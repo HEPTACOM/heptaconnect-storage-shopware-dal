@@ -18,12 +18,16 @@
     ],
     "require": {
         "php": ">=7.4",
-        "heptacom/heptaconnect-storage-base": "@dev"
+        "heptacom/heptaconnect-dataset-base": "@dev",
+        "heptacom/heptaconnect-portal-base": "@dev",
+        "heptacom/heptaconnect-storage-base": "@dev",
+        "shopware/core": ">=6.2.3"
     },
     "conflict": {
         "nikic/php-parser": "4.7.0"
     },
     "require-dev": {
+        "ext-json": "*",
         "ergebnis/composer-normalize": ">=2.7",
         "friendsofphp/php-cs-fixer": ">=2",
         "icanhazstring/composer-unused": ">=0.7",
