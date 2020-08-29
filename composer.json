@@ -1,10 +1,11 @@
 {
-    "name": "heptacom/heptaconnect-repository-base",
+    "name": "heptacom/heptaconnect-storage-shopware-dal",
     "type": "library",
-    "description": "HEPTAconnect package",
+    "description": "HEPTAconnect package to use shopware DAL as underlying storage system",
     "keywords": [
-        "heptaconnect-dataset",
-        "heptaconnect-adapter"
+        "heptaconnect-storage",
+        "shopware",
+        "shopware-platform"
     ],
     "license": [
         "AGPL-3.0-or-later",
@@ -16,7 +17,8 @@
         }
     ],
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "heptacom/heptaconnect-storage-base": "@dev"
     },
     "conflict": {
         "nikic/php-parser": "4.7.0"
@@ -38,12 +40,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Heptacom\\HeptaConnect\\": "src/"
+            "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Heptacom\\HeptaConnect\\Test\\": "test/"
+            "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\Test\\": "test/"
         }
     },
     "minimum-stability": "stable"
