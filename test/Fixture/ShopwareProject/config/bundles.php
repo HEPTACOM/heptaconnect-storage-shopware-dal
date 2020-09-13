@@ -14,4 +14,5 @@ return [
     Shopware\Core\Content\Content::class => ['all' => true],
     Shopware\Core\Checkout\Checkout::class => ['all' => true],
     Shopware\Core\Profiling\Profiling::class => ['dev' => true],
+    \Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Bundle::class => ['all' => true],
 ];
