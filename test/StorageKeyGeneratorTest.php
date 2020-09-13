@@ -8,10 +8,6 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\WebhookKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\WebhookStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use PHPUnit\Framework\TestCase;
 
@@ -35,39 +31,58 @@ class StorageKeyGeneratorTest extends TestCase
         $generator->generateKey(AbstractStorageKey::class);
     }
 
-    public function testCronjobKey(): void
+    /**
+     * @dataProvider provideKeyInterfaces
+     */
+    public function testKeyGenerator(string $interface): void
     {
         $generator = new StorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = $generator->generateKey(CronjobKeyInterface::class);
-        self::assertInstanceOf(CronjobStorageKey::class, $key);
+        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        $key = $generator->generateKey($interface);
+        self::assertInstanceOf($interface, $key);
+    }
+
+    /**
+     * @dataProvider provideKeyInterfaces
+     */
+    public function testKeySerialization(string $interface): void
+    {
+        $generator = new StorageKeyGenerator();
+        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        $key = $generator->generateKey($interface);
+        $serialized = $generator->serialize($key);
+        self::assertStringContainsString($key->getUuid(), $serialized);
+    }
+
+    /**
+     * @dataProvider provideKeyInterfaces
+     */
+    public function testKeyDeserialization(string $interface): void
+    {
+        $generator = new StorageKeyGenerator();
+        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        $key = $generator->generateKey($interface);
+        $serialized = $generator->serialize($key);
+        $deserialized = $generator->deserialize($serialized);
+        self::assertTrue($key->equals($deserialized), 'Keys are not equal');
+    }
+
+    /**
+     * @dataProvider provideKeyInterfaces
+     */
+    public function testKeyJsonSerialization(string $interface): void
+    {
+        $generator = new StorageKeyGenerator();
+        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        $key = $generator->generateKey($interface);
         self::assertStringContainsString($key->getUuid(), \json_encode($key));
     }
 
-    public function testMappingNodeKey(): void
+    public function provideKeyInterfaces(): iterable
     {
-        $generator = new StorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = $generator->generateKey(MappingNodeKeyInterface::class);
-        self::assertInstanceOf(MappingNodeStorageKey::class, $key);
-        self::assertStringContainsString($key->getUuid(), \json_encode($key));
-    }
-
-    public function testPortalNodeKey(): void
-    {
-        $generator = new StorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = $generator->generateKey(PortalNodeKeyInterface::class);
-        self::assertInstanceOf(PortalNodeStorageKey::class, $key);
-        self::assertStringContainsString($key->getUuid(), \json_encode($key));
-    }
-
-    public function testWebhookKey(): void
-    {
-        $generator = new StorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = $generator->generateKey(WebhookKeyInterface::class);
-        self::assertInstanceOf(WebhookStorageKey::class, $key);
-        self::assertStringContainsString($key->getUuid(), \json_encode($key));
+        yield [PortalNodeKeyInterface::class];
+        yield [WebhookKeyInterface::class];
+        yield [MappingNodeKeyInterface::class];
+        yield [CronjobKeyInterface::class];
     }
 }
