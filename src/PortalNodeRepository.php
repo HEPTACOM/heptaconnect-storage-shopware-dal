@@ -8,16 +8,18 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\EntityRepositoryChecksTrait;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Event\NestedEventCollection;
 
 class PortalNodeRepository extends PortalNodeRepositoryContract
 {
+    use EntityRepositoryChecksTrait;
+
     private EntityRepositoryInterface $portalNodes;
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
@@ -99,18 +101,11 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        try {
-            $updateResult = $this->portalNodes->update([[
-                'id' => $portalNodeKey->getUuid(),
-                'deletedAt' => \date_create(),
-            ]], Context::createDefaultContext())->getEvents();
-        } catch (\Throwable $throwable) {
-            // TODO log
-            return;
-        }
-
-        if (!$updateResult instanceof NestedEventCollection || $updateResult->count() < 1) {
-            throw new NotFoundException();
-        }
+        $context = Context::createDefaultContext();
+        $this->throwNotFoundWhenNoMatch($this->portalNodes, ['id' => $portalNodeKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->portalNodes->update([[
+            'id' => $portalNodeKey->getUuid(),
+            'deletedAt' => \date_create(),
+        ]], $context));
     }
 }

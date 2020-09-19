@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\EntityRepositoryChecksTrait;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Defaults;
@@ -23,6 +24,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 class CronjobRepository extends CronjobRepositoryContract
 {
+    use EntityRepositoryChecksTrait;
+
     private EntityRepositoryInterface $cronjobs;
 
     private StorageKeyGeneratorContract $keyGenerator;
@@ -90,16 +93,12 @@ class CronjobRepository extends CronjobRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $cronjobIds = $this->cronjobs->searchIds(new Criteria([$cronjobKey->getUuid()]), $context);
 
-        if ($cronjobIds->getTotal() <= 0) {
-            throw new NotFoundException();
-        }
-
-        $this->cronjobs->update([[
+        $this->throwNotFoundWhenNoMatch($this->cronjobs, ['id' => $cronjobKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->cronjobs->update([[
             'id' => $cronjobKey->getUuid(),
             'queuedUntil' => $nextExecution,
-        ]], $context);
+        ]], $context));
     }
 
     public function delete(CronjobKeyInterface $cronjobKey): void
@@ -109,15 +108,10 @@ class CronjobRepository extends CronjobRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $cronjobIds = $this->cronjobs->searchIds(new Criteria([$cronjobKey->getUuid()]), $context);
-
-        if ($cronjobIds->getTotal() <= 0) {
-            throw new NotFoundException();
-        }
-
-        $this->cronjobs->delete([[
+        $this->throwNotFoundWhenNoMatch($this->cronjobs, ['id' => $cronjobKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->cronjobs->delete([[
             'id' => $cronjobKey,
-        ]], $context);
+        ]], $context));
     }
 
     public function listExecutables(?\DateTimeInterface $until = null): iterable

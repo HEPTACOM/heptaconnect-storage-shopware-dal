@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\EntityRepositoryChecksTrait;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobRunStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Shopware\Core\Defaults;
@@ -26,6 +27,8 @@ use Shopware\Core\Framework\Event\NestedEventCollection;
 
 class CronjobRunRepository extends CronjobRunRepositoryContract
 {
+    use EntityRepositoryChecksTrait;
+
     private EntityRepositoryInterface $cronjobs;
 
     private EntityRepositoryInterface $cronjobRuns;
@@ -124,19 +127,12 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
-        try {
-            $updateResult = $this->cronjobRuns->update([[
-                'id' => $cronjobRunKey->getUuid(),
-                'startedAt' => $now,
-            ]], Context::createDefaultContext())->getEvents();
-        } catch (\Throwable $throwable) {
-            // TODO log
-            return;
-        }
-
-        if (!$updateResult instanceof NestedEventCollection || $updateResult->count() < 1) {
-            throw new NotFoundException();
-        }
+        $context = Context::createDefaultContext();
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
+            'id' => $cronjobRunKey->getUuid(),
+            'startedAt' => $now,
+        ]], $context));
     }
 
     /**
@@ -149,19 +145,12 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
-        try {
-            $updateResult = $this->cronjobRuns->update([[
-                'id' => $cronjobRunKey->getUuid(),
-                'finishedAt' => $now,
-            ]], Context::createDefaultContext())->getEvents();
-        } catch (\Throwable $throwable) {
-            // TODO log
-            return;
-        }
-
-        if (!$updateResult instanceof NestedEventCollection || $updateResult->count() < 1) {
-            throw new NotFoundException();
-        }
+        $context = Context::createDefaultContext();
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
+            'id' => $cronjobRunKey->getUuid(),
+            'finishedAt' => $now,
+        ]], $context));
     }
 
     /**
@@ -174,29 +163,22 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
+        $serialize = null;
+
         try {
-            $serialize = null;
-
-            try {
-                $serialize = \serialize($throwable);
-            } catch (\Throwable $ignored) {
-            }
-
-            $updateResult = $this->cronjobRuns->update([[
-                'id' => $cronjobRunKey->getUuid(),
-                'throwableClass' => \get_class($throwable),
-                'throwableMessage' => $throwable->getMessage(),
-                'throwableSerialized' => $serialize,
-                'throwableFile' => $throwable->getFile(),
-                'throwableLine' => $throwable->getLine(),
-            ]], Context::createDefaultContext())->getEvents();
+            $serialize = \serialize($throwable);
         } catch (\Throwable $ignored) {
-            // TODO log
-            return;
         }
 
-        if (!$updateResult instanceof NestedEventCollection || $updateResult->count() < 1) {
-            throw new NotFoundException();
-        }
+        $context = Context::createDefaultContext();
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
+            'id' => $cronjobRunKey->getUuid(),
+            'throwableClass' => \get_class($throwable),
+            'throwableMessage' => $throwable->getMessage(),
+            'throwableSerialized' => $serialize,
+            'throwableFile' => $throwable->getFile(),
+            'throwableLine' => $throwable->getLine(),
+        ]], $context));
     }
 }
