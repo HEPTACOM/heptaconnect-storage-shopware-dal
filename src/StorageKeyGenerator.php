@@ -4,6 +4,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobRunKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
@@ -15,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobRunStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\WebhookStorageKey;
@@ -29,6 +31,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         CronjobKeyInterface::class => CronjobStorageKey::class,
         CronjobRunKeyInterface::class => CronjobRunStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
+        MappingKeyInterface::class => MappingStorageKey::class,
     ];
 
     public function generateKey(string $keyClassName): StorageKeyInterface
