@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\RouteInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteRepositoryContract;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\RouteRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;

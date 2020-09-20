@@ -1,17 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Portal\Base\Cronjob\Contract\CronjobInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\CronjobRepositoryContract;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\CronjobRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\EntityRepositoryChecksTrait;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Defaults;
