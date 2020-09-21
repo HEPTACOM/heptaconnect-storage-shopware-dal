@@ -11,6 +11,10 @@ class MappingErrorMessageEntity extends Entity
 
     protected string $mappingId;
 
+    protected ?string $previousId;
+
+    protected ?string $groupPreviousId;
+
     protected ?string $message;
 
     protected ?string $stackTrace;
@@ -35,6 +39,26 @@ class MappingErrorMessageEntity extends Entity
     public function setMappingId(string $mappingId): void
     {
         $this->mappingId = $mappingId;
+    }
+
+    public function getPreviousId(): ?string
+    {
+        return $this->previousId;
+    }
+
+    public function setPreviousId(?string $previousId): void
+    {
+        $this->previousId = $previousId;
+    }
+
+    public function getGroupPreviousId(): ?string
+    {
+        return $this->groupPreviousId;
+    }
+
+    public function setGroupPreviousId(?string $groupPreviousId): void
+    {
+        $this->groupPreviousId = $groupPreviousId;
     }
 
     public function getMessage(): ?string

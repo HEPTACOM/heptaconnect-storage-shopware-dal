@@ -36,6 +36,8 @@ class MappingErrorMessageDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new FkField('mapping_id', 'mappingId', MappingDefinition::class))->addFlags(new Required()),
+            new FkField('previous_id', 'previousId', self::class),
+            new FkField('group_previous_id', 'groupPreviousId', self::class),
             (new StringField('type', 'type'))->addFlags(new Required()),
             new LongTextField('message', 'message'),
             new LongTextField('stack_trace', 'stackTrace'),

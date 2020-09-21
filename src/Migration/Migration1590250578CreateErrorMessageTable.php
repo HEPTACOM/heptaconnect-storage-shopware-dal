@@ -11,6 +11,8 @@ class Migration1590250578CreateErrorMessageTable extends MigrationStep
 CREATE TABLE `heptaconnect_mapping_error_message` (
     `id` BINARY(16) NOT NULL,
     `mapping_id` BINARY(16) NOT NULL,
+    `group_previous_id` BINARY(16) NULL,
+    `previous_id` BINARY(16) NULL,
     `message` LONGTEXT NULL,
     `type` VARCHAR(255) NOT NULL,
     `stack_trace` LONGTEXT NULL,
@@ -19,6 +21,14 @@ CREATE TABLE `heptaconnect_mapping_error_message` (
     PRIMARY KEY (`id`),
     FOREIGN KEY `fk.heptaconnect_mapping_error_message.mapping_id` (`mapping_id`)
         REFERENCES `heptaconnect_mapping` (`id`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    FOREIGN KEY `fk.heptaconnect_mapping_error_message.group_previous_id` (`group_previous_id`)
+        REFERENCES `heptaconnect_mapping_error_message` (`id`)
+            ON DELETE CASCADE
+            ON UPDATE CASCADE,
+    FOREIGN KEY `fk.heptaconnect_mapping_error_message.previous_id` (`previous_id`)
+        REFERENCES `heptaconnect_mapping_error_message` (`id`)
             ON DELETE CASCADE
             ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
