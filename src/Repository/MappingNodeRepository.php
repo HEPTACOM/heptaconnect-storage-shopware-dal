@@ -22,6 +22,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class MappingNodeRepository extends MappingNodeRepositoryContract
 {
+    use EntityRepositoryChecksTrait;
+
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
     private EntityRepositoryInterface $mappingNodes;
@@ -105,6 +107,19 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         ]], $context);
 
         return $mappingId;
+    }
+
+    public function delete(MappingNodeKeyInterface $key): void
+    {
+        if (!$key instanceof MappingNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($key));
+        }
+
+        $context = Context::createDefaultContext();
+        $this->throwNotFoundWhenNoMatch($this->mappingNodes, $key->getUuid(), $context);
+        $this->throwNotFoundWhenNoChange($this->mappingNodes->delete([[
+            'id' => $key->getUuid(),
+        ]], $context));
     }
 
     /**
