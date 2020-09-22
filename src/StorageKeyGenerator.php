@@ -37,6 +37,17 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         MappingExceptionKeyInterface::class => MappingExceptionStorageKey::class,
     ];
 
+    private const ABBREVIATIONS = [
+        'PortalNode' => PortalNodeStorageKey::class,
+        'MappingNode' => MappingNodeStorageKey::class,
+        'Webhook' => WebhookStorageKey::class,
+        'Cronjob' => CronjobStorageKey::class,
+        'CronjobRun' => CronjobRunStorageKey::class,
+        'Route' => RouteStorageKey::class,
+        'Mapping' => MappingStorageKey::class,
+        'MappingException' => MappingExceptionStorageKey::class,
+    ];
+
     public function generateKey(string $keyClassName): StorageKeyInterface
     {
         return $this->createKey($keyClassName, null);
@@ -50,18 +61,28 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
             throw new UnsupportedStorageKeyException($class);
         }
 
-        if (($interface = \array_search($class, self::IMPLEMENTATION_MAP, true)) === false) {
+        if (($abbreviation = \array_search($class, self::ABBREVIATIONS, true)) === false) {
             throw new UnsupportedStorageKeyException($class);
         }
 
-        return \sprintf('%s:%s', $interface, $key->getUuid());
+        return \sprintf('%s:%s', $abbreviation, $key->getUuid());
     }
 
     public function deserialize(string $keyData): StorageKeyInterface
     {
-        [$interface, $key] = \explode(':', $keyData, 2);
+        [$abbreviation, $key] = \explode(':', $keyData, 2);
 
         if (\preg_match('/^[a-f0-9]{32}$/', $key) !== 1) {
+            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+        }
+
+        if (!\array_key_exists($abbreviation, self::ABBREVIATIONS)) {
+            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+        }
+
+        $class = self::ABBREVIATIONS[$abbreviation];
+
+        if (($interface = \array_search($class, self::IMPLEMENTATION_MAP)) === false) {
             throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
         }
 
