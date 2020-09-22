@@ -80,6 +80,27 @@ class MappingRepository extends MappingRepositoryContract
         }
     }
 
+    public function listByPortalNodeAndType(PortalNodeKeyInterface $portalNodeKey, string $datasetEntityType): iterable
+    {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        $criteria = new Criteria();
+        $criteria->setLimit(50);
+        $criteria->addFilter(
+            new EqualsFilter('mappingNode.type.type', $datasetEntityType),
+            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
+        );
+        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+
+        while (!empty($ids = $iterator->fetchIds())) {
+            foreach ($ids as $id) {
+                yield new MappingStorageKey($id);
+            }
+        }
+    }
+
     public function create(
         PortalNodeKeyInterface $portalNodeKey,
         MappingNodeKeyInterface $mappingNodeKey,
