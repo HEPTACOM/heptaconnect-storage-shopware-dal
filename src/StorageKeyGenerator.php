@@ -65,11 +65,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
             throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
         }
 
-        if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
-        }
-
-        return $this->createKey(self::IMPLEMENTATION_MAP[$interface], (string) $key);
+        return $this->createKey($interface, (string) $key);
     }
 
     private function createKey(string $interface, ?string $uuid): StorageKeyInterface
