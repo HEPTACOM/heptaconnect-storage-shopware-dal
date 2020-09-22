@@ -101,7 +101,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->portalNodes, ['id' => $portalNodeKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->portalNodes, $portalNodeKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->portalNodes->update([[
             'id' => $portalNodeKey->getUuid(),
             'deletedAt' => \date_create(),

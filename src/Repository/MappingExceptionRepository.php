@@ -113,8 +113,10 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->mappingExceptions, ['id' => $key->getUuid()], $context);
-        $this->throwNotFoundWhenNoChange($this->mappingExceptions->delete(['id' => $key->getUuid()], $context));
+        $this->throwNotFoundWhenNoMatch($this->mappingExceptions, $key->getUuid(), $context);
+        $this->throwNotFoundWhenNoChange($this->mappingExceptions->delete([[
+            'id' => $key->getUuid(),
+        ]], $context));
     }
 
     /**

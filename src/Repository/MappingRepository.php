@@ -137,7 +137,7 @@ class MappingRepository extends MappingRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->mappings, ['id' => $key->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappings->update([[
             'id' => $key->getUuid(),
             'externalId' => $externalId,
@@ -151,7 +151,7 @@ class MappingRepository extends MappingRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->mappings, ['id' => $key->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappings->delete([[
             'id' => $key->getUuid(),
         ]], $context));

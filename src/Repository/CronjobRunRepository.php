@@ -126,7 +126,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
             'startedAt' => $now,
@@ -144,7 +144,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
             'finishedAt' => $now,
@@ -169,7 +169,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
         }
 
         $context = Context::createDefaultContext();
-        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, ['id' => $cronjobRunKey->getUuid()], $context);
+        $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
             'throwableClass' => \get_class($throwable),

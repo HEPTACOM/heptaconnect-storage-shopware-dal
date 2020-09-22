@@ -13,7 +13,7 @@ trait EntityRepositoryChecksTrait
 {
     private function throwNotFoundWhenNoMatch(
         EntityRepositoryInterface $repository,
-        array $primaryKey,
+        string $primaryKey,
         Context $context
     ): void {
         if ($repository->searchIds(new Criteria([$primaryKey]), $context)->getTotal() < 1) {
