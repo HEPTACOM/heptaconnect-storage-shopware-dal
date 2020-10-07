@@ -1,5 +1,6 @@
 {
     "name": "heptacom/heptaconnect-storage-shopware-dal",
+    "version": "0.0.1",
     "type": "library",
     "description": "HEPTAconnect package to use shopware DAL as underlying storage system",
     "keywords": [
@@ -18,9 +19,9 @@
     ],
     "require": {
         "php": ">=7.4",
-        "heptacom/heptaconnect-dataset-base": "@dev",
-        "heptacom/heptaconnect-portal-base": "@dev",
-        "heptacom/heptaconnect-storage-base": "@dev",
+        "heptacom/heptaconnect-dataset-base": ">=0.0.1",
+        "heptacom/heptaconnect-portal-base": ">=0.0.1",
+        "heptacom/heptaconnect-storage-base": ">=0.0.1",
         "shopware/core": ">=6.2.3",
         "symfony/lock": ">=4"
     },
@@ -52,6 +53,5 @@
         "psr-4": {
             "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\Test\\": "test/"
         }
-    },
-    "minimum-stability": "stable"
+    }
 }
