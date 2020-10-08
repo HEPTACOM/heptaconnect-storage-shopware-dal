@@ -57,7 +57,9 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
     }
 
     public function listByTypeAndPortalNodeAndExternalId(
-        string $datasetEntityClassName, PortalNodeKeyInterface $portalNodeKey, string $externalId
+        string $datasetEntityClassName,
+        PortalNodeKeyInterface $portalNodeKey,
+        string $externalId
     ): iterable {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
