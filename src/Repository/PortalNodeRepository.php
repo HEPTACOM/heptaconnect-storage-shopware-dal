@@ -51,7 +51,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
     public function listAll(): iterable
     {
-        $criteria = (new Criteria())->addFilter(new EqualsFilter('deletedAt', null));
+        $criteria = (new Criteria())->setLimit(50)->addFilter(new EqualsFilter('deletedAt', null));
 
         $iterator = new RepositoryIterator($this->portalNodes, Context::createDefaultContext(), $criteria);
 
@@ -64,7 +64,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
     public function listByClass(string $className): iterable
     {
-        $criteria = (new Criteria())->addFilter(
+        $criteria = (new Criteria())->setLimit(50)->addFilter(
             new EqualsFilter('deletedAt', null),
             new EqualsFilter('className', $className)
         );
