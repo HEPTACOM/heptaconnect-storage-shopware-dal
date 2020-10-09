@@ -70,7 +70,13 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
 
     public function deserialize(string $keyData): StorageKeyInterface
     {
-        [$abbreviation, $key] = \explode(':', $keyData, 2);
+        $parts = \explode(':', $keyData, 2);
+
+        if (\count($parts) !== 2) {
+            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+        }
+
+        [$abbreviation, $key] = $parts;
 
         if (\preg_match('/^[a-f0-9]{32}$/', $key) !== 1) {
             throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
