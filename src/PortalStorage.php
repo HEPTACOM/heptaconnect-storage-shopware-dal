@@ -11,8 +11,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStora
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class PortalStorage extends PortalStorageContract
 {
@@ -91,6 +93,33 @@ class PortalStorage extends PortalStorageContract
         }
 
         return $result->getType();
+    }
+
+    public function list(PortalNodeKeyInterface $portalNodeKey): iterable
+    {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        $context = Context::createDefaultContext();
+
+        $criteria = (new Criteria())
+            ->setLimit(50)
+            ->addFilter(new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()))
+        ;
+
+        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
+
+        while (!empty($entities = $iterator->fetch()->getEntities())) {
+            foreach ($entities as $entity) {
+                if ($entity instanceof PortalNodeStorageEntity) {
+                    yield $entity->getKey() => [
+                        'type' => $entity->getType(),
+                        'value' => $entity->getValue(),
+                    ];
+                }
+            }
+        }
     }
 
     public function has(PortalNodeKeyInterface $portalNodeKey, string $key): bool
