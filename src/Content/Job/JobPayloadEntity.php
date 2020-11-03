@@ -5,7 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class PayloadEntity extends Entity
+class JobPayloadEntity extends Entity
 {
     use EntityIdTrait;
 
@@ -14,6 +14,8 @@ class PayloadEntity extends Entity
     protected string $format;
 
     protected string $checksum;
+
+    protected ?JobCollection $jobs = null;
 
     public function getPayload(): string
     {
@@ -32,9 +34,11 @@ class PayloadEntity extends Entity
         return $this->format;
     }
 
-    public function setFormat(string $format): void
+    public function setFormat(string $format): self
     {
         $this->format = $format;
+
+        return $this;
     }
 
     public function getChecksum(): string
@@ -42,8 +46,22 @@ class PayloadEntity extends Entity
         return $this->checksum;
     }
 
-    public function setChecksum(string $checksum): void
+    public function setChecksum(string $checksum): self
     {
         $this->checksum = $checksum;
+
+        return $this;
+    }
+
+    public function getJobs(): ?JobCollection
+    {
+        return $this->jobs;
+    }
+
+    public function setJobs(?JobCollection $jobs): self
+    {
+        $this->jobs = $jobs;
+
+        return $this;
     }
 }

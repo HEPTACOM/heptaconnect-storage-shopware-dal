@@ -7,7 +7,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadStorageContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\PayloadEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -114,7 +114,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
         $criteria->setLimit(1);
         $entity = $this->jobPayloads->search($criteria, $context)->first();
 
-        if (!$entity instanceof PayloadEntity) {
+        if (!$entity instanceof JobPayloadEntity) {
             throw new NotFoundException();
         }
 

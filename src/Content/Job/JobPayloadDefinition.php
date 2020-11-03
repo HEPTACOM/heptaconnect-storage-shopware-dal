@@ -7,10 +7,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
-class PayloadDefinition extends EntityDefinition
+class JobPayloadDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'heptaconnect_job_payload';
 
@@ -21,12 +22,12 @@ class PayloadDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return PayloadEntity::class;
+        return JobPayloadEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return PayloadCollection::class;
+        return JobPayloadCollection::class;
     }
 
     protected function defineFields(): FieldCollection
@@ -36,6 +37,7 @@ class PayloadDefinition extends EntityDefinition
             (new BlobField('payload', 'payload'))->addFlags(new Required()),
             (new StringField('format', 'format', 255))->addFlags(new Required()),
             (new StringField('checksum', 'checksum', 255))->addFlags(new Required()),
+            new OneToManyAssociationField('jobs', JobDefinition::class, 'payload_id'),
         ]);
     }
 }

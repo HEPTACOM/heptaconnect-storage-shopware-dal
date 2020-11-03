@@ -26,9 +26,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(string $id): self
     {
         $this->id = $id;
+
+        return $this;
     }
 
     public function getMappingId(): string
@@ -36,9 +38,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->mappingId;
     }
 
-    public function setMappingId(string $mappingId): void
+    public function setMappingId(string $mappingId): self
     {
         $this->mappingId = $mappingId;
+
+        return $this;
     }
 
     public function getPreviousId(): ?string
@@ -46,9 +50,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->previousId;
     }
 
-    public function setPreviousId(?string $previousId): void
+    public function setPreviousId(?string $previousId): self
     {
         $this->previousId = $previousId;
+
+        return $this;
     }
 
     public function getGroupPreviousId(): ?string
@@ -56,9 +62,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->groupPreviousId;
     }
 
-    public function setGroupPreviousId(?string $groupPreviousId): void
+    public function setGroupPreviousId(?string $groupPreviousId): self
     {
         $this->groupPreviousId = $groupPreviousId;
+
+        return $this;
     }
 
     public function getMessage(): ?string
@@ -66,9 +74,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->message;
     }
 
-    public function setMessage(?string $message): void
+    public function setMessage(?string $message): self
     {
         $this->message = $message;
+
+        return $this;
     }
 
     public function getStackTrace(): ?string
@@ -76,9 +86,11 @@ class MappingErrorMessageEntity extends Entity
         return $this->stackTrace;
     }
 
-    public function setStackTrace(?string $stackTrace): void
+    public function setStackTrace(?string $stackTrace): self
     {
         $this->stackTrace = $stackTrace;
+
+        return $this;
     }
 
     public function getMapping(): ?MappingEntity
@@ -86,8 +98,10 @@ class MappingErrorMessageEntity extends Entity
         return $this->mapping;
     }
 
-    public function setMapping(?MappingEntity $mapping): void
+    public function setMapping(?MappingEntity $mapping): self
     {
         $this->mapping = $mapping;
+
+        return $this;
     }
 }
