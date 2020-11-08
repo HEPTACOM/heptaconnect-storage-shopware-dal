@@ -3,9 +3,11 @@
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
+use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingCollection as StorageMappingCollection;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\MappingKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -17,7 +19,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class MappingRepository extends MappingRepositoryContract
@@ -119,6 +124,35 @@ class MappingRepository extends MappingRepositoryContract
         }
     }
 
+    public function listUnsavedExternalIds(
+        PortalNodeKeyInterface $portalNodeKey,
+        string $datasetEntityClassName,
+        array $externalIdsToCheck
+    ): array {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('mappingNode.type.type', $datasetEntityClassName),
+            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
+            new EqualsAnyFilter('externalId', $externalIdsToCheck),
+        );
+        $criteria->addAggregation(new TermsAggregation(
+            'externalIds',
+            'externalId'
+        ));
+        $aggrResult = $this->mappings->aggregate($criteria, Context::createDefaultContext());
+        $termResult = $aggrResult->get('externalIds');
+
+        if (!$termResult instanceof TermsResult) {
+            return $externalIdsToCheck;
+        }
+
+        return \array_diff($externalIdsToCheck, $termResult->getKeys());
+    }
+
     public function create(
         PortalNodeKeyInterface $portalNodeKey,
         MappingNodeKeyInterface $mappingNodeKey,
@@ -146,6 +180,45 @@ class MappingRepository extends MappingRepositoryContract
         ]], Context::createDefaultContext());
 
         return $key;
+    }
+
+    public function createList(StorageMappingCollection $mappings): MappingKeyCollection
+    {
+        $result = new MappingKeyCollection();
+        $payload = [];
+
+        /** @var MappingInterface $mapping */
+        foreach ($mappings as $mapping) {
+            $portalNodeKey = $mapping->getPortalNodeKey();
+
+            if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            }
+
+            $mappingNodeKey = $mapping->getMappingNodeKey();
+
+            if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+            }
+
+            $key = $this->storageKeyGenerator->generateKey(MappingKeyInterface::class);
+
+            if (!$key instanceof MappingStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($key));
+            }
+
+            $payload[] = [
+                'id' => $key->getUuid(),
+                'externalId' => $mapping->getExternalId(),
+                'mappingNodeId' => $mappingNodeKey->getUuid(),
+                'portalNodeId' => $portalNodeKey->getUuid(),
+            ];
+            $result->push([$key]);
+        }
+
+        $this->mappings->create($payload, Context::createDefaultContext());
+
+        return $result;
     }
 
     public function updateExternalId(MappingKeyInterface $key, ?string $externalId): void
