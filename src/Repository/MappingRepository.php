@@ -216,7 +216,9 @@ class MappingRepository extends MappingRepositoryContract
             $result->push([$key]);
         }
 
-        $this->mappings->create($payload, Context::createDefaultContext());
+        if (!empty($payload)) {
+            $this->mappings->create($payload, Context::createDefaultContext());
+        }
 
         return $result;
     }
