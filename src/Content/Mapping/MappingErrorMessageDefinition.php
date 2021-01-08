@@ -4,6 +4,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -39,7 +40,7 @@ class MappingErrorMessageDefinition extends EntityDefinition
             new FkField('previous_id', 'previousId', self::class),
             new FkField('group_previous_id', 'groupPreviousId', self::class),
             (new StringField('type', 'type'))->addFlags(new Required()),
-            new LongTextField('message', 'message'),
+            (new LongTextField('message', 'message'))->addFlags(new AllowHtml()),
             new LongTextField('stack_trace', 'stackTrace'),
 
             new ManyToOneAssociationField('mapping', 'mapping_id', MappingDefinition::class),
