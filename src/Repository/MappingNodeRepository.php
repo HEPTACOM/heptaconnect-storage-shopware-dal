@@ -76,6 +76,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
                 new EqualsFilter('mappings.portalNode.id', $portalNodeKey->getUuid()),
             );
 
+        // TODO: Do not use iterator. We only expect one result.
         $iterator = new RepositoryIterator($this->mappingNodes, Context::createDefaultContext(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
