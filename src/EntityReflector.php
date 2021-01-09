@@ -8,34 +8,131 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\EntityReflectorContract;
+use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Ramsey\Uuid\Uuid;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 
 class EntityReflector extends EntityReflectorContract
 {
     private MappingServiceInterface $mappingService;
 
-    public function __construct(MappingServiceInterface $mappingService)
-    {
+    private EntityRepositoryInterface $mappingRepository;
+
+    public function __construct(
+        MappingServiceInterface $mappingService,
+        EntityRepositoryInterface $mappingRepository
+    ) {
         $this->mappingService = $mappingService;
+        $this->mappingRepository = $mappingRepository;
     }
 
     public function reflectEntities(
-        MappedDatasetEntityCollection $entities,
-        PortalNodeKeyInterface $portalNodeKey
+        MappedDatasetEntityCollection $mappedEntities,
+        PortalNodeKeyInterface $targetPortalNodeKey
     ): void {
-        /** @var MappedDatasetEntityStruct $entity */
-        foreach ($entities as $entity) {
-            $sourceMapping = $entity->getMapping();
-            $targetMapping = $this->mappingService->reflect($sourceMapping, $portalNodeKey);
+        if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($targetPortalNodeKey));
+        }
+
+        $targetPortalNodeId = $targetPortalNodeKey->getUuid();
+
+        $context = Context::createDefaultContext();
+
+        $index = [];
+        $filters = [];
+        $createMappings = [];
+        $reflectedFilters = [];
+
+        /** @var MappedDatasetEntityStruct $mappedEntity */
+        foreach ($mappedEntities as $key => $mappedEntity) {
+            $primaryKey = $mappedEntity->getMapping()->getExternalId();
+            $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
+            $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
+
+            if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+            }
+
+            $mappingNodeId = $mappingNodeKey->getUuid();
+
+            $index[$mappingNodeId] = $key;
+
+            if ($primaryKey === null) {
+                continue;
+            }
+
+            if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
+            }
+
+            $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
+
+            $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
+                new EqualsFilter('externalId', $primaryKey),
+                new EqualsFilter('mappingNodeId', $mappingNodeId),
+                new EqualsFilter('portalNodeId', $sourcePortalNodeId),
+            ]);
+
+            $reflectedFilters[] = new EqualsFilter('mappingNodeId', $mappingNodeId);
+
+            $mappingId = Uuid::uuid4()->getHex();
+
+            $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] = [
+                'id' => $mappingId,
+                'externalId' => $primaryKey,
+                'mappingNodeId' => $mappingNodeId,
+                'portalNodeId' => $sourcePortalNodeId,
+            ];
+        }
+
+        $criteria = (new Criteria())->addFilter(
+            new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
+        );
+
+        /** @var MappingEntity $mapping */
+        foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
+            $key = $mapping->getPortalNodeId() . $mapping->getMappingNodeId() . $mapping->getExternalId();
+            unset($createMappings[$key]);
+        }
+
+        if ($createMappings) {
+            $this->mappingRepository->create(\array_values($createMappings), $context);
+        }
+
+        $criteria = (new Criteria())->addFilter(
+            new EqualsFilter('portalNodeId', $targetPortalNodeId),
+            new MultiFilter(MultiFilter::CONNECTION_OR, $reflectedFilters),
+        );
+
+        /** @var MappingEntity $mapping */
+        foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
+            $key = $index[$mapping->getMappingNodeId()];
+            unset($index[$mapping->getMappingNodeId()]);
+
+            /** @var MappedDatasetEntityStruct $mappedEntity */
+            $mappedEntity = $mappedEntities[$key];
 
             $reflectionMapping = (new ReflectionMapping())
-                ->setPortalNodeKey($sourceMapping->getPortalNodeKey())
-                ->setMappingNodeKey($sourceMapping->getMappingNodeKey())
-                ->setDatasetEntityClassName($sourceMapping->getDatasetEntityClassName())
-                ->setExternalId($sourceMapping->getExternalId())
+                ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
+                ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
+                ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
+                ->setExternalId($mappedEntity->getMapping()->getExternalId())
             ;
 
-            $entity->getDatasetEntity()->attach($reflectionMapping);
-            $entity->getDatasetEntity()->setPrimaryKey($targetMapping->getExternalId());
+            $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
+            $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
+        }
+
+        /** @var MappedDatasetEntityStruct $mappedEntity */
+        foreach ($index as $mappedEntity) {
+            $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
         }
     }
 }
