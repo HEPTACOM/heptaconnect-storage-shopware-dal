@@ -61,6 +61,13 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         return $this->createKey($keyClassName, null);
     }
 
+    public function generateKeys(string $keyClassName, int $count): iterable
+    {
+        while ($count-- > 0) {
+            yield $this->createKey($keyClassName, null);
+        }
+    }
+
     public function serialize(StorageKeyInterface $key): string
     {
         $class = \get_class($key);
