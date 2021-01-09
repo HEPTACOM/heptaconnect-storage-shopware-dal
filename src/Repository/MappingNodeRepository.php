@@ -11,12 +11,14 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -29,15 +31,19 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
 
     private EntityRepositoryInterface $mappingNodes;
 
+    private EntityRepositoryInterface $mappings;
+
     private EntityRepositoryInterface $datasetEntityTypes;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
+        EntityRepositoryInterface $mappings,
         EntityRepositoryInterface $datasetEntityTypes
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
+        $this->mappings = $mappings;
         $this->datasetEntityTypes = $datasetEntityTypes;
     }
 
@@ -83,6 +89,40 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingNodeStorageKey($id);
+            }
+        }
+    }
+
+    public function listByTypeAndPortalNodeAndExternalIds(
+        string $datasetEntityClassName,
+        PortalNodeKeyInterface $portalNodeKey,
+        array $externalIds
+    ): iterable {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        if ($externalIds === []) {
+            yield from [];
+        }
+
+        $criteria = (new Criteria())
+            ->setLimit(50)
+            ->addFilter(
+                new EqualsFilter('mappingNode.deletedAt', null),
+                new EqualsFilter('mappingNode.type.type', $datasetEntityClassName),
+                new EqualsFilter('deletedAt', null),
+                new EqualsAnyFilter('externalId', $externalIds),
+                new EqualsFilter('portalNode.deletedAt', null),
+                new EqualsFilter('portalNode.id', $portalNodeKey->getUuid()),
+            );
+
+        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+
+        while (($result = $iterator->fetch()) instanceof EntitySearchResult) {
+            /** @var MappingEntity $entity */
+            foreach ($result->getIterator() as $entity) {
+                yield $entity->getExternalId() => new MappingNodeStorageKey($entity->getMappingNodeId());
             }
         }
     }
