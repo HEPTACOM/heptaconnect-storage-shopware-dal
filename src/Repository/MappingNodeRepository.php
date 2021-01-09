@@ -4,6 +4,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\MappingNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Contract\MappingNodeStructInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
@@ -110,6 +111,45 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         ]], $context);
 
         return $mappingId;
+    }
+
+    public function createList(
+        string $datasetEntityClassName,
+        PortalNodeKeyInterface $portalNodeKey,
+        int $count
+    ): MappingNodeKeyCollection {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        $result = new MappingNodeKeyCollection($this->storageKeyGenerator->generateKeys(MappingNodeKeyInterface::class, $count));
+
+        if ($result->count() !== $count) {
+            throw new UnsupportedStorageKeyException(MappingNodeKeyInterface::class);
+        }
+
+        $context = Context::createDefaultContext();
+        $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
+        $payload = [];
+
+        /** @var MappingNodeStorageKey $key */
+        foreach ($result as $key) {
+            if (!$key instanceof MappingNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($key));
+            }
+
+            $payload[] = [
+                'id' => $key->getUuid(),
+                'originPortalNodeId' => $portalNodeKey->getUuid(),
+                'typeId' => $typeIds[$datasetEntityClassName],
+            ];
+        }
+
+        if ($payload !== []) {
+            $this->mappingNodes->create($payload, $context);
+        }
+
+        return $result;
     }
 
     public function delete(MappingNodeKeyInterface $key): void
