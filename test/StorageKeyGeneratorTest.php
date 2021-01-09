@@ -57,6 +57,19 @@ class StorageKeyGeneratorTest extends TestCase
     /**
      * @dataProvider provideKeyInterfaces
      */
+    public function testKeyGeneratorList(string $interface): void
+    {
+        $generator = new StorageKeyGenerator();
+        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        self::assertCount(100, $generator->generateKeys($interface, 100));
+        self::assertCount(10, $generator->generateKeys($interface, 10));
+        self::assertCount(0, $generator->generateKeys($interface, 0));
+        self::assertCount(0, $generator->generateKeys($interface, -10));
+    }
+
+    /**
+     * @dataProvider provideKeyInterfaces
+     */
     public function testKeySerialization(string $interface): void
     {
         $generator = new StorageKeyGenerator();
