@@ -21,15 +21,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 
 class EntityReflector extends EntityReflectorContract
 {
-    private MappingServiceInterface $mappingService;
-
     private EntityRepositoryInterface $mappingRepository;
 
-    public function __construct(
-        MappingServiceInterface $mappingService,
-        EntityRepositoryInterface $mappingRepository
-    ) {
-        $this->mappingService = $mappingService;
+    public function __construct(EntityRepositoryInterface $mappingRepository)
+    {
         $this->mappingRepository = $mappingRepository;
     }
 
