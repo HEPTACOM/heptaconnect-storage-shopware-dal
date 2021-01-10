@@ -130,8 +130,18 @@ class EntityReflector extends EntityReflectorContract
             $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
         }
 
-        /** @var MappedDatasetEntityStruct $mappedEntity */
-        foreach ($index as $mappedEntity) {
+        foreach ($index as $key) {
+            /** @var MappedDatasetEntityStruct $mappedEntity */
+            $mappedEntity = $mappedEntities[$key];
+
+            $reflectionMapping = (new ReflectionMapping())
+                ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
+                ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
+                ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
+                ->setExternalId($mappedEntity->getMapping()->getExternalId())
+            ;
+
+            $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
             $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
         }
     }
