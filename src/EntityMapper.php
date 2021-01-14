@@ -76,6 +76,13 @@ class EntityMapper extends EntityMapperContract
                 continue;
             }
 
+            $typeId = $typeIds[$type];
+
+            if (\is_null($typeId)) {
+                // todo create type
+                continue;
+            }
+
             $readMappingNodes[$key] = [
                 'externalId' => $primaryKey,
                 'type' => $type,
@@ -84,7 +91,7 @@ class EntityMapper extends EntityMapperContract
             $readMappingNodesIndex[$type][$primaryKey] = $key;
 
             $createMappingNodes[$key] = [
-                'typeId' => $typeIds[$type],
+                'typeId' => $typeId,
                 'originPortalNodeId' => $portalNodeId,
                 'mappings' => [
                     [
