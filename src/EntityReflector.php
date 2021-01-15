@@ -112,12 +112,11 @@ class EntityReflector extends EntityReflectorContract
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = (new ReflectionMapping())
-                    ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
-                    ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
-                    ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
-                    ->setExternalId($mappedEntity->getMapping()->getExternalId())
-                ;
+                $reflectionMapping = new ReflectionMapping();
+                $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
+                $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
+                $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
+                $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
 
                 $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
                 $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
@@ -131,12 +130,11 @@ class EntityReflector extends EntityReflectorContract
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = (new ReflectionMapping())
-                    ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
-                    ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
-                    ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
-                    ->setExternalId($mappedEntity->getMapping()->getExternalId())
-                ;
+                $reflectionMapping = new ReflectionMapping();
+                $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
+                $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
+                $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
+                $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
 
                 $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
                 $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
