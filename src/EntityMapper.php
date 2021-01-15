@@ -88,7 +88,7 @@ class EntityMapper extends EntityMapperContract
                 'type' => $type,
             ];
 
-            $readMappingNodesIndex[$type][$primaryKey] = $key;
+            $readMappingNodesIndex[$type][$primaryKey][] = $key;
 
             $createMappingNodes[$key] = [
                 'typeId' => $typeId,
@@ -129,9 +129,10 @@ class EntityMapper extends EntityMapperContract
                 $mapping = $mappingNode->getMappings()->first();
                 $type = $mappingNode->getType()->getType();
 
-                $key = $readMappingNodesIndex[$type][$mapping->getExternalId()];
-                unset($createMappingNodes[$key], $readMappings[$key]);
-                $resultMappings[$type][$key] = $mapping;
+                foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
+                    unset($createMappingNodes[$key], $readMappings[$key]);
+                    $resultMappings[$type][$key] = $mapping;
+                }
             }
         }
 
@@ -163,8 +164,10 @@ class EntityMapper extends EntityMapperContract
             /** @var MappingEntity $mapping */
             foreach ($this->mappings->search($criteria, $context)->getIterator() as $mapping) {
                 $type = $mapping->getMappingNode()->getType()->getType();
-                $key = $readMappingNodesIndex[$type][$mapping->getExternalId()];
-                $resultMappings[$type][$key] = $mapping;
+
+                foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
+                    $resultMappings[$type][$key] = $mapping;
+                }
             }
         }
 
