@@ -78,7 +78,7 @@ class ShopwareIntegrationTest extends TestCase
         $command = $application->find('database:migrate');
         $result = $command->run(new StringInput('--all'), new NullOutput());
         static::assertEquals(0, $result);
-        $result = $command->run(new StringInput('database:migrate --all FixtureBundleForIntegration'), new NullOutput());
+        $result = $command->run(new StringInput('database:migrate --all HeptaConnectStorage'), new NullOutput());
         static::assertEquals(0, $result);
     }
 

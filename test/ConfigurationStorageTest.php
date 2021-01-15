@@ -13,6 +13,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage
+ */
 class ConfigurationStorageTest extends TestCase
 {
     protected ShopwareKernel $kernel;

@@ -13,10 +13,10 @@ class ShopwareKernel extends Kernel
         $classLoader = require __DIR__.'/../../vendor/autoload.php';
 
         parent::__construct(
-            'test',
+            'prod',
             true,
             new StaticKernelPluginLoader($classLoader),
-            'test',
+            'prod',
             self::SHOPWARE_FALLBACK_VERSION,
             null,
             __DIR__.'/ShopwareProject'

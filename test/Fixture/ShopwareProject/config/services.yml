@@ -1,0 +1,130 @@
+services:
+    Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage:
+        arguments:
+            - '@Shopware\Core\System\SystemConfig\SystemConfigService'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_cronjob }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_cronjob_run }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_dataset_entity_type }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_mapping }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingErrorMessageDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_mapping_error_message }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_mapping_node }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_portal_node }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStorageDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_portal_node_storage }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_job }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_job_payload }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_job_type }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_route }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Webhook\WebhookDefinition:
+        tags:
+            - { name: shopware.entity.definition, entity: heptaconnect_webhook }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+            - '@heptaconnect_mapping_node.repository.patched'
+            - '@heptaconnect_dataset_entity_type.repository.patched'
+            - '@heptaconnect_mapping.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector:
+        arguments:
+            - '@heptaconnect_mapping.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage:
+        arguments:
+            - '@heptaconnect_portal_node_storage.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\CronjobRepository:
+        arguments:
+            - '@heptaconnect_cronjob.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\CronjobRunRepository:
+        arguments:
+            - '@heptaconnect_cronjob.repository.patched'
+            - '@heptaconnect_cronjob_run.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingExceptionRepository:
+        arguments:
+            - '@heptaconnect_mapping_error_message.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+            - '@heptaconnect_mapping_node.repository.patched'
+            - '@heptaconnect_mapping.repository.patched'
+            - '@heptaconnect_dataset_entity_type.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+            - '@heptaconnect_mapping.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository:
+        arguments:
+            - '@heptaconnect_portal_node.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+            - '@heptaconnect_route.repository.patched'
+            - '@heptaconnect_dataset_entity_type.repository.patched'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\WebhookRepository:
+        arguments:
+            - '@heptaconnect_webhook.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\MigrationSource:
+        tags:
+            - { name: shopware.migration_source }
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\JobPayloadStorage:
+        arguments:
+            - '@heptaconnect_job_payload.repository.patched'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator: ~
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage.lock_factory'
