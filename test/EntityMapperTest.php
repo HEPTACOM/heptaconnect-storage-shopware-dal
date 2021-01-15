@@ -16,6 +16,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Uuid\Uuid;
+use function DeepCopy\deep_copy;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper
@@ -58,6 +59,7 @@ class EntityMapperTest extends TestCase
         $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $datasetEntityTypeRepository, $mappingRepository);
         $portalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
 
+        $entity->setPrimaryKey($entity->getPrimaryKey() ?? Uuid::randomHex());
         $context = Context::createDefaultContext();
         $getClass = \get_class($entity);
         $typeId = Uuid::randomHex();
@@ -81,12 +83,22 @@ class EntityMapperTest extends TestCase
             'portalNodeId' => $portalNodeKey->getUuid(),
             'externalId' => $entity->getPrimaryKey(),
         ]], $context);
-        $mappedEntities = $mapper->mapEntities(new TrackedEntityCollection([$entity]), $portalNodeKey);
-        /** @var MappedDatasetEntityStruct|null $mappedEntity */
-        $mappedEntity = $mappedEntities->first();
 
-        static::assertNotNull($mappedEntity);
-        static::assertInstanceOf(MappedDatasetEntityStruct::class, $mappedEntity);
-        static::assertEquals($entity->getPrimaryKey(), $mappedEntity->getMapping()->getExternalId());
+        $mappedEntities = $mapper->mapEntities(new TrackedEntityCollection([$entity, deep_copy($entity)]), $portalNodeKey);
+        /** @var MappedDatasetEntityStruct|null $firstEntity */
+        $firstEntity = $mappedEntities->first();
+        /** @var MappedDatasetEntityStruct|null $secondEntity */
+        $secondEntity = $mappedEntities->last();
+
+        static::assertNotNull($firstEntity);
+        static::assertInstanceOf(MappedDatasetEntityStruct::class, $firstEntity);
+        static::assertEquals($entity->getPrimaryKey(), $firstEntity->getMapping()->getExternalId());
+
+        static::assertNotNull($secondEntity);
+        static::assertInstanceOf(MappedDatasetEntityStruct::class, $secondEntity);
+        static::assertEquals($entity->getPrimaryKey(), $secondEntity->getMapping()->getExternalId());
+
+        static::assertNotSame($firstEntity, $secondEntity);
+        static::assertCount(2, $mappedEntities);
     }
 }
