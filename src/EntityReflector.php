@@ -57,7 +57,7 @@ class EntityReflector extends EntityReflectorContract
 
             $mappingNodeId = $mappingNodeKey->getUuid();
 
-            $index[$mappingNodeId] = $key;
+            $index[$mappingNodeId][] = $key;
 
             if ($primaryKey === null) {
                 continue;
@@ -108,36 +108,39 @@ class EntityReflector extends EntityReflectorContract
 
         /** @var MappingEntity $mapping */
         foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
-            $key = $index[$mapping->getMappingNodeId()];
+            foreach ($index[$mapping->getMappingNodeId()] ?? [] as $key) {
+                /** @var MappedDatasetEntityStruct $mappedEntity */
+                $mappedEntity = $mappedEntities[$key];
+
+                $reflectionMapping = (new ReflectionMapping())
+                    ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
+                    ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
+                    ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
+                    ->setExternalId($mappedEntity->getMapping()->getExternalId())
+                ;
+
+                $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
+                $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
+            }
+
             unset($index[$mapping->getMappingNodeId()]);
-
-            /** @var MappedDatasetEntityStruct $mappedEntity */
-            $mappedEntity = $mappedEntities[$key];
-
-            $reflectionMapping = (new ReflectionMapping())
-                ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
-                ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
-                ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
-                ->setExternalId($mappedEntity->getMapping()->getExternalId())
-            ;
-
-            $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
-            $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
         }
 
-        foreach ($index as $key) {
-            /** @var MappedDatasetEntityStruct $mappedEntity */
-            $mappedEntity = $mappedEntities[$key];
+        foreach ($index as $keys) {
+            foreach ($keys as $key) {
+                /** @var MappedDatasetEntityStruct $mappedEntity */
+                $mappedEntity = $mappedEntities[$key];
 
-            $reflectionMapping = (new ReflectionMapping())
-                ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
-                ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
-                ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
-                ->setExternalId($mappedEntity->getMapping()->getExternalId())
-            ;
+                $reflectionMapping = (new ReflectionMapping())
+                    ->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey())
+                    ->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey())
+                    ->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName())
+                    ->setExternalId($mappedEntity->getMapping()->getExternalId())
+                ;
 
-            $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
-            $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
+                $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
+                $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
+            }
         }
     }
 }
