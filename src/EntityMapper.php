@@ -131,7 +131,7 @@ class EntityMapper extends EntityMapperContract
 
                 foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
                     unset($createMappingNodes[$key], $readMappings[$key]);
-                    $resultMappings[$type][$key] = $mapping;
+                    $resultMappings[$key] = $mapping;
                 }
             }
         }
@@ -166,7 +166,7 @@ class EntityMapper extends EntityMapperContract
                 $type = $mapping->getMappingNode()->getType()->getType();
 
                 foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
-                    $resultMappings[$type][$key] = $mapping;
+                    $resultMappings[$key] = $mapping;
                 }
             }
         }
@@ -174,11 +174,9 @@ class EntityMapper extends EntityMapperContract
         $mappedDatasetEntityCollection = new MappedDatasetEntityCollection();
 
         foreach ($datasetEntities as $key => $entity) {
-            $type = \get_class($entity);
-
-            if (isset($resultMappings[$type][$key])) {
+            if (isset($resultMappings[$key])) {
                 $mappedDatasetEntityCollection->push([
-                    new MappedDatasetEntityStruct($resultMappings[$type][$key], $entity),
+                    new MappedDatasetEntityStruct($resultMappings[$key], $entity),
                 ]);
             }
         }
