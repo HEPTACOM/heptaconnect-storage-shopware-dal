@@ -137,6 +137,88 @@ class EntityReflectorTest extends TestCase
     /**
      * @dataProvider provideEntities
      */
+    public function testReflectDatasetEntityTwiceToDifferentPortalNode(DatasetEntityInterface $datasetEntity): void
+    {
+        /** @var DefinitionInstanceRegistry $definitionRegistration */
+        $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
+        $portalNodeRepository = $definitionRegistration->getRepository('heptaconnect_portal_node');
+        $mappingRepository = $definitionRegistration->getRepository('heptaconnect_mapping');
+        $mappingNodeRepository = $definitionRegistration->getRepository('heptaconnect_mapping_node');
+        $datasetEntityTypeRepository = $definitionRegistration->getRepository('heptaconnect_dataset_entity_type');
+        $context = Context::createDefaultContext();
+        $reflector = new EntityReflector($mappingRepository);
+        $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
+        $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
+        $mappedEntities = new MappedDatasetEntityCollection();
+        DatasetEntityTracker::instance()->listen();
+        $datasetEntity->setPrimaryKey($datasetEntity->getPrimaryKey() ?? Uuid::randomHex());
+        $datasetEntity->attach(deep_copy($datasetEntity));
+        deep_copy($datasetEntity);
+        $tracked = DatasetEntityTracker::instance()->retrieve();
+
+        $types = [];
+        $nodes = [];
+        $mappings = [];
+
+        /** @var DatasetEntityInterface $entity */
+        foreach ($tracked as $entity) {
+            $entityClass = \get_class($entity);
+            $typeId = ($types[$entityClass] ??= [
+                'id' => Uuid::randomHex(),
+                'type' => $entityClass,
+            ])['id'];
+            $sourceId = $entity->getPrimaryKey() ?? Uuid::randomHex();
+            $nodeId = ($nodes[$sourceId] ??= [
+                'id' => Uuid::randomHex(),
+                'typeId' => $typeId,
+                'originPortalNodeId' => $sourcePortalNodeKey->getUuid(),
+            ])['id'];
+            $mappings['s'.$sourceId] = [
+                'id' => Uuid::randomHex(),
+                'mappingNodeId' => $nodeId,
+                'portalNodeId' => $sourcePortalNodeKey->getUuid(),
+                'externalId' => $sourceId,
+            ];
+            $targetId = Uuid::randomHex();
+            $mappings['t'.$sourceId] = [
+                'id' => Uuid::randomHex(),
+                'mappingNodeId' => $nodeId,
+                'portalNodeId' => $targetPortalNodeKey->getUuid(),
+                'externalId' => $targetId,
+            ];
+
+            $entity->setPrimaryKey($sourceId);
+            $mappedEntities->push([new MappedDatasetEntityStruct($this->getMapping($entityClass, $sourceId, $sourcePortalNodeKey, $nodeId), $entity)]);
+        }
+
+        $portalNodeRepository->create([[
+            'id' => $sourcePortalNodeKey->getUuid(),
+            'className' => PortalContract::class,
+        ], [
+            'id' => $targetPortalNodeKey->getUuid(),
+            'className' => PortalContract::class,
+        ]], $context);
+        $datasetEntityTypeRepository->create(\array_values($types), $context);
+        $mappingNodeRepository->create(\array_values($nodes), $context);
+        $mappingRepository->create(\array_values($mappings), $context);
+
+        $reflector->reflectEntities($mappedEntities, $targetPortalNodeKey);
+
+        /** @var MappedDatasetEntityStruct|null $first */
+        $first = $mappedEntities->first();
+        /** @var MappedDatasetEntityStruct|null $last */
+        $last = $mappedEntities->last();
+
+        static::assertNotNull($first);
+        static::assertInstanceOf(MappedDatasetEntityStruct::class, $first);
+        static::assertNotNull($last);
+        static::assertInstanceOf(MappedDatasetEntityStruct::class, $last);
+        static::assertSame($first->getDatasetEntity()->getPrimaryKey(), $last->getDatasetEntity()->getPrimaryKey());
+    }
+
+    /**
+     * @dataProvider provideEntities
+     */
     public function testReflectToDifferentPortalNodeWithMoreThanTwoMappings($datasetEntity): void
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
@@ -251,7 +333,6 @@ class EntityReflectorTest extends TestCase
         $types = [];
         $nodes = [];
         $mappings = [];
-        $mappingPairs = [];
 
         /** @var DatasetEntityInterface $entity */
         foreach ($tracked as $entity) {
