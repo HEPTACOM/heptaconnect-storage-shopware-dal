@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -126,8 +127,8 @@ class EntityReflectorTest extends TestCase
         /** @var MappedDatasetEntityStruct $mappedEntity */
         foreach ($mappedEntities as $mappedEntity) {
             $entity = $mappedEntity->getDatasetEntity();
-            /** @var ReflectionMapping $reflectionMapping */
-            $reflectionMapping = $entity->getAttachment(ReflectionMapping::class);
+            /** @var PrimaryKeySharingMappingStruct $reflectionMapping */
+            $reflectionMapping = $entity->getAttachment(PrimaryKeySharingMappingStruct::class);
 
             static::assertSame($mappingPairs['object_hash'][spl_object_hash($entity)], $entity->getPrimaryKey());
             static::assertSame($mappingPairs['reflection_mapping'][$reflectionMapping->getExternalId()], $entity->getPrimaryKey());
@@ -302,8 +303,8 @@ class EntityReflectorTest extends TestCase
         /** @var MappedDatasetEntityStruct $mappedEntity */
         foreach ($mappedEntities as $mappedEntity) {
             $entity = $mappedEntity->getDatasetEntity();
-            /** @var ReflectionMapping $reflectionMapping */
-            $reflectionMapping = $entity->getAttachment(ReflectionMapping::class);
+            /** @var PrimaryKeySharingMappingStruct $reflectionMapping */
+            $reflectionMapping = $entity->getAttachment(PrimaryKeySharingMappingStruct::class);
 
             static::assertSame($mappingPairs['object_hash'][spl_object_hash($entity)], $entity->getPrimaryKey());
             static::assertSame($mappingPairs['reflection_mapping'][$reflectionMapping->getExternalId()], $entity->getPrimaryKey());

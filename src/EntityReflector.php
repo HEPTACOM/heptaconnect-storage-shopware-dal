@@ -2,13 +2,12 @@
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Heptacom\HeptaConnect\Core\Mapping\Contract\MappingServiceInterface;
-use Heptacom\HeptaConnect\Core\Mapping\Support\ReflectionMapping;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\EntityReflectorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -112,7 +111,7 @@ class EntityReflector extends EntityReflectorContract
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = new ReflectionMapping();
+                $reflectionMapping = new PrimaryKeySharingMappingStruct();
                 $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
                 $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
                 $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
@@ -130,7 +129,7 @@ class EntityReflector extends EntityReflectorContract
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = new ReflectionMapping();
+                $reflectionMapping = new PrimaryKeySharingMappingStruct();
                 $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
                 $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
                 $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
