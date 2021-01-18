@@ -46,6 +46,8 @@ class EntityReflector extends EntityReflectorContract
 
         /** @var MappedDatasetEntityStruct $mappedEntity */
         foreach ($mappedEntities as $key => $mappedEntity) {
+            $mappedEntity->getDatasetEntity()->unattach(PrimaryKeySharingMappingStruct::class);
+
             $primaryKey = $mappedEntity->getMapping()->getExternalId();
             $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
             $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
