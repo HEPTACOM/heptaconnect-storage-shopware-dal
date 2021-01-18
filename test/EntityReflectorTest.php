@@ -215,6 +215,19 @@ class EntityReflectorTest extends TestCase
         static::assertNotNull($last);
         static::assertInstanceOf(MappedDatasetEntityStruct::class, $last);
         static::assertSame($first->getDatasetEntity()->getPrimaryKey(), $last->getDatasetEntity()->getPrimaryKey());
+
+        $reflectionMappings = [];
+
+        /** @var MappedDatasetEntityStruct $mappedEntity */
+        foreach ($mappedEntities as $mappedEntity) {
+            $reflectionMapping = $mappedEntity->getDatasetEntity()->getAttachment(PrimaryKeySharingMappingStruct::class);
+
+            if ($reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
+                $reflectionMappings[\spl_object_hash($reflectionMapping)] = \count(\iterable_to_array($reflectionMapping->getOwners()));
+            }
+        }
+
+        static::assertLessThan(\array_sum($reflectionMappings), \count($reflectionMappings));
     }
 
     /**

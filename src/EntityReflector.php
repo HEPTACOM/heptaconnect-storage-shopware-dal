@@ -107,18 +107,24 @@ class EntityReflector extends EntityReflectorContract
 
         /** @var MappingEntity $mapping */
         foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
+            $reflectionMapping = null;
+
             foreach ($index[$mapping->getMappingNodeId()] ?? [] as $key) {
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = new PrimaryKeySharingMappingStruct();
-                $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
-                $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
-                $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
-                $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
+                if (!$reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
+                    $reflectionMapping = new PrimaryKeySharingMappingStruct();
 
-                $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
+                    $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
+                    $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
+                    $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
+                    $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
+                    $reflectionMapping->setForeignKey($mapping->getExternalId());
+                }
+
                 $mappedEntity->getDatasetEntity()->setPrimaryKey($mapping->getExternalId());
+                $reflectionMapping->addOwner($mappedEntity->getDatasetEntity());
             }
 
             unset($index[$mapping->getMappingNodeId()]);
