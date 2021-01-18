@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
@@ -68,7 +69,7 @@ class EntityReflectorTest extends TestCase
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
         DatasetEntityTracker::instance()->listen();
-        deep_copy($datasetEntity);
+        (new DeepCloneContract())->deepClone($datasetEntity);
         $tracked = DatasetEntityTracker::instance()->retrieve();
 
         $types = [];
@@ -153,8 +154,8 @@ class EntityReflectorTest extends TestCase
         $mappedEntities = new MappedDatasetEntityCollection();
         DatasetEntityTracker::instance()->listen();
         $datasetEntity->setPrimaryKey($datasetEntity->getPrimaryKey() ?? Uuid::randomHex());
-        $datasetEntity->attach(deep_copy($datasetEntity));
-        deep_copy($datasetEntity);
+        $datasetEntity->attach((new DeepCloneContract())->deepClone($datasetEntity));
+        (new DeepCloneContract())->deepClone($datasetEntity);
         $tracked = DatasetEntityTracker::instance()->retrieve();
 
         $types = [];
@@ -248,7 +249,7 @@ class EntityReflectorTest extends TestCase
         $unrelatedPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
         DatasetEntityTracker::instance()->listen();
-        deep_copy($datasetEntity);
+        (new DeepCloneContract())->deepClone($datasetEntity);
         $tracked = DatasetEntityTracker::instance()->retrieve();
 
         $types = [];
@@ -341,7 +342,7 @@ class EntityReflectorTest extends TestCase
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
         DatasetEntityTracker::instance()->listen();
-        deep_copy($datasetEntity);
+        (new DeepCloneContract())->deepClone($datasetEntity);
         $tracked = DatasetEntityTracker::instance()->retrieve();
 
         $types = [];

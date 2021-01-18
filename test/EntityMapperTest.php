@@ -8,6 +8,7 @@ use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
 use Heptacom\HeptaConnect\Dataset\Base\Support\TrackedEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
+use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
@@ -84,7 +85,7 @@ class EntityMapperTest extends TestCase
             'externalId' => $entity->getPrimaryKey(),
         ]], $context);
 
-        $mappedEntities = $mapper->mapEntities(new TrackedEntityCollection([$entity, deep_copy($entity)]), $portalNodeKey);
+        $mappedEntities = $mapper->mapEntities(new TrackedEntityCollection([$entity, (new DeepCloneContract())->deepClone($entity)]), $portalNodeKey);
         /** @var MappedDatasetEntityStruct|null $firstEntity */
         $firstEntity = $mappedEntities->first();
         /** @var MappedDatasetEntityStruct|null $secondEntity */
