@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Core\Mapping\Support\ReflectionMapping;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
 use Heptacom\HeptaConnect\Dataset\Base\Support\DatasetEntityTracker;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
@@ -23,7 +22,6 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Uuid\Uuid;
-use function DeepCopy\deep_copy;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector
