@@ -125,8 +125,12 @@ class EntityMapper extends EntityMapperContract
 
             /** @var MappingNodeEntity $mappingNode */
             foreach ($this->mappingNodes->search($criteria, $context)->getIterator() as $mappingNode) {
-                /** @var MappingEntity $mapping */
                 $mapping = $mappingNode->getMappings()->first();
+
+                if (!$mapping instanceof MappingEntity) {
+                    continue;
+                }
+
                 $type = $mappingNode->getType()->getType();
 
                 foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
