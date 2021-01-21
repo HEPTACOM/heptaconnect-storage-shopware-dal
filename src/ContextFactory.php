@@ -9,6 +9,6 @@ class ContextFactory
 {
     public function create(): Context
     {
-        return Context::createDefaultContext();
+        return Context::createDefaultContext()->disableCache(static fn (Context $context): Context => clone $context);
     }
 }
