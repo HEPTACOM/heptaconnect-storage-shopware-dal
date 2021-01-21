@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterfac
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -57,12 +58,14 @@ class EntityReflectorTest extends TestCase
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
+        /** @var ContextFactory $contextFactory */
+        $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
         $portalNodeRepository = $definitionRegistration->getRepository('heptaconnect_portal_node');
         $mappingRepository = $definitionRegistration->getRepository('heptaconnect_mapping');
         $mappingNodeRepository = $definitionRegistration->getRepository('heptaconnect_mapping_node');
         $datasetEntityTypeRepository = $definitionRegistration->getRepository('heptaconnect_dataset_entity_type');
         $context = Context::createDefaultContext();
-        $reflector = new EntityReflector($mappingRepository);
+        $reflector = new EntityReflector($mappingRepository, $contextFactory);
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
@@ -141,12 +144,14 @@ class EntityReflectorTest extends TestCase
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
+        /** @var ContextFactory $contextFactory */
+        $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
         $portalNodeRepository = $definitionRegistration->getRepository('heptaconnect_portal_node');
         $mappingRepository = $definitionRegistration->getRepository('heptaconnect_mapping');
         $mappingNodeRepository = $definitionRegistration->getRepository('heptaconnect_mapping_node');
         $datasetEntityTypeRepository = $definitionRegistration->getRepository('heptaconnect_dataset_entity_type');
         $context = Context::createDefaultContext();
-        $reflector = new EntityReflector($mappingRepository);
+        $reflector = new EntityReflector($mappingRepository, $contextFactory);
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
@@ -236,12 +241,14 @@ class EntityReflectorTest extends TestCase
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
+        /** @var ContextFactory $contextFactory */
+        $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
         $portalNodeRepository = $definitionRegistration->getRepository('heptaconnect_portal_node');
         $mappingRepository = $definitionRegistration->getRepository('heptaconnect_mapping');
         $mappingNodeRepository = $definitionRegistration->getRepository('heptaconnect_mapping_node');
         $datasetEntityTypeRepository = $definitionRegistration->getRepository('heptaconnect_dataset_entity_type');
         $context = Context::createDefaultContext();
-        $reflector = new EntityReflector($mappingRepository);
+        $reflector = new EntityReflector($mappingRepository, $contextFactory);
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $unrelatedPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
@@ -330,12 +337,14 @@ class EntityReflectorTest extends TestCase
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
+        /** @var ContextFactory $contextFactory */
+        $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
         $portalNodeRepository = $definitionRegistration->getRepository('heptaconnect_portal_node');
         $mappingRepository = $definitionRegistration->getRepository('heptaconnect_mapping');
         $mappingNodeRepository = $definitionRegistration->getRepository('heptaconnect_mapping_node');
         $datasetEntityTypeRepository = $definitionRegistration->getRepository('heptaconnect_dataset_entity_type');
         $context = Context::createDefaultContext();
-        $reflector = new EntityReflector($mappingRepository);
+        $reflector = new EntityReflector($mappingRepository, $contextFactory);
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();

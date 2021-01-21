@@ -8,6 +8,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -23,12 +24,16 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         EntityRepositoryInterface $portalNodes,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        ContextFactory $contextFactory
     ) {
         $this->portalNodes = $portalNodes;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function read(PortalNodeKeyInterface $portalNodeKey): string
@@ -40,7 +45,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
         $criteria = (new Criteria([$portalNodeKey->getUuid()]))
             ->addFilter(new EqualsFilter('deletedAt', null));
 
-        $portalNode = $this->portalNodes->search($criteria, Context::createDefaultContext())->first();
+        $portalNode = $this->portalNodes->search($criteria, $this->contextFactory->create())->first();
 
         if (!$portalNode instanceof PortalNodeEntity) {
             throw new NotFoundException();
@@ -53,7 +58,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
     {
         $criteria = (new Criteria())->setLimit(50)->addFilter(new EqualsFilter('deletedAt', null));
 
-        $iterator = new RepositoryIterator($this->portalNodes, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -69,7 +74,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
             new EqualsFilter('className', $className)
         );
 
-        $iterator = new RepositoryIterator($this->portalNodes, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -89,7 +94,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
         $this->portalNodes->create([[
             'id' => $portalNodeKey->getUuid(),
             'className' => $className,
-        ]], Context::createDefaultContext());
+        ]], $this->contextFactory->create());
 
         return $portalNodeKey;
     }
@@ -100,7 +105,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->portalNodes, $portalNodeKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->portalNodes->update([[
             'id' => $portalNodeKey->getUuid(),

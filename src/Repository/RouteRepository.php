@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Framework\Context;
@@ -28,14 +29,18 @@ class RouteRepository extends RouteRepositoryContract
 
     private EntityRepositoryInterface $datasetEntityTypes;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $routes,
-        EntityRepositoryInterface $datasetEntityTypes
+        EntityRepositoryInterface $datasetEntityTypes,
+        ContextFactory $contextFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->routes = $routes;
         $this->datasetEntityTypes = $datasetEntityTypes;
+        $this->contextFactory = $contextFactory;
     }
 
     public function read(RouteKeyInterface $key): RouteInterface
@@ -46,7 +51,7 @@ class RouteRepository extends RouteRepositoryContract
 
         $criteria = new Criteria([$key->getUuid()]);
         $criteria->addAssociation('type');
-        $route = $this->routes->search($criteria, Context::createDefaultContext())->first();
+        $route = $this->routes->search($criteria, $this->contextFactory->create())->first();
 
         if (!$route instanceof RouteInterface) {
             throw new NotFoundException();
@@ -67,7 +72,7 @@ class RouteRepository extends RouteRepositoryContract
                 new EqualsFilter('type.type', $entityClassName),
                 new EqualsFilter('sourceId', $sourceKey->getUuid())
             );
-        $iterator = new RepositoryIterator($this->routes, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->routes, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -95,7 +100,7 @@ class RouteRepository extends RouteRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $typeId = $this->getIdsForDatasetEntityType([$entityClassName], $context)[$entityClassName];
 
         $this->routes->create([[

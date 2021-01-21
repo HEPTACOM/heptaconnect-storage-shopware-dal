@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Defaults;
@@ -29,10 +30,16 @@ class CronjobRepository extends CronjobRepositoryContract
 
     private StorageKeyGeneratorContract $keyGenerator;
 
-    public function __construct(EntityRepositoryInterface $cronjobs, StorageKeyGeneratorContract $keyGenerator)
-    {
+    private ContextFactory $contextFactory;
+
+    public function __construct(
+        EntityRepositoryInterface $cronjobs,
+        StorageKeyGeneratorContract $keyGenerator,
+        ContextFactory $contextFactory
+    ) {
         $this->cronjobs = $cronjobs;
         $this->keyGenerator = $keyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function create(
@@ -46,7 +53,7 @@ class CronjobRepository extends CronjobRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $key = $this->keyGenerator->generateKey(CronjobKeyInterface::class);
 
         $this->cronjobs->create([[
@@ -72,7 +79,7 @@ class CronjobRepository extends CronjobRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         /** @var CronjobCollection $cronjobs */
         $cronjobs = $this->cronjobs->search(new Criteria([$cronjobKey->getUuid()]), $context)->getEntities();
 
@@ -91,7 +98,7 @@ class CronjobRepository extends CronjobRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
 
         $this->throwNotFoundWhenNoMatch($this->cronjobs, $cronjobKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobs->update([[
@@ -106,7 +113,7 @@ class CronjobRepository extends CronjobRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->cronjobs, $cronjobKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobs->delete([[
             'id' => $cronjobKey,
@@ -115,7 +122,7 @@ class CronjobRepository extends CronjobRepositoryContract
 
     public function listExecutables(?\DateTimeInterface $until = null): iterable
     {
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addSorting(

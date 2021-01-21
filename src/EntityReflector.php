@@ -12,7 +12,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -22,9 +21,12 @@ class EntityReflector extends EntityReflectorContract
 {
     private EntityRepositoryInterface $mappingRepository;
 
-    public function __construct(EntityRepositoryInterface $mappingRepository)
+    private ContextFactory $contextFactory;
+
+    public function __construct(EntityRepositoryInterface $mappingRepository, ContextFactory $contextFactory)
     {
         $this->mappingRepository = $mappingRepository;
+        $this->contextFactory = $contextFactory;
     }
 
     public function reflectEntities(
@@ -36,8 +38,7 @@ class EntityReflector extends EntityReflectorContract
         }
 
         $targetPortalNodeId = $targetPortalNodeKey->getUuid();
-
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
 
         $index = [];
         $filters = [];

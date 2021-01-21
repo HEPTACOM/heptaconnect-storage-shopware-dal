@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -33,10 +34,16 @@ class MappingRepository extends MappingRepositoryContract
 
     private EntityRepositoryInterface $mappings;
 
-    public function __construct(StorageKeyGeneratorContract $storageKeyGenerator, EntityRepositoryInterface $mappings)
-    {
+    private ContextFactory $contextFactory;
+
+    public function __construct(
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        EntityRepositoryInterface $mappings,
+        ContextFactory $contextFactory
+    ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappings = $mappings;
+        $this->contextFactory = $contextFactory;
     }
 
     public function read(MappingKeyInterface $key): MappingInterface
@@ -45,7 +52,7 @@ class MappingRepository extends MappingRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         /** @var MappingCollection $mappings */
         $mappings = $this->mappings->search(new Criteria([$key->getUuid()]), $context)->getEntities();
 
@@ -76,7 +83,7 @@ class MappingRepository extends MappingRepositoryContract
             new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()),
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
         );
-        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -94,7 +101,7 @@ class MappingRepository extends MappingRepositoryContract
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addFilter(new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()));
-        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -115,7 +122,7 @@ class MappingRepository extends MappingRepositoryContract
             new EqualsFilter('mappingNode.type.type', $datasetEntityType),
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
         );
-        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -143,7 +150,7 @@ class MappingRepository extends MappingRepositoryContract
             'externalIds',
             'externalId'
         ));
-        $aggrResult = $this->mappings->aggregate($criteria, Context::createDefaultContext());
+        $aggrResult = $this->mappings->aggregate($criteria, $this->contextFactory->create());
         $termResult = $aggrResult->get('externalIds');
 
         if (!$termResult instanceof TermsResult) {
@@ -177,7 +184,7 @@ class MappingRepository extends MappingRepositoryContract
             'externalId' => $externalId,
             'mappingNodeId' => $mappingNodeKey->getUuid(),
             'portalNodeId' => $portalNodeKey->getUuid(),
-        ]], Context::createDefaultContext());
+        ]], $this->contextFactory->create());
 
         return $key;
     }
@@ -217,7 +224,7 @@ class MappingRepository extends MappingRepositoryContract
         }
 
         if (!empty($payload)) {
-            $this->mappings->create($payload, Context::createDefaultContext());
+            $this->mappings->create($payload, $this->contextFactory->create());
         }
 
         return $result;
@@ -229,7 +236,7 @@ class MappingRepository extends MappingRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappings->update([[
             'id' => $key->getUuid(),
@@ -243,7 +250,7 @@ class MappingRepository extends MappingRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappings->delete([[
             'id' => $key->getUuid(),

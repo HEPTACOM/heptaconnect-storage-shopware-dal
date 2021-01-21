@@ -20,9 +20,12 @@ class PortalStorage extends PortalStorageContract
 {
     private EntityRepositoryInterface $portalNodeStorages;
 
-    public function __construct(EntityRepositoryInterface $portalNodeStorages)
+    private ContextFactory $contextFactory;
+
+    public function __construct(EntityRepositoryInterface $portalNodeStorages, ContextFactory $contextFactory)
     {
         $this->portalNodeStorages = $portalNodeStorages;
+        $this->contextFactory = $contextFactory;
     }
 
     public function set(PortalNodeKeyInterface $portalNodeKey, string $key, string $value, string $type): void
@@ -31,7 +34,6 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
         $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
 
         $this->portalNodeStorages->upsert([[
@@ -40,7 +42,7 @@ class PortalStorage extends PortalStorageContract
             'key' => $key,
             'value' => $value,
             'type' => $type,
-        ]], $context);
+        ]], $this->contextFactory->create());
     }
 
     public function unset(PortalNodeKeyInterface $portalNodeKey, string $key): void
@@ -49,7 +51,7 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
@@ -101,8 +103,7 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
-
+        $context = $this->contextFactory->create();
         $criteria = (new Criteria())
             ->setLimit(50)
             ->addFilter(new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()))
@@ -128,24 +129,22 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $context = Context::createDefaultContext();
         $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
-        $searchResult = $this->portalNodeStorages->searchIds($criteria, $context);
+        $searchResult = $this->portalNodeStorages->searchIds($criteria, $this->contextFactory->create());
 
         return $searchResult->getTotal() > 0;
     }
 
     private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
     {
-        $context = Context::createDefaultContext();
         $storageId = Uuid::uuid5($portalNodeId, $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
 
         /** @var PortalNodeStorageCollection $entities */
-        $entities = $this->portalNodeStorages->search($criteria, $context)->getEntities();
+        $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
 
         return $entities->first();
     }

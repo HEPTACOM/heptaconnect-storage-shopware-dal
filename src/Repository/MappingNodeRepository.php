@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
@@ -35,16 +36,20 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
 
     private EntityRepositoryInterface $datasetEntityTypes;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
         EntityRepositoryInterface $mappings,
-        EntityRepositoryInterface $datasetEntityTypes
+        EntityRepositoryInterface $datasetEntityTypes,
+        ContextFactory $contextFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
         $this->mappings = $mappings;
         $this->datasetEntityTypes = $datasetEntityTypes;
+        $this->contextFactory = $contextFactory;
     }
 
     public function read(MappingNodeKeyInterface $key): MappingNodeStructInterface
@@ -54,7 +59,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $criteria = new Criteria([$key->getUuid()]);
-        $item = $this->mappingNodes->search($criteria, Context::createDefaultContext())->first();
+        $item = $this->mappingNodes->search($criteria, $this->contextFactory->create())->first();
 
         if (!$item instanceof MappingNodeStructInterface) {
             throw new NotFoundException();
@@ -84,7 +89,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             );
 
         // TODO: Do not use iterator. We only expect one result.
-        $iterator = new RepositoryIterator($this->mappingNodes, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappingNodes, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -117,7 +122,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
                 new EqualsFilter('portalNode.id', $portalNodeKey->getUuid()),
             );
 
-        $iterator = new RepositoryIterator($this->mappings, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (($result = $iterator->fetch()) instanceof EntitySearchResult) {
             /** @var MappingEntity $entity */
@@ -141,7 +146,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($mappingId));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
 
         $this->mappingNodes->create([[
@@ -168,7 +173,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(MappingNodeKeyInterface::class);
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
         $payload = [];
 
@@ -198,7 +203,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappingNodes, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappingNodes->delete([[
             'id' => $key->getUuid(),

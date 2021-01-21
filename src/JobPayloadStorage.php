@@ -9,7 +9,6 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -25,12 +24,16 @@ class JobPayloadStorage extends JobPayloadStorageContract
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         EntityRepositoryInterface $jobPayloads,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        ContextFactory $contextFactory
     ) {
         $this->jobPayloads = $jobPayloads;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function add(object $payload): JobPayloadKeyInterface
@@ -41,7 +44,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $serialize = \serialize($payload);
 
         $this->jobPayloads->create([[
@@ -60,7 +63,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
             throw new UnsupportedStorageKeyException(\get_class($processPayloadKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = new Criteria([$processPayloadKey->getUuid()]);
         $criteria->setLimit(1);
         $searchResult = $this->jobPayloads->searchIds($criteria, $context);
@@ -77,7 +80,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
 
     public function list(): iterable
     {
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = (new Criteria())->setLimit(50);
         $iterator = new RepositoryIterator($this->jobPayloads, $context, $criteria);
 
@@ -94,7 +97,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
             throw new UnsupportedStorageKeyException(\get_class($processPayloadKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = new Criteria([$processPayloadKey->getUuid()]);
         $criteria->setLimit(1);
         $searchResult = $this->jobPayloads->searchIds($criteria, $context);
@@ -109,7 +112,7 @@ class JobPayloadStorage extends JobPayloadStorageContract
             throw new UnsupportedStorageKeyException(\get_class($processPayloadKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = new Criteria([$processPayloadKey->getUuid()]);
         $criteria->setLimit(1);
         $entity = $this->jobPayloads->search($criteria, $context)->first();

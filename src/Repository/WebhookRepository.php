@@ -9,6 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\WebhookRepositoryCont
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\WebhookStorageKey;
 use Shopware\Core\Framework\Context;
@@ -23,12 +24,16 @@ class WebhookRepository extends WebhookRepositoryContract
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         EntityRepositoryInterface $webhooks,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        ContextFactory $contextFactory
     ) {
         $this->webhooks = $webhooks;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function create(
@@ -53,7 +58,7 @@ class WebhookRepository extends WebhookRepositoryContract
             'handler' => $handler,
             'payload' => $payload,
             'portalNodeId' => $portalNodeKey->getUuid(),
-        ]], Context::createDefaultContext());
+        ]], $this->contextFactory->create());
 
         return $key;
     }
@@ -64,7 +69,7 @@ class WebhookRepository extends WebhookRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $webhook = $this->webhooks->search(new Criteria([$key->getUuid()]), Context::createDefaultContext())->first();
+        $webhook = $this->webhooks->search(new Criteria([$key->getUuid()]), $this->contextFactory->create())->first();
 
         if (!$webhook instanceof WebhookInterface) {
             throw new NotFoundException();
@@ -76,7 +81,7 @@ class WebhookRepository extends WebhookRepositoryContract
     public function listByUrl(string $url): iterable
     {
         $criteria = (new Criteria())->addFilter(new EqualsFilter('url', $url));
-        $iterator = new RepositoryIterator($this->webhooks, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->webhooks, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {

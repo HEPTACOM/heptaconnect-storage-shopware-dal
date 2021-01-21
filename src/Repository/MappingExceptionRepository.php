@@ -7,6 +7,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingExceptionRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Shopware\Core\Framework\Context;
@@ -23,12 +24,16 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         EntityRepositoryInterface $mappingExceptions,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        ContextFactory $contextFactory
     ) {
         $this->mappingExceptions = $mappingExceptions;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function create(MappingKeyInterface $mappingKey, \Throwable $throwable): MappingExceptionKeyInterface
@@ -62,7 +67,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             $previousKey = $key;
         }
 
-        $this->mappingExceptions->create($insert, Context::createDefaultContext());
+        $this->mappingExceptions->create($insert, $this->contextFactory->create());
 
         return $resultKey;
     }
@@ -76,7 +81,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addFilter(new EqualsFilter('mappingId', $mappingKey->getUuid()));
-        $iterator = new RepositoryIterator($this->mappingExceptions, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -97,7 +102,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             new EqualsFilter('mappingId', $mappingKey->getUuid()),
             new EqualsFilter('type', $type),
         );
-        $iterator = new RepositoryIterator($this->mappingExceptions, Context::createDefaultContext(), $criteria);
+        $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
         while (!empty($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
@@ -112,7 +117,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappingExceptions, $key->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->mappingExceptions->delete([[
             'id' => $key->getUuid(),

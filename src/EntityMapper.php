@@ -16,7 +16,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -33,16 +32,20 @@ class EntityMapper extends EntityMapperContract
 
     private EntityRepositoryInterface $mappings;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
         EntityRepositoryInterface $datasetEntityTypes,
-        EntityRepositoryInterface $mappings
+        EntityRepositoryInterface $mappings,
+        ContextFactory $contextFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
         $this->datasetEntityTypes = $datasetEntityTypes;
         $this->mappings = $mappings;
+        $this->contextFactory = $contextFactory;
     }
 
     public function mapEntities(
@@ -54,7 +57,7 @@ class EntityMapper extends EntityMapperContract
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $datasetEntities = iterable_to_array($entityCollection);
 
         /** @var DatasetEntityTypeCollection $datasetTypeEntities */

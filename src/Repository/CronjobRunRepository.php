@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobRunStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Shopware\Core\Defaults;
@@ -33,14 +34,18 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private ContextFactory $contextFactory;
+
     public function __construct(
         EntityRepositoryInterface $cronjobs,
         EntityRepositoryInterface $cronjobRuns,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        ContextFactory $contextFactory
     ) {
         $this->cronjobs = $cronjobs;
         $this->cronjobRuns = $cronjobRuns;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->contextFactory = $contextFactory;
     }
 
     public function create(CronjobKeyInterface $cronjobKey, \DateTimeInterface $queuedFor): CronjobRunKeyInterface
@@ -49,7 +54,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $id = $this->storageKeyGenerator->generateKey(CronjobRunKeyInterface::class);
 
         if (!$id instanceof CronjobRunStorageKey) {
@@ -78,7 +83,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
 
     public function listExecutables(\DateTimeInterface $now): iterable
     {
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
@@ -108,7 +113,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         /** @var CronjobRunCollection $cronjobRuns */
         $cronjobRuns = $this->cronjobRuns->search(new Criteria([$cronjobRunKey->getUuid()]), $context)->getEntities();
 
@@ -125,7 +130,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
@@ -143,7 +148,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($cronjobRunKey));
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
@@ -168,7 +173,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
         } catch (\Throwable $ignored) {
         }
 
-        $context = Context::createDefaultContext();
+        $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->cronjobRuns, $cronjobRunKey->getUuid(), $context);
         $this->throwNotFoundWhenNoChange($this->cronjobRuns->update([[
             'id' => $cronjobRunKey->getUuid(),
