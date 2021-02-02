@@ -5,14 +5,14 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
-use Heptacom\HeptaConnect\Dataset\Base\Support\DatasetEntityTracker;
+use Heptacom\HeptaConnect\Dataset\Base\Support\TrackedEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
+use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepObjectIteratorContract;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector;
@@ -69,9 +69,7 @@ class EntityReflectorTest extends TestCase
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
-        DatasetEntityTracker::instance()->listen();
-        (new DeepCloneContract())->deepClone($datasetEntity);
-        $tracked = DatasetEntityTracker::instance()->retrieve();
+        $tracked = new TrackedEntityCollection((new DeepObjectIteratorContract())->iterate($datasetEntity));
 
         $types = [];
         $nodes = [];
@@ -155,11 +153,9 @@ class EntityReflectorTest extends TestCase
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
-        DatasetEntityTracker::instance()->listen();
         $datasetEntity->setPrimaryKey($datasetEntity->getPrimaryKey() ?? Uuid::randomHex());
-        $datasetEntity->attach((new DeepCloneContract())->deepClone($datasetEntity));
-        (new DeepCloneContract())->deepClone($datasetEntity);
-        $tracked = DatasetEntityTracker::instance()->retrieve();
+        $datasetEntity->attach($datasetEntity);
+        $tracked = new TrackedEntityCollection((new DeepObjectIteratorContract())->iterate($datasetEntity));
 
         $types = [];
         $nodes = [];
@@ -253,9 +249,7 @@ class EntityReflectorTest extends TestCase
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $unrelatedPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
-        DatasetEntityTracker::instance()->listen();
-        (new DeepCloneContract())->deepClone($datasetEntity);
-        $tracked = DatasetEntityTracker::instance()->retrieve();
+        $tracked = new TrackedEntityCollection((new DeepObjectIteratorContract())->iterate($datasetEntity));
 
         $types = [];
         $nodes = [];
@@ -348,9 +342,7 @@ class EntityReflectorTest extends TestCase
         $sourcePortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $targetPortalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
         $mappedEntities = new MappedDatasetEntityCollection();
-        DatasetEntityTracker::instance()->listen();
-        (new DeepCloneContract())->deepClone($datasetEntity);
-        $tracked = DatasetEntityTracker::instance()->retrieve();
+        $tracked = new TrackedEntityCollection((new DeepObjectIteratorContract())->iterate($datasetEntity));
 
         $types = [];
         $nodes = [];
