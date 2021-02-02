@@ -2,7 +2,7 @@
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType;
 
-use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -12,14 +12,14 @@ class DatasetEntityTypeEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface>
+     * @var class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>
      */
-    protected string $type = DatasetEntityInterface::class;
+    protected string $type = DatasetEntityContract::class;
 
     protected ?MappingNodeCollection $mappingNodes = null;
 
     /**
-     * @psalm-return class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface>
+     * @psalm-return class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>
      */
     public function getType(): string
     {
@@ -27,7 +27,7 @@ class DatasetEntityTypeEntity extends Entity
     }
 
     /**
-     * @psalm-param class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface> $type
+     * @psalm-param class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract> $type
      */
     public function setType(string $type): self
     {

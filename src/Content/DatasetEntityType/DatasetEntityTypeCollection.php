@@ -16,7 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 class DatasetEntityTypeCollection extends EntityCollection
 {
     /**
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface>, string>
+     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
      */
     public function groupByType(): array
     {

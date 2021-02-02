@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\Support\TrackedEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
@@ -76,7 +76,7 @@ class EntityReflectorTest extends TestCase
         $mappings = [];
         $mappingPairs = [];
 
-        /** @var DatasetEntityInterface $entity */
+        /** @var DatasetEntityContract $entity */
         foreach ($tracked as $entity) {
             $entityClass = \get_class($entity);
             $typeId = ($types[$entityClass] ??= [
@@ -138,7 +138,7 @@ class EntityReflectorTest extends TestCase
     /**
      * @dataProvider provideEntities
      */
-    public function testReflectDatasetEntityTwiceToDifferentPortalNode(DatasetEntityInterface $datasetEntity): void
+    public function testReflectDatasetEntityTwiceToDifferentPortalNode(DatasetEntityContract $datasetEntity): void
     {
         /** @var DefinitionInstanceRegistry $definitionRegistration */
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
@@ -161,7 +161,7 @@ class EntityReflectorTest extends TestCase
         $nodes = [];
         $mappings = [];
 
-        /** @var DatasetEntityInterface $entity */
+        /** @var DatasetEntityContract $entity */
         foreach ($tracked as $entity) {
             $entityClass = \get_class($entity);
             $typeId = ($types[$entityClass] ??= [
@@ -256,7 +256,7 @@ class EntityReflectorTest extends TestCase
         $mappings = [];
         $mappingPairs = [];
 
-        /** @var DatasetEntityInterface $entity */
+        /** @var DatasetEntityContract $entity */
         foreach ($tracked as $entity) {
             $entityClass = \get_class($entity);
             $typeId = ($types[$entityClass] ??= [
@@ -348,7 +348,7 @@ class EntityReflectorTest extends TestCase
         $nodes = [];
         $mappings = [];
 
-        /** @var DatasetEntityInterface $entity */
+        /** @var DatasetEntityContract $entity */
         foreach ($tracked as $entity) {
             $entityClass = \get_class($entity);
             $typeId = ($types[$entityClass] ??= [

@@ -2,7 +2,7 @@
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Heptacom\HeptaConnect\Dataset\Base\DatasetEntity;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\DatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
@@ -70,7 +70,7 @@ class EntityMapper extends EntityMapperContract
         $readMappings = [];
         $resultMappings = [];
 
-        /** @var DatasetEntity $entity */
+        /** @var DatasetEntityContract $entity */
         foreach ($datasetEntities as $key => $entity) {
             $primaryKey = $entity->getPrimaryKey();
             $type = \get_class($entity);

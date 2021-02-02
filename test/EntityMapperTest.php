@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityInterface;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\Support\TrackedEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
@@ -50,7 +50,7 @@ class EntityMapperTest extends TestCase
     /**
      * @dataProvider provideEntities
      */
-    public function testMap(DatasetEntityInterface $entity): void
+    public function testMap(DatasetEntityContract $entity): void
     {
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
