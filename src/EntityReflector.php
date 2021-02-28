@@ -71,12 +71,14 @@ class EntityReflector extends EntityReflectorContract
 
             $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
 
+            // TODO: merge filters with same criteria together for a faster search
             $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
                 new EqualsFilter('externalId', $primaryKey),
                 new EqualsFilter('mappingNodeId', $mappingNodeId),
                 new EqualsFilter('portalNodeId', $sourcePortalNodeId),
             ]);
 
+            // TODO: merge these filters as one EqualsAnyFilter
             $reflectedFilters[] = new EqualsFilter('mappingNodeId', $mappingNodeId);
 
             $mappingId = Uuid::uuid4()->getHex();
