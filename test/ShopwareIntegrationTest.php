@@ -37,7 +37,7 @@ use Symfony\Component\Console\Output\NullOutput;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589662318CreateDatasetEntityTypeTable
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589662426CreatePortalNodeTable
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1612206762CreateKeyAlias
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589673188CreateMappingNodeTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589674916CreateMappingTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1590070312CreateRouteTable
