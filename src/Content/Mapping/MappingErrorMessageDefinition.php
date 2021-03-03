@@ -41,7 +41,8 @@ class MappingErrorMessageDefinition extends EntityDefinition
             new FkField('group_previous_id', 'groupPreviousId', self::class),
             (new StringField('type', 'type'))->addFlags(new Required()),
             (new LongTextField('message', 'message'))->addFlags(new AllowHtml()),
-            new LongTextField('stack_trace', 'stackTrace'),
+            // TODO: Add AllowEmptyString flag when it is supported
+            (new LongTextField('stack_trace', 'stackTrace'))->addFlags(new AllowHtml()),
 
             new ManyToOneAssociationField('mapping', 'mapping_id', MappingDefinition::class),
         ]);
