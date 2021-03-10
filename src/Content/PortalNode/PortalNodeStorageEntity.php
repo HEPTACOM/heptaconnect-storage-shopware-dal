@@ -17,6 +17,8 @@ class PortalNodeStorageEntity extends Entity
 
     protected string $portalNodeId = '';
 
+    protected ?\DateTime $expiredAt;
+
     protected ?PortalNodeEntity $portalNode = null;
 
     public function getKey(): string
@@ -75,6 +77,18 @@ class PortalNodeStorageEntity extends Entity
     public function setPortalNode(?PortalNodeEntity $portalNode): self
     {
         $this->portalNode = $portalNode;
+
+        return $this;
+    }
+
+    public function getExpiredAt(): ?\DateTime
+    {
+        return $this->expiredAt;
+    }
+
+    public function setExpiredAt(?\DateTime $expiredAt): PortalNodeStorageEntity
+    {
+        $this->expiredAt = $expiredAt;
 
         return $this;
     }

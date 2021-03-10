@@ -4,6 +4,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -38,6 +39,7 @@ class PortalNodeStorageDefinition extends EntityDefinition
             (new StringField('key', 'key', 1024))->addFlags(new Required()),
             (new BlobField('value', 'value'))->addFlags(new Required()),
             (new StringField('type', 'type', 255))->addFlags(new Required()),
+            new DateTimeField('expired_at', 'expiredAt'),
 
             (new FkField('portal_node_id', 'portalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('portalNode', 'portal_node_id', PortalNodeDefinition::class),

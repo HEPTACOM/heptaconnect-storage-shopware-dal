@@ -10,11 +10,13 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStora
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStorageEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class PortalStorage extends PortalStorageContract
 {
@@ -28,21 +30,34 @@ class PortalStorage extends PortalStorageContract
         $this->contextFactory = $contextFactory;
     }
 
-    public function set(PortalNodeKeyInterface $portalNodeKey, string $key, string $value, string $type): void
-    {
+    public function set(
+        PortalNodeKeyInterface $portalNodeKey,
+        string $key,
+        string $value,
+        string $type,
+        ?\DateInterval $ttl = null
+    ): void {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
         $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
 
-        $this->portalNodeStorages->upsert([[
+        $upsert = [
             'id' => $storageId,
             'portalNodeId' => $portalNodeKey->getUuid(),
             'key' => $key,
             'value' => $value,
             'type' => $type,
-        ]], $this->contextFactory->create());
+        ];
+
+        if ($ttl instanceof \DateInterval) {
+            $upsert['expiredAt'] = (new \DateTimeImmutable())->add($ttl);
+        } else {
+            $upsert['expiredAt'] = null;
+        }
+
+        $this->portalNodeStorages->upsert([$upsert], $this->contextFactory->create());
     }
 
     public function unset(PortalNodeKeyInterface $portalNodeKey, string $key): void
@@ -142,6 +157,12 @@ class PortalStorage extends PortalStorageContract
         $storageId = Uuid::uuid5($portalNodeId, $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
+        $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
+            new EqualsFilter('expiredAt', null),
+            new RangeFilter('expiredAt', [
+                RangeFilter::GT => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            ]),
+        ]));
 
         /** @var PortalNodeStorageCollection $entities */
         $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
