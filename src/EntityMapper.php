@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 
 class EntityMapper extends EntityMapperContract
 {
@@ -124,7 +125,10 @@ class EntityMapper extends EntityMapperContract
             $criteria->addAssociation('type');
 
             $criteria->getAssociation('mappings')->addFilter(
-                new EqualsFilter('portalNodeId', $portalNodeId)
+                new EqualsFilter('portalNodeId', $portalNodeId),
+                new NotFilter(MultiFilter::CONNECTION_OR, [
+                    new EqualsFilter('externalId', null),
+                ])
             );
 
             /** @var MappingNodeEntity $mappingNode */
