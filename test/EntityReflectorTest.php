@@ -104,7 +104,7 @@ class EntityReflectorTest extends TestCase
                 'externalId' => $targetId,
             ];
 
-            $mappingPairs['object_hash'][spl_object_hash($entity)] = $targetId;
+            $mappingPairs['object_hash'][\spl_object_hash($entity)] = $targetId;
             $mappingPairs['reflection_mapping'][$sourceId] = $targetId;
 
             $entity->setPrimaryKey($sourceId);
@@ -130,7 +130,7 @@ class EntityReflectorTest extends TestCase
             /** @var PrimaryKeySharingMappingStruct $reflectionMapping */
             $reflectionMapping = $entity->getAttachment(PrimaryKeySharingMappingStruct::class);
 
-            static::assertSame($mappingPairs['object_hash'][spl_object_hash($entity)], $entity->getPrimaryKey());
+            static::assertSame($mappingPairs['object_hash'][\spl_object_hash($entity)], $entity->getPrimaryKey());
             static::assertSame($mappingPairs['reflection_mapping'][$reflectionMapping->getExternalId()], $entity->getPrimaryKey());
         }
     }
@@ -223,7 +223,7 @@ class EntityReflectorTest extends TestCase
             $reflectionMapping = $mappedEntity->getDatasetEntity()->getAttachment(PrimaryKeySharingMappingStruct::class);
 
             if ($reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
-                $reflectionMappings[\spl_object_hash($reflectionMapping)] = \count(\iterable_to_array($reflectionMapping->getOwners()));
+                $reflectionMappings[\spl_object_hash($reflectionMapping)] = \count(iterable_to_array($reflectionMapping->getOwners()));
             }
         }
 
@@ -290,7 +290,7 @@ class EntityReflectorTest extends TestCase
                 'externalId' => Uuid::randomHex(),
             ];
 
-            $mappingPairs['object_hash'][spl_object_hash($entity)] = $targetId;
+            $mappingPairs['object_hash'][\spl_object_hash($entity)] = $targetId;
             $mappingPairs['reflection_mapping'][$sourceId] = $targetId;
 
             $entity->setPrimaryKey($sourceId);
@@ -319,7 +319,7 @@ class EntityReflectorTest extends TestCase
             /** @var PrimaryKeySharingMappingStruct $reflectionMapping */
             $reflectionMapping = $entity->getAttachment(PrimaryKeySharingMappingStruct::class);
 
-            static::assertSame($mappingPairs['object_hash'][spl_object_hash($entity)], $entity->getPrimaryKey());
+            static::assertSame($mappingPairs['object_hash'][\spl_object_hash($entity)], $entity->getPrimaryKey());
             static::assertSame($mappingPairs['reflection_mapping'][$reflectionMapping->getExternalId()], $entity->getPrimaryKey());
         }
     }
@@ -398,12 +398,7 @@ class EntityReflectorTest extends TestCase
         PortalNodeStorageKey $sourcePortalNodeKey,
         string $nodeId
     ): MappingInterface {
-        return new class (
-            $entityClass,
-            $sourceId,
-            $sourcePortalNodeKey,
-            new MappingNodeStorageKey($nodeId)
-        ) implements MappingInterface {
+        return new class($entityClass, $sourceId, $sourcePortalNodeKey, new MappingNodeStorageKey($nodeId)) implements MappingInterface {
             private ?string $externalId;
 
             private PortalNodeKeyInterface $portalNodeKey;
@@ -417,8 +412,7 @@ class EntityReflectorTest extends TestCase
                 ?string $externalId,
                 PortalNodeKeyInterface $portalNodeKey,
                 MappingNodeKeyInterface $mappingNodeKey
-            )
-            {
+            ) {
                 $this->type = $type;
                 $this->externalId = $externalId;
                 $this->portalNodeKey = $portalNodeKey;

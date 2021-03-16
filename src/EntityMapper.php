@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
@@ -144,7 +145,7 @@ class EntityMapper extends EntityMapperContract
         }
 
         if ($createMappingNodes) {
-            foreach (array_keys($createMappingNodes) as $key) {
+            foreach (\array_keys($createMappingNodes) as $key) {
                 $mappingNodeKey = $this->storageKeyGenerator->generateKey(MappingNodeKeyInterface::class);
 
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {

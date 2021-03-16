@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Symfony\Component\Dotenv\Dotenv;
@@ -12,5 +13,5 @@ KernelLifecycleManager::prepare($loader);
 $connection = \Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel::getConnection();
 
 if (!$connection->getSchemaManager()->tablesExist('migration')) {
-    $connection->exec(\file_get_contents(__DIR__ . '/../vendor/shopware/core/schema.sql'));
+    $connection->exec(\file_get_contents(__DIR__.'/../vendor/shopware/core/schema.sql'));
 }

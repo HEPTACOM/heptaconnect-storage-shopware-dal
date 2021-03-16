@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
@@ -83,7 +84,7 @@ class EntityReflector extends EntityReflectorContract
 
             $mappingId = Uuid::uuid4()->getHex();
 
-            $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] = [
+            $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] = [
                 'id' => $mappingId,
                 'externalId' => $primaryKey,
                 'mappingNodeId' => $mappingNodeId,
@@ -97,7 +98,7 @@ class EntityReflector extends EntityReflectorContract
 
         /** @var MappingEntity $mapping */
         foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
-            $key = $mapping->getPortalNodeId() . $mapping->getMappingNodeId() . $mapping->getExternalId();
+            $key = $mapping->getPortalNodeId().$mapping->getMappingNodeId().$mapping->getExternalId();
             unset($createMappings[$key]);
         }
 
