@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 
 class EntityReflector extends EntityReflectorContract
 {
@@ -109,6 +110,9 @@ class EntityReflector extends EntityReflectorContract
         $criteria = (new Criteria())->addFilter(
             new EqualsFilter('portalNodeId', $targetPortalNodeId),
             new MultiFilter(MultiFilter::CONNECTION_OR, $reflectedFilters),
+            new NotFilter(NotFilter::CONNECTION_OR, [
+                new EqualsFilter('externalId', null),
+            ])
         );
 
         /** @var MappingEntity $mapping */

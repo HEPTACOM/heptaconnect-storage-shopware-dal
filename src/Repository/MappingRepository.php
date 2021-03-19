@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 
 class MappingRepository extends MappingRepositoryContract
 {
@@ -81,7 +82,10 @@ class MappingRepository extends MappingRepositoryContract
         $criteria->setLimit(50);
         $criteria->addFilter(
             new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()),
-            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
+            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
+            new NotFilter(NotFilter::CONNECTION_AND, [
+                new EqualsFilter('externalId', null),
+            ])
         );
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
