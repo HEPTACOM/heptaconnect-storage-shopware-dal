@@ -141,18 +141,35 @@ class EntityReflector extends EntityReflectorContract
         }
 
         foreach ($index as $keys) {
+            /** @var PrimaryKeySharingMappingStruct[] $reflectionMappingCache */
+            $reflectionMappingCache = [];
+
             foreach ($keys as $key) {
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
 
-                $reflectionMapping = new PrimaryKeySharingMappingStruct();
-                $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
-                $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
-                $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
-                $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
+                $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
 
-                $mappedEntity->getDatasetEntity()->attach($reflectionMapping);
+                if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
+                    throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
+                }
+
+                $cacheKey = \sprintf(
+                    '%s;%s',
+                    $sourcePortalNodeKey->getUuid(),
+                    $mappedEntity->getMapping()->getExternalId()
+                );
+
+                if (!(($reflectionMappingCache[$cacheKey] ?? null) instanceof PrimaryKeySharingMappingStruct)) {
+                    $reflectionMappingCache[$cacheKey] = new PrimaryKeySharingMappingStruct();
+                    $reflectionMappingCache[$cacheKey]->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
+                    $reflectionMappingCache[$cacheKey]->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
+                    $reflectionMappingCache[$cacheKey]->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
+                    $reflectionMappingCache[$cacheKey]->setExternalId($mappedEntity->getMapping()->getExternalId());
+                }
+
                 $mappedEntity->getDatasetEntity()->setPrimaryKey(null);
+                $reflectionMappingCache[$cacheKey]->addOwner($mappedEntity->getDatasetEntity());
             }
         }
     }
