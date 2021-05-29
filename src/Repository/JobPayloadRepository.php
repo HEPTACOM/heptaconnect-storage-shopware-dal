@@ -43,7 +43,7 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         $this->contextFactory = $contextFactory;
     }
 
-    public function add(object $payload): JobPayloadKeyInterface
+    public function add(array $payload): JobPayloadKeyInterface
     {
         $key = $this->storageKeyGenerator->generateKey(JobPayloadKeyInterface::class);
 
@@ -113,7 +113,7 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         return !\is_null($storageId);
     }
 
-    public function get(JobPayloadKeyInterface $processPayloadKey): object
+    public function get(JobPayloadKeyInterface $processPayloadKey): array
     {
         if (!$processPayloadKey instanceof JobPayloadStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($processPayloadKey));
@@ -129,13 +129,13 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         }
 
         if ($entity->getFormat() === self::FORMAT_SERIALIZED) {
-            return (object) \unserialize($entity->getPayload());
+            return (array) \unserialize($entity->getPayload());
         }
 
         if ($entity->getFormat() === self::FORMAT_SERIALIZED_GZPRESS) {
-            return (object) \unserialize(\gzuncompress($entity->getPayload()));
+            return (array) \unserialize(\gzuncompress($entity->getPayload()));
         }
 
-        return (object) $entity->getPayload();
+        return (array) $entity->getPayload();
     }
 }
