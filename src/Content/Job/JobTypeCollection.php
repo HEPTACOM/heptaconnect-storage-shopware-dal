@@ -16,6 +16,21 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  */
 class JobTypeCollection extends EntityCollection
 {
+    /**
+     * @psalm-return array<string, string>
+     */
+    public function groupByType(): array
+    {
+        $result = [];
+
+        /** @var JobTypeEntity $type */
+        foreach ($this as $type) {
+            $result[$type->getType()] = $type->getId();
+        }
+
+        return $result;
+    }
+
     protected function getExpectedClass(): string
     {
         return JobTypeEntity::class;

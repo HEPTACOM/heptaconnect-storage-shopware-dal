@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -19,7 +20,7 @@ class JobEntity extends Entity
 
     protected string $entityTypeId;
 
-    protected ?JobTypeEntity $entityType = null;
+    protected ?DatasetEntityTypeEntity $entityType = null;
 
     protected string $jobTypeId;
 
@@ -65,26 +66,50 @@ class JobEntity extends Entity
         return $this;
     }
 
-    public function getTypeId(): string
+    public function getEntityTypeId(): string
     {
-        return $this->typeId;
+        return $this->entityTypeId;
     }
 
-    public function setTypeId(string $typeId): self
+    public function setEntityTypeId(string $entityTypeId): self
     {
-        $this->typeId = $typeId;
+        $this->entityTypeId = $entityTypeId;
 
         return $this;
     }
 
-    public function getType(): ?JobTypeEntity
+    public function getEntityType(): ?DatasetEntityTypeEntity
     {
-        return $this->type;
+        return $this->entityType;
     }
 
-    public function setType(?JobTypeEntity $type): self
+    public function setEntityType(?DatasetEntityTypeEntity $entityType): self
     {
-        $this->type = $type;
+        $this->entityType = $entityType;
+
+        return $this;
+    }
+
+    public function getJobTypeId(): string
+    {
+        return $this->jobTypeId;
+    }
+
+    public function setJobTypeId(string $jobTypeId): self
+    {
+        $this->jobTypeId = $jobTypeId;
+
+        return $this;
+    }
+
+    public function getJobType(): ?JobTypeEntity
+    {
+        return $this->jobType;
+    }
+
+    public function setJobType(?JobTypeEntity $jobType): self
+    {
+        $this->jobType = $jobType;
 
         return $this;
     }
