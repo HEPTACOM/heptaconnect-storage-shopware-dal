@@ -21,6 +21,11 @@ class JobPayloadStorage extends JobPayloadStorageContract
      */
     private const FORMAT_SERIALIZED = 'serialized';
 
+    /**
+     * @deprecated TODO remove serialized format
+     */
+    private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
+
     private EntityRepositoryInterface $jobPayloads;
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
@@ -50,9 +55,9 @@ class JobPayloadStorage extends JobPayloadStorageContract
 
         $this->jobPayloads->create([[
             'id' => $key->getUuid(),
-            'payload' => $serialize,
+            'payload' => \gzcompress($serialize),
             'checksum' => \md5($serialize),
-            'format' => self::FORMAT_SERIALIZED,
+            'format' => self::FORMAT_SERIALIZED_GZPRESS,
         ]], $context);
 
         return $key;
@@ -124,6 +129,10 @@ class JobPayloadStorage extends JobPayloadStorageContract
 
         if ($entity->getFormat() === self::FORMAT_SERIALIZED) {
             return (object) \unserialize($entity->getPayload());
+        }
+
+        if ($entity->getFormat() === self::FORMAT_SERIALIZED_GZPRESS) {
+            return (object) \unserialize(\gzuncompress($entity->getPayload()));
         }
 
         return (object) $entity->getPayload();
