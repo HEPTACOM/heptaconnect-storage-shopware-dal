@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping;
 
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowEmptyString;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -35,17 +37,23 @@ class MappingErrorMessageDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        $stackTraceField = (new LongTextField('stack_trace', 'stackTrace'))->addFlags(new AllowHtml());
+
+        if (\class_exists(AllowEmptyString::class)) {
+            $stackTraceField->addFlags(new AllowEmptyString());
+        }
+
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            (new FkField('mapping_id', 'mappingId', MappingDefinition::class))->addFlags(new Required()),
+            (new FkField('portal_node_id', 'portalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
+            (new FkField('mapping_node_id', 'mappingNodeId', MappingNodeDefinition::class))->addFlags(new Required()),
             new FkField('previous_id', 'previousId', self::class),
             new FkField('group_previous_id', 'groupPreviousId', self::class),
             (new StringField('type', 'type'))->addFlags(new Required()),
             (new LongTextField('message', 'message'))->addFlags(new AllowHtml()),
-            // TODO: Add AllowEmptyString flag when it is supported
-            (new LongTextField('stack_trace', 'stackTrace'))->addFlags(new AllowHtml()),
+            $stackTraceField,
 
-            new ManyToOneAssociationField('mapping', 'mapping_id', MappingDefinition::class),
+            new ManyToOneAssociationField('mappingNode', 'mapping_node_id', MappingNodeDefinition::class),
         ]);
     }
 }
