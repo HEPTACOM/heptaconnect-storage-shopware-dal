@@ -10,7 +10,7 @@ class MappingErrorMessageEntity extends Entity
 {
     use EntityIdTrait;
 
-    protected string $mappingId;
+    protected string $mappingNodeId;
 
     protected ?string $previousId;
 
@@ -20,7 +20,7 @@ class MappingErrorMessageEntity extends Entity
 
     protected ?string $stackTrace;
 
-    protected ?MappingEntity $mapping;
+    protected ?MappingNodeEntity $mappingNode;
 
     public function getId(): string
     {
@@ -34,14 +34,14 @@ class MappingErrorMessageEntity extends Entity
         return $this;
     }
 
-    public function getMappingId(): string
+    public function getMappingNodeId(): string
     {
-        return $this->mappingId;
+        return $this->mappingNodeId;
     }
 
-    public function setMappingId(string $mappingId): self
+    public function setMappingNodeId(string $mappingNodeId): self
     {
-        $this->mappingId = $mappingId;
+        $this->mappingNodeId = $mappingNodeId;
 
         return $this;
     }
@@ -94,14 +94,14 @@ class MappingErrorMessageEntity extends Entity
         return $this;
     }
 
-    public function getMapping(): ?MappingEntity
+    public function getMappingNode(): ?MappingNodeEntity
     {
-        return $this->mapping;
+        return $this->mappingNode;
     }
 
-    public function setMapping(?MappingEntity $mapping): self
+    public function setMappingNode(?MappingNodeEntity $mappingNode): self
     {
-        $this->mapping = $mapping;
+        $this->mappingNode = $mappingNode;
 
         return $this;
     }

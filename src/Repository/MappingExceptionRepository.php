@@ -5,12 +5,16 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingExceptionKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingExceptionRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -36,21 +40,35 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         $this->contextFactory = $contextFactory;
     }
 
-    public function create(MappingKeyInterface $mappingKey, \Throwable $throwable): MappingExceptionKeyInterface
-    {
-        if (!$mappingKey instanceof MappingStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($mappingKey));
+    public function create(
+        PortalNodeKeyInterface $portalNodeKey,
+        MappingNodeKeyInterface $mappingNodeKey,
+        \Throwable $throwable
+    ): MappingExceptionKeyInterface {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
         }
 
         $insert = [];
         $resultKey = null;
         $previousKey = null;
 
-        foreach (self::unwrapException($throwable) as $exceptionItem) {
-            $key = $this->storageKeyGenerator->generateKey(MappingExceptionKeyInterface::class);
+        $exceptions = self::unwrapException($throwable);
+
+        $keys = iterable_to_array($this->storageKeyGenerator->generateKeys(
+            MappingExceptionKeyInterface::class,
+            \count($exceptions)
+        ));
+
+        foreach ($exceptions as $exception) {
+            $key = array_shift($keys);
 
             if (!$key instanceof MappingExceptionStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($key));
+                throw new UnsupportedStorageKeyException(\is_null($key) ? 'null' : \get_class($key));
             }
 
             $resultKey ??= $key;
@@ -59,11 +77,13 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
                 'id' => $key->getUuid(),
                 'previousId' => $previousKey ? $previousKey->getUuid() : null,
                 'groupPreviousId' => $resultKey && !$key->equals($resultKey) ? $resultKey->getUuid() : null,
-                'mappingId' => $mappingKey->getUuid(),
-                'type' => \get_class($exceptionItem),
-                'message' => $exceptionItem->getMessage(),
-                'stackTrace' => \json_encode($exceptionItem->getTrace()),
+                'portalNodeId' => $portalNodeKey->getUuid(),
+                'mappingNodeId' => $mappingNodeKey->getUuid(),
+                'type' => \get_class($exception),
+                'message' => $exception->getMessage(),
+                'stackTrace' => \json_encode($exception->getTrace()),
             ];
+
             $previousKey = $key;
         }
 
