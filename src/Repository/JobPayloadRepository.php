@@ -1,20 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadStorageContract;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobPayloadRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
-class JobPayloadStorage extends JobPayloadStorageContract
+class JobPayloadRepository extends JobPayloadRepositoryContract
 {
     /**
      * @deprecated TODO remove serialized format
