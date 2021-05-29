@@ -60,7 +60,7 @@ class EntityMapper extends EntityMapperContract
 
         $portalNodeId = $portalNodeKey->getUuid();
         $context = $this->contextFactory->create();
-        $datasetEntities = iterable_to_array($entityCollection);
+        $datasetEntities = \iterable_to_array($entityCollection);
 
         /** @var DatasetEntityTypeCollection $datasetTypeEntities */
         $datasetTypeEntities = $this->datasetEntityTypes->search(new Criteria(), $context)->getEntities();

@@ -11,8 +11,8 @@ class ContextFactory
     {
         if (\method_exists(Context::class, 'disableCache')) {
             return Context::createDefaultContext()->disableCache(static fn (Context $context): Context => clone $context);
-        } else {
-            return Context::createDefaultContext();
         }
+
+        return Context::createDefaultContext();
     }
 }

@@ -223,7 +223,7 @@ class EntityReflectorTest extends TestCase
             $reflectionMapping = $mappedEntity->getDatasetEntity()->getAttachment(PrimaryKeySharingMappingStruct::class);
 
             if ($reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
-                $reflectionMappings[\spl_object_hash($reflectionMapping)] = \count(iterable_to_array($reflectionMapping->getOwners()));
+                $reflectionMappings[\spl_object_hash($reflectionMapping)] = \count(\iterable_to_array($reflectionMapping->getOwners()));
             }
         }
 
