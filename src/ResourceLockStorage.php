@@ -19,7 +19,9 @@ class ResourceLockStorage extends ResourceLockStorageContract
     public function create(string $key): void
     {
         try {
-            $this->lockFactory->createLock($key)->acquire();
+            if (!$this->lockFactory->createLock($key)->acquire()) {
+                throw new ResourceIsLockedException($key, null);
+            }
         } catch (\Throwable $throwable) {
             throw new ResourceIsLockedException($key, null);
         }
