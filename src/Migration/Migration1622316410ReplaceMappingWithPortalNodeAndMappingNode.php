@@ -8,7 +8,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 class Migration1622316410ReplaceMappingWithPortalNodeAndMappingNode extends MigrationStep
 {
     public const UP = <<<'SQL'
-alter table heptaconnect_mapping_error_message drop foreign key heptaconnect_mapping_error_message_ibfk_1;
+alter table heptaconnect_mapping_error_message drop foreign key `fk.heptaconnect_mapping_error_message.mapping_id`;
 
 alter table heptaconnect_mapping_error_message drop column mapping_id;
 
@@ -37,7 +37,7 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $connection->executeStatement(self::UP);
+        $connection->exec(self::UP);
     }
 
     public function updateDestructive(Connection $connection): void
