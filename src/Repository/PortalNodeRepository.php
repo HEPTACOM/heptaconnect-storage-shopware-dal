@@ -51,7 +51,10 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
             throw new NotFoundException();
         }
 
-        return $portalNode->getClassName();
+        /** @var class-string<\Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract> $className */
+        $className = $portalNode->getClassName();
+
+        return $className;
     }
 
     public function listAll(): iterable
@@ -60,7 +63,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
         $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new PortalNodeStorageKey($id);
             }
@@ -76,7 +79,7 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
         $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new PortalNodeStorageKey($id);
             }

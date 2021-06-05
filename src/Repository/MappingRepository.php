@@ -89,7 +89,7 @@ class MappingRepository extends MappingRepositoryContract
         );
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }
@@ -107,7 +107,7 @@ class MappingRepository extends MappingRepositoryContract
         $criteria->addFilter(new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()));
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }
@@ -128,7 +128,7 @@ class MappingRepository extends MappingRepositoryContract
         );
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }
@@ -227,7 +227,7 @@ class MappingRepository extends MappingRepositoryContract
             $result->push([$key]);
         }
 
-        if (!empty($payload)) {
+        if ($payload !== []) {
             $this->mappings->create($payload, $this->contextFactory->create());
         }
 

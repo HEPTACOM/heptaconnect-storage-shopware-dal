@@ -92,7 +92,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         // TODO: Do not use iterator. We only expect one result.
         $iterator = new RepositoryIterator($this->mappingNodes, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingNodeStorageKey($id);
             }
@@ -178,7 +178,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
         $payload = [];
 
-        /** @var MappingNodeStorageKey $key */
+        /** @var MappingNodeKeyInterface $key */
         foreach ($result as $key) {
             if (!$key instanceof MappingNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($key));

@@ -15,9 +15,6 @@ class Job implements JobInterface
 
     protected ?JobPayloadKeyInterface $payloadKey;
 
-    /**
-     * @psalm-param string $datasetEntityClassName class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>
-     */
     public function __construct(
         MappingComponentStructContract $mapping,
         string $jobType,

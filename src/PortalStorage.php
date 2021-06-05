@@ -127,7 +127,7 @@ class PortalStorage extends PortalStorageContract
 
         $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
 
-        while (($searchResult = $iterator->fetch()) !== null && !empty($entities = $searchResult->getEntities())) {
+        while (($searchResult = $iterator->fetch()) !== null && ($entities = $searchResult->getEntities())->count() > 0) {
             foreach ($entities as $entity) {
                 if ($entity instanceof PortalNodeStorageEntity) {
                     yield $entity->getKey() => [

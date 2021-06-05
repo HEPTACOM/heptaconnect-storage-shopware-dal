@@ -97,7 +97,7 @@ class CronjobRunRepository extends CronjobRunRepositoryContract
 
         $iterator = new RepositoryIterator($this->cronjobRuns, $context, $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new CronjobRunStorageKey($id);
             }

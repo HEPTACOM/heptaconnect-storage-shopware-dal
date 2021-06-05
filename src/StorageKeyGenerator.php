@@ -104,11 +104,11 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
 
         $class = self::ABBREVIATIONS[$abbreviation];
 
-        if (($interface = \array_search($class, self::IMPLEMENTATION_MAP)) === false) {
+        if (($interface = \array_search($class, self::IMPLEMENTATION_MAP, true)) === false) {
             throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
         }
 
-        return $this->createKey($interface, (string) $key);
+        return $this->createKey($interface, $key);
     }
 
     private function createKey(string $interface, ?string $uuid): StorageKeyInterface

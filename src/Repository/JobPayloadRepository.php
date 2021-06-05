@@ -91,7 +91,7 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         $criteria = (new Criteria())->setLimit(50);
         $iterator = new RepositoryIterator($this->jobPayloads, $context, $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new JobPayloadStorageKey($id);
             }

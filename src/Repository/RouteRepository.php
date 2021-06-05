@@ -75,7 +75,7 @@ class RouteRepository extends RouteRepositoryContract
             );
         $iterator = new RepositoryIterator($this->routes, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new RouteStorageKey($id);
             }

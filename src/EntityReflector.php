@@ -124,12 +124,13 @@ class EntityReflector extends EntityReflectorContract
                 $mappedEntity = $mappedEntities[$key];
 
                 if (!$reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
-                    $reflectionMapping = new PrimaryKeySharingMappingStruct();
+                    $reflectionMapping = new PrimaryKeySharingMappingStruct(
+                        $mappedEntity->getMapping()->getDatasetEntityClassName(),
+                        $mappedEntity->getMapping()->getExternalId(),
+                        $mappedEntity->getMapping()->getPortalNodeKey(),
+                        $mappedEntity->getMapping()->getMappingNodeKey()
+                    );
 
-                    $reflectionMapping->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
-                    $reflectionMapping->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
-                    $reflectionMapping->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
-                    $reflectionMapping->setExternalId($mappedEntity->getMapping()->getExternalId());
                     $reflectionMapping->setForeignKey($mapping->getExternalId());
                 }
 
@@ -161,11 +162,12 @@ class EntityReflector extends EntityReflectorContract
                 );
 
                 if (!(($reflectionMappingCache[$cacheKey] ?? null) instanceof PrimaryKeySharingMappingStruct)) {
-                    $reflectionMappingCache[$cacheKey] = new PrimaryKeySharingMappingStruct();
-                    $reflectionMappingCache[$cacheKey]->setPortalNodeKey($mappedEntity->getMapping()->getPortalNodeKey());
-                    $reflectionMappingCache[$cacheKey]->setMappingNodeKey($mappedEntity->getMapping()->getMappingNodeKey());
-                    $reflectionMappingCache[$cacheKey]->setDatasetEntityClassName($mappedEntity->getMapping()->getDatasetEntityClassName());
-                    $reflectionMappingCache[$cacheKey]->setExternalId($mappedEntity->getMapping()->getExternalId());
+                    $reflectionMappingCache[$cacheKey] = new PrimaryKeySharingMappingStruct(
+                        $mappedEntity->getMapping()->getDatasetEntityClassName(),
+                        $mappedEntity->getMapping()->getExternalId(),
+                        $mappedEntity->getMapping()->getPortalNodeKey(),
+                        $mappedEntity->getMapping()->getMappingNodeKey(),
+                    );
                 }
 
                 $mappedEntity->getDatasetEntity()->setPrimaryKey(null);

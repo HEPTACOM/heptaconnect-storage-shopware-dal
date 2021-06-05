@@ -116,7 +116,7 @@ class JobRepository extends JobRepositoryContract
         $criteria = (new Criteria())->setLimit(50);
         $iterator = new RepositoryIterator($this->jobs, $context, $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new JobStorageKey($id);
             }

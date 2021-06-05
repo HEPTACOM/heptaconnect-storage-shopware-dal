@@ -56,6 +56,10 @@ class CronjobRepository extends CronjobRepositoryContract
         $context = $this->contextFactory->create();
         $key = $this->keyGenerator->generateKey(CronjobKeyInterface::class);
 
+        if (!$key instanceof CronjobStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($key));
+        }
+
         $this->cronjobs->create([[
             'id' => $key->getUuid(),
             'cronExpression' => $cronExpression,
@@ -138,7 +142,7 @@ class CronjobRepository extends CronjobRepositoryContract
 
         $iterator = new RepositoryIterator($this->cronjobs, $context, $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new CronjobStorageKey($id);
             }

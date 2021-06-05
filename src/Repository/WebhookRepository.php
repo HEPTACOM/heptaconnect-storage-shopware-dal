@@ -83,7 +83,7 @@ class WebhookRepository extends WebhookRepositoryContract
         $criteria = (new Criteria())->addFilter(new EqualsFilter('url', $url));
         $iterator = new RepositoryIterator($this->webhooks, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new WebhookStorageKey($id);
             }

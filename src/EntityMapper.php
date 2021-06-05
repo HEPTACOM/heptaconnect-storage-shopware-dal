@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\EntityMapperContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
@@ -81,7 +82,7 @@ class EntityMapper extends EntityMapperContract
                 continue;
             }
 
-            $typeId = $typeIds[$type];
+            $typeId = $typeIds[$type] ?? null;
 
             if (\is_null($typeId)) {
                 // todo create type
@@ -107,7 +108,7 @@ class EntityMapper extends EntityMapperContract
             ];
         }
 
-        if ($readMappingNodes) {
+        if ($readMappingNodes !== []) {
             $filters = [];
 
             foreach ($readMappingNodes as $key => $entity) {
@@ -133,7 +134,13 @@ class EntityMapper extends EntityMapperContract
 
             /** @var MappingNodeEntity $mappingNode */
             foreach ($this->mappingNodes->search($criteria, $context)->getIterator() as $mappingNode) {
-                $mapping = $mappingNode->getMappings()->first();
+                $mappings = $mappingNode->getMappings();
+
+                if (!$mappings instanceof MappingCollection) {
+                    continue;
+                }
+
+                $mapping = $mappings->first();
 
                 if (!$mapping instanceof MappingEntity) {
                     continue;
@@ -148,7 +155,7 @@ class EntityMapper extends EntityMapperContract
             }
         }
 
-        if ($createMappingNodes) {
+        if ($createMappingNodes !== []) {
             foreach (\array_keys($createMappingNodes) as $key) {
                 $mappingNodeKey = $this->storageKeyGenerator->generateKey(MappingNodeKeyInterface::class);
 
@@ -165,7 +172,7 @@ class EntityMapper extends EntityMapperContract
             $this->mappingNodes->create(\array_values($createMappingNodes), $context);
         }
 
-        if ($readMappings) {
+        if ($readMappings !== []) {
             $criteria = (new Criteria())->addFilter(
                 new EqualsFilter('portalNodeId', $portalNodeId),
                 new EqualsAnyFilter('mappingNodeId', $readMappings)

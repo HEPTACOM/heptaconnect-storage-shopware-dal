@@ -59,13 +59,13 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
 
         $exceptions = self::unwrapException($throwable);
 
-        $keys = iterable_to_array($this->storageKeyGenerator->generateKeys(
+        $keys = \iterable_to_array($this->storageKeyGenerator->generateKeys(
             MappingExceptionKeyInterface::class,
             \count($exceptions)
         ));
 
         foreach ($exceptions as $exception) {
-            $key = array_shift($keys);
+            $key = \array_shift($keys) ?: null;
 
             if (!$key instanceof MappingExceptionStorageKey) {
                 throw new UnsupportedStorageKeyException(\is_null($key) ? 'null' : \get_class($key));
@@ -76,7 +76,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             $insert[] = [
                 'id' => $key->getUuid(),
                 'previousId' => $previousKey ? $previousKey->getUuid() : null,
-                'groupPreviousId' => $resultKey && !$key->equals($resultKey) ? $resultKey->getUuid() : null,
+                'groupPreviousId' => $key->equals($resultKey) ? null : $resultKey->getUuid(),
                 'portalNodeId' => $portalNodeKey->getUuid(),
                 'mappingNodeId' => $mappingNodeKey->getUuid(),
                 'type' => \get_class($exception),
@@ -103,7 +103,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         $criteria->addFilter(new EqualsFilter('mappingId', $mappingKey->getUuid()));
         $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingExceptionStorageKey($id);
             }
@@ -124,7 +124,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         );
         $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
-        while (!empty($ids = $iterator->fetchIds())) {
+        while (!\is_null($ids = $iterator->fetchIds())) {
             foreach ($ids as $id) {
                 yield new MappingExceptionStorageKey($id);
             }
