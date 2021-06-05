@@ -156,8 +156,14 @@ class EntityMapper extends EntityMapperContract
         }
 
         if ($createMappingNodes !== []) {
+            /** @var MappingNodeKeyInterface[] $mappingNodeKeys */
+            $mappingNodeKeys = \iterable_to_array($this->storageKeyGenerator->generateKeys(
+                MappingNodeKeyInterface::class,
+                \count($createMappingNodes)
+            ));
+
             foreach (\array_keys($createMappingNodes) as $key) {
-                $mappingNodeKey = $this->storageKeyGenerator->generateKey(MappingNodeKeyInterface::class);
+                $mappingNodeKey = \array_shift($mappingNodeKeys);
 
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
                     throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
