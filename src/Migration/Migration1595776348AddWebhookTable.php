@@ -33,7 +33,12 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $connection->exec(self::UP);
+        // doctrine/dbal 2 support
+        if (\method_exists($connection, 'executeStatement')) {
+            $connection->executeStatement(self::UP);
+        } else {
+            $connection->exec(self::UP);
+        }
     }
 
     public function updateDestructive(Connection $connection): void

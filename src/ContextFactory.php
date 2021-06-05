@@ -9,10 +9,12 @@ class ContextFactory
 {
     public function create(): Context
     {
-        if (\method_exists(Context::class, 'disableCache')) {
-            return Context::createDefaultContext()->disableCache(static fn (Context $context): Context => clone $context);
+        $result = Context::createDefaultContext();
+
+        if (\method_exists($result, 'disableCache')) {
+            return $result->disableCache(static fn (Context $context): Context => clone $context);
         }
 
-        return Context::createDefaultContext();
+        return $result;
     }
 }
