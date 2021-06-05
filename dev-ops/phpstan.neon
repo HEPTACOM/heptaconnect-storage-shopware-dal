@@ -5,3 +5,12 @@ parameters:
 	paths:
 		- ../src/
 	tmpDir: ../.build/phpstan/
+	ignoreErrors:
+		-
+			# weird error
+			message: '#Cannot unset offset \(int\|string\) on array\(\).#'
+			path: ../src/EntityMapper.php
+		-
+			# internal deprecation note
+			message: '#Fetching deprecated class constant.*#'
+			path: ../src/Repository/JobPayloadRepository.php
