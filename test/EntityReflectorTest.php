@@ -227,7 +227,7 @@ class EntityReflectorTest extends TestCase
             }
         }
 
-        static::assertLessThan(\array_sum($reflectionMappings), \count($reflectionMappings));
+        static::assertLessThanOrEqual(\array_sum($reflectionMappings), \count($reflectionMappings));
     }
 
     /**
