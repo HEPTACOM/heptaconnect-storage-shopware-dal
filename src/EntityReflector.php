@@ -47,25 +47,14 @@ class EntityReflector extends EntityReflectorContract
         $createMappings = [];
         $reflectedFilters = [];
 
-        /** @var MappedDatasetEntityStruct $mappedEntity */
-        foreach ($mappedEntities as $key => $mappedEntity) {
-            $mappedEntity->getDatasetEntity()->unattach(PrimaryKeySharingMappingStruct::class);
+        foreach ($mappedEntities->groupByPortalNode() as $mappedEntityGroup) {
+            $firstMappedEntity = $mappedEntityGroup->first();
 
-            $primaryKey = $mappedEntity->getMapping()->getExternalId();
-            $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
-            $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
-
-            if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
-            }
-
-            $mappingNodeId = $mappingNodeKey->getUuid();
-
-            $index[$mappingNodeId][] = $key;
-
-            if ($primaryKey === null) {
+            if (!$firstMappedEntity instanceof MappedDatasetEntityStruct) {
                 continue;
             }
+
+            $sourcePortalNodeKey = $firstMappedEntity->getMapping()->getPortalNodeKey();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
@@ -73,24 +62,53 @@ class EntityReflector extends EntityReflectorContract
 
             $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
 
-            // TODO: merge filters with same criteria together for a faster search
-            $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
-                new EqualsFilter('externalId', $primaryKey),
-                new EqualsFilter('mappingNodeId', $mappingNodeId),
-                new EqualsFilter('portalNodeId', $sourcePortalNodeId),
-            ]);
+            $filtersPerPortalNode = [];
 
-            // TODO: merge these filters as one EqualsAnyFilter
-            $reflectedFilters[] = new EqualsFilter('mappingNodeId', $mappingNodeId);
+            /** @var MappedDatasetEntityStruct $mappedEntity */
+            foreach ($mappedEntityGroup as $key => $mappedEntity) {
+                $mappedEntity->getDatasetEntity()->unattach(PrimaryKeySharingMappingStruct::class);
 
-            $mappingId = Uuid::uuid4()->getHex();
+                $primaryKey = $mappedEntity->getMapping()->getExternalId();
 
-            $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] = [
-                'id' => $mappingId,
-                'externalId' => $primaryKey,
-                'mappingNodeId' => $mappingNodeId,
-                'portalNodeId' => $sourcePortalNodeId,
-            ];
+                $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
+
+                if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
+                    throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+                }
+
+                $mappingNodeId = $mappingNodeKey->getUuid();
+
+                $index[$mappingNodeId][] = $key;
+
+                if ($primaryKey === null) {
+                    continue;
+                }
+
+                // TODO: merge filters with same criteria together for a faster search
+                $filtersPerPortalNode[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
+                    new EqualsFilter('externalId', $primaryKey),
+                    new EqualsFilter('mappingNodeId', $mappingNodeId),
+                ]);
+
+                // TODO: merge these filters as one EqualsAnyFilter
+                $reflectedFilters[] = new EqualsFilter('mappingNodeId', $mappingNodeId);
+
+                $mappingId = Uuid::uuid4()->getHex();
+
+                $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] = [
+                    'id' => $mappingId,
+                    'externalId' => $primaryKey,
+                    'mappingNodeId' => $mappingNodeId,
+                    'portalNodeId' => $sourcePortalNodeId,
+                ];
+            }
+
+            if ($filtersPerPortalNode) {
+                $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
+                    new EqualsFilter('portalNodeId', $sourcePortalNodeId),
+                    new MultiFilter(MultiFilter::CONNECTION_OR, $filtersPerPortalNode),
+                ]);
+            }
         }
 
         $criteria = (new Criteria())->addFilter(
