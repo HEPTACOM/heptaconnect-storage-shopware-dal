@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\Context;
@@ -35,22 +36,22 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
 
     private EntityRepositoryInterface $mappings;
 
-    private EntityRepositoryInterface $datasetEntityTypes;
-
     private ContextFactory $contextFactory;
+
+    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
         EntityRepositoryInterface $mappings,
-        EntityRepositoryInterface $datasetEntityTypes,
-        ContextFactory $contextFactory
+        ContextFactory $contextFactory,
+        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
         $this->mappings = $mappings;
-        $this->datasetEntityTypes = $datasetEntityTypes;
         $this->contextFactory = $contextFactory;
+        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
     }
 
     public function read(MappingNodeKeyInterface $key): MappingNodeStructInterface
@@ -148,7 +149,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
+        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context);
 
         $this->mappingNodes->create([[
             'id' => $mappingId->getUuid(),
@@ -175,7 +176,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context);
+        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context);
         $payload = [];
 
         /** @var MappingNodeKeyInterface $key */
@@ -209,36 +210,5 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         $this->throwNotFoundWhenNoChange($this->mappingNodes->delete([[
             'id' => $key->getUuid(),
         ]], $context));
-    }
-
-    /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $types
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
-     */
-    private function getIdsForDatasetEntityType(array $types, Context $context): array
-    {
-        $datasetEntityCriteria = new Criteria();
-        $datasetEntityCriteria->addFilter(new EqualsAnyFilter('type', $types));
-        /** @var DatasetEntityTypeCollection $datasetTypeEntities */
-        $datasetTypeEntities = $this->datasetEntityTypes->search($datasetEntityCriteria, $context)->getEntities();
-        $typeIds = $datasetTypeEntities->groupByType();
-        $datasetTypeInsert = [];
-
-        foreach ($types as $className) {
-            if (!\array_key_exists($className, $typeIds)) {
-                $id = Uuid::randomHex();
-                $datasetTypeInsert[] = [
-                    'id' => $id,
-                    'type' => $className,
-                ];
-                $typeIds[$className] = $id;
-            }
-        }
-
-        if (\count($datasetTypeInsert) > 0) {
-            $this->datasetEntityTypes->create($datasetTypeInsert, $context);
-        }
-
-        return $typeIds;
     }
 }

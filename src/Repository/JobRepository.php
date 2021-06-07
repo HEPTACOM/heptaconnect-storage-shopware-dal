@@ -16,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetE
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Job;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -33,24 +34,24 @@ class JobRepository extends JobRepositoryContract
 
     private EntityRepositoryInterface $jobTypes;
 
-    private EntityRepositoryInterface $datasetEntityTypes;
-
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
     private ContextFactory $contextFactory;
 
+    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
+
     public function __construct(
         EntityRepositoryInterface $jobs,
         EntityRepositoryInterface $jobTypes,
-        EntityRepositoryInterface $datasetEntityTypes,
         StorageKeyGeneratorContract $storageKeyGenerator,
-        ContextFactory $contextFactory
+        ContextFactory $contextFactory,
+        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
     ) {
         $this->jobs = $jobs;
         $this->jobTypes = $jobTypes;
-        $this->datasetEntityTypes = $datasetEntityTypes;
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->contextFactory = $contextFactory;
+        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
     }
 
     public function add(
@@ -81,7 +82,7 @@ class JobRepository extends JobRepositoryContract
             'id' => $key->getUuid(),
             'externalId' => $mapping->getExternalId(),
             'portalNodeId' => $portalNodeKey->getUuid(),
-            'entityTypeId' => $this->getIdsForDatasetEntityType([$datasetEntityClassName], $context)[$datasetEntityClassName],
+            'entityTypeId' => $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context)[$datasetEntityClassName],
             'jobTypeId' => $this->getIdsForJobType([$jobType], $context)[$jobType],
             'payloadId' => $jobPayloadKey === null ? null : $jobPayloadKey->getUuid(),
         ]], $context);
@@ -166,37 +167,6 @@ class JobRepository extends JobRepositoryContract
             $entity->getJobType()->getType(),
             $entity->getPayloadId() === null ? null : new JobPayloadStorageKey($entity->getPayloadId())
         );
-    }
-
-    /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $types
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
-     */
-    private function getIdsForDatasetEntityType(array $types, Context $context): array
-    {
-        $datasetEntityCriteria = new Criteria();
-        $datasetEntityCriteria->addFilter(new EqualsAnyFilter('type', $types));
-        /** @var DatasetEntityTypeCollection $datasetTypeEntities */
-        $datasetTypeEntities = $this->datasetEntityTypes->search($datasetEntityCriteria, $context)->getEntities();
-        $typeIds = $datasetTypeEntities->groupByType();
-        $datasetTypeInsert = [];
-
-        foreach ($types as $className) {
-            if (!\array_key_exists($className, $typeIds)) {
-                $id = Uuid::randomHex();
-                $datasetTypeInsert[] = [
-                    'id' => $id,
-                    'type' => $className,
-                ];
-                $typeIds[$className] = $id;
-            }
-        }
-
-        if (\count($datasetTypeInsert) > 0) {
-            $this->datasetEntityTypes->create($datasetTypeInsert, $context);
-        }
-
-        return $typeIds;
     }
 
     /**

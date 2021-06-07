@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Framework\Context;
@@ -28,20 +29,20 @@ class RouteRepository extends RouteRepositoryContract
 
     private EntityRepositoryInterface $routes;
 
-    private EntityRepositoryInterface $datasetEntityTypes;
-
     private ContextFactory $contextFactory;
+
+    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $routes,
-        EntityRepositoryInterface $datasetEntityTypes,
-        ContextFactory $contextFactory
+        ContextFactory $contextFactory,
+        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->routes = $routes;
-        $this->datasetEntityTypes = $datasetEntityTypes;
         $this->contextFactory = $contextFactory;
+        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
     }
 
     public function read(RouteKeyInterface $key): RouteInterface
@@ -102,7 +103,7 @@ class RouteRepository extends RouteRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeId = $this->getIdsForDatasetEntityType([$entityClassName], $context)[$entityClassName];
+        $typeId = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityClassName], $context)[$entityClassName];
 
         $this->routes->create([[
             'id' => $key->getUuid(),
@@ -112,36 +113,5 @@ class RouteRepository extends RouteRepositoryContract
         ]], $context);
 
         return $key;
-    }
-
-    /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $types
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
-     */
-    private function getIdsForDatasetEntityType(array $types, Context $context): array
-    {
-        $datasetEntityCriteria = new Criteria();
-        $datasetEntityCriteria->addFilter(new EqualsAnyFilter('type', $types));
-        /** @var DatasetEntityTypeCollection $datasetTypeEntities */
-        $datasetTypeEntities = $this->datasetEntityTypes->search($datasetEntityCriteria, $context)->getEntities();
-        $typeIds = $datasetTypeEntities->groupByType();
-        $datasetTypeInsert = [];
-
-        foreach ($types as $className) {
-            if (!\array_key_exists($className, $typeIds)) {
-                $id = Uuid::randomHex();
-                $datasetTypeInsert[] = [
-                    'id' => $id,
-                    'type' => $className,
-                ];
-                $typeIds[$className] = $id;
-            }
-        }
-
-        if (\count($datasetTypeInsert) > 0) {
-            $this->datasetEntityTypes->create($datasetTypeInsert, $context);
-        }
-
-        return $typeIds;
     }
 }
