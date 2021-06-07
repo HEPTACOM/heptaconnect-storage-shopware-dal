@@ -31,23 +31,23 @@ class EntityMapper extends EntityMapperContract
 
     private EntityRepositoryInterface $mappingNodes;
 
-    private EntityRepositoryInterface $datasetEntityTypes;
-
     private EntityRepositoryInterface $mappings;
+
+    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
 
     private ContextFactory $contextFactory;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
-        EntityRepositoryInterface $datasetEntityTypes,
         EntityRepositoryInterface $mappings,
+        DatasetEntityTypeAccessor $datasetEntityTypeAccessor,
         ContextFactory $contextFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
-        $this->datasetEntityTypes = $datasetEntityTypes;
         $this->mappings = $mappings;
+        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
         $this->contextFactory = $contextFactory;
     }
 
@@ -62,10 +62,8 @@ class EntityMapper extends EntityMapperContract
         $portalNodeId = $portalNodeKey->getUuid();
         $context = $this->contextFactory->create();
         $datasetEntities = \iterable_to_array($entityCollection);
-
-        /** @var DatasetEntityTypeCollection $datasetTypeEntities */
-        $datasetTypeEntities = $this->datasetEntityTypes->search(new Criteria(), $context)->getEntities();
-        $typeIds = $datasetTypeEntities->groupByType();
+        $neededTypes = \array_map('get_class', $datasetEntities);
+        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes($neededTypes, $context);
 
         $readMappingNodes = [];
         $readMappingNodesIndex = [];
@@ -82,13 +80,7 @@ class EntityMapper extends EntityMapperContract
                 continue;
             }
 
-            $typeId = $typeIds[$type] ?? null;
-
-            if (\is_null($typeId)) {
-                // todo create type
-                continue;
-            }
-
+            $typeId = $typeIds[$type];
             $readMappingNodes[$key] = [
                 'externalId' => $primaryKey,
                 'type' => $type,
