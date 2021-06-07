@@ -22,7 +22,7 @@
         "heptacom/heptaconnect-dataset-base": ">=0.0.1",
         "heptacom/heptaconnect-portal-base": ">=0.0.1",
         "heptacom/heptaconnect-storage-base": ">=0.0.1",
-        "shopware/core": ">=6.2.3",
+        "shopware/core": ">=6.2",
         "symfony/lock": ">=4"
     },
     "conflict": {
