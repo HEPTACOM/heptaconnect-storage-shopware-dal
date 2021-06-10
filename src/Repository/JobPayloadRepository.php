@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class JobPayloadRepository extends JobPayloadRepositoryContract
 {
@@ -45,19 +46,29 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
 
     public function add(array $payload): JobPayloadKeyInterface
     {
+        $context = $this->contextFactory->create();
+        $serialize = \serialize($payload);
+        $checksum = \md5($serialize);
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('checksum', $checksum));
+        $criteria->setLimit(1);
+        $existingId = $this->jobPayloads->searchIds($criteria, $context)->firstId();
+
+        if ($existingId !== null) {
+            return new JobPayloadStorageKey($existingId);
+        }
+
         $key = $this->storageKeyGenerator->generateKey(JobPayloadKeyInterface::class);
 
         if (!$key instanceof JobPayloadStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $context = $this->contextFactory->create();
-        $serialize = \serialize($payload);
-
         $this->jobPayloads->create([[
             'id' => $key->getUuid(),
             'payload' => \gzcompress($serialize),
-            'checksum' => \md5($serialize),
+            'checksum' => $checksum,
             'format' => self::FORMAT_SERIALIZED_GZPRESS,
         ]], $context);
 
