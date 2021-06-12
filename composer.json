@@ -56,5 +56,11 @@
         "psr-4": {
             "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\Test\\": "test/"
         }
+    },
+    "repositories": {
+        "heptaconnect-sources": {
+            "type": "path",
+            "url": "../**"
+        }
     }
 }
