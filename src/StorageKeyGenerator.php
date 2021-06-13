@@ -74,7 +74,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         $class = \get_class($key);
 
         if (!$key instanceof AbstractStorageKey) {
-            throw new UnsupportedStorageKeyException($class);
+            return parent::serialize($key);
         }
 
         if (($abbreviation = \array_search($class, self::ABBREVIATIONS, true)) === false) {
@@ -89,13 +89,13 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         $parts = \explode(':', $keyData, 2);
 
         if (\count($parts) !== 2) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            return parent::deserialize($keyData);
         }
 
         [$abbreviation, $key] = $parts;
 
         if (\preg_match('/^[a-f0-9]{32}$/', $key) !== 1) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            return parent::deserialize($keyData);
         }
 
         if (!\array_key_exists($abbreviation, self::ABBREVIATIONS)) {
