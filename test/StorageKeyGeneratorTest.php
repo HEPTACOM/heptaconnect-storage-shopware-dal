@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
+use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobRunKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingExceptionKeyInterface;
@@ -14,6 +15,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\WebhookKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use PHPUnit\Framework\TestCase;
@@ -42,6 +44,24 @@ class StorageKeyGeneratorTest extends TestCase
 
         $generator = new StorageKeyGenerator();
         $generator->generateKey(AbstractStorageKey::class);
+    }
+
+    public function testPreviewKeySerialization(): void
+    {
+        $generator = new StorageKeyGenerator();
+        $serialized = $generator->serialize(new PreviewPortalNodeKey(PortalContract::class));
+
+        self::assertStringContainsString(\addcslashes(PortalContract::class, '\\'), $serialized);
+    }
+
+    public function testPreviewKeyDeserialization(): void
+    {
+        $generator = new StorageKeyGenerator();
+        $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Portal\\\\Base\\\\Portal\\\\Contract\\\\PortalContract"}');
+
+        self::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
+        /* @var $deserialized PreviewPortalNodeKey */
+        self::assertSame(PortalContract::class, $deserialized->getPortalType());
     }
 
     /**

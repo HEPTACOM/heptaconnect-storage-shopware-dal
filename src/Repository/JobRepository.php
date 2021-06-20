@@ -12,7 +12,6 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobRepositoryContract
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;

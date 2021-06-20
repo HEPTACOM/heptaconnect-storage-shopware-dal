@@ -95,7 +95,7 @@ class EntityReflector extends EntityReflectorContract
 
                 $mappingId = Uuid::uuid4()->getHex();
 
-                $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] = [
+                $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] = [
                     'id' => $mappingId,
                     'externalId' => $primaryKey,
                     'mappingNodeId' => $mappingNodeId,

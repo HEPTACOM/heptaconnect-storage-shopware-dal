@@ -8,6 +8,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\PortalNodeRepositoryC
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -38,6 +39,10 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
     public function read(PortalNodeKeyInterface $portalNodeKey): string
     {
+        if ($portalNodeKey instanceof PreviewPortalNodeKey) {
+            return $portalNodeKey->getPortalType();
+        }
+
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
