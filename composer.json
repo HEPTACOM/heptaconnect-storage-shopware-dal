@@ -1,6 +1,6 @@
 {
     "name": "heptacom/heptaconnect-storage-shopware-dal",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "type": "library",
     "description": "HEPTAconnect package to use shopware DAL as underlying storage system",
     "keywords": [
