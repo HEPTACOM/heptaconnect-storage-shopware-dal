@@ -7,6 +7,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefin
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowEmptyString;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -35,11 +36,17 @@ class MappingDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        $externalId = new StringField('external_id', 'externalId', 512);
+
+        if (\class_exists(AllowEmptyString::class)) {
+            $externalId->addFlags(new AllowEmptyString());
+        }
+
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new FkField('portal_node_id', 'portalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
             (new FkField('mapping_node_id', 'mappingNodeId', MappingNodeDefinition::class))->addFlags(new Required()),
-            new StringField('external_id', 'externalId', 512),
+            $externalId,
             (new DateTimeField('deleted_at', 'deletedAt')),
 
             (new ManyToOneAssociationField('portalNode', 'portal_node_id', PortalNodeDefinition::class)),

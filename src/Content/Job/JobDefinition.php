@@ -7,6 +7,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetE
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowEmptyString;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -35,10 +36,16 @@ class JobDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        $externalId = new StringField('external_id', 'externalId', 512);
+
+        if (\class_exists(AllowEmptyString::class)) {
+            $externalId->addFlags(new AllowEmptyString());
+        }
+
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
 
-            new StringField('external_id', 'externalId', 512),
+            $externalId,
 
             (new FkField('portal_node_id', 'portalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('portalNode', 'portal_node_id', PortalNodeDefinition::class),
