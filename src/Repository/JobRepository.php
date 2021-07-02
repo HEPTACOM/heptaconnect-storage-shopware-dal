@@ -3,15 +3,14 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
-use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingComponentStructContract;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobRepositoryContract;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\Base\Repository\JobAdd;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
@@ -39,6 +38,8 @@ class JobRepository extends JobRepositoryContract
 
     private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
 
+    private array $cachedJobTypes = [];
+
     public function __construct(
         EntityRepositoryInterface $jobs,
         EntityRepositoryInterface $jobTypes,
@@ -53,40 +54,55 @@ class JobRepository extends JobRepositoryContract
         $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
     }
 
-    public function add(
-        MappingComponentStructContract $mapping,
-        string $jobType,
-        ?JobPayloadKeyInterface $jobPayloadKey
-    ): JobKeyInterface {
-        $key = $this->storageKeyGenerator->generateKey(JobKeyInterface::class);
-
-        if (!$key instanceof JobStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
-        }
-
-        $portalNodeKey = $mapping->getPortalNodeKey();
-
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        if ($jobPayloadKey !== null && !$jobPayloadKey instanceof JobPayloadStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($jobPayloadKey));
-        }
+    public function add(array $jobAdds): array
+    {
+        $result = [];
+        $keys = \iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, \count($jobAdds)));
 
         $context = $this->contextFactory->create();
-        $datasetEntityClassName = $mapping->getDatasetEntityClassName();
 
-        $this->jobs->create([[
-            'id' => $key->getUuid(),
-            'externalId' => $mapping->getExternalId(),
-            'portalNodeId' => $portalNodeKey->getUuid(),
-            'entityTypeId' => $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context)[$datasetEntityClassName],
-            'jobTypeId' => $this->getIdsForJobType([$jobType], $context)[$jobType],
-            'payloadId' => $jobPayloadKey === null ? null : $jobPayloadKey->getUuid(),
-        ]], $context);
+        $creates = [];
 
-        return $key;
+        /** @var JobAdd $jobAdd */
+        foreach ($jobAdds as $jobAddKey => $jobAdd) {
+            $key = \array_shift($keys);
+
+            if (!$key instanceof JobStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($key));
+            }
+
+            $portalNodeKey = $jobAdd->getMapping()->getPortalNodeKey();
+
+            if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            }
+
+            $jobPayloadKey = $jobAdd->getPayloadKey();
+
+            if ($jobPayloadKey !== null && !$jobPayloadKey instanceof JobPayloadStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($jobPayloadKey));
+            }
+
+            $datasetEntityClassName = $jobAdd->getMapping()->getDatasetEntityClassName();
+
+            $creates[] = [
+                'id' => $key->getUuid(),
+                'externalId' => $jobAdd->getMapping()->getExternalId(),
+                'portalNodeId' => $portalNodeKey->getUuid(),
+                'entityTypeId' => $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context)[$datasetEntityClassName],
+                // TODO batch lookup
+                'jobTypeId' => $this->getIdsForJobType([$jobAdd->getJobType()], $context)[$jobAdd->getJobType()],
+                'payloadId' => $jobPayloadKey === null ? null : $jobPayloadKey->getUuid(),
+            ];
+
+            $result[$jobAddKey] = $key;
+        }
+
+        if ($creates !== []) {
+            $this->jobs->create($creates, $context);
+        }
+
+        return $result;
     }
 
     public function remove(JobKeyInterface $jobKey): void
@@ -174,28 +190,46 @@ class JobRepository extends JobRepositoryContract
      */
     private function getIdsForJobType(array $types, Context $context): array
     {
-        $datasetEntityCriteria = new Criteria();
-        $datasetEntityCriteria->addFilter(new EqualsAnyFilter('type', $types));
-        /** @var JobTypeCollection $jobTypes */
-        $jobTypes = $this->jobTypes->search($datasetEntityCriteria, $context)->getEntities();
-        $typeIds = $jobTypes->groupByType();
-        $insert = [];
+        $result = [];
+        $typesToCacheCheck = $types;
+        $types = [];
 
-        foreach ($types as $typeName) {
-            if (!\array_key_exists($typeName, $typeIds)) {
-                $id = Uuid::randomHex();
-                $insert[] = [
-                    'id' => $id,
-                    'type' => $typeName,
-                ];
-                $typeIds[$typeName] = $id;
+        foreach ($typesToCacheCheck as $type) {
+            if (\array_key_exists($type, $this->cachedJobTypes)) {
+                $result[$type] = $this->cachedJobTypes[$type];
+            } else {
+                $types[] = $type;
             }
         }
 
-        if (\count($insert) > 0) {
-            $this->jobTypes->create($insert, $context);
+        if ($types !== []) {
+            $datasetEntityCriteria = new Criteria();
+            $datasetEntityCriteria->addFilter(new EqualsAnyFilter('type', $types));
+            /** @var JobTypeCollection $jobTypes */
+            $jobTypes = $this->jobTypes->search($datasetEntityCriteria, $context)->getEntities();
+            $typeIds = $jobTypes->groupByType();
+            $insert = [];
+
+            foreach ($types as $typeName) {
+                if (!\array_key_exists($typeName, $typeIds)) {
+                    $id = Uuid::randomHex();
+                    $insert[] = [
+                        'id' => $id,
+                        'type' => $typeName,
+                    ];
+                    $result[$typeName] = $id;
+                    $this->cachedJobTypes[$typeName] = $id;
+                } else {
+                    $result[$typeName] = $typeIds[$typeName];
+                    $this->cachedJobTypes[$typeName] = $typeIds[$typeName];
+                }
+            }
+
+            if (\count($insert) > 0) {
+                $this->jobTypes->create($insert, $context);
+            }
         }
 
-        return $typeIds;
+        return $result;
     }
 }

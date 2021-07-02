@@ -10,11 +10,12 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\DalAccess;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 
 class JobPayloadRepository extends JobPayloadRepositoryContract
 {
@@ -34,45 +35,71 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
 
     private ContextFactory $contextFactory;
 
+    private DalAccess $dalAccess;
+
     public function __construct(
         EntityRepositoryInterface $jobPayloads,
         StorageKeyGeneratorContract $storageKeyGenerator,
-        ContextFactory $contextFactory
+        ContextFactory $contextFactory,
+        DalAccess $dalAccess
     ) {
         $this->jobPayloads = $jobPayloads;
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->contextFactory = $contextFactory;
+        $this->dalAccess = $dalAccess;
     }
 
-    public function add(array $payload): JobPayloadKeyInterface
+    public function add(array $payloads): array
     {
         $context = $this->contextFactory->create();
-        $serialize = \serialize($payload);
-        $checksum = \md5($serialize);
+        $creates = [];
+        $result = [];
+        $checksums = [];
+
+        foreach ($payloads as $payloadKey => $payload) {
+            $serialize = \serialize($payload);
+            $checksum = \md5($serialize);
+
+            $checksums[$payloadKey] = $checksum;
+            $creates[$checksum] = [
+                'payload' => \gzcompress($serialize),
+                'checksum' => $checksum,
+                'format' => self::FORMAT_SERIALIZED_GZPRESS,
+            ];
+        }
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('checksum', $checksum));
-        $criteria->setLimit(1);
-        $existingId = $this->jobPayloads->searchIds($criteria, $context)->firstId();
+        $criteria->addFilter(new EqualsAnyFilter('checksum', \array_values($checksums)));
+        $existingChecksums = $this->dalAccess->queryValueById($this->jobPayloads, 'checksum', $criteria, $context);
 
-        if ($existingId !== null) {
-            return new JobPayloadStorageKey($existingId);
+        foreach ($checksums as $payloadKey => $checksum) {
+            if (($key = \array_search($checksum, $existingChecksums)) !== false) {
+                $result[$payloadKey] = new JobPayloadStorageKey($key);
+                unset($creates[$checksum]);
+            }
         }
 
-        $key = $this->storageKeyGenerator->generateKey(JobPayloadKeyInterface::class);
+        if ($creates !== []) {
+            $keys = \iterable_to_array($this->storageKeyGenerator->generateKeys(JobPayloadKeyInterface::class, \count($creates)));
 
-        if (!$key instanceof JobPayloadStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
+            foreach ($creates as $checksum => &$create) {
+                $key = \array_shift($keys);
+
+                if (!$key instanceof JobPayloadStorageKey) {
+                    throw new UnsupportedStorageKeyException(\get_class($key));
+                }
+
+                foreach (\array_keys($checksums, $checksum) as $payloadKey) {
+                    $result[$payloadKey] = $key;
+                }
+
+                $create['id'] = $key->getUuid();
+            }
+
+            $this->jobPayloads->create(\array_values($creates), $context);
         }
 
-        $this->jobPayloads->create([[
-            'id' => $key->getUuid(),
-            'payload' => \gzcompress($serialize),
-            'checksum' => $checksum,
-            'format' => self::FORMAT_SERIALIZED_GZPRESS,
-        ]], $context);
-
-        return $key;
+        return $result;
     }
 
     public function remove(JobPayloadKeyInterface $processPayloadKey): void
