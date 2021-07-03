@@ -19,9 +19,14 @@
     ],
     "require": {
         "php": ">=7.4",
+        "ext-json": "*",
+        "ext-zlib": "*",
+        "bentools/iterable-functions": "^1.4",
+        "doctrine/dbal": ">=2.1",
         "heptacom/heptaconnect-dataset-base": "self.version",
         "heptacom/heptaconnect-portal-base": "self.version",
         "heptacom/heptaconnect-storage-base": "self.version",
+        "ramsey/uuid": "^3.5|^4",
         "shopware/core": ">=6.2",
         "symfony/lock": ">=4"
     },
