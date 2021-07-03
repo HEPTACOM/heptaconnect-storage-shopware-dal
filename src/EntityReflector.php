@@ -15,6 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
@@ -84,14 +85,12 @@ class EntityReflector extends EntityReflectorContract
                     continue;
                 }
 
-                // TODO: merge filters with same criteria together for a faster search
                 $filtersPerPortalNode[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
                     new EqualsFilter('externalId', $primaryKey),
                     new EqualsFilter('mappingNodeId', $mappingNodeId),
                 ]);
 
-                // TODO: merge these filters as one EqualsAnyFilter
-                $reflectedFilters[] = new EqualsFilter('mappingNodeId', $mappingNodeId);
+                $reflectedFilters[] = $mappingNodeId;
 
                 $mappingId = Uuid::uuid4()->getHex();
 
@@ -127,7 +126,7 @@ class EntityReflector extends EntityReflectorContract
 
         $criteria = (new Criteria())->addFilter(
             new EqualsFilter('portalNodeId', $targetPortalNodeId),
-            new MultiFilter(MultiFilter::CONNECTION_OR, $reflectedFilters),
+            new EqualsAnyFilter('mappingNodeId', $reflectedFilters),
             new NotFilter(NotFilter::CONNECTION_OR, [
                 new EqualsFilter('externalId', null),
             ])
