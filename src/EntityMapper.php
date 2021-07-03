@@ -100,12 +100,16 @@ class EntityMapper extends EntityMapperContract
         }
 
         if ($readMappingNodes !== []) {
-            $filters = [];
+            $filtersByType = [];
+            foreach ($readMappingNodes as $entity) {
+                $filtersByType[$typeIds[$entity['type']]][$entity['externalId']] = true;
+            }
 
-            foreach ($readMappingNodes as $key => $entity) {
+            $filters = [];
+            foreach ($filtersByType as $typeId => $externalIds) {
                 $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
-                    new EqualsFilter('mappings.externalId', $entity['externalId']),
-                    new EqualsFilter('typeId', $typeIds[$entity['type']]),
+                    new EqualsFilter('typeId', $typeId),
+                    new EqualsAnyFilter('mappings.externalId', \array_keys($externalIds)),
                 ]);
             }
 
