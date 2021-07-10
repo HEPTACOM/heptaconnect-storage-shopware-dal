@@ -16,6 +16,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  */
 class ConfigurationStorageTest extends TestCase
 {
