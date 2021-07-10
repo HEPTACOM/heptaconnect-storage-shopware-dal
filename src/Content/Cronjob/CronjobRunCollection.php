@@ -6,6 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
+ * @internal
+ *
  * @method void                  add(CronjobRunEntity $entity)
  * @method void                  set(string $key, CronjobRunEntity $entity)
  * @method CronjobRunEntity[]    getIterator()

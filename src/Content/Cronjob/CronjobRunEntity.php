@@ -14,6 +14,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
+/**
+ * @internal
+ */
 class CronjobRunEntity extends Entity implements CronjobRunInterface
 {
     use EntityIdTrait;

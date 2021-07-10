@@ -16,6 +16,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
+/**
+ * @internal
+ */
 class CronjobDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'heptaconnect_cronjob';

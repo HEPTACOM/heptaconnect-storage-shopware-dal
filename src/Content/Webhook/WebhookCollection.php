@@ -6,6 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Webhook;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 /**
+ * @internal
+ *
  * @method void               add(WebhookEntity $entity)
  * @method void               set(string $key, WebhookEntity $entity)
  * @method WebhookEntity[]    getIterator()

@@ -24,6 +24,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
+/**
+ * @internal
+ */
 class CronjobRunRepository extends CronjobRunRepositoryContract
 {
     use EntityRepositoryChecksTrait;

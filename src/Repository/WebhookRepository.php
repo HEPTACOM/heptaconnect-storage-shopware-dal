@@ -18,6 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
+/**
+ * @internal
+ */
 class WebhookRepository extends WebhookRepositoryContract
 {
     private EntityRepositoryInterface $webhooks;

@@ -12,6 +12,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\WebhookStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
+/**
+ * @internal
+ */
 class WebhookEntity extends Entity implements WebhookInterface
 {
     use EntityIdTrait;

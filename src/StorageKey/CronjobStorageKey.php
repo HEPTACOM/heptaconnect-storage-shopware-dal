@@ -5,6 +5,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobKeyInterface;
 
+/**
+ * @internal
+ */
 class CronjobStorageKey extends AbstractStorageKey implements CronjobKeyInterface
 {
 }
