@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
@@ -32,6 +33,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class EntityMapperTest extends TestCase
@@ -71,7 +73,8 @@ class EntityMapperTest extends TestCase
         $mappingNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping_node');
         $mappingRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping');
         $portalNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_portal_node');
-        $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $datasetEntityTypeRepository, $mappingRepository, $contextFactory);
+        $datasetEntityTypeAccessor = new DatasetEntityTypeAccessor($datasetEntityTypeRepository);
+        $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $mappingRepository, $datasetEntityTypeAccessor, $contextFactory);
         $portalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
 
         $entity->setPrimaryKey($entity->getPrimaryKey() ?? Uuid::randomHex());
