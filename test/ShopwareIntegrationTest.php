@@ -17,9 +17,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Bundle;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\DefinitionNotFoundException;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\StringInput;
-use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection
@@ -38,7 +35,6 @@ use Symfony\Component\Console\Output\NullOutput;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589662318CreateDatasetEntityTypeTable
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1612206762CreateKeyAlias
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589673188CreateMappingNodeTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589674916CreateMappingTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1590070312CreateRouteTable
@@ -63,29 +59,6 @@ class ShopwareIntegrationTest extends TestCase
         $this->kernel->shutdown();
     }
 
-    public function testConnection(): void
-    {
-        $connection = $this->kernel::getConnection();
-        static::assertTrue($connection->ping());
-    }
-
-    /**
-     * @depends testConnection
-     */
-    public function testMigration(): void
-    {
-        $this->kernel->registerBundles();
-        $application = new Application($this->kernel);
-        $command = $application->find('database:migrate');
-        $result = $command->run(new StringInput('--all'), new NullOutput());
-        static::assertEquals(0, $result);
-        $result = $command->run(new StringInput('database:migrate --all HeptaConnectStorage'), new NullOutput());
-        static::assertEquals(0, $result);
-    }
-
-    /**
-     * @depends testMigration
-     */
     public function testShopwareKernelLoading(): void
     {
         $this->kernel->registerBundles();
