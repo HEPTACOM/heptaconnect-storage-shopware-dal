@@ -22,6 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -398,6 +399,20 @@ class EntityReflectorTest extends TestCase
         foreach ($mappedEntities as $mappedEntity) {
             static::assertNull($mappedEntity->getDatasetEntity()->getPrimaryKey());
         }
+    }
+
+    public function testNoDatabaseLookupsOnEmptyPayload(): void
+    {
+        $contextFactory = $this->createMock(ContextFactory::class);
+        $mappingRepository = $this->createMock(EntityRepositoryInterface::class);
+
+        $contextFactory->expects(self::never())->method('create');
+        $mappingRepository->expects(self::never())->method('search');
+        $mappingRepository->expects(self::never())->method('searchIds');
+        $mappingRepository->expects(self::never())->method('aggregate');
+
+        $reflector = new EntityReflector($mappingRepository, $contextFactory);
+        $reflector->reflectEntities(new MappedDatasetEntityCollection(), new PortalNodeStorageKey(Uuid::randomHex()));
     }
 
     private function getMapping(

@@ -41,8 +41,6 @@ class EntityReflector extends EntityReflectorContract
         }
 
         $targetPortalNodeId = $targetPortalNodeKey->getUuid();
-        $context = $this->contextFactory->create();
-
         $index = [];
         $filters = [];
         $createMappings = [];
@@ -110,9 +108,15 @@ class EntityReflector extends EntityReflectorContract
             }
         }
 
+        if ($filters === []) {
+            return;
+        }
+
         $criteria = (new Criteria())->addFilter(
             new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
         );
+
+        $context = $this->contextFactory->create();
 
         /** @var MappingEntity $mapping */
         foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
