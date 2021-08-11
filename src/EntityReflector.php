@@ -133,7 +133,8 @@ class EntityReflector extends EntityReflectorContract
             new EqualsAnyFilter('mappingNodeId', $reflectedFilters),
             new NotFilter(NotFilter::CONNECTION_OR, [
                 new EqualsFilter('externalId', null),
-            ])
+            ]),
+            new EqualsFilter('deletedAt', null),
         );
 
         /** @var MappingEntity $mapping */
