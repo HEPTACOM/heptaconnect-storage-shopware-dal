@@ -115,7 +115,8 @@ class EntityMapper extends EntityMapperContract
 
             $criteria = (new Criteria())->addFilter(
                 new EqualsFilter('mappings.portalNodeId', $portalNodeId),
-                new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
+                new MultiFilter(MultiFilter::CONNECTION_OR, $filters),
+                new EqualsFilter('deletedAt', null)
             );
 
             $criteria->addAssociation('type');
@@ -124,7 +125,8 @@ class EntityMapper extends EntityMapperContract
                 new EqualsFilter('portalNodeId', $portalNodeId),
                 new NotFilter(MultiFilter::CONNECTION_OR, [
                     new EqualsFilter('externalId', null),
-                ])
+                ]),
+                new EqualsFilter('deletedAt', null)
             );
 
             /** @var MappingNodeEntity $mappingNode */
@@ -176,7 +178,8 @@ class EntityMapper extends EntityMapperContract
         if ($readMappings !== []) {
             $criteria = (new Criteria())->addFilter(
                 new EqualsFilter('portalNodeId', $portalNodeId),
-                new EqualsAnyFilter('mappingNodeId', $readMappings)
+                new EqualsAnyFilter('mappingNodeId', $readMappings),
+                new EqualsFilter('deletedAt', null)
             );
 
             $criteria->addAssociation('mappingNode.type');

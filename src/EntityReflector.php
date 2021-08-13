@@ -113,7 +113,8 @@ class EntityReflector extends EntityReflectorContract
         }
 
         $criteria = (new Criteria())->addFilter(
-            new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
+            new MultiFilter(MultiFilter::CONNECTION_OR, $filters),
+            new EqualsFilter('deletedAt', null)
         );
 
         $context = $this->contextFactory->create();
@@ -134,7 +135,7 @@ class EntityReflector extends EntityReflectorContract
             new NotFilter(NotFilter::CONNECTION_OR, [
                 new EqualsFilter('externalId', null),
             ]),
-            new EqualsFilter('deletedAt', null),
+            new EqualsFilter('deletedAt', null)
         );
 
         /** @var MappingEntity $mapping */
