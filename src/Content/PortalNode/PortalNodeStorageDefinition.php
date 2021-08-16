@@ -37,8 +37,10 @@ class PortalNodeStorageDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
+            // 4 times the size on the database to allow for utf8mb4 but with binary support
             (new StringField('key', 'key', 1024))->addFlags(new Required()),
             (new BlobField('value', 'value'))->addFlags(new Required()),
+            // 4 times the size on the database to allow for utf8mb4 but with binary support
             (new StringField('type', 'type', 255))->addFlags(new Required()),
             new DateTimeField('expired_at', 'expiredAt'),
 

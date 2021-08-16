@@ -37,7 +37,8 @@ class PortalNodeDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            (new StringField('class_name', 'className')),
+            // 4 times the size on the database to allow for utf8mb4 but with binary support
+            (new StringField('class_name', 'className', 255)),
             (new DateTimeField('deleted_at', 'deletedAt')),
 
             (new OneToManyAssociationField('mappings', MappingDefinition::class, 'portal_node_id', 'id')),

@@ -36,6 +36,7 @@ class MappingDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        // 4 times the size on the database to allow for utf8mb4 but with binary support
         $externalId = new StringField('external_id', 'externalId', 512);
 
         if (\class_exists(AllowEmptyString::class)) {
