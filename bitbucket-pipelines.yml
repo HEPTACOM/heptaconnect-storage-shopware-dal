@@ -7,6 +7,8 @@ definitions:
             variables:
                 MYSQL_DATABASE: 'pipelines'
                 MYSQL_ROOT_PASSWORD: 'let_me_in'
+                MYSQL_USER: 'test_user'
+                MYSQL_PASSWORD: 'let_me_in_as_well'
     caches:
         heptaconnect-ci: .build
     steps:
@@ -55,8 +57,9 @@ definitions:
                 <<: *default-step
                 name: Init database
                 script:
-                    - echo "set names 'utf8'; source vendor/shopware/core/schema.sql;" | mysql -uroot -plet_me_in -h127.0.0.1 pipelines_test
-                    - echo "set names 'utf8'; source vendor/shopware/core/schema.sql;" | mysql -uroot -plet_me_in -h127.0.0.1 pipelines_coverage
+                    - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
+                    - echo "CREATE DATABASE pipelines_test; USE pipelines_test; SET names 'utf8'; SOURCE vendor/shopware/core/schema.sql;" | mysql -utest_user -plet_me_in_as_well -h127.0.0.1
+                    - echo "CREATE DATABASE pipelines_covr; USE pipelines_covr; SET names 'utf8'; SOURCE vendor/shopware/core/schema.sql;" | mysql -utest_user -plet_me_in_as_well -h127.0.0.1
         -   step:  &test-unit
                 <<: *default-step
                 name: Unit test
@@ -68,7 +71,7 @@ definitions:
                 name: Unit test coverage
                 script:
                     - GLOBAL_REPOSITORIES_DIR=.build/private-composer composer-repository
-                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_coverage' make -e coverage
+                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' make -e coverage
         -   step: &test-code-style
                 <<: *default-step
                 name: Code style and static code analysis
