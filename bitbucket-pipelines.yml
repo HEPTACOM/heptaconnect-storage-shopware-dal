@@ -52,21 +52,19 @@ definitions:
                 name: Install
                 script:
                     - make vendor
-        -   step: &db-install
-                <<: *default-step
-                name: Init database
-                script:
-                    - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
-                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_test; CREATE DATABASE pipelines_covr;'
         -   step:  &test-unit
                 <<: *default-step
                 name: Unit test
                 script:
+                    - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
+                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_test;'
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_test' make -e test
         -   step: &test-coverage
                 <<: *default-step
                 name: Unit test coverage
                 script:
+                    - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
+                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_covr;'
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' make -e coverage
         -   step: &test-code-style
                 <<: *default-step
@@ -85,7 +83,6 @@ pipelines:
             -   step: *github-keyword-gate-step
             -   step: *github-mirror-branch
             -   step: *composer-install
-            -   step: *db-install
             -   parallel:
                     -   step: *test-unit
                     -   step: *test-coverage
@@ -98,7 +95,6 @@ pipelines:
 
     default:
         -   step: *composer-install
-        -   step: *db-install
         -   parallel:
                 -   step: *test-unit
                 -   step: *test-coverage
