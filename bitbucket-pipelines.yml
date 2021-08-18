@@ -58,8 +58,7 @@ definitions:
                 name: Init database
                 script:
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
-                    - echo "CREATE DATABASE pipelines_test; USE pipelines_test; SET names 'utf8'; SOURCE vendor/shopware/core/schema.sql;" | mysql -utest_user -plet_me_in_as_well -h127.0.0.1
-                    - echo "CREATE DATABASE pipelines_covr; USE pipelines_covr; SET names 'utf8'; SOURCE vendor/shopware/core/schema.sql;" | mysql -utest_user -plet_me_in_as_well -h127.0.0.1
+                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_test; CREATE DATABASE pipelines_covr;'
         -   step:  &test-unit
                 <<: *default-step
                 name: Unit test
