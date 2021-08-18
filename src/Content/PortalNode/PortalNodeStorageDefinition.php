@@ -7,6 +7,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\BlobField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -35,10 +36,16 @@ class PortalNodeStorageDefinition extends EntityDefinition
 
     protected function defineFields(): FieldCollection
     {
+        // 4 times the size on the database to allow for utf8mb4 but with binary support
+        $keyField = (new StringField('key', 'key', 1024))->addFlags(new Required());
+
+        if (\class_exists(AllowHtml::class)) {
+            $keyField->addFlags(new AllowHtml());
+        }
+
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            // 4 times the size on the database to allow for utf8mb4 but with binary support
-            (new StringField('key', 'key', 1024))->addFlags(new Required()),
+            $keyField,
             (new BlobField('value', 'value'))->addFlags(new Required()),
             // 4 times the size on the database to allow for utf8mb4 but with binary support
             (new StringField('type', 'type', 255))->addFlags(new Required()),
