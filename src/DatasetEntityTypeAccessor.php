@@ -48,7 +48,7 @@ class DatasetEntityTypeAccessor
                     continue;
                 }
 
-                $id = Uuid::uuid5(self::DATASET_ENTITY_TYPE_ID_NS, $nonMatchingKey)->getHex();
+                $id = (string) Uuid::uuid5(self::DATASET_ENTITY_TYPE_ID_NS, $nonMatchingKey)->getHex();
                 $inserts[] = [
                     'id' => $id,
                     'type' => $nonMatchingKey,

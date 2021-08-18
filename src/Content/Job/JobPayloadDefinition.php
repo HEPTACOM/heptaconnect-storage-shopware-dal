@@ -36,7 +36,9 @@ class JobPayloadDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
             (new BlobField('payload', 'payload'))->addFlags(new Required()),
+            // 4 times the size on the database to allow for utf8mb4 but with binary support
             (new StringField('format', 'format', 255))->addFlags(new Required()),
+            // 4 times the size on the database to allow for utf8mb4 but with binary support
             (new StringField('checksum', 'checksum', 255))->addFlags(new Required()),
             new OneToManyAssociationField('jobs', JobDefinition::class, 'payload_id'),
         ]);
