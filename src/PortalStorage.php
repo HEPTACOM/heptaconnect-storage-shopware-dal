@@ -42,7 +42,7 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
+        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
 
         $upsert = [
             'id' => $storageId,
@@ -68,7 +68,7 @@ class PortalStorage extends PortalStorageContract
         }
 
         $context = $this->contextFactory->create();
-        $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
+        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
         $searchResult = $this->portalNodeStorages->searchIds($criteria, $context);
@@ -145,7 +145,7 @@ class PortalStorage extends PortalStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $storageId = Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
+        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
         $searchResult = $this->portalNodeStorages->searchIds($criteria, $this->contextFactory->create());
@@ -155,7 +155,7 @@ class PortalStorage extends PortalStorageContract
 
     private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
     {
-        $storageId = Uuid::uuid5($portalNodeId, $key)->getHex();
+        $storageId = (string) Uuid::uuid5($portalNodeId, $key)->getHex();
         $criteria = new Criteria([$storageId]);
         $criteria->setLimit(1);
         $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
