@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowEmptyString;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
@@ -64,6 +65,9 @@ class JobDefinition extends EntityDefinition
 
             (new FkField('payload_id', 'payloadId', PortalNodeDefinition::class)),
             new ManyToOneAssociationField('payload', 'payload_id', JobPayloadDefinition::class),
-        ]);
+
+            (new DateTimeField('started_at', 'startedAt')),
+            (new DateTimeField('finished_at', 'finishedAt'))
+            ]);
     }
 }
