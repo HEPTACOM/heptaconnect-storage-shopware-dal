@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Sdk\Maker\Portal;
 use Heptacom\HeptaConnect\Storage\Base\Contract\PortalStorageContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -15,8 +16,10 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class PortalStorage extends PortalStorageContract
@@ -169,5 +172,84 @@ class PortalStorage extends PortalStorageContract
         $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
 
         return $entities->first();
+    }
+
+    public function clear(PortalNodeKeyInterface $portalNodeKey)
+    {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+        $context = $this->contextFactory->create();
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
+        );
+        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
+        while (($removeIds = $iterator->fetchIds()) !== null) {
+            $this->portalNodeStorages->delete(array_map(
+                static fn(string $removeId): array => ['id' => $removeId],
+                $removeIds
+            ), $context);
+            $criteria->setOffset(0);
+        }
+    }
+
+    /**
+     * @param PortalNodeKeyInterface $portalNodeKey
+     * @param array $keys
+     * @return array
+     * @throws UnsupportedStorageKeyException
+     */
+    public function getMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys) {
+
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+
+        $context = $this->contextFactory->create();
+        $criteria = new Criteria();
+        $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
+                new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
+                new EqualsAnyFilter('key', $keys)
+            ])
+        );
+        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
+        $values = array();
+        /**
+         * @var PortalNodeStorageEntity $result
+         */
+        while (($entities = $iterator->fetch()) !== null) {
+            foreach ($entities->getEntities() as $entity) {
+                $values[$entity->getKey()] = $entity->getValue();
+            }
+        }
+        return $values;
+    }
+
+    /**
+     * @param PortalNodeKeyInterface $portalNodeKey
+     * @param array $keys
+     * @throws UnsupportedStorageKeyException
+     */
+    public function deleteMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys) {
+        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+        }
+        $context = $this->contextFactory->create();
+        $criteria = new Criteria();
+        $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
+                new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
+                new EqualsAnyFilter('key', $keys)
+            ])
+        );
+
+        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
+        while (($removeIds = $iterator->fetchIds()) !== null) {
+            $this->portalNodeStorages->delete(array_map(
+                static fn(string $removeId): array => ['id' => $removeId],
+                $removeIds
+            ), $context);
+            $criteria->setOffset(0);
+        }
     }
 }
