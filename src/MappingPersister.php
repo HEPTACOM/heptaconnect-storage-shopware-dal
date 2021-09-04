@@ -65,7 +65,7 @@ class MappingPersister extends MappingPersisterContract
                 continue;
             }
 
-            $create[] = [
+            $create[$mappingNodeId.$portalNodeId.$externalId] ??= [
                 'id' => Uuid::randomHex(),
                 'mappingNodeId' => $mappingNodeId,
                 'portalNodeId' => $portalNodeId,
@@ -73,7 +73,7 @@ class MappingPersister extends MappingPersisterContract
             ];
         }
 
-        return $create;
+        return \array_values($create);
     }
 
     protected function getUpdatePayload(MappingPersistPayload $payload, string $portalNodeId, Context $context): array
