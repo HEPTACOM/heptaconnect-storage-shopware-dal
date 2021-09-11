@@ -166,8 +166,8 @@ class PortalStorage extends PortalStorageContract
         );
         $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
         while (($removeIds = $iterator->fetchIds()) !== null) {
-            $this->portalNodeStorages->delete(array_map(
-                static fn(string $removeId): array => ['id' => $removeId],
+            $this->portalNodeStorages->delete(\array_map(
+                static fn (string $removeId): array => ['id' => $removeId],
                 $removeIds
             ), $context);
             $criteria->setOffset(0);
@@ -184,12 +184,12 @@ class PortalStorage extends PortalStorageContract
         $criteria = new Criteria();
         $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
                 new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-                new EqualsAnyFilter('key', $keys)
+                new EqualsAnyFilter('key', $keys),
             ])
         );
         $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
         $values = [];
-        /**
+        /*
          * @var PortalNodeStorageEntity $result
          */
         while (($entities = $iterator->fetch()) !== null) {
@@ -210,14 +210,14 @@ class PortalStorage extends PortalStorageContract
         $criteria = new Criteria();
         $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
                 new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-                new EqualsAnyFilter('key', $keys)
+                new EqualsAnyFilter('key', $keys),
             ])
         );
 
         $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
         while (($removeIds = $iterator->fetchIds()) !== null) {
-            $this->portalNodeStorages->delete(array_map(
-                static fn(string $removeId): array => ['id' => $removeId],
+            $this->portalNodeStorages->delete(\array_map(
+                static fn (string $removeId): array => ['id' => $removeId],
                 $removeIds
             ), $context);
             $criteria->setOffset(0);
