@@ -309,6 +309,7 @@ class MappingPersister extends MappingPersisterContract
     private function getNewMappings(array $create, array $update, array $typeIds, string $portalNodeId): array
     {
         $newMappings = [];
+        $newExternalIds = [];
 
         foreach ([...$create, ...$update] as $operation) {
             $mappingNodeId = $operation['mappingNodeId'];
@@ -319,7 +320,14 @@ class MappingPersister extends MappingPersisterContract
                 !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
                 throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
             }
+
+            if (isset($newExternalIds[$typeId][$mappingNodeId]) &&
+                !isset($newExternalIds[$typeId][$mappingNodeId][$externalId])) {
+                throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            }
+
             $newMappings[$typeId][$externalId][$mappingNodeId] = true;
+            $newExternalIds[$typeId][$mappingNodeId][$externalId] = true;
         }
 
         return $newMappings;
