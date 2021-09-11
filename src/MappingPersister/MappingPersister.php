@@ -267,7 +267,7 @@ class MappingPersister extends MappingPersisterContract
                 continue;
             }
 
-            throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
         }
     }
 
@@ -320,12 +320,12 @@ class MappingPersister extends MappingPersisterContract
 
             if (isset($newMappings[$typeId][$externalId]) &&
                 !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
-                throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+                throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
             }
 
             if (isset($newExternalIds[$typeId][$mappingNodeId]) &&
                 !isset($newExternalIds[$typeId][$mappingNodeId][$externalId])) {
-                throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+                throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
             }
 
             $newMappings[$typeId][$externalId][$mappingNodeId] = true;
