@@ -243,4 +243,72 @@ class MappingPersisterTest extends TestCase
         ));
         self::assertCount(0, $targetMappings);
     }
+
+    public function testDeletingMappingNode()
+    {
+        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+        $externalIdTarget = '686a849649134e1dbebc05830981bc86';
+
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+
+        $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKey, $externalIdTarget);
+
+        self::assertCount(1, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeySource)
+        )));
+        self::assertCount(1, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        )));
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->delete($mappingNodeKey);
+
+        $this->mappingPersister->persist($payload);
+
+        self::assertCount(1, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeySource)
+        )));
+        self::assertCount(0, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        )));
+
+        $payload = new MappingPersistPayload($portalNodeKeySource);
+        $payload->delete($mappingNodeKey);
+
+        $this->mappingPersister->persist($payload);
+
+        self::assertCount(0, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeySource)
+        )));
+        self::assertCount(0, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        )));
+    }
 }
