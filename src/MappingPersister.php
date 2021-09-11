@@ -3,26 +3,33 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Contract\MappingPersisterContract;
+use Heptacom\HeptaConnect\Storage\Base\Exception\MappingConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersistPayload;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class MappingPersister extends MappingPersisterContract
 {
     private EntityRepositoryInterface $mappingRepository;
 
-    public function __construct(EntityRepositoryInterface $mappingRepository)
-    {
+    private Connection $connection;
+
+    public function __construct(
+        EntityRepositoryInterface $mappingRepository,
+        Connection $connection
+    ) {
         $this->mappingRepository = $mappingRepository;
+        $this->connection = $connection;
     }
 
     public function persist(MappingPersistPayload $payload): void
@@ -39,6 +46,8 @@ class MappingPersister extends MappingPersisterContract
         $create = $this->getCreatePayload($payload, $portalNodeId);
         $update = $this->getUpdatePayload($payload, $portalNodeId, $context);
         $delete = $this->getDeletePayload($payload, $portalNodeId, $context);
+
+        $this->validateMappingConflicts($portalNodeId, $create, $update, $delete);
 
         $this->mappingRepository->create($create, $context);
         $this->mappingRepository->update([...$update, ...$delete], $context);
@@ -66,7 +75,7 @@ class MappingPersister extends MappingPersisterContract
             }
 
             $create[$mappingNodeId.$portalNodeId.$externalId] ??= [
-                'id' => Uuid::randomHex(),
+                'id' => (string) Uuid::uuid4()->getHex(),
                 'mappingNodeId' => $mappingNodeId,
                 'portalNodeId' => $portalNodeId,
                 'externalId' => $externalId,
@@ -120,10 +129,17 @@ class MappingPersister extends MappingPersisterContract
                 continue;
             }
 
+            unset($mappingNodes[$mapping->getMappingNodeId()]);
+
             $update[] = [
                 'id' => $mapping->getId(),
+                'mappingNodeId' => $mapping->getMappingNodeId(),
                 'externalId' => $externalId,
             ];
+        }
+
+        if ($mappingNodes !== []) {
+            throw new \Exception('Unable to update mapping'); // TODO: enrich message
         }
 
         return $update;
@@ -144,24 +160,191 @@ class MappingPersister extends MappingPersisterContract
                 continue;
             }
 
-            $mappingNodeIds[] = $deleteMapping->getUuid();
+            $mappingNodeIds[$deleteMapping->getUuid()] = true;
         }
 
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('portalNodeId', $portalNodeId))
-            ->addFilter(new EqualsAnyFilter('mappingNodeId', $mappingNodeIds))
+            ->addFilter(new EqualsAnyFilter('mappingNodeId', \array_keys($mappingNodeIds)))
             ->addFilter(new EqualsFilter('deletedAt', null))
         ;
 
-        $mappingIds = $this->mappingRepository->searchIds($criteria, $context)->getIds();
+        $mappings = $this->mappingRepository->search($criteria, $context);
 
-        foreach ($mappingIds as $mappingId) {
+        /** @var MappingEntity $mapping */
+        foreach ($mappings->getIterator() as $mapping) {
+            unset($mappingNodeIds[$mapping->getMappingNodeId()]);
+
             $delete[] = [
-                'id' => $mappingId,
+                'id' => $mapping->getId(),
+                'mappingNodeId' => $mapping->getMappingNodeId(),
                 'deletedAt' => \date_create(),
             ];
         }
 
+        if ($mappingNodeIds !== []) {
+            throw new \Exception('Unable to delete mapping'); // TODO: enrich message
+        }
+
         return $delete;
+    }
+
+    protected function validateMappingConflicts(
+        string $portalNodeId,
+        array $create,
+        array $update,
+        array $delete
+    ): void {
+        $typeIds = $this->fetchTypes(\array_column([...$create, ...$update, ...$delete], 'mappingNodeId'));
+
+        $newMappings = $this->getNewMappings($create, $update, $typeIds, $portalNodeId);
+        $changedMappings = $this->getChangedMappings($update);
+        $deletedMappings = $this->getDeletedMappings($delete);
+
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $expr = $queryBuilder->expr();
+
+        $typeConditions = [];
+
+        foreach ($newMappings as $typeId => $externalIds) {
+            $typeParameterKey = 'typeId_'.Uuid::uuid4()->getHex();
+            $externalIdParameterKey = 'externalId_'.Uuid::uuid4()->getHex();
+
+            $typeConditions[] = $expr->and(
+                $expr->eq('mappingNode.type_id', ':'.$typeParameterKey),
+                $expr->in('mapping.external_id', ':'.$externalIdParameterKey)
+            );
+
+            $queryBuilder->setParameter($typeParameterKey, \hex2bin($typeId));
+            $queryBuilder->setParameter(
+                $externalIdParameterKey,
+                \array_keys($externalIds),
+                Connection::PARAM_STR_ARRAY
+            );
+        }
+
+        $queryBuilder
+            ->select([
+                'mapping.mapping_node_id AS mappingNodeId',
+                'mapping.external_id AS externalId',
+            ])
+            ->from('heptaconnect_mapping', 'mapping')
+            ->innerJoin(
+                'mapping',
+                'heptaconnect_mapping_node',
+                'mappingNode',
+                $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
+            )
+            ->where($expr->and(
+                $expr->isNull('mapping.deleted_at'),
+                $expr->isNull('mappingNode.deleted_at'),
+                $expr->eq('mapping.portal_node_id', ':portalNodeId'),
+                $expr->or(...$typeConditions)
+            ))
+            ->setParameter('portalNodeId', \hex2bin($portalNodeId))
+        ;
+
+        foreach ($queryBuilder->execute()->fetchAll() as $row) {
+            $mappingNodeId = \bin2hex($row['mappingNodeId']);
+            $externalId = $row['externalId'];
+
+            if (isset($changedMappings[$mappingNodeId]) &&
+                !isset($changedMappings[$mappingNodeId][$externalId])) {
+                // conflict will be resolved in this changeset
+
+                continue;
+            }
+
+            if (isset($deletedMappings[$mappingNodeId])) {
+                // conflict will be resolved in this changeset
+
+                continue;
+            }
+
+            throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+        }
+    }
+
+    private function fetchTypes(array $mappingNodeIds): array
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $expr = $queryBuilder->expr();
+
+        $queryBuilder
+            ->select([
+                'mappingNode.id AS mappingNodeId',
+                'type.id AS typeId',
+            ])
+            ->from('heptaconnect_dataset_entity_type', 'type')
+            ->innerJoin(
+                'type',
+                'heptaconnect_mapping_node',
+                'mappingNode',
+                $expr->and(
+                    $expr->eq('type.id', 'mappingNode.type_id'),
+                    $expr->isNull('mappingNode.deleted_at'),
+                )
+            )
+            ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
+            ->setParameter(
+                'mappingNodeIds',
+                \array_map('hex2bin', $mappingNodeIds),
+                Connection::PARAM_STR_ARRAY
+            )
+        ;
+
+        $types = [];
+
+        foreach ($queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            $types[\bin2hex($row['mappingNodeId'])] = \bin2hex($row['typeId']);
+        }
+
+        return $types;
+    }
+
+    private function getNewMappings(array $create, array $update, array $typeIds, string $portalNodeId): array
+    {
+        $newMappings = [];
+
+        foreach ([...$create, ...$update] as $operation) {
+            $mappingNodeId = $operation['mappingNodeId'];
+            $externalId = $operation['externalId'];
+            $typeId = $typeIds[$mappingNodeId];
+
+            if (isset($newMappings[$typeId][$externalId]) &&
+                !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
+                throw new MappingConflictException(new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            }
+            $newMappings[$typeId][$externalId][$mappingNodeId] = true;
+        }
+
+        return $newMappings;
+    }
+
+    private function getChangedMappings(array $update): array
+    {
+        $changedMappings = [];
+
+        foreach ($update as $operation) {
+            $mappingNodeId = $operation['mappingNodeId'];
+            $externalId = $operation['externalId'];
+
+            $changedMappings[$mappingNodeId][$externalId] = true;
+        }
+
+        return $changedMappings;
+    }
+
+    private function getDeletedMappings(array $delete): array
+    {
+        $deletedMappings = [];
+
+        foreach ($delete as $operation) {
+            $mappingNodeId = $operation['mappingNodeId'];
+
+            $deletedMappings[$mappingNodeId] = true;
+        }
+
+        return $deletedMappings;
     }
 }
