@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Storage\Base\Exception\MappingConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersister\Contract\MappingPersisterContract;
+use Heptacom\HeptaConnect\Storage\Base\MappingPersister\Exception\MappingConflictException;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersistPayload;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
