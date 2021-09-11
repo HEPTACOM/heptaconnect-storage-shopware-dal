@@ -311,4 +311,50 @@ class MappingPersisterTest extends TestCase
                 ->equals($portalNodeKeyTarget)
         )));
     }
+
+    public function testDeletingMappingNodesTwice()
+    {
+        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+
+        $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+
+        self::assertCount(1, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeySource)
+        )));
+
+        $payload = new MappingPersistPayload($portalNodeKeySource);
+        $payload->delete($mappingNodeKey);
+
+        $this->mappingPersister->persist($payload);
+
+        self::assertCount(0, \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeySource)
+        )));
+
+        $payload = new MappingPersistPayload($portalNodeKeySource);
+        $payload->delete($mappingNodeKey);
+
+        $failed = false;
+
+        try {
+            $this->mappingPersister->persist($payload);
+        } catch (\Throwable $t) {
+            $failed = true;
+        }
+
+        if (!$failed) {
+            self::fail('mappingPersister->persist should have failed');
+        }
+    }
 }
