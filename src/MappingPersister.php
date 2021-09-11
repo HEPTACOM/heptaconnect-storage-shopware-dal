@@ -223,6 +223,10 @@ class MappingPersister extends MappingPersisterContract
             );
         }
 
+        if ($typeConditions === []) {
+            return;
+        }
+
         $queryBuilder
             ->select([
                 'mapping.mapping_node_id AS mappingNodeId',
