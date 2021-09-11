@@ -205,4 +205,42 @@ class MappingPersisterTest extends TestCase
         ));
         self::assertCount(0, $targetMappings);
     }
+
+    public function testCreatingAndUpdatingDifferentExternalIdToTwoSameMappingNodes()
+    {
+        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+        $externalId1Target = '686a849649134e1dbebc05830981bc86';
+        $externalId2Target = 'c7791ca6c13e42b58d1f09368b34647e';
+
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+
+        $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->create($mappingNodeKey, $externalId1Target);
+        $payload->update($mappingNodeKey, $externalId2Target);
+
+        $failed = false;
+
+        try {
+            $this->mappingPersister->persist($payload);
+        } catch (\Throwable $t) {
+            $failed = true;
+        }
+
+        if (!$failed) {
+            self::fail('mappingPersister->persist should have failed');
+        }
+
+        $targetMappings = \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        ));
+        self::assertCount(0, $targetMappings);
+    }
 }
