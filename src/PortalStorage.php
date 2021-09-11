@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Sdk\Maker\Portal;
 use Heptacom\HeptaConnect\Storage\Base\Contract\PortalStorageContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -19,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class PortalStorage extends PortalStorageContract
@@ -156,25 +154,7 @@ class PortalStorage extends PortalStorageContract
         return $searchResult->getTotal() > 0;
     }
 
-    private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
-    {
-        $storageId = (string) Uuid::uuid5($portalNodeId, $key)->getHex();
-        $criteria = new Criteria([$storageId]);
-        $criteria->setLimit(1);
-        $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
-            new EqualsFilter('expiredAt', null),
-            new RangeFilter('expiredAt', [
-                RangeFilter::GT => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            ]),
-        ]));
-
-        /** @var PortalNodeStorageCollection $entities */
-        $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
-
-        return $entities->first();
-    }
-
-    public function clear(PortalNodeKeyInterface $portalNodeKey)
+    public function clear(PortalNodeKeyInterface $portalNodeKey): void
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
@@ -194,14 +174,8 @@ class PortalStorage extends PortalStorageContract
         }
     }
 
-    /**
-     * @param PortalNodeKeyInterface $portalNodeKey
-     * @param array $keys
-     * @return array
-     * @throws UnsupportedStorageKeyException
-     */
-    public function getMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys) {
-
+    public function getMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys): array
+    {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
@@ -214,7 +188,7 @@ class PortalStorage extends PortalStorageContract
             ])
         );
         $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
-        $values = array();
+        $values = [];
         /**
          * @var PortalNodeStorageEntity $result
          */
@@ -223,15 +197,12 @@ class PortalStorage extends PortalStorageContract
                 $values[$entity->getKey()] = $entity->getValue();
             }
         }
+
         return $values;
     }
 
-    /**
-     * @param PortalNodeKeyInterface $portalNodeKey
-     * @param array $keys
-     * @throws UnsupportedStorageKeyException
-     */
-    public function deleteMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys) {
+    public function deleteMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys): void
+    {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
@@ -251,5 +222,23 @@ class PortalStorage extends PortalStorageContract
             ), $context);
             $criteria->setOffset(0);
         }
+    }
+
+    private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
+    {
+        $storageId = (string) Uuid::uuid5($portalNodeId, $key)->getHex();
+        $criteria = new Criteria([$storageId]);
+        $criteria->setLimit(1);
+        $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
+            new EqualsFilter('expiredAt', null),
+            new RangeFilter('expiredAt', [
+                RangeFilter::GT => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            ]),
+        ]));
+
+        /** @var PortalNodeStorageCollection $entities */
+        $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
+
+        return $entities->first();
     }
 }
