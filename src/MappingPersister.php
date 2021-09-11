@@ -163,6 +163,8 @@ class MappingPersister extends MappingPersisterContract
             $mappingNodeIds[$deleteMapping->getUuid()] = true;
         }
 
+        $deletedAt = \date_create();
+
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('portalNodeId', $portalNodeId))
             ->addFilter(new EqualsAnyFilter('mappingNodeId', \array_keys($mappingNodeIds)))
@@ -178,7 +180,7 @@ class MappingPersister extends MappingPersisterContract
             $delete[] = [
                 'id' => $mapping->getId(),
                 'mappingNodeId' => $mapping->getMappingNodeId(),
-                'deletedAt' => \date_create(),
+                'deletedAt' => $deletedAt,
             ];
         }
 
