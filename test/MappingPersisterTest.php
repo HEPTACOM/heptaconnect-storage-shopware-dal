@@ -119,4 +119,52 @@ class MappingPersisterTest extends TestCase
         self::assertSame($externalIdTarget, $targetMapping->getExternalId());
         self::assertSame(Simple::class, $targetMapping->getDatasetEntityClassName());
     }
+
+    public function testPersistingSameExternalIdToTwoDifferentMappingNodes()
+    {
+        $externalId1Source = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+        $externalId2Source = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+        $externalIdTarget = 'c7791ca6c13e42b58d1f09368b34647e';
+
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+
+        $mappingNodeKey1 = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $mappingNodeKey2 = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey1, $externalId1Source);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey2, $externalId2Source);
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->create($mappingNodeKey1, $externalIdTarget);
+        $payload->create($mappingNodeKey2, $externalIdTarget);
+
+        $failed = false;
+
+        try {
+            $this->mappingPersister->persist($payload);
+        } catch (\Throwable $t) {
+            $failed = true;
+        }
+
+        if (!$failed) {
+            self::fail('mappingPersister->persist should have failed');
+        }
+
+        $target1Mappings = \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey1),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        ));
+        self::assertCount(0, $target1Mappings);
+        $target2Mappings = \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKey2),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        ));
+        self::assertCount(0, $target2Mappings);
+    }
 }
