@@ -4,7 +4,7 @@
 ## Description
 
 This is a HEPTAconnect package that offers an implementation for the storage within shopware 6.
-Read more under [Overview](../heptaconnect-docs).
+Read more in the [documentation](https://heptaconnect.io/).
 
 
 ## System requirements

@@ -51,11 +51,13 @@ definitions:
                 <<: *default-step
                 name: Install
                 script:
+                    - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - make vendor
         -   step:  &test-unit
                 <<: *default-step
                 name: Unit test
                 script:
+                    - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
                     - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_test;'
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_test' make -e test
@@ -63,6 +65,7 @@ definitions:
                 <<: *default-step
                 name: Unit test coverage
                 script:
+                    - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
                     - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_covr;'
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' make -e coverage
@@ -70,11 +73,13 @@ definitions:
                 <<: *default-step
                 name: Code style and static code analysis
                 script:
+                    - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - make cs
         -   step: &test-infection
                 <<: *default-step
                 name: Unit test infection detection
                 script:
+                    - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - make infection
 
 pipelines:
