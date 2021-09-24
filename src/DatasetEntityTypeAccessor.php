@@ -24,14 +24,14 @@ class DatasetEntityTypeAccessor
     }
 
     /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $datasetEntityClassNames
+     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $entityTypes
      * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
      */
-    public function getIdsForTypes(array $datasetEntityClassNames, Context $context): array
+    public function getIdsForTypes(array $entityTypes, Context $context): array
     {
-        $datasetEntityClassNames = \array_unique($datasetEntityClassNames);
+        $entityTypes = \array_unique($entityTypes);
         $knownKeys = \array_keys($this->datasetEntityTypeIds);
-        $nonMatchingKeys = \array_diff($datasetEntityClassNames, $knownKeys);
+        $nonMatchingKeys = \array_diff($entityTypes, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
             $criteria = new Criteria();
@@ -61,6 +61,6 @@ class DatasetEntityTypeAccessor
             }
         }
 
-        return \array_intersect_key($this->datasetEntityTypeIds, \array_fill_keys($datasetEntityClassNames, true));
+        return \array_intersect_key($this->datasetEntityTypeIds, \array_fill_keys($entityTypes, true));
     }
 }

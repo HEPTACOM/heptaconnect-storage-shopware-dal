@@ -464,7 +464,7 @@ class EntityReflectorTest extends TestCase
                 return $this->mappingNodeKey;
             }
 
-            public function getDatasetEntityClassName(): string
+            public function getEntityType(): string
             {
                 return $this->type;
             }

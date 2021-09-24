@@ -137,7 +137,7 @@ class MappingRepository extends MappingRepositoryContract
 
     public function listUnsavedExternalIds(
         PortalNodeKeyInterface $portalNodeKey,
-        string $datasetEntityClassName,
+        string $entityType,
         array $externalIdsToCheck
     ): array {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
@@ -146,7 +146,7 @@ class MappingRepository extends MappingRepositoryContract
 
         $criteria = new Criteria();
         $criteria->addFilter(
-            new EqualsFilter('mappingNode.type.type', $datasetEntityClassName),
+            new EqualsFilter('mappingNode.type.type', $entityType),
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
             new EqualsAnyFilter('externalId', $externalIdsToCheck),
         );

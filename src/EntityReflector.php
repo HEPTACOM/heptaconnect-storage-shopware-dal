@@ -146,7 +146,7 @@ class EntityReflector extends EntityReflectorContract
 
                 if (!$reflectionMapping instanceof PrimaryKeySharingMappingStruct) {
                     $reflectionMapping = new PrimaryKeySharingMappingStruct(
-                        $mappedEntity->getMapping()->getDatasetEntityClassName(),
+                        $mappedEntity->getMapping()->getEntityType(),
                         $mappedEntity->getMapping()->getExternalId(),
                         $mappedEntity->getMapping()->getPortalNodeKey(),
                         $mappedEntity->getMapping()->getMappingNodeKey()
@@ -184,7 +184,7 @@ class EntityReflector extends EntityReflectorContract
 
                 if (!(($reflectionMappingCache[$cacheKey] ?? null) instanceof PrimaryKeySharingMappingStruct)) {
                     $reflectionMappingCache[$cacheKey] = new PrimaryKeySharingMappingStruct(
-                        $mappedEntity->getMapping()->getDatasetEntityClassName(),
+                        $mappedEntity->getMapping()->getEntityType(),
                         $mappedEntity->getMapping()->getExternalId(),
                         $mappedEntity->getMapping()->getPortalNodeKey(),
                         $mappedEntity->getMapping()->getMappingNodeKey(),

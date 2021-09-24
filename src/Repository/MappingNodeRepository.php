@@ -68,7 +68,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
     }
 
     public function listByTypeAndPortalNodeAndExternalId(
-        string $datasetEntityClassName,
+        string $entityType,
         PortalNodeKeyInterface $portalNodeKey,
         string $externalId
     ): iterable {
@@ -80,7 +80,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             ->setLimit(1)
             ->addFilter(
                 new EqualsFilter('deletedAt', null),
-                new EqualsFilter('type.type', $datasetEntityClassName),
+                new EqualsFilter('type.type', $entityType),
                 new EqualsFilter('mappings.deletedAt', null),
                 new EqualsFilter('mappings.externalId', $externalId),
                 new EqualsFilter('mappings.portalNode.deletedAt', null),
@@ -98,7 +98,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
     }
 
     public function listByTypeAndPortalNodeAndExternalIds(
-        string $datasetEntityClassName,
+        string $entityType,
         PortalNodeKeyInterface $portalNodeKey,
         array $externalIds
     ): iterable {
@@ -114,7 +114,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             ->setLimit(50)
             ->addFilter(
                 new EqualsFilter('mappingNode.deletedAt', null),
-                new EqualsFilter('mappingNode.type.type', $datasetEntityClassName),
+                new EqualsFilter('mappingNode.type.type', $entityType),
                 new EqualsFilter('deletedAt', null),
                 new EqualsAnyFilter('externalId', $externalIds),
                 new EqualsFilter('portalNode.deletedAt', null),
@@ -132,7 +132,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
     }
 
     public function create(
-        string $datasetEntityClassName,
+        string $entityType,
         PortalNodeKeyInterface $portalNodeKey
     ): MappingNodeKeyInterface {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
@@ -146,19 +146,19 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context);
+        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType], $context);
 
         $this->mappingNodes->create([[
             'id' => $mappingId->getUuid(),
             'originPortalNodeId' => $portalNodeKey->getUuid(),
-            'typeId' => $typeIds[$datasetEntityClassName],
+            'typeId' => $typeIds[$entityType],
         ]], $context);
 
         return $mappingId;
     }
 
     public function createList(
-        string $datasetEntityClassName,
+        string $entityType,
         PortalNodeKeyInterface $portalNodeKey,
         int $count
     ): MappingNodeKeyCollection {
@@ -173,7 +173,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$datasetEntityClassName], $context);
+        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType], $context);
         $payload = [];
 
         /** @var MappingNodeKeyInterface $key */
@@ -185,7 +185,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             $payload[] = [
                 'id' => $key->getUuid(),
                 'originPortalNodeId' => $portalNodeKey->getUuid(),
-                'typeId' => $typeIds[$datasetEntityClassName],
+                'typeId' => $typeIds[$entityType],
             ];
         }
 
