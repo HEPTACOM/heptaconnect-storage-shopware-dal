@@ -17,6 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
@@ -103,8 +104,8 @@ class MappingPersisterTest extends TestCase
 
     public function testPersistingSingleEntityMapping()
     {
-        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
-        $externalIdTarget = 'c7791ca6c13e42b58d1f09368b34647e';
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
         $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
@@ -138,9 +139,9 @@ class MappingPersisterTest extends TestCase
 
     public function testPersistingSameExternalIdToTwoDifferentMappingNodes()
     {
-        $externalId1Source = 'a1f2b3b52f234bfab4fb570ff2f9d174';
-        $externalId2Source = 'ffb41aec6bcb4ca8a5a9e8a2631d632a';
-        $externalIdTarget = 'c7791ca6c13e42b58d1f09368b34647e';
+        $externalId1Source = (string) Uuid::uuid4()->getHex();
+        $externalId2Source = (string) Uuid::uuid4()->getHex();
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
         $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
@@ -186,9 +187,9 @@ class MappingPersisterTest extends TestCase
 
     public function testCreatingDifferentExternalIdToTwoSameMappingNodes()
     {
-        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
-        $externalId1Target = '686a849649134e1dbebc05830981bc86';
-        $externalId2Target = 'c7791ca6c13e42b58d1f09368b34647e';
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalId1Target = (string) Uuid::uuid4()->getHex();
+        $externalId2Target = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
         $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
@@ -224,9 +225,9 @@ class MappingPersisterTest extends TestCase
 
     public function testCreatingAndUpdatingDifferentExternalIdToTwoSameMappingNodes()
     {
-        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
-        $externalId1Target = '686a849649134e1dbebc05830981bc86';
-        $externalId2Target = 'c7791ca6c13e42b58d1f09368b34647e';
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalId1Target = (string) Uuid::uuid4()->getHex();
+        $externalId2Target = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
         $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
@@ -262,8 +263,8 @@ class MappingPersisterTest extends TestCase
 
     public function testDeletingMappingNode()
     {
-        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
-        $externalIdTarget = '686a849649134e1dbebc05830981bc86';
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
         $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
@@ -330,7 +331,7 @@ class MappingPersisterTest extends TestCase
 
     public function testDeletingMappingNodesTwice()
     {
-        $externalIdSource = 'a1f2b3b52f234bfab4fb570ff2f9d174';
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
 
         $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
 
