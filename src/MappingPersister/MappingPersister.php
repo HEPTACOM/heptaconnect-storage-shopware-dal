@@ -49,8 +49,10 @@ class MappingPersister extends MappingPersisterContract
 
         $this->validateMappingConflicts($portalNodeId, $create, $update, $delete);
 
-        $this->mappingRepository->create($create, $context);
-        $this->mappingRepository->update([...$update, ...$delete], $context);
+        $this->connection->transactional(function () use ($create, $update, $delete, $context) {
+            $this->mappingRepository->create($create, $context);
+            $this->mappingRepository->update([...$update, ...$delete], $context);
+        });
     }
 
     protected function getCreatePayload(MappingPersistPayload $payload, string $portalNodeId): array
