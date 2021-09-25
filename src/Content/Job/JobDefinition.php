@@ -67,7 +67,7 @@ class JobDefinition extends EntityDefinition
             new ManyToOneAssociationField('payload', 'payload_id', JobPayloadDefinition::class),
 
             (new DateTimeField('started_at', 'startedAt')),
-            (new DateTimeField('finished_at', 'finishedAt'))
-            ]);
+            (new DateTimeField('finished_at', 'finishedAt')),
+        ]);
     }
 }

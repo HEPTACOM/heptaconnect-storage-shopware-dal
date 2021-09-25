@@ -186,6 +186,50 @@ class JobRepository extends JobRepositoryContract
         );
     }
 
+    public function start(JobKeyInterface $jobKey, ?\DateTime $time): void
+    {
+        if (!$jobKey instanceof JobStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($jobKey));
+        }
+        $timeData[] = [
+            'id' => $jobKey->getUuid(),
+            'startedAt' => isset($time) ? $time : \date_create(),
+        ];
+        $this->jobs->update($timeData, $this->contextFactory->create());
+    }
+
+    public function finish(JobKeyInterface $jobKey, ?\DateTime $time): void
+    {
+        if (!$jobKey instanceof JobStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($jobKey));
+        }
+        $timeData[] = [
+            'id' => $jobKey->getUuid(),
+            'finishedAt' => isset($time) ? $time : \date_create(),
+        ];
+        $this->jobs->update($timeData, $this->contextFactory->create());
+    }
+
+    public function cleanup(): void
+    {
+        $context = $this->contextFactory->create();
+
+        $criteria = (new Criteria())->addFilter(
+            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('finishedAt', null)])
+        );
+
+        $iterator = new RepositoryIterator($this->jobs, $context, $criteria);
+
+        while (($finishedIds = $iterator->fetchIds()) !== null) {
+            $this->jobs->delete(\array_map(
+                static fn (string $finishedId): array => ['id' => $finishedId],
+                $finishedIds
+            ), $context);
+
+            $criteria->setOffset(0);
+        }
+    }
+
     /**
      * @psalm-param array<array-key, string> $types
      * @psalm-return array<string, string>
@@ -233,44 +277,5 @@ class JobRepository extends JobRepositoryContract
         }
 
         return $result;
-    }
-
-    public function start(JobKeyInterface $jobKey, ?\DateTime $time): void
-    {
-        if (!$jobKey instanceof JobStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($jobKey));
-        }
-        $timeData[] = [
-            'id' => $jobKey->getUuid(),
-            'startedAt' => isset($time) ? $time : \date_create()
-        ];
-        $this->jobs->update($timeData, $this->contextFactory->create());
-    }
-
-    public function finish(JobKeyInterface $jobKey, ?\DateTime $time): void
-    {
-        if (!$jobKey instanceof JobStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($jobKey));
-        }
-        $timeData[] = [
-            'id' => $jobKey->getUuid(),
-            'finishedAt' => isset($time) ? $time : \date_create()
-        ];
-        $this->jobs->update($timeData, $this->contextFactory->create());
-    }
-
-    public function cleanup(): void {
-        $context = $this->contextFactory->create();
-        $criteria = (new Criteria())->addFilter(
-            new NotFilter(NotFilter::CONNECTION_AND, [new EqualsFilter('finishedAt', null)])
-        );
-        $iterator = new RepositoryIterator($this->jobs, $context, $criteria);
-        while (($finishedIds = $iterator->fetchIds()) !== null) {
-            $this->jobs->delete(array_map(
-                static fn(string $finishedId): array => ['id' => $finishedId],
-                $finishedIds
-            ), $context);
-            $criteria->setOffset(0);
-        }
     }
 }

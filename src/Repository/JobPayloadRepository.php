@@ -186,8 +186,8 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         );
         $iterator = new RepositoryIterator($this->jobPayloads, $context, $criteria);
         while (($orphanedJobIds = $iterator->fetchIds()) !== null) {
-            $this->jobPayloads->delete(array_map(
-                static fn(string $orphanedJobId): array => ['id' => $orphanedJobId],
+            $this->jobPayloads->delete(\array_map(
+                static fn (string $orphanedJobId): array => ['id' => $orphanedJobId],
                 $orphanedJobIds
             ), $context);
             $criteria->setOffset(0);
