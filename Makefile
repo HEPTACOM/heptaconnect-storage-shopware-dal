@@ -21,6 +21,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f composer.lock ]] || rm composer.lock
 	[[ ! -d vendor ]] || rm -rf vendor
 	[[ ! -d .build ]] || rm -rf .build
+	[[ ! -d test/Fixture/ShopwareProject/var/cache ]] || rm -rf test/Fixture/ShopwareProject/var/cache
 
 .PHONY: it
 it: cs-fix-composer-normalize csfix cs test ## Fix code style and run unit tests

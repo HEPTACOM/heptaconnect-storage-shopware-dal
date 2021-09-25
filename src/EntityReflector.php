@@ -83,17 +83,10 @@ class EntityReflector extends EntityReflectorContract
                     continue;
                 }
 
-                $filtersPerPortalNode[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
-                    new EqualsFilter('externalId', $primaryKey),
-                    new EqualsFilter('mappingNodeId', $mappingNodeId),
-                ]);
+                $filtersPerPortalNode[] = $reflectedFilters[] = $mappingNodeId;
 
-                $reflectedFilters[] = $mappingNodeId;
-
-                $mappingId = (string) Uuid::uuid4()->getHex();
-
-                $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] = [
-                    'id' => $mappingId,
+                $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] ??= [
+                    'id' => Uuid::uuid4()->getHex(),
                     'externalId' => $primaryKey,
                     'mappingNodeId' => $mappingNodeId,
                     'portalNodeId' => $sourcePortalNodeId,
@@ -103,7 +96,7 @@ class EntityReflector extends EntityReflectorContract
             if ($filtersPerPortalNode) {
                 $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
                     new EqualsFilter('portalNodeId', $sourcePortalNodeId),
-                    new MultiFilter(MultiFilter::CONNECTION_OR, $filtersPerPortalNode),
+                    new EqualsAnyFilter('mappingNodeId', $filtersPerPortalNode),
                 ]);
             }
         }
@@ -113,7 +106,8 @@ class EntityReflector extends EntityReflectorContract
         }
 
         $criteria = (new Criteria())->addFilter(
-            new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
+            new MultiFilter(MultiFilter::CONNECTION_OR, $filters),
+            new EqualsFilter('deletedAt', null)
         );
 
         $context = $this->contextFactory->create();
@@ -133,7 +127,8 @@ class EntityReflector extends EntityReflectorContract
             new EqualsAnyFilter('mappingNodeId', $reflectedFilters),
             new NotFilter(NotFilter::CONNECTION_OR, [
                 new EqualsFilter('externalId', null),
-            ])
+            ]),
+            new EqualsFilter('deletedAt', null)
         );
 
         /** @var MappingEntity $mapping */
