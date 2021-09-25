@@ -191,10 +191,12 @@ class JobRepository extends JobRepositoryContract
         if (!$jobKey instanceof JobStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($jobKey));
         }
+
         $timeData[] = [
             'id' => $jobKey->getUuid(),
             'startedAt' => isset($time) ? $time : \date_create(),
         ];
+
         $this->jobs->update($timeData, $this->contextFactory->create());
     }
 
@@ -203,10 +205,12 @@ class JobRepository extends JobRepositoryContract
         if (!$jobKey instanceof JobStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($jobKey));
         }
+
         $timeData[] = [
             'id' => $jobKey->getUuid(),
             'finishedAt' => isset($time) ? $time : \date_create(),
         ];
+
         $this->jobs->update($timeData, $this->contextFactory->create());
     }
 
