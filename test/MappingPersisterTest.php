@@ -261,6 +261,65 @@ class MappingPersisterTest extends TestCase
         self::assertCount(0, $targetMappings);
     }
 
+    public function testSwappingExternalIdsOfTwoMappings()
+    {
+        $externalIdSourceA = (string) Uuid::uuid4()->getHex();
+        $externalIdTargetA = (string) Uuid::uuid4()->getHex();
+
+        $externalIdSourceB = (string) Uuid::uuid4()->getHex();
+        $externalIdTargetB = (string) Uuid::uuid4()->getHex();
+
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+
+        $mappingNodeKeyA = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $mappingNodeKeyB = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeyA, $externalIdSourceA);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeyB, $externalIdSourceB);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyA, $externalIdTargetA);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyB, $externalIdTargetB);
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->update($mappingNodeKeyA, $externalIdTargetB);
+        $payload->update($mappingNodeKeyB, $externalIdTargetA);
+
+        $this->mappingPersister->persist($payload);
+
+        $targetMappingsA = \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKeyA),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        ));
+
+        /** @var MappingKeyInterface $targetMappingKeyA */
+        $targetMappingKeyA = \array_shift($targetMappingsA);
+        $targetMappingA = $this->mappingRepository->read($targetMappingKeyA);
+
+        $targetMappingsB = \iterable_to_array(\iterable_filter(
+            $this->mappingRepository->listByMappingNode($mappingNodeKeyB),
+            fn (MappingKeyInterface $mappingKey) => $this->mappingRepository
+                ->read($mappingKey)
+                ->getPortalNodeKey()
+                ->equals($portalNodeKeyTarget)
+        ));
+
+        /** @var MappingKeyInterface $targetMappingKeyB */
+        $targetMappingKeyB = \array_shift($targetMappingsB);
+        $targetMappingB = $this->mappingRepository->read($targetMappingKeyB);
+
+        self::assertTrue($targetMappingA->getMappingNodeKey()->equals($mappingNodeKeyA));
+        self::assertTrue($targetMappingA->getPortalNodeKey()->equals($portalNodeKeyTarget));
+        self::assertSame($externalIdTargetB, $targetMappingA->getExternalId());
+        self::assertSame(Simple::class, $targetMappingA->getDatasetEntityClassName());
+
+        self::assertTrue($targetMappingB->getMappingNodeKey()->equals($mappingNodeKeyB));
+        self::assertTrue($targetMappingB->getPortalNodeKey()->equals($portalNodeKeyTarget));
+        self::assertSame($externalIdTargetA, $targetMappingB->getExternalId());
+        self::assertSame(Simple::class, $targetMappingB->getDatasetEntityClassName());
+    }
+
     public function testDeletingMappingNode()
     {
         $externalIdSource = (string) Uuid::uuid4()->getHex();
