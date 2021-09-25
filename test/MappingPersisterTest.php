@@ -20,7 +20,23 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class MappingPersisterTest extends TestCase
 {
