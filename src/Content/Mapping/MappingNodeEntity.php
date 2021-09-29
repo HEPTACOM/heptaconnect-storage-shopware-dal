@@ -5,7 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\MappingNodeStructInterface;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -25,7 +25,7 @@ class MappingNodeEntity extends Entity implements MappingNodeStructInterface
 
     protected ?\DateTimeInterface $deletedAt = null;
 
-    protected DatasetEntityTypeEntity $type;
+    protected EntityTypeEntity $type;
 
     protected ?MappingCollection $mappings = null;
 
@@ -67,12 +67,12 @@ class MappingNodeEntity extends Entity implements MappingNodeStructInterface
         return $this;
     }
 
-    public function getType(): DatasetEntityTypeEntity
+    public function getType(): EntityTypeEntity
     {
         return $this->type;
     }
 
-    public function setType(DatasetEntityTypeEntity $type): self
+    public function setType(EntityTypeEntity $type): self
     {
         $this->type = $type;
 

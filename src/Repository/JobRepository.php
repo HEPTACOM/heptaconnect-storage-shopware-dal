@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\Base\Repository\JobAdd;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Job;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -36,7 +36,7 @@ class JobRepository extends JobRepositoryContract
 
     private ContextFactory $contextFactory;
 
-    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
+    private EntityTypeAccessor $entityTypeAccessor;
 
     private array $cachedJobTypes = [];
 
@@ -45,13 +45,13 @@ class JobRepository extends JobRepositoryContract
         EntityRepositoryInterface $jobTypes,
         StorageKeyGeneratorContract $storageKeyGenerator,
         ContextFactory $contextFactory,
-        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
+        EntityTypeAccessor $entityTypeAccessor
     ) {
         $this->jobs = $jobs;
         $this->jobTypes = $jobTypes;
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->contextFactory = $contextFactory;
-        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
+        $this->entityTypeAccessor = $entityTypeAccessor;
     }
 
     public function add(array $jobAdds): array
@@ -89,7 +89,7 @@ class JobRepository extends JobRepositoryContract
                 'id' => $key->getUuid(),
                 'externalId' => $jobAdd->getMapping()->getExternalId(),
                 'portalNodeId' => $portalNodeKey->getUuid(),
-                'entityTypeId' => $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType], $context)[$entityType],
+                'entityTypeId' => $this->entityTypeAccessor->getIdsForTypes([$entityType], $context)[$entityType],
                 // TODO batch lookup
                 'jobTypeId' => $this->getIdsForJobType([$jobAdd->getJobType()], $context)[$jobAdd->getJobType()],
                 'payloadId' => $jobPayloadKey === null ? null : $jobPayloadKey->getUuid(),

@@ -14,9 +14,9 @@ services:
         tags:
             - { name: shopware.entity.definition, entity: heptaconnect_cronjob_run }
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition:
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeDefinition:
         tags:
-            - { name: shopware.entity.definition, entity: heptaconnect_dataset_entity_type }
+            - { name: shopware.entity.definition, entity: heptaconnect_entity_type }
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition:
         tags:
@@ -62,7 +62,7 @@ services:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@heptaconnect_mapping_node.repository.patched'
-            - '@heptaconnect_dataset_entity_type.repository.patched'
+            - '@heptaconnect_entity_type.repository.patched'
             - '@heptaconnect_mapping.repository.patched'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
@@ -100,7 +100,7 @@ services:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@heptaconnect_mapping_node.repository.patched'
             - '@heptaconnect_mapping.repository.patched'
-            - '@heptaconnect_dataset_entity_type.repository.patched'
+            - '@heptaconnect_entity_type.repository.patched'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository:
@@ -119,7 +119,7 @@ services:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@heptaconnect_route.repository.patched'
-            - '@heptaconnect_dataset_entity_type.repository.patched'
+            - '@heptaconnect_entity_type.repository.patched'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\WebhookRepository:

@@ -13,7 +13,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -35,20 +35,20 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
 
     private ContextFactory $contextFactory;
 
-    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
+    private EntityTypeAccessor $entityTypeAccessor;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
         EntityRepositoryInterface $mappings,
         ContextFactory $contextFactory,
-        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
+        EntityTypeAccessor $entityTypeAccessor
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
         $this->mappings = $mappings;
         $this->contextFactory = $contextFactory;
-        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
+        $this->entityTypeAccessor = $entityTypeAccessor;
     }
 
     public function read(MappingNodeKeyInterface $key): MappingNodeStructInterface
@@ -146,7 +146,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType], $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
 
         $this->mappingNodes->create([[
             'id' => $mappingId->getUuid(),
@@ -173,7 +173,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType], $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
         $payload = [];
 
         /** @var MappingNodeKeyInterface $key */

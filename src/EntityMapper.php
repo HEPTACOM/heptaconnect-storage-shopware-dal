@@ -32,7 +32,7 @@ class EntityMapper extends EntityMapperContract
 
     private EntityRepositoryInterface $mappings;
 
-    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
+    private EntityTypeAccessor $entityTypeAccessor;
 
     private ContextFactory $contextFactory;
 
@@ -40,13 +40,13 @@ class EntityMapper extends EntityMapperContract
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $mappingNodes,
         EntityRepositoryInterface $mappings,
-        DatasetEntityTypeAccessor $datasetEntityTypeAccessor,
+        EntityTypeAccessor $entityTypeAccessor,
         ContextFactory $contextFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->mappingNodes = $mappingNodes;
         $this->mappings = $mappings;
-        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
+        $this->entityTypeAccessor = $entityTypeAccessor;
         $this->contextFactory = $contextFactory;
     }
 
@@ -62,7 +62,7 @@ class EntityMapper extends EntityMapperContract
         $context = $this->contextFactory->create();
         $datasetEntities = \iterable_to_array($entityCollection);
         $neededTypes = \array_map('get_class', $datasetEntities);
-        $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes($neededTypes, $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes, $context);
 
         $readMappingNodes = [];
         $readMappingNodesIndex = [];
