@@ -288,7 +288,8 @@ class MappingPersister extends MappingPersisterContract
                 'type',
                 'heptaconnect_mapping_node',
                 'mappingNode',
-                $expr->and(
+                // TODO: Resolve deprecation notice
+                $expr->andX(
                     $expr->eq('type.id', 'mappingNode.type_id'),
                     $expr->isNull('mappingNode.deleted_at'),
                 )
