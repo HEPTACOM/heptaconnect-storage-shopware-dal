@@ -214,7 +214,7 @@ class MappingPersister extends MappingPersisterContract
             $typeParameterKey = 'typeId_'.Uuid::uuid4()->getHex();
             $externalIdParameterKey = 'externalId_'.Uuid::uuid4()->getHex();
 
-            $typeConditions[] = $expr->and(
+            $typeConditions[] = $expr->andX(
                 $expr->eq('mappingNode.type_id', ':'.$typeParameterKey),
                 $expr->in('mapping.external_id', ':'.$externalIdParameterKey)
             );
@@ -243,11 +243,11 @@ class MappingPersister extends MappingPersisterContract
                 'mappingNode',
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
-            ->where($expr->and(
+            ->where($expr->andX(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
                 $expr->eq('mapping.portal_node_id', ':portalNodeId'),
-                $expr->or(...$typeConditions)
+                $expr->orX(...$typeConditions)
             ))
             ->setParameter('portalNodeId', \hex2bin($portalNodeId))
         ;
