@@ -58,6 +58,8 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         $criteria = new Criteria([$key->getUuid()]);
+        $criteria->addFilter(new EqualsFilter('deletedAt', null));
+
         $item = $this->mappingNodes->search($criteria, $this->contextFactory->create())->first();
 
         if (!$item instanceof MappingNodeStructInterface) {
@@ -204,8 +206,9 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
 
         $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappingNodes, $key->getUuid(), $context);
-        $this->throwNotFoundWhenNoChange($this->mappingNodes->delete([[
+        $this->throwNotFoundWhenNoChange($this->mappingNodes->update([[
             'id' => $key->getUuid(),
+            'deletedAt' => \date_create(),
         ]], $context));
     }
 }

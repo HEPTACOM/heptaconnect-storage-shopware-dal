@@ -54,8 +54,12 @@ class MappingRepository extends MappingRepositoryContract
         }
 
         $context = $this->contextFactory->create();
+
+        $criteria = new Criteria([$key->getUuid()]);
+        $criteria->addFilter(new EqualsFilter('deletedAt', null));
+
         /** @var MappingCollection $mappings */
-        $mappings = $this->mappings->search(new Criteria([$key->getUuid()]), $context)->getEntities();
+        $mappings = $this->mappings->search($criteria, $context)->getEntities();
 
         $mapping = $mappings->first();
 
@@ -85,7 +89,8 @@ class MappingRepository extends MappingRepositoryContract
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
             new NotFilter(NotFilter::CONNECTION_AND, [
                 new EqualsFilter('externalId', null),
-            ])
+            ]),
+            new EqualsFilter('deletedAt', null)
         );
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
@@ -104,7 +109,11 @@ class MappingRepository extends MappingRepositoryContract
 
         $criteria = new Criteria();
         $criteria->setLimit(50);
-        $criteria->addFilter(new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()));
+        $criteria->addFilter(
+            new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()),
+            new EqualsFilter('deletedAt', null)
+        );
+
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (!\is_null($ids = $iterator->fetchIds())) {
@@ -123,9 +132,11 @@ class MappingRepository extends MappingRepositoryContract
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addFilter(
-            new EqualsFilter('mappingNode.type.type', $entityType),
-            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
+            new EqualsFilter('mappingNode.type.type', $datasetEntityType),
+            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
+            new EqualsFilter('deletedAt', null)
         );
+
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
         while (!\is_null($ids = $iterator->fetchIds())) {
@@ -149,6 +160,7 @@ class MappingRepository extends MappingRepositoryContract
             new EqualsFilter('mappingNode.type.type', $entityType),
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
             new EqualsAnyFilter('externalId', $externalIdsToCheck),
+            new EqualsFilter('deletedAt', null)
         );
         $criteria->addAggregation(new TermsAggregation(
             'externalIds',
@@ -256,8 +268,9 @@ class MappingRepository extends MappingRepositoryContract
 
         $context = $this->contextFactory->create();
         $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
-        $this->throwNotFoundWhenNoChange($this->mappings->delete([[
+        $this->throwNotFoundWhenNoChange($this->mappings->update([[
             'id' => $key->getUuid(),
+            'deletedAt' => \date_create(),
         ]], $context));
     }
 }

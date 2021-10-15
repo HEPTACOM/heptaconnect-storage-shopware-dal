@@ -48,6 +48,7 @@ class RouteRepository extends RouteRepositoryContract
         }
 
         $criteria = new Criteria([$key->getUuid()]);
+        $criteria->addFilter(new EqualsFilter('deletedAt', null));
         $criteria->addAssociation('type');
         $route = $this->routes->search($criteria, $this->contextFactory->create())->first();
 
@@ -67,8 +68,9 @@ class RouteRepository extends RouteRepositoryContract
         $criteria = (new Criteria())
             ->setLimit(100)
             ->addFilter(
-                new EqualsFilter('type.type', $entityType),
-                new EqualsFilter('sourceId', $sourceKey->getUuid())
+                new EqualsFilter('type.type', $entityClassName),
+                new EqualsFilter('sourceId', $sourceKey->getUuid()),
+                new EqualsFilter('deletedAt', null)
             );
         $iterator = new RepositoryIterator($this->routes, $this->contextFactory->create(), $criteria);
 

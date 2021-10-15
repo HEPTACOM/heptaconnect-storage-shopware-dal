@@ -17,12 +17,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 
 class EntityMapper extends EntityMapperContract
 {
@@ -99,36 +99,11 @@ class EntityMapper extends EntityMapperContract
             ];
         }
 
+        $createMappingNodes = \array_unique($createMappingNodes, \SORT_REGULAR);
+
         if ($readMappingNodes !== []) {
-            $filtersByType = [];
-            foreach ($readMappingNodes as $entity) {
-                $filtersByType[$typeIds[$entity['type']]][$entity['externalId']] = true;
-            }
-
-            $filters = [];
-            foreach ($filtersByType as $typeId => $externalIds) {
-                $filters[] = new MultiFilter(MultiFilter::CONNECTION_AND, [
-                    new EqualsFilter('typeId', $typeId),
-                    new EqualsAnyFilter('mappings.externalId', \array_keys($externalIds)),
-                ]);
-            }
-
-            $criteria = (new Criteria())->addFilter(
-                new EqualsFilter('mappings.portalNodeId', $portalNodeId),
-                new MultiFilter(MultiFilter::CONNECTION_OR, $filters)
-            );
-
-            $criteria->addAssociation('type');
-
-            $criteria->getAssociation('mappings')->addFilter(
-                new EqualsFilter('portalNodeId', $portalNodeId),
-                new NotFilter(MultiFilter::CONNECTION_OR, [
-                    new EqualsFilter('externalId', null),
-                ])
-            );
-
             /** @var MappingNodeEntity $mappingNode */
-            foreach ($this->mappingNodes->search($criteria, $context)->getIterator() as $mappingNode) {
+            foreach ($this->getMappingNodes($readMappingNodes, $typeIds, $portalNodeId, $context) as $mappingNode) {
                 $mappings = $mappingNode->getMappings();
 
                 if (!$mappings instanceof MappingCollection) {
@@ -144,7 +119,7 @@ class EntityMapper extends EntityMapperContract
                 $type = $mappingNode->getType()->getType();
 
                 foreach ($readMappingNodesIndex[$type][$mapping->getExternalId()] ?? [] as $key) {
-                    unset($createMappingNodes[$key], $readMappings[$key]);
+                    unset($createMappingNodes[$key]);
                     $resultMappings[$key] = $mapping;
                 }
             }
@@ -176,7 +151,8 @@ class EntityMapper extends EntityMapperContract
         if ($readMappings !== []) {
             $criteria = (new Criteria())->addFilter(
                 new EqualsFilter('portalNodeId', $portalNodeId),
-                new EqualsAnyFilter('mappingNodeId', $readMappings)
+                new EqualsAnyFilter('mappingNodeId', $readMappings),
+                new EqualsFilter('deletedAt', null)
             );
 
             $criteria->addAssociation('mappingNode.type');
@@ -202,5 +178,34 @@ class EntityMapper extends EntityMapperContract
         }
 
         return $mappedDatasetEntityCollection;
+    }
+
+    private function getMappingNodes(array $readMappingNodes, array $typeIds, string $portalNodeId, Context $context): iterable
+    {
+        $filtersByType = [];
+        foreach ($readMappingNodes as $entity) {
+            $filtersByType[$typeIds[$entity['type']]][$entity['externalId']] = true;
+        }
+
+        foreach ($filtersByType as $typeId => $externalIds) {
+            $criteria = (new Criteria())->addFilter(
+                new EqualsFilter('typeId', $typeId),
+                new EqualsFilter('deletedAt', null),
+                new MultiFilter(MultiFilter::CONNECTION_AND, [
+                    new EqualsFilter('mappings.portalNodeId', $portalNodeId),
+                    new EqualsAnyFilter('mappings.externalId', \array_keys($externalIds)),
+                ])
+            );
+
+            $criteria->addAssociation('type');
+
+            $criteria->getAssociation('mappings')->addFilter(
+                new EqualsFilter('deletedAt', null),
+                new EqualsFilter('portalNodeId', $portalNodeId),
+                new EqualsAnyFilter('externalId', \array_keys($externalIds))
+            );
+
+            yield from $this->mappingNodes->search($criteria, $context)->getIterator();
+        }
     }
 }

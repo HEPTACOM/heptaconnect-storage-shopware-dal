@@ -26,6 +26,21 @@ class ShopwareKernel extends Kernel
         );
     }
 
+    public function getCacheDir(): string
+    {
+        return \sprintf(
+            '%s/var/cache/%s_h%s',
+            __DIR__.'/../../.build/ShopwareProject',
+            $this->getEnvironment(),
+            $this->getCacheHash()
+        );
+    }
+
+    public function getLogDir(): string
+    {
+        return __DIR__.'/../../.build/ShopwareProject/var/log';
+    }
+
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         parent::configureContainer($container, $loader);
