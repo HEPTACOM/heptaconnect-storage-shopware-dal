@@ -186,7 +186,7 @@ class JobRepository extends JobRepositoryContract
         );
     }
 
-    public function start(JobKeyInterface $jobKey, ?\DateTime $time): void
+    public function start(JobKeyInterface $jobKey, ?\DateTimeInterface $time): void
     {
         if (!$jobKey instanceof JobStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($jobKey));
@@ -200,7 +200,7 @@ class JobRepository extends JobRepositoryContract
         $this->jobs->update($timeData, $this->contextFactory->create());
     }
 
-    public function finish(JobKeyInterface $jobKey, ?\DateTime $time): void
+    public function finish(JobKeyInterface $jobKey, ?\DateTimeInterface $time): void
     {
         if (!$jobKey instanceof JobStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($jobKey));
