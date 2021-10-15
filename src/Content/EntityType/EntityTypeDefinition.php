@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType;
 
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -12,9 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
-class DatasetEntityTypeDefinition extends EntityDefinition
+class EntityTypeDefinition extends EntityDefinition
 {
-    public const ENTITY_NAME = 'heptaconnect_dataset_entity_type';
+    public const ENTITY_NAME = 'heptaconnect_entity_type';
 
     public function getEntityName(): string
     {
@@ -23,12 +23,12 @@ class DatasetEntityTypeDefinition extends EntityDefinition
 
     public function getEntityClass(): string
     {
-        return DatasetEntityTypeEntity::class;
+        return EntityTypeEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return DatasetEntityTypeCollection::class;
+        return EntityTypeCollection::class;
     }
 
     protected function defineFields(): FieldCollection

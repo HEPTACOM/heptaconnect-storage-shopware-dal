@@ -11,7 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
@@ -27,18 +27,18 @@ class RouteRepository extends RouteRepositoryContract
 
     private ContextFactory $contextFactory;
 
-    private DatasetEntityTypeAccessor $datasetEntityTypeAccessor;
+    private EntityTypeAccessor $entityTypeAccessor;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityRepositoryInterface $routes,
         ContextFactory $contextFactory,
-        DatasetEntityTypeAccessor $datasetEntityTypeAccessor
+        EntityTypeAccessor $entityTypeAccessor
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->routes = $routes;
         $this->contextFactory = $contextFactory;
-        $this->datasetEntityTypeAccessor = $datasetEntityTypeAccessor;
+        $this->entityTypeAccessor = $entityTypeAccessor;
     }
 
     public function read(RouteKeyInterface $key): RouteInterface
@@ -59,7 +59,7 @@ class RouteRepository extends RouteRepositoryContract
         return $route;
     }
 
-    public function listBySourceAndEntityType(PortalNodeKeyInterface $sourceKey, string $entityClassName): iterable
+    public function listBySourceAndEntityType(PortalNodeKeyInterface $sourceKey, string $entityType): iterable
     {
         if (!$sourceKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
@@ -84,7 +84,7 @@ class RouteRepository extends RouteRepositoryContract
     public function create(
         PortalNodeKeyInterface $sourceKey,
         PortalNodeKeyInterface $targetKey,
-        string $entityClassName
+        string $entityType
     ): RouteKeyInterface {
         if (!$sourceKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
@@ -101,7 +101,7 @@ class RouteRepository extends RouteRepositoryContract
         }
 
         $context = $this->contextFactory->create();
-        $typeId = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityClassName], $context)[$entityClassName];
+        $typeId = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context)[$entityType];
 
         $this->routes->create([[
             'id' => $key->getUuid(),

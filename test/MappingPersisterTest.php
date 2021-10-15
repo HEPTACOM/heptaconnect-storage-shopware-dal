@@ -8,7 +8,7 @@ use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersistPayload;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
@@ -31,7 +31,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository
@@ -69,7 +69,7 @@ class MappingPersisterTest extends TestCase
         $shopwarePortalNodeRepository = $definitionInstanceRegistry
             ->getRepository('heptaconnect_portal_node');
         $shopwareDatasetEntityTypeRepository = $definitionInstanceRegistry
-            ->getRepository('heptaconnect_dataset_entity_type');
+            ->getRepository('heptaconnect_entity_type');
 
         $this->mappingPersister = new MappingPersister($shopwareMappingRepository, $connection);
         $storageKeyGenerator = new StorageKeyGenerator();
@@ -79,7 +79,7 @@ class MappingPersisterTest extends TestCase
             $storageKeyGenerator,
             $contextFactory
         );
-        $datasetEntityTypeAccessor = new DatasetEntityTypeAccessor($shopwareDatasetEntityTypeRepository);
+        $datasetEntityTypeAccessor = new EntityTypeAccessor($shopwareDatasetEntityTypeRepository);
         $this->mappingNodeRepository = new MappingNodeRepository(
             $storageKeyGenerator,
             $shopwareMappingNodeRepository,
@@ -134,7 +134,7 @@ class MappingPersisterTest extends TestCase
         self::assertTrue($targetMapping->getMappingNodeKey()->equals($mappingNodeKey));
         self::assertTrue($targetMapping->getPortalNodeKey()->equals($portalNodeKeyTarget));
         self::assertSame($externalIdTarget, $targetMapping->getExternalId());
-        self::assertSame(Simple::class, $targetMapping->getDatasetEntityClassName());
+        self::assertSame(Simple::class, $targetMapping->getEntityType());
     }
 
     public function testPersistingSameExternalIdToTwoDifferentMappingNodes()
@@ -312,12 +312,12 @@ class MappingPersisterTest extends TestCase
         self::assertTrue($targetMappingA->getMappingNodeKey()->equals($mappingNodeKeyA));
         self::assertTrue($targetMappingA->getPortalNodeKey()->equals($portalNodeKeyTarget));
         self::assertSame($externalIdTargetB, $targetMappingA->getExternalId());
-        self::assertSame(Simple::class, $targetMappingA->getDatasetEntityClassName());
+        self::assertSame(Simple::class, $targetMappingA->getEntityType());
 
         self::assertTrue($targetMappingB->getMappingNodeKey()->equals($mappingNodeKeyB));
         self::assertTrue($targetMappingB->getPortalNodeKey()->equals($portalNodeKeyTarget));
         self::assertSame($externalIdTargetA, $targetMappingB->getExternalId());
-        self::assertSame(Simple::class, $targetMappingB->getDatasetEntityClassName());
+        self::assertSame(Simple::class, $targetMappingB->getEntityType());
     }
 
     public function testDeletingMappingNode()

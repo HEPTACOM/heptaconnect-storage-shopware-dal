@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping;
 
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
@@ -38,11 +38,11 @@ class MappingNodeDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),
-            (new FkField('type_id', 'typeId', DatasetEntityTypeDefinition::class))->addFlags(new Required()),
+            (new FkField('type_id', 'typeId', EntityTypeDefinition::class))->addFlags(new Required()),
             (new FkField('origin_portal_node_id', 'originPortalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
             (new DateTimeField('deleted_at', 'deletedAt')),
 
-            (new ManyToOneAssociationField('type', 'type_id', DatasetEntityTypeDefinition::class, 'id', true)),
+            (new ManyToOneAssociationField('type', 'type_id', EntityTypeDefinition::class, 'id', true)),
             (new OneToManyAssociationField('mappings', MappingDefinition::class, 'mapping_node_id', 'id')),
             (new ManyToOneAssociationField('originPortalNode', 'origin_portal_node_id', PortalNodeDefinition::class)),
         ]);

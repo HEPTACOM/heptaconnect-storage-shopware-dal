@@ -114,8 +114,8 @@ class MappingEntity extends Entity implements MappingInterface
         return new MappingNodeStorageKey($this->mappingNodeId);
     }
 
-    public function getDatasetEntityClassName(): string
+    public function getEntityType(): string
     {
-        return $this->getMappingNode()->getDatasetEntityClassName();
+        return $this->getMappingNode()->getEntityType();
     }
 }

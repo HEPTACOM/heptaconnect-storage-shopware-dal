@@ -10,8 +10,8 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
@@ -22,9 +22,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity
@@ -33,7 +33,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class EntityMapperTest extends TestCase
@@ -69,12 +69,12 @@ class EntityMapperTest extends TestCase
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
         /** @var ContextFactory $contextFactory */
         $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
-        $datasetEntityTypeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_dataset_entity_type');
+        $entityTypeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_entity_type');
         $mappingNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping_node');
         $mappingRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping');
         $portalNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_portal_node');
-        $datasetEntityTypeAccessor = new DatasetEntityTypeAccessor($datasetEntityTypeRepository);
-        $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $mappingRepository, $datasetEntityTypeAccessor, $contextFactory);
+        $entityTypeAccessor = new EntityTypeAccessor($entityTypeRepository);
+        $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $mappingRepository, $entityTypeAccessor, $contextFactory);
         $portalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
 
         $entity->setPrimaryKey($entity->getPrimaryKey() ?? Uuid::randomHex());
@@ -85,7 +85,7 @@ class EntityMapperTest extends TestCase
             'id' => $portalNodeKey->getUuid(),
             'className' => PortalContract::class,
         ]], $context);
-        $datasetEntityTypeRepository->create([[
+        $entityTypeRepository->create([[
             'id' => $typeId,
             'type' => $getClass,
         ]], $context);

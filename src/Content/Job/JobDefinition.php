@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
@@ -57,8 +57,8 @@ class JobDefinition extends EntityDefinition
             (new FkField('portal_node_id', 'portalNodeId', PortalNodeDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('portalNode', 'portal_node_id', PortalNodeDefinition::class),
 
-            (new FkField('entity_type_id', 'entityTypeId', DatasetEntityTypeDefinition::class))->addFlags(new Required()),
-            new ManyToOneAssociationField('entityType', 'entity_type_id', DatasetEntityTypeDefinition::class),
+            (new FkField('entity_type_id', 'entityTypeId', EntityTypeDefinition::class))->addFlags(new Required()),
+            new ManyToOneAssociationField('entityType', 'entity_type_id', EntityTypeDefinition::class),
 
             (new FkField('job_type_id', 'jobTypeId', JobTypeDefinition::class))->addFlags(new Required()),
             new ManyToOneAssociationField('jobType', 'job_type_id', JobTypeDefinition::class),

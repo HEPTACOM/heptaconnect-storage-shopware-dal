@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType;
 
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class DatasetEntityTypeEntity extends Entity
+class EntityTypeEntity extends Entity
 {
     use EntityIdTrait;
 
     /**
-     * @var class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>
+     * @var class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>ø
      */
     protected string $type = DatasetEntityContract::class;
 

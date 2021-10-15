@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeCollection;
@@ -19,9 +19,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\DefinitionNotFoundException;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity
@@ -76,16 +76,16 @@ class ShopwareIntegrationTest extends TestCase
         $definitionRegistration = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
 
         try {
-            $definition = $definitionRegistration->getByEntityName('heptaconnect_dataset_entity_type');
-            static::assertEquals('heptaconnect_dataset_entity_type', $definition->getEntityName());
-            static::assertEquals(DatasetEntityTypeCollection::class, $definition->getCollectionClass());
-            static::assertEquals(DatasetEntityTypeEntity::class, $definition->getEntityClass());
+            $definition = $definitionRegistration->getByEntityName('heptaconnect_entity_type');
+            static::assertEquals('heptaconnect_entity_type', $definition->getEntityName());
+            static::assertEquals(EntityTypeCollection::class, $definition->getCollectionClass());
+            static::assertEquals(EntityTypeEntity::class, $definition->getEntityClass());
             static::assertTrue($definition->getFields()->has('id'));
             static::assertTrue($definition->getFields()->has('type'));
             static::assertTrue($definition->getFields()->has('createdAt'));
             static::assertTrue($definition->getFields()->has('updatedAt'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_dataset_entity_type: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_entity_type: '.$e->getMessage());
         }
 
         try {
