@@ -9,35 +9,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add Migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1632763825RenameDatasetEntityTypeTable` to rename database table `heptaconnect-dataset-entity-type` to `heptaconnect-entity-type`
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1632763825RenameDatasetEntityTypeTable` to rename database table `heptaconnect_dataset_entity_type` to `heptaconnect_entity_type`
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1629643769AddJobStartAndFinishFields` to add `started_at` and `finished_at` datetime columns into table `heptaconnect_job` for job processing tracking
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::start` to implement new `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobRepositoryContract::start` for tracking the start of job processing
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::finish` to implement new `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobRepositoryContract::finish` for tracking the stop of job processing
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::cleanup` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobPayloadRepository::cleanup` to implement new `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobRepositoryContract::cleanup` and `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\JobPayloadRepositoryContract::cleanup` for cleaning up executed jobs and their payloads
 
 ### Changed
 
-* Change namespace from `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType` to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType` and rename folder appropriately
-* Change class from `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeDefinition` name to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition` in global refactoring effort
-* Change class name from `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeCollection` to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection` in global refactoring effort
-* Change class name from `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeEntity` to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity` in global refactoring effort
-* Change class name from `Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor` to `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor` in global refactoring effort
-* Change a method name in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity` to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity::getEntityType` in global refactoring effort
-* Change a method name in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity` to `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity::getEntityType` in global refactoring effort and change method call to refactored method `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity::getEntityType`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobDefinition` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector::reflectEntities` to use refactored method `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity::getEntityType`
-* Change a method call in `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::add` to use refactored method `Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingComponentStructContract::getEntityType`
-* Change getter and setter of `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change getter and setter of `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
-* Change a parameter of `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper::__construct` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
-* Change a parameter of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::__construct` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
-* Change a parameter of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::__construct` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
-* Change a parameter of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::__construct` to use refactored class `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::listBySourceAndEntityType` in global refactoring effort
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::create` in global refactoring effort
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listByPortalNodeAndType` in global refactoring effort
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::getIdsForTypes` in global refactoring effort
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalId`, `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalIds`,  `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::create`, `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::createList` in global refactoring effort
-* Change a parameter name of `Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listUnsavedExternalIds` in global refactoring effort
+- Change namespace from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType` and rename folder appropriately
+- Change class from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeDefinition` name to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition` in global refactoring effort
+- Change class name from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeCollection` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection` in global refactoring effort
+- Change class name from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeEntity` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity` in global refactoring effort
+- Change class name from `\Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor` in global refactoring effort
+- Change a method name in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity::getEntityType` in global refactoring effort
+- Change a method name in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity::getEntityType` in global refactoring effort and change method call to refactored method `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity::getEntityType`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobDefinition` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector::reflectEntities` to use refactored method `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity::getEntityType`
+- Change a method call in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::add` to use refactored method `\Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingComponentStructContract::getEntityType`
+- Change getter and setter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change getter and setter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition`
+- Change a parameter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper::__construct` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
+- Change a parameter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository::__construct` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
+- Change a parameter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::__construct` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
+- Change a parameter of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::__construct` to use refactored class `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor`
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::listBySourceAndEntityType` in global refactoring effort
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::create` in global refactoring effort
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listByPortalNodeAndType` in global refactoring effort
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::getIdsForTypes` in global refactoring effort
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalId`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalIds`,  `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::create`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::createList` in global refactoring effort
+- Change a parameter name of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listUnsavedExternalIds` in global refactoring effort
 
 ## [0.7.0] - 2021-09-25
 

@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class JobPayloadRepository extends JobPayloadRepositoryContract
 {
@@ -175,5 +176,21 @@ class JobPayloadRepository extends JobPayloadRepositoryContract
         }
 
         return (array) $entity->getPayload();
+    }
+
+    public function cleanup(): void
+    {
+        $context = $this->contextFactory->create();
+        $criteria = (new Criteria())->addFilter(
+            new EqualsFilter('jobs.id', null)
+        );
+        $iterator = new RepositoryIterator($this->jobPayloads, $context, $criteria);
+        while (($orphanedJobIds = $iterator->fetchIds()) !== null) {
+            $this->jobPayloads->delete(\array_map(
+                static fn (string $orphanedJobId): array => ['id' => $orphanedJobId],
+                $orphanedJobIds
+            ), $context);
+            $criteria->setOffset(0);
+        }
     }
 }
