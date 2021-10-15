@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
@@ -20,7 +20,7 @@ class JobEntity extends Entity
 
     protected string $entityTypeId;
 
-    protected ?DatasetEntityTypeEntity $entityType = null;
+    protected ?EntityTypeEntity $entityType = null;
 
     protected string $jobTypeId;
 
@@ -78,12 +78,12 @@ class JobEntity extends Entity
         return $this;
     }
 
-    public function getEntityType(): ?DatasetEntityTypeEntity
+    public function getEntityType(): ?EntityTypeEntity
     {
         return $this->entityType;
     }
 
-    public function setEntityType(?DatasetEntityTypeEntity $entityType): self
+    public function setEntityType(?EntityTypeEntity $entityType): self
     {
         $this->entityType = $entityType;
 

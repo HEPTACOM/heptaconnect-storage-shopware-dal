@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\RouteInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\DatasetEntityType\DatasetEntityTypeEntity;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
@@ -25,7 +25,7 @@ class RouteEntity extends Entity implements RouteInterface
 
     protected ?\DateTimeInterface $deletedAt = null;
 
-    protected ?DatasetEntityTypeEntity $type = null;
+    protected ?EntityTypeEntity $type = null;
 
     protected ?PortalNodeEntity $source = null;
 
@@ -79,12 +79,12 @@ class RouteEntity extends Entity implements RouteInterface
         return $this;
     }
 
-    public function getType(): ?DatasetEntityTypeEntity
+    public function getType(): ?EntityTypeEntity
     {
         return $this->type;
     }
 
-    public function setType(?DatasetEntityTypeEntity $type): RouteEntity
+    public function setType(?EntityTypeEntity $type): RouteEntity
     {
         $this->type = $type;
 
@@ -130,7 +130,7 @@ class RouteEntity extends Entity implements RouteInterface
         return new PortalNodeStorageKey($this->getSourceId());
     }
 
-    public function getEntityClassName(): string
+    public function getEntityType(): string
     {
         return $this->getType()->getType();
     }
