@@ -69,7 +69,7 @@ class MappingPersisterTest extends TestCase
         $shopwarePortalNodeRepository = $definitionInstanceRegistry
             ->getRepository('heptaconnect_portal_node');
         $shopwareDatasetEntityTypeRepository = $definitionInstanceRegistry
-            ->getRepository('heptaconnect_dataset_entity_type');
+            ->getRepository('heptaconnect_entity_type');
 
         $this->mappingPersister = new MappingPersister($shopwareMappingRepository, $connection);
         $storageKeyGenerator = new StorageKeyGenerator();

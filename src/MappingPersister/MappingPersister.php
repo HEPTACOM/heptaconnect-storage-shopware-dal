@@ -283,7 +283,7 @@ class MappingPersister extends MappingPersisterContract
                 'mappingNode.id AS mappingNodeId',
                 'type.id AS typeId',
             ])
-            ->from('heptaconnect_dataset_entity_type', 'type')
+            ->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
                 'heptaconnect_mapping_node',
