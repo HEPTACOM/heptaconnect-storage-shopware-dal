@@ -14,7 +14,7 @@ services:
         tags:
             - { name: shopware.entity.definition, entity: heptaconnect_cronjob_run }
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\DatasetEntityTypeDefinition:
+    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition:
         tags:
             - { name: shopware.entity.definition, entity: heptaconnect_entity_type }
 
