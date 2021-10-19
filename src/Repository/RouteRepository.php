@@ -68,7 +68,7 @@ class RouteRepository extends RouteRepositoryContract
         $criteria = (new Criteria())
             ->setLimit(100)
             ->addFilter(
-                new EqualsFilter('type.type', $entityClassName),
+                new EqualsFilter('type.type', $entityType),
                 new EqualsFilter('sourceId', $sourceKey->getUuid()),
                 new EqualsFilter('deletedAt', null)
             );
