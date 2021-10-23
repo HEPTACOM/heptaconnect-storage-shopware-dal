@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\DatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
@@ -18,8 +17,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
-use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -39,26 +36,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class EntityReflectorTest extends TestCase
 {
     use ProvideEntitiesTrait;
-
-    protected ShopwareKernel $kernel;
-
-    protected function setUp(): void
-    {
-        $this->kernel = new ShopwareKernel();
-        $this->kernel->boot();
-
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
-    }
-
-    protected function tearDown(): void
-    {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->rollBack();
-        $this->kernel->shutdown();
-    }
 
     /**
      * @dataProvider provideEntities

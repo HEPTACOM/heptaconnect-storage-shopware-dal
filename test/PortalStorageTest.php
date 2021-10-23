@@ -3,14 +3,11 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
-use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage
@@ -20,26 +17,6 @@ use PHPUnit\Framework\TestCase;
  */
 class PortalStorageTest extends TestCase
 {
-    protected ShopwareKernel $kernel;
-
-    protected function setUp(): void
-    {
-        $this->kernel = new ShopwareKernel();
-        $this->kernel->boot();
-
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
-    }
-
-    protected function tearDown(): void
-    {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->rollBack();
-        $this->kernel->shutdown();
-    }
-
     public function testUniqueNaming(): void
     {
         $contextFactory = new ContextFactory();

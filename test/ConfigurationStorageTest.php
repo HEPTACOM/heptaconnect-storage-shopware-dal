@@ -3,15 +3,12 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 /**
@@ -21,26 +18,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class ConfigurationStorageTest extends TestCase
 {
-    protected ShopwareKernel $kernel;
-
-    protected function setUp(): void
-    {
-        $this->kernel = new ShopwareKernel();
-        $this->kernel->boot();
-
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
-    }
-
-    protected function tearDown(): void
-    {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->rollBack();
-        $this->kernel->shutdown();
-    }
-
     public function testSetConfiguration(): void
     {
         /** @var SystemConfigService&MockObject $systemConfigService */

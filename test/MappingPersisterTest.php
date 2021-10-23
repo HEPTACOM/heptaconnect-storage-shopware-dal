@@ -16,7 +16,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
-use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
@@ -53,8 +52,7 @@ class MappingPersisterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->kernel = new ShopwareKernel();
-        $this->kernel->boot();
+        parent::setup();
 
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
@@ -92,14 +90,6 @@ class MappingPersisterTest extends TestCase
             $shopwareMappingRepository,
             $contextFactory
         );
-    }
-
-    protected function tearDown(): void
-    {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->rollBack();
-        $this->kernel->shutdown();
     }
 
     public function testPersistingSingleEntityMapping()
