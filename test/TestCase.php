@@ -52,6 +52,7 @@ abstract class TestCase extends BaseTestCase
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $connection->beginTransaction();
+        $connection->executeStatement('SET SESSION innodb_lock_wait_timeout = 5');
     }
 
     protected function downKernel(): void
