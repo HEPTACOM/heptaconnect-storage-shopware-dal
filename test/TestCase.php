@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Shopware\Core\System\Language\CachedLanguageLoader;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -53,6 +54,10 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $connection->beginTransaction();
         $connection->executeStatement('SET SESSION innodb_lock_wait_timeout = 5');
+
+        /** @var CachedLanguageLoader $languageLoader */
+        $languageLoader = $this->kernel->getContainer()->get(CachedLanguageLoader::class);
+        $languageLoader->loadLanguages();
     }
 
     protected function downKernel(): void

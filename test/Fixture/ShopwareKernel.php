@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture;
 
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\Kernel;
+use Shopware\Core\System\Language\CachedLanguageLoader;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -50,5 +51,11 @@ class ShopwareKernel extends Kernel
                 'enabled' => true,
             ],
         ]);
+    }
+
+    protected function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+        $container->getDefinition(CachedLanguageLoader::class)->setPublic(true);
     }
 }
