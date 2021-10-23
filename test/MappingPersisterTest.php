@@ -15,7 +15,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
@@ -40,8 +39,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
  */
 class MappingPersisterTest extends TestCase
 {
-    protected ShopwareKernel $kernel;
-
     private MappingPersister $mappingPersister;
 
     private PortalNodeRepository $portalNodeRepository;
