@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
 abstract class TestCase extends BaseTestCase
@@ -152,6 +153,20 @@ abstract class TestCase extends BaseTestCase
         $trackedQueries = $this->trackedQueries;
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
+            foreach ($params as &$param) {
+                try {
+                    if (\is_array($param)) {
+                        $param = \array_map(
+                            static fn (string $i): string => '0x' . $i,
+                            Uuid::fromBytesToHexList($param)
+                        );
+                    } else {
+                        $param = '0x' . Uuid::fromBytesToHex($param);
+                    }
+                } catch (\Throwable $throwable) {
+                }
+            }
+
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
                 $context = \implode(\PHP_EOL, [
