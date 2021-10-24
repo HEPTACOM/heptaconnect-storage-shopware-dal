@@ -37,11 +37,11 @@ abstract class TestCase extends BaseTestCase
         parent::tearDown();
 
         if ($this->setupKernel) {
+            $this->downKernel();
+
             if ($this->setupQueryTracking) {
                 $this->downQueryTracking();
             }
-
-            $this->downKernel();
         }
     }
 
@@ -64,8 +64,10 @@ abstract class TestCase extends BaseTestCase
     {
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection->getConfiguration()->setSQLLogger();
         $connection->rollBack();
         $this->kernel->shutdown();
+        $connection->close();
     }
 
     protected function upQueryTracking(): void
@@ -147,8 +149,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function downQueryTracking(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->getConfiguration()->setSQLLogger();
         $trackedQueries = $this->trackedQueries;
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
