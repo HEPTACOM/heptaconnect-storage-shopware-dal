@@ -168,7 +168,10 @@ abstract class TestCase extends BaseTestCase
                 $allKeys = $explanation['possible_keys'] ?? null;
 
                 if ($key !== null && $allKeys !== null) {
-                    static::assertStringContainsString($key, $allKeys, 'Unexpected key for query used in ' . $context);
+                    $keyParts = \explode(',', $key);
+                    $allKeysParts = \explode(',', 'PRIMARY,' . $allKeys);
+
+                    static::assertTrue(\array_intersect($keyParts, $allKeysParts) !== [], 'Unexpected key for query used in ' . $context);
                 }
             }
         }
