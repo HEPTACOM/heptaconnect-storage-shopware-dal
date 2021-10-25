@@ -178,16 +178,6 @@ abstract class TestCase extends BaseTestCase
                     ...$frames,
                 ]);
                 static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $context);
-
-                $key = $explanation['key'] ?? null;
-                $allKeys = $explanation['possible_keys'] ?? null;
-
-                if ($key !== null && $allKeys !== null) {
-                    $keyParts = \explode(',', $key);
-                    $allKeysParts = \explode(',', 'PRIMARY,' . $allKeys);
-
-                    static::assertTrue(\array_intersect($keyParts, $allKeysParts) !== [], 'Unexpected key for query used in ' . $context);
-                }
             }
         }
 
