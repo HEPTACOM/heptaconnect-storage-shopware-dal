@@ -51,7 +51,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 $builder->expr()->eq('e.type', ':type'),
             );
 
-        $builder->setParameter('source_key', $sourceKey->getUuid(), ParameterType::BINARY);
+        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
         $ids = $this->iterator->iterateColumn($builder);
