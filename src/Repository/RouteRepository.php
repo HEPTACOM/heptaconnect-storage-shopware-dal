@@ -59,28 +59,6 @@ class RouteRepository extends RouteRepositoryContract
         return $route;
     }
 
-    public function listBySourceAndEntityType(PortalNodeKeyInterface $sourceKey, string $entityType): iterable
-    {
-        if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($sourceKey));
-        }
-
-        $criteria = (new Criteria())
-            ->setLimit(100)
-            ->addFilter(
-                new EqualsFilter('type.type', $entityType),
-                new EqualsFilter('sourceId', $sourceKey->getUuid()),
-                new EqualsFilter('deletedAt', null)
-            );
-        $iterator = new RepositoryIterator($this->routes, $this->contextFactory->create(), $criteria);
-
-        while (!\is_null($ids = $iterator->fetchIds())) {
-            foreach ($ids as $id) {
-                yield new RouteStorageKey($id);
-            }
-        }
-    }
-
     public function create(
         PortalNodeKeyInterface $sourceKey,
         PortalNodeKeyInterface $targetKey,
