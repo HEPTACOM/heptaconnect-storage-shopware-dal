@@ -115,13 +115,6 @@ services:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository:
-        arguments:
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_route.repository.patched'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor'
-
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\WebhookRepository:
         arguments:
             - '@heptaconnect_webhook.repository.patched'
