@@ -102,11 +102,11 @@ class RouteOverview implements RouteOverviewActionInterface
         yield from \iterable_map(
             $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
-                new RouteStorageKey(Uuid::fromBytesToHex($row['id'])),
+                new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
                 (string) $row['e_t'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex($row['s_id'])),
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['s_id'])),
                 (string) $row['s_cn'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex($row['t_id'])),
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
                 (string) $row['t_cn'],
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct'])
             )
