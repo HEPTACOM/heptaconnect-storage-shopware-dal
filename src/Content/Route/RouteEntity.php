@@ -3,17 +3,12 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route;
 
-use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\RouteInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class RouteEntity extends Entity implements RouteInterface
+class RouteEntity extends Entity
 {
     use EntityIdTrait;
 
@@ -113,25 +108,5 @@ class RouteEntity extends Entity implements RouteInterface
         $this->target = $target;
 
         return $this;
-    }
-
-    public function getKey(): RouteKeyInterface
-    {
-        return new RouteStorageKey($this->getId());
-    }
-
-    public function getTargetKey(): PortalNodeKeyInterface
-    {
-        return new PortalNodeStorageKey($this->getTargetId());
-    }
-
-    public function getSourceKey(): PortalNodeKeyInterface
-    {
-        return new PortalNodeStorageKey($this->getSourceId());
-    }
-
-    public function getEntityType(): string
-    {
-        return $this->getType()->getType();
     }
 }
