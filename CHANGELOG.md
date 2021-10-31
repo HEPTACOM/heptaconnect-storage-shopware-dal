@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteOverview`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFindByTargetsAndType`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteGet`
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator` to simplify DBAL paginated iteration
 
 ### Changed
