@@ -46,6 +46,18 @@ class RouteOverview implements RouteOverviewActionInterface
                 't',
                 $builder->expr()->eq('t.id', 'r.target_id')
             )
+            ->leftJoin(
+                'r',
+                'heptaconnect_route_has_capability',
+                'rc',
+                $builder->expr()->eq('rc.route_id', 'r.id')
+            )
+            ->leftJoin(
+                'rc',
+                'heptaconnect_route_capability',
+                'c',
+                $builder->expr()->eq('rc.route_capability_id', 'c.id')
+            )
             ->select([
                 'r.id id',
                 'e.type e_t',
@@ -54,6 +66,17 @@ class RouteOverview implements RouteOverviewActionInterface
                 't.id t_id',
                 't.class_name t_cn',
                 'r.created_at ct',
+                'c.name c_n',
+                'GROUP_CONCAT(c.name SEPARATOR \',\')',
+            ])
+            ->groupBy([
+                'r.id',
+                'e.type',
+                's.id',
+                's.class_name',
+                't.id',
+                't.class_name',
+                'r.created_at',
             ])
             ->where($builder->expr()->isNull('r.deleted_at'));
 
@@ -108,7 +131,8 @@ class RouteOverview implements RouteOverviewActionInterface
                 (string) $row['s_cn'],
                 new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
                 (string) $row['t_cn'],
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct'])
+                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
+                \explode(',', (string) $row['c_n'])
             )
         );
     }
