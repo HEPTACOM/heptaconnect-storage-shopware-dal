@@ -44,15 +44,29 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 'e',
                 $builder->expr()->eq('e.id', 'r.type_id')
             )
+            ->innerJoin(
+                'r',
+                'heptaconnect_route_has_capability',
+                'rc',
+                $builder->expr()->eq('rc.route_id', 'r.id')
+            )
+            ->innerJoin(
+                'rc',
+                'heptaconnect_route_capability',
+                'c',
+                $builder->expr()->eq('c.id', 'rc.route_capability_id')
+            )
             ->select(['r.id id'])
             ->where(
                 $builder->expr()->isNull('r.deleted_at'),
                 $builder->expr()->eq('r.source_id', ':source_key'),
                 $builder->expr()->eq('e.type', ':type'),
+                $builder->expr()->eq('c.name', ':cap')
             );
 
         $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('cap', 'reception');
 
         $ids = $this->iterator->iterateColumn($builder);
         $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
