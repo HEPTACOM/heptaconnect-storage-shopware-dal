@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeResult;
@@ -37,8 +38,27 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
         }
 
         // TODO cache built query
+        $builder = $this->getBuilder();
+
+        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('type', $criteria->getEntityType());
+
+        $id = $builder->execute()->fetchColumn();
+
+        if (!\is_string($id)) {
+            return null;
+        }
+
+        return new RouteFindByTargetsAndTypeResult(new RouteStorageKey(Uuid::fromBytesToHex($id)));
+    }
+
+    protected function getBuilder(): QueryBuilder
+    {
         $builder = $this->connection->createQueryBuilder();
-        $builder
+
+        // TODO human readable
+        return $builder
             ->from('heptaconnect_route', 'r')
             ->innerJoin(
                 'r',
@@ -54,17 +74,5 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
                 $builder->expr()->eq('r.target_id', ':target_key'),
                 $builder->expr()->eq('e.type', ':type'),
             );
-
-        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
-
-        $id = $builder->execute()->fetchColumn();
-
-        if (!\is_string($id)) {
-            return null;
-        }
-
-        return new RouteFindByTargetsAndTypeResult(new RouteStorageKey(Uuid::fromBytesToHex($id)));
     }
 }

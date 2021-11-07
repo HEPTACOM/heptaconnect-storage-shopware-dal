@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteGetResult;
@@ -41,11 +42,24 @@ class RouteGet implements RouteGetActionInterface
             return [];
         }
 
-        $ids = Uuid::fromHexToBytesList($ids);
-
         // TODO cache built query
+        $builder = $this->getBuilder();
+        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+
+        yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
+            new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['s_id'])),
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
+            (string) $row['e_t']
+        ));
+    }
+
+    protected function getBuilder(): QueryBuilder
+    {
         $builder = $this->connection->createQueryBuilder();
-        $builder
+
+        // TODO human readable
+        return $builder
             ->from('heptaconnect_route', 'r')
             ->innerJoin(
                 'r',
@@ -75,14 +89,5 @@ class RouteGet implements RouteGetActionInterface
                 $builder->expr()->isNull('r.deleted_at'),
                 $builder->expr()->in('r.id', ':ids')
             );
-
-        $builder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-
-        yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
-            new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['s_id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
-            (string) $row['e_t']
-        ));
     }
 }

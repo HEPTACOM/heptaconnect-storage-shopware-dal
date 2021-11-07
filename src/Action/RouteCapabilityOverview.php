@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewResult;
@@ -22,14 +23,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
     {
         // TODO cache built query
-        $builder = $this->connection->createQueryBuilder();
-        $builder
-            ->from('heptaconnect_route_capability', 'c')
-            ->select([
-                'c.name n',
-                'c.created_at ct',
-            ])
-            ->where($builder->expr()->isNull('c.deleted_at'));
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -72,5 +66,19 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct'])
             )
         );
+    }
+
+    protected function getBuilder(): QueryBuilder
+    {
+        $builder = $this->connection->createQueryBuilder();
+
+        // TODO human readable
+        return $builder
+            ->from('heptaconnect_route_capability', 'c')
+            ->select([
+                'c.name n',
+                'c.created_at ct',
+            ])
+            ->where($builder->expr()->isNull('c.deleted_at'));
     }
 }

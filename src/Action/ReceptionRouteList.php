@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListResult;
@@ -35,8 +36,24 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
         }
 
         // TODO cache built query
+        $builder = $this->getBuilder();
+
+        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('cap', 'reception');
+
+        $ids = $this->iterator->iterateColumn($builder);
+        $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
+
+        yield from \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
+    }
+
+    protected function getBuilder(): QueryBuilder
+    {
         $builder = $this->connection->createQueryBuilder();
-        $builder
+
+        // TODO human readable
+        return $builder
             ->from('heptaconnect_route', 'r')
             ->innerJoin(
                 'r',
@@ -63,14 +80,5 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 $builder->expr()->eq('e.type', ':type'),
                 $builder->expr()->eq('c.name', ':cap')
             );
-
-        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
-        $builder->setParameter('cap', 'reception');
-
-        $ids = $this->iterator->iterateColumn($builder);
-        $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
-
-        yield from \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
     }
 }

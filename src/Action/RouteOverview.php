@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewResult;
@@ -25,60 +26,7 @@ class RouteOverview implements RouteOverviewActionInterface
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
         // TODO cache built query
-        $builder = $this->connection->createQueryBuilder();
-        $builder
-            ->from('heptaconnect_route', 'r')
-            ->innerJoin(
-                'r',
-                'heptaconnect_entity_type',
-                'e',
-                $builder->expr()->eq('e.id', 'r.type_id')
-            )
-            ->innerJoin(
-                'r',
-                'heptaconnect_portal_node',
-                's',
-                $builder->expr()->eq('s.id', 'r.source_id')
-            )
-            ->innerJoin(
-                'r',
-                'heptaconnect_portal_node',
-                't',
-                $builder->expr()->eq('t.id', 'r.target_id')
-            )
-            ->leftJoin(
-                'r',
-                'heptaconnect_route_has_capability',
-                'rc',
-                $builder->expr()->eq('rc.route_id', 'r.id')
-            )
-            ->leftJoin(
-                'rc',
-                'heptaconnect_route_capability',
-                'c',
-                $builder->expr()->eq('rc.route_capability_id', 'c.id')
-            )
-            ->select([
-                'r.id id',
-                'e.type e_t',
-                's.id s_id',
-                's.class_name s_cn',
-                't.id t_id',
-                't.class_name t_cn',
-                'r.created_at ct',
-                'c.name c_n',
-                'GROUP_CONCAT(c.name SEPARATOR \',\')',
-            ])
-            ->groupBy([
-                'r.id',
-                'e.type',
-                's.id',
-                's.class_name',
-                't.id',
-                't.class_name',
-                'r.created_at',
-            ])
-            ->where($builder->expr()->isNull('r.deleted_at'));
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dalDirection = $direction === RouteOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -135,5 +83,65 @@ class RouteOverview implements RouteOverviewActionInterface
                 \explode(',', (string) $row['c_n'])
             )
         );
+    }
+
+    protected function getBuilder(): QueryBuilder
+    {
+        $builder = $this->connection->createQueryBuilder();
+
+        // TODO human readable
+        return $builder
+            ->from('heptaconnect_route', 'r')
+            ->innerJoin(
+                'r',
+                'heptaconnect_entity_type',
+                'e',
+                $builder->expr()->eq('e.id', 'r.type_id')
+            )
+            ->innerJoin(
+                'r',
+                'heptaconnect_portal_node',
+                's',
+                $builder->expr()->eq('s.id', 'r.source_id')
+            )
+            ->innerJoin(
+                'r',
+                'heptaconnect_portal_node',
+                't',
+                $builder->expr()->eq('t.id', 'r.target_id')
+            )
+            ->leftJoin(
+                'r',
+                'heptaconnect_route_has_capability',
+                'rc',
+                $builder->expr()->eq('rc.route_id', 'r.id')
+            )
+            ->leftJoin(
+                'rc',
+                'heptaconnect_route_capability',
+                'c',
+                $builder->expr()->eq('rc.route_capability_id', 'c.id')
+            )
+            ->select([
+                'r.id id',
+                'e.type e_t',
+                's.id s_id',
+                's.class_name s_cn',
+                't.id t_id',
+                't.class_name t_cn',
+                'r.created_at ct',
+                'c.name c_n',
+                'GROUP_CONCAT(c.name SEPARATOR \',\')',
+            ])
+            ->groupBy([
+                'r.id',
+                'e.type',
+                's.id',
+                's.class_name',
+                't.id',
+                't.class_name',
+                'r.created_at',
+            ])
+            ->where($builder->expr()->isNull('r.deleted_at'));
     }
 }
