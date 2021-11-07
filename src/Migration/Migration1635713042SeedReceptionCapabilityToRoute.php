@@ -3,9 +3,7 @@
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
 use Shopware\Core\Framework\Migration\MigrationStep;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class Migration1635713042SeedReceptionCapabilityToRoute extends MigrationStep
 {
@@ -31,7 +29,7 @@ SQL;
     {
         // doctrine/dbal 2 support
         if (\method_exists($connection, 'executeStatement')) {
-            $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Type::BINARY]);
+            $connection->executeStatement(self::UP);
         } else {
             $connection->exec(self::UP);
         }

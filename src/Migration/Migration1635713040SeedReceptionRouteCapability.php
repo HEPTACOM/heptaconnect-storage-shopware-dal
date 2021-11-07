@@ -32,7 +32,9 @@ SQL;
         if (\method_exists($connection, 'executeStatement')) {
             $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Type::BINARY]);
         } else {
-            $connection->exec(self::UP);
+            $statement = $connection->prepare(self::UP);
+            $statement->bindValue('id', Uuid::randomBytes(), Type::BINARY);
+            $statement->execute();
         }
     }
 
