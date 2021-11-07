@@ -7,8 +7,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateParam;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateParams;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -37,11 +37,11 @@ class RouteCreate implements RouteCreateActionInterface
         $this->entityTypes = $entityTypes;
     }
 
-    public function create(RouteCreateParams $params): iterable
+    public function create(RouteCreatePayloads $params): iterable
     {
         $payload = [];
 
-        /** @var RouteCreateParam $param */
+        /** @var RouteCreatePayload $param */
         foreach ($params as $param) {
             $sourceKey = $param->getSource();
 

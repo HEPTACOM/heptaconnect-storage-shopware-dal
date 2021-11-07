@@ -5,8 +5,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateParam;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateParams;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -56,8 +56,8 @@ class RouteCreateTest extends TestCase
         $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
 
         $action = new RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes));
-        \iterable_to_array($action->create(new RouteCreateParams([
-            new RouteCreateParam(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class),
+        \iterable_to_array($action->create(new RouteCreatePayloads([
+            new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class),
         ])));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route')->fetchColumn();
