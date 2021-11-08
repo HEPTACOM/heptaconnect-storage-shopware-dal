@@ -27,23 +27,23 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         $builder = $this->getBuilderCached();
 
         foreach ($criteria->getSort() as $field => $direction) {
-            $dalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
-            $dalFieldName = null;
+            $dbalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
+            $dbalFieldName = null;
 
             switch ($field) {
                 case RouteCapabilityOverviewCriteria::FIELD_CREATED:
-                    $dalFieldName = 'capability.created_at';
+                    $dbalFieldName = 'capability.created_at';
                     break;
                 case RouteCapabilityOverviewCriteria::FIELD_NAME:
-                    $dalFieldName = 'capability.name';
+                    $dbalFieldName = 'capability.name';
                     break;
             }
 
-            if ($dalFieldName === null) {
+            if ($dbalFieldName === null) {
                 continue;
             }
 
-            $builder->addOrderBy($dalFieldName, $dalDirection);
+            $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
         $builder->addOrderBy('capability.id', 'ASC');

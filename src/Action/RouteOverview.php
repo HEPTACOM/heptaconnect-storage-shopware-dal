@@ -30,31 +30,31 @@ class RouteOverview implements RouteOverviewActionInterface
         $builder = $this->getBuilderCached();
 
         foreach ($criteria->getSort() as $field => $direction) {
-            $dalDirection = $direction === RouteOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
-            $dalFieldName = null;
+            $dbalDirection = $direction === RouteOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
+            $dbalFieldName = null;
 
             switch ($field) {
                 case RouteOverviewCriteria::FIELD_CREATED:
-                    $dalFieldName = 'route.created_at';
+                    $dbalFieldName = 'route.created_at';
                     break;
                 case RouteOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dalFieldName = 'entity_type.type';
+                    $dbalFieldName = 'entity_type.type';
                     break;
                 case RouteOverviewCriteria::FIELD_SOURCE:
                     // TODO allow sort by portal name
-                    $dalFieldName = 'source_portal_node.class_name';
+                    $dbalFieldName = 'source_portal_node.class_name';
                     break;
                 case RouteOverviewCriteria::FIELD_TARGET:
                     // TODO allow sort by portal name
-                    $dalFieldName = 'target_portal_node.class_name';
+                    $dbalFieldName = 'target_portal_node.class_name';
                     break;
             }
 
-            if ($dalFieldName === null) {
+            if ($dbalFieldName === null) {
                 continue;
             }
 
-            $builder->addOrderBy($dalFieldName, $dalDirection);
+            $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
         $builder->addOrderBy('route.id', 'ASC');
