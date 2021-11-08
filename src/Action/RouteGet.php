@@ -40,19 +40,7 @@ class RouteGet implements RouteGetActionInterface
             $ids[] = $routeKey->getUuid();
         }
 
-        if ($ids === []) {
-            return [];
-        }
-
-        $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
-
-        yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
-            new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
-            (string) $row['entity_type_name']
-        ));
+        return $ids === [] ? [] : $this->yieldRoutes($ids);
     }
 
     protected function getBuilderCached(): QueryBuilder
@@ -101,5 +89,22 @@ class RouteGet implements RouteGetActionInterface
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')
             );
+    }
+
+    /**
+     * @param string[] $ids
+     * @return iterable<RouteGetResult>
+     */
+    protected function yieldRoutes(array $ids): iterable
+    {
+        $builder = $this->getBuilderCached();
+        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+
+        yield from $this->iterator->iterate($builder, static fn(array $row): RouteGetResult => new RouteGetResult(
+            new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+            (string) $row['entity_type_name']
+        ));
     }
 }
