@@ -16,6 +16,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteOverview implements RouteOverviewActionInterface
 {
+    private ?QueryBuilder $builder = null;
+
     private Connection $connection;
 
     public function __construct(Connection $connection)
@@ -25,8 +27,7 @@ class RouteOverview implements RouteOverviewActionInterface
 
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
-        // TODO cache built query
-        $builder = $this->getBuilder();
+        $builder = $this->getBuilderCached();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dalDirection = $direction === RouteOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -83,6 +84,18 @@ class RouteOverview implements RouteOverviewActionInterface
                 \explode(',', (string) $row['c_n'])
             )
         );
+    }
+
+    protected function getBuilderCached(): QueryBuilder
+    {
+        if (!$this->builder instanceof QueryBuilder) {
+            $this->builder = $this->getBuilder();
+            $this->builder->setFirstResult(0);
+            $this->builder->setMaxResults(null);
+            $this->builder->getSQL();
+        }
+
+        return clone $this->builder;
     }
 
     protected function getBuilder(): QueryBuilder

@@ -17,6 +17,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
+    private ?QueryBuilder $builder = null;
+
     private Connection $connection;
 
     private QueryIterator $iterator;
@@ -35,8 +37,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
         }
 
-        // TODO cache built query
-        $builder = $this->getBuilder();
+        $builder = $this->getBuilderCached();
 
         $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
@@ -46,6 +47,18 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
         $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
 
         yield from \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
+    }
+
+    protected function getBuilderCached(): QueryBuilder
+    {
+        if (!$this->builder instanceof QueryBuilder) {
+            $this->builder = $this->getBuilder();
+            $this->builder->setFirstResult(0);
+            $this->builder->setMaxResults(null);
+            $this->builder->getSQL();
+        }
+
+        return clone $this->builder;
     }
 
     protected function getBuilder(): QueryBuilder

@@ -13,6 +13,8 @@ use Shopware\Core\Defaults;
 
 class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
+    private ?QueryBuilder $builder = null;
+
     private Connection $connection;
 
     public function __construct(Connection $connection)
@@ -22,8 +24,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
     {
-        // TODO cache built query
-        $builder = $this->getBuilder();
+        $builder = $this->getBuilderCached();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -66,6 +67,18 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct'])
             )
         );
+    }
+
+    protected function getBuilderCached(): QueryBuilder
+    {
+        if (!$this->builder instanceof QueryBuilder) {
+            $this->builder = $this->getBuilder();
+            $this->builder->setFirstResult(0);
+            $this->builder->setMaxResults(null);
+            $this->builder->getSQL();
+        }
+
+        return clone $this->builder;
     }
 
     protected function getBuilder(): QueryBuilder

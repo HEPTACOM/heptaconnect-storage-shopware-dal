@@ -16,6 +16,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteGet implements RouteGetActionInterface
 {
+    private ?QueryBuilder $builder = null;
+
     private Connection $connection;
 
     private QueryIterator $iterator;
@@ -42,8 +44,7 @@ class RouteGet implements RouteGetActionInterface
             return [];
         }
 
-        // TODO cache built query
-        $builder = $this->getBuilder();
+        $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
 
         yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
@@ -52,6 +53,18 @@ class RouteGet implements RouteGetActionInterface
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
             (string) $row['e_t']
         ));
+    }
+
+    protected function getBuilderCached(): QueryBuilder
+    {
+        if (!$this->builder instanceof QueryBuilder) {
+            $this->builder = $this->getBuilder();
+            $this->builder->setFirstResult(0);
+            $this->builder->setMaxResults(null);
+            $this->builder->getSQL();
+        }
+
+        return clone $this->builder;
     }
 
     protected function getBuilder(): QueryBuilder
