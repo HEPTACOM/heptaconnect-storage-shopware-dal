@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class ReceptionRouteListTest extends TestCase
 {

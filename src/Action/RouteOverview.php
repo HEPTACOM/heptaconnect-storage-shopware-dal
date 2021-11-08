@@ -5,12 +5,12 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -100,7 +100,7 @@ class RouteOverview implements RouteOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
 
         // TODO human readable
         return $builder

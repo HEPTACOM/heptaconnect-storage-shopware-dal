@@ -5,13 +5,13 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListResult;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -63,7 +63,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
 
         // TODO human readable
         return $builder

@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapabilityOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class RouteCapabilityOverviewTest extends TestCase
 {

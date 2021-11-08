@@ -5,13 +5,13 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeResult;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterface
@@ -68,7 +68,7 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
 
         // TODO human readable
         return $builder
