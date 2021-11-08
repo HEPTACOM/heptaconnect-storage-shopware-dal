@@ -32,10 +32,10 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 
             switch ($field) {
                 case RouteCapabilityOverviewCriteria::FIELD_CREATED:
-                    $dalFieldName = 'c.created_at';
+                    $dalFieldName = 'capability.created_at';
                     break;
                 case RouteCapabilityOverviewCriteria::FIELD_NAME:
-                    $dalFieldName = 'c.name';
+                    $dalFieldName = 'capability.name';
                     break;
             }
 
@@ -46,7 +46,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             $builder->addOrderBy($dalFieldName, $dalDirection);
         }
 
-        $builder->addOrderBy('c.id', 'ASC');
+        $builder->addOrderBy('capability.id', 'ASC');
 
         $pageSize = $criteria->getPageSize();
 
@@ -85,13 +85,12 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
     {
         $builder = new QueryBuilder($this->connection);
 
-        // TODO human readable
         return $builder
-            ->from('heptaconnect_route_capability', 'c')
+            ->from('heptaconnect_route_capability', 'capability')
             ->select([
-                'c.name n',
-                'c.created_at ct',
+                'capability.name n',
+                'capability.created_at ct',
             ])
-            ->where($builder->expr()->isNull('c.deleted_at'));
+            ->where($builder->expr()->isNull('capability.deleted_at'));
     }
 }

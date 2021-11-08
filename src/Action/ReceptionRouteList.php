@@ -41,7 +41,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
         $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
-        $builder->setParameter('cap', 'reception');
+        $builder->setParameter('capability', 'reception');
 
         $ids = $this->iterator->iterateColumn($builder);
         $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
@@ -65,33 +65,32 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
     {
         $builder = new QueryBuilder($this->connection);
 
-        // TODO human readable
         return $builder
-            ->from('heptaconnect_route', 'r')
+            ->from('heptaconnect_route', 'route')
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_entity_type',
-                'e',
-                $builder->expr()->eq('e.id', 'r.type_id')
+                'entity_type',
+                $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_route_has_capability',
-                'rc',
-                $builder->expr()->eq('rc.route_id', 'r.id')
+                'route_has_capability',
+                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
             )
             ->innerJoin(
-                'rc',
+                'route_has_capability',
                 'heptaconnect_route_capability',
-                'c',
-                $builder->expr()->eq('c.id', 'rc.route_capability_id')
+                'capability',
+                $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id')
             )
-            ->select(['r.id id'])
+            ->select(['route.id id'])
             ->where(
-                $builder->expr()->isNull('r.deleted_at'),
-                $builder->expr()->eq('r.source_id', ':source_key'),
-                $builder->expr()->eq('e.type', ':type'),
-                $builder->expr()->eq('c.name', ':cap')
+                $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->eq('route.source_id', ':source_key'),
+                $builder->expr()->eq('entity_type.type', ':type'),
+                $builder->expr()->eq('capability.name', ':capability')
             );
     }
 }

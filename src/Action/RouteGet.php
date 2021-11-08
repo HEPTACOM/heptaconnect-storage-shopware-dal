@@ -49,9 +49,9 @@ class RouteGet implements RouteGetActionInterface
 
         yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
             new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['s_id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
-            (string) $row['e_t']
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+            (string) $row['entity_type_name']
         ));
     }
 
@@ -71,36 +71,35 @@ class RouteGet implements RouteGetActionInterface
     {
         $builder = new QueryBuilder($this->connection);
 
-        // TODO human readable
         return $builder
-            ->from('heptaconnect_route', 'r')
+            ->from('heptaconnect_route', 'route')
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_entity_type',
-                'e',
-                $builder->expr()->eq('e.id', 'r.type_id')
+                'entity_type',
+                $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_portal_node',
-                's',
-                $builder->expr()->eq('s.id', 'r.source_id')
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
             )
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_portal_node',
-                't',
-                $builder->expr()->eq('t.id', 'r.target_id')
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
             )
             ->select([
-                'r.id id',
-                'e.type e_t',
-                's.id s_id',
-                't.id t_id',
+                'route.id id',
+                'entity_type.type entity_type_name',
+                'source_portal_node.id source_portal_node_id',
+                'target_portal_node.id target_portal_node_id',
             ])
             ->where(
-                $builder->expr()->isNull('r.deleted_at'),
-                $builder->expr()->in('r.id', ':ids')
+                $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->in('route.id', ':ids')
             );
     }
 }

@@ -35,18 +35,18 @@ class RouteOverview implements RouteOverviewActionInterface
 
             switch ($field) {
                 case RouteOverviewCriteria::FIELD_CREATED:
-                    $dalFieldName = 'r.created_at';
+                    $dalFieldName = 'route.created_at';
                     break;
                 case RouteOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dalFieldName = 'e.type';
+                    $dalFieldName = 'entity_type.type';
                     break;
                 case RouteOverviewCriteria::FIELD_SOURCE:
                     // TODO allow sort by portal name
-                    $dalFieldName = 's.class_name';
+                    $dalFieldName = 'source_portal_node.class_name';
                     break;
                 case RouteOverviewCriteria::FIELD_TARGET:
                     // TODO allow sort by portal name
-                    $dalFieldName = 't.class_name';
+                    $dalFieldName = 'target_portal_node.class_name';
                     break;
             }
 
@@ -57,7 +57,7 @@ class RouteOverview implements RouteOverviewActionInterface
             $builder->addOrderBy($dalFieldName, $dalDirection);
         }
 
-        $builder->addOrderBy('r.id', 'ASC');
+        $builder->addOrderBy('route.id', 'ASC');
 
         $pageSize = $criteria->getPageSize();
 
@@ -75,13 +75,13 @@ class RouteOverview implements RouteOverviewActionInterface
             $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-                (string) $row['e_t'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['s_id'])),
-                (string) $row['s_cn'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['t_id'])),
-                (string) $row['t_cn'],
+                (string) $row['entity_type_name'],
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+                (string) $row['source_portal_node_class'],
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+                (string) $row['target_portal_node_class'],
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
-                \explode(',', (string) $row['c_n'])
+                \explode(',', (string) $row['capability_name'])
             )
         );
     }
@@ -102,59 +102,57 @@ class RouteOverview implements RouteOverviewActionInterface
     {
         $builder = new QueryBuilder($this->connection);
 
-        // TODO human readable
         return $builder
-            ->from('heptaconnect_route', 'r')
+            ->from('heptaconnect_route', 'route')
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_entity_type',
-                'e',
-                $builder->expr()->eq('e.id', 'r.type_id')
+                'entity_type',
+                $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_portal_node',
-                's',
-                $builder->expr()->eq('s.id', 'r.source_id')
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
             )
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_portal_node',
-                't',
-                $builder->expr()->eq('t.id', 'r.target_id')
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
             )
             ->leftJoin(
-                'r',
+                'route',
                 'heptaconnect_route_has_capability',
-                'rc',
-                $builder->expr()->eq('rc.route_id', 'r.id')
+                'route_has_capability',
+                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
             )
             ->leftJoin(
-                'rc',
+                'route_has_capability',
                 'heptaconnect_route_capability',
-                'c',
-                $builder->expr()->eq('rc.route_capability_id', 'c.id')
+                'capability',
+                $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id')
             )
             ->select([
-                'r.id id',
-                'e.type e_t',
-                's.id s_id',
-                's.class_name s_cn',
-                't.id t_id',
-                't.class_name t_cn',
-                'r.created_at ct',
-                'c.name c_n',
-                'GROUP_CONCAT(c.name SEPARATOR \',\')',
+                'route.id id',
+                'entity_type.type entity_type_name',
+                'source_portal_node.id source_portal_node_id',
+                'source_portal_node.class_name source_portal_node_class',
+                'target_portal_node.id target_portal_node_id',
+                'target_portal_node.class_name target_portal_node_class',
+                'route.created_at ct',
+                'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
             ])
             ->groupBy([
-                'r.id',
-                'e.type',
-                's.id',
-                's.class_name',
-                't.id',
-                't.class_name',
-                'r.created_at',
+                'route.id',
+                'entity_type.type',
+                'source_portal_node.id',
+                'source_portal_node.class_name',
+                'target_portal_node.id',
+                'target_portal_node.class_name',
+                'route.created_at',
             ])
-            ->where($builder->expr()->isNull('r.deleted_at'));
+            ->where($builder->expr()->isNull('route.deleted_at'));
     }
 }

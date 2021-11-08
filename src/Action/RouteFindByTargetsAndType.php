@@ -70,22 +70,21 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
     {
         $builder = new QueryBuilder($this->connection);
 
-        // TODO human readable
         return $builder
-            ->from('heptaconnect_route', 'r')
+            ->from('heptaconnect_route', 'route')
             ->innerJoin(
-                'r',
+                'route',
                 'heptaconnect_entity_type',
-                'e',
-                $builder->expr()->eq('e.id', 'r.type_id')
+                'entity_type',
+                $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
-            ->select(['r.id id'])
+            ->select(['route.id id'])
             ->setMaxResults(1)
             ->where(
-                $builder->expr()->isNull('r.deleted_at'),
-                $builder->expr()->eq('r.source_id', ':source_key'),
-                $builder->expr()->eq('r.target_id', ':target_key'),
-                $builder->expr()->eq('e.type', ':type'),
+                $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->eq('route.source_id', ':source_key'),
+                $builder->expr()->eq('route.target_id', ':target_key'),
+                $builder->expr()->eq('entity_type.type', ':type'),
             );
     }
 }
