@@ -8,6 +8,7 @@ use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListResult;
+use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
@@ -41,7 +42,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
         $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
-        $builder->setParameter('capability', 'reception');
+        $builder->setParameter('capability', RouteCapability::RECEPTION);
 
         $ids = $this->iterator->iterateColumn($builder);
         $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);

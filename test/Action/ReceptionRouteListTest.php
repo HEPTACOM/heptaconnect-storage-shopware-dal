@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -120,6 +121,6 @@ class ReceptionRouteListTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        return (string) $connection->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', ['reception'])->fetchColumn();
+        return (string) $connection->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION])->fetchColumn();
     }
 }
