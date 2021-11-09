@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1635019153RouteIndexHappenedAtColumns` to add descending indices to `created_at`, `updated_at` and `deleted_at` to table `heptaconnect_route` for improved listings and searches
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteOverview`
-- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFindByTargetsAndType`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteGet`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate`
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator` to simplify DBAL paginated iteration
@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::listBySourceAndEntityType` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList::list`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteOverview::overview` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFindByTargetsAndType::find` that are optimized for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::listBySourceAndEntityType` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList::list`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteOverview::overview` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind::find` that are optimized for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::read` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteGet::get` that is optimized for known use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\RouteRepository::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` that is optimized for known use-cases
 

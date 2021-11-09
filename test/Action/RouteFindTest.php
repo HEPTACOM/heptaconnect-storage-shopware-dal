@@ -5,19 +5,19 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeResult;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFindByTargetsAndType;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFindByTargetsAndType
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
-class RouteFindByTargetsAndTypeTest extends TestCase
+class RouteFindTest extends TestCase
 {
     public function testDeletedAt(): void
     {
@@ -50,8 +50,8 @@ class RouteFindByTargetsAndTypeTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new RouteFindByTargetsAndType($connection);
-        $criteria = new RouteFindByTargetsAndTypeCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
+        $action = new RouteFind($connection);
+        $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
         static::assertNull($action->find($criteria));
     }
 
@@ -85,8 +85,8 @@ class RouteFindByTargetsAndTypeTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new RouteFindByTargetsAndType($connection);
-        $criteria = new RouteFindByTargetsAndTypeCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
-        static::assertInstanceOf(RouteFindByTargetsAndTypeResult::class, $action->find($criteria));
+        $action = new RouteFind($connection);
+        $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
+        static::assertInstanceOf(RouteFindResult::class, $action->find($criteria));
     }
 }

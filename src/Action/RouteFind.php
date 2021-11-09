@@ -5,16 +5,16 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindByTargetsAndTypeResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Framework\Uuid\Uuid;
 
-class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterface
+class RouteFind implements RouteFindActionInterface
 {
     private ?QueryBuilder $builder = null;
 
@@ -25,7 +25,7 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
         $this->connection = $connection;
     }
 
-    public function find(RouteFindByTargetsAndTypeCriteria $criteria): ?RouteFindByTargetsAndTypeResult
+    public function find(RouteFindCriteria $criteria): ?RouteFindResult
     {
         $sourceKey = $criteria->getSource();
 
@@ -51,7 +51,7 @@ class RouteFindByTargetsAndType implements RouteFindByTargetsAndTypeActionInterf
             return null;
         }
 
-        return new RouteFindByTargetsAndTypeResult(new RouteStorageKey(Uuid::fromBytesToHex($id)));
+        return new RouteFindResult(new RouteStorageKey(Uuid::fromBytesToHex($id)));
     }
 
     protected function getBuilderCached(): QueryBuilder
