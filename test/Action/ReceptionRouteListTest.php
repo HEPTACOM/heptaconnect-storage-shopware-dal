@@ -5,9 +5,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\ReceptionRouteListCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
@@ -15,7 +15,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\ReceptionRouteList
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class ReceptionRouteListTest extends TestCase

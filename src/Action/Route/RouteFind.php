@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;

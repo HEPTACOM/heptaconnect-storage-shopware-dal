@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayloads;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateResults;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;

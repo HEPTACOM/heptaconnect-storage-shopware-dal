@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Defaults;

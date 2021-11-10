@@ -5,9 +5,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayloads;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate
  */
 class RouteCreateTest extends TestCase
 {
@@ -55,7 +55,7 @@ class RouteCreateTest extends TestCase
         /** @var EntityRepositoryInterface $entityTypes */
         $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
 
-        $action = new RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes));
+        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes));
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class),
         ])));

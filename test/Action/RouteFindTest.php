@@ -5,16 +5,16 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteFindResult;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteFind
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class RouteFindTest extends TestCase
@@ -50,7 +50,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new RouteFind($connection);
+        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind($connection);
         $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
         static::assertNull($action->find($criteria));
     }

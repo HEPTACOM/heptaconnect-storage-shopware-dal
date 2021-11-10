@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCapabilityOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapabilityOverview;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapabilityOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class RouteCapabilityOverviewTest extends TestCase
@@ -18,7 +18,7 @@ class RouteCapabilityOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteCapabilityOverview($connection);
+        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview($connection);
         $criteria = new RouteCapabilityOverviewCriteria();
         static::assertCount(1, $action->overview($criteria));
     }
@@ -27,7 +27,7 @@ class RouteCapabilityOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteCapabilityOverview($connection);
+        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview($connection);
         $criteria0 = new RouteCapabilityOverviewCriteria();
         $criteria0->setPageSize(1);
         $criteria0->setPage(0);
