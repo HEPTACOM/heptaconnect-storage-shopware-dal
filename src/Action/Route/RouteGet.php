@@ -98,6 +98,12 @@ class RouteGet implements RouteGetActionInterface
                 'target_portal_node.id target_portal_node_id',
                 'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
             ])
+            ->addGroupBy([
+                'route.id',
+                'entity_type.type',
+                'source_portal_node.id',
+                'target_portal_node.id',
+            ])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')
