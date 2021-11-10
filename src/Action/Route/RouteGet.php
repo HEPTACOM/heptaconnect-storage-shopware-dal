@@ -106,6 +106,7 @@ class RouteGet implements RouteGetActionInterface
 
     /**
      * @param string[] $ids
+     *
      * @return iterable<RouteGetResult>
      */
     protected function yieldRoutes(array $ids): iterable
@@ -113,7 +114,7 @@ class RouteGet implements RouteGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
 
-        yield from $this->iterator->iterate($builder, static fn(array $row): RouteGetResult => new RouteGetResult(
+        yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
             new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),

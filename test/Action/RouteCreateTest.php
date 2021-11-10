@@ -9,6 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateP
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
@@ -55,7 +56,7 @@ class RouteCreateTest extends TestCase
         /** @var EntityRepositoryInterface $entityTypes */
         $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
 
-        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes));
+        $action = new RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class),
         ])));
