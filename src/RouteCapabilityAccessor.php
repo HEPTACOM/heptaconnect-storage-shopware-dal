@@ -36,7 +36,7 @@ class RouteCapabilityAccessor
                     'route_capability.name name',
                 ])
                 ->andWhere($builder->expr()->in('route_capability.name', ':names'))
-                ->setParameter('names', $nonMatchingKeys);
+                ->setParameter('names', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
 
             $rows = $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE);
             $typeIds = \array_column($rows, 'id', 'name');

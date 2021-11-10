@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
@@ -20,12 +21,13 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor
  */
 class RouteCreateTest extends TestCase
 {
     protected bool $setupQueryTracking = false;
 
-    public function testGet(): void
+    public function testCreate(): void
     {
         $source = Uuid::randomBytes();
         $target = Uuid::randomBytes();
@@ -58,10 +60,13 @@ class RouteCreateTest extends TestCase
 
         $action = new RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
         \iterable_to_array($action->create(new RouteCreatePayloads([
-            new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class),
+            new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
+            new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),
         ])));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route')->fetchColumn();
+        self::assertSame(2, $count);
+        $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route_has_capability')->fetchColumn();
         self::assertSame(1, $count);
     }
 }

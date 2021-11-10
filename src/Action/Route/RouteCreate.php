@@ -91,6 +91,7 @@ class RouteCreate implements RouteCreateActionInterface
 
         foreach ($payloads as $payload) {
             $key = $keys->current();
+            $keys->next();
 
             if (!$key instanceof RouteStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException(\get_class($key)));
@@ -111,8 +112,8 @@ class RouteCreate implements RouteCreateActionInterface
 
             foreach ($payload->getCapabilities() as $capability) {
                 $routeCapabilityInserts[] = [
-                    'route_id' => \bin2hex($key->getUuid()),
-                    'route_capability_id' => \bin2hex($capabilityIds[$capability]),
+                    'route_id' => \hex2bin($key->getUuid()),
+                    'route_capability_id' => \hex2bin($capabilityIds[$capability]),
                     'created_at' => $now,
                 ];
             }
