@@ -10,7 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
@@ -18,7 +21,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteCreate implements RouteCreateActionInterface
 {
@@ -42,74 +44,105 @@ class RouteCreate implements RouteCreateActionInterface
         $this->routeCapabilities = $routeCapabilities;
     }
 
-    public function create(RouteCreatePayloads $params): iterable
+    public function create(RouteCreatePayloads $payloads): RouteCreateResults
     {
-        $payload = [];
+        $capabilities = [];
+        $entityTypes = [];
 
-        /** @var RouteCreatePayload $param */
-        foreach ($params as $param) {
-            $sourceKey = $param->getSource();
+        /** @var RouteCreatePayload $payload */
+        foreach ($payloads as $payload) {
+            $sourceKey = $payload->getSource();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($sourceKey));
+                throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException(\get_class($sourceKey)));
             }
 
-            $targetKey = $param->getTarget();
+            $targetKey = $payload->getTarget();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($targetKey));
+                throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException(\get_class($targetKey)));
             }
 
-            $payload[] = [
-                'type' => $param->getEntityType(),
-                'sourceKey' => $sourceKey->getUuid(),
-                'targetKey' => $targetKey->getUuid(),
-                'capabilities' => \array_values($param->getCapabilities()),
-            ];
+            $entityTypes[] = $payload->getEntityType();
+            $capabilities[] = $payload->getCapabilities();
         }
 
-        $entityTypeIds = $this->entityTypes->getIdsForTypes(\array_column($payload, 'type'), Context::createDefaultContext());
-        $capabilityIds = $this->routeCapabilities->getIdsForNames(\array_merge([], ...\array_column($payload, 'capabilities')));
-        $keys = $this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, \count($payload));
+        $allCapabilities = \array_merge([], ...$capabilities);
+        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes, Context::createDefaultContext());
+        $capabilityIds = $this->routeCapabilities->getIdsForNames($allCapabilities);
 
-        foreach ($keys as $key) {
+        foreach ($allCapabilities as $capability) {
+            if (!\array_key_exists($capability, $capabilityIds)) {
+                throw new InvalidCreatePayloadException($payload, 1636573805);
+            }
+        }
+
+        foreach ($entityTypes as $entityType) {
+            if (!\array_key_exists($entityType, $entityTypeIds)) {
+                throw new InvalidCreatePayloadException($payload, 1636573806);
+            }
+        }
+
+        $keys = \iterable_to_traversable($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count()));
+        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $routeInserts = [];
+        $routeCapabilityInserts = [];
+        $result = [];
+
+        foreach ($payloads as $payload) {
+            $key = $keys->current();
+
             if (!$key instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($key));
+                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException(\get_class($key)));
             }
 
-            $data = \array_shift($payload);
+            /** @var PortalNodeStorageKey $sourceKey */
+            $sourceKey = $payload->getSource();
+            /** @var PortalNodeStorageKey $targetKey */
+            $targetKey = $payload->getTarget();
 
-            if (!\is_array($data)) {
-                continue;
+            $routeInserts[] = [
+                'id' => \hex2bin($key->getUuid()),
+                'source_id' => \hex2bin($sourceKey->getUuid()),
+                'target_id' => \hex2bin($targetKey->getUuid()),
+                'type_id' => \hex2bin($entityTypeIds[$payload->getEntityType()]),
+                'created_at' => $now,
+            ];
+
+            foreach ($payload->getCapabilities() as $capability) {
+                $routeCapabilityInserts[] = [
+                    'route_id' => \bin2hex($key->getUuid()),
+                    'route_capability_id' => \bin2hex($capabilityIds[$capability]),
+                    'created_at' => $now,
+                ];
             }
 
-            $this->connection->insert('heptaconnect_route', [
-                'id' => Uuid::fromHexToBytes($key->getUuid()),
-                'source_id' => Uuid::fromHexToBytes((string) $data['sourceKey']),
-                'target_id' => Uuid::fromHexToBytes((string) $data['targetKey']),
-                'type_id' => Uuid::fromHexToBytes($entityTypeIds[(string) $data['type']]),
-                'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            ], [
-                'id' => Types::BINARY,
-                'source_id' => Types::BINARY,
-                'target_id' => Types::BINARY,
-                'type_id' => Types::BINARY,
-            ]);
-
-            foreach ($data['capabilities'] ?? [] as $capability) {
-                $capabilityId = $capabilityIds[$capability];
-
-                $this->connection->insert('heptaconnect_route_has_capability', [
-                    'route_id' => Uuid::fromHexToBytes($key->getUuid()),
-                    'route_capability_id' => Uuid::fromHexToBytes($capabilityId),
-                    'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-                ], [
-                    'route_id' => Types::BINARY,
-                    'route_capability_id' => Types::BINARY,
-                ]);
-            }
-
-            yield new RouteCreateResult($key);
+            $result[] = new RouteCreateResult($key);
         }
+
+        try {
+            $this->connection->transactional(function () use ($routeCapabilityInserts, $routeInserts) {
+                // TODO batch
+                foreach ($routeInserts as $routeInsert) {
+                    $this->connection->insert('heptaconnect_route', $routeInsert, [
+                        'id' => Types::BINARY,
+                        'source_id' => Types::BINARY,
+                        'target_id' => Types::BINARY,
+                        'type_id' => Types::BINARY,
+                    ]);
+                }
+
+                foreach ($routeCapabilityInserts as $routeCapabilityInsert) {
+                    $this->connection->insert('heptaconnect_route_has_capability', $routeCapabilityInsert, [
+                        'route_id' => Types::BINARY,
+                        'route_capability_id' => Types::BINARY,
+                    ]);
+                }
+            });
+        } catch (\Throwable $throwable) {
+            throw new CreateException(1636576240, $throwable);
+        }
+
+        return new RouteCreateResults($result);
     }
 }

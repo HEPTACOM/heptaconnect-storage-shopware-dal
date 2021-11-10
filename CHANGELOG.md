@@ -41,6 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor` to read route capabilities efficiently for other internal operations
 - Add exception code `1636505518` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteOverview::overview` when the criteria has an invalid sorting option
 - Add exception code `1636505519` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapabilityOverview::overview` when the criteria has an invalid sorting option
+- Add exception code `1636573803` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when the payload refers to a source portal node with an invalid portal node
+- Add exception code `1636573804` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when the payload refers to a target portal node with an invalid portal node
+- Add exception code `1636573805` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when the payload refers to an unknown route capability
+- Add exception code `1636573806` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when the payload refers to an unknown entity type
+- Add exception code `1636573807` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when the key generator cannot generate a valid route key
+- Add exception code `1636576240` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCreate::create` when writing to the database fails
 
 ### Changed
 
