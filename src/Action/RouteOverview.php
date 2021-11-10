@@ -8,6 +8,7 @@ use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
@@ -51,7 +52,7 @@ class RouteOverview implements RouteOverviewActionInterface
             }
 
             if ($dbalFieldName === null) {
-                continue;
+                throw new InvalidOverviewCriteriaException($criteria, 1636528918);
             }
 
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
