@@ -64,8 +64,8 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         yield from \iterable_map(
             $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
-                (string) $row['n'],
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct'])
+                (string) $row['name'],
+                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at'])
             )
         );
     }
@@ -89,8 +89,8 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         return $builder
             ->from('heptaconnect_route_capability', 'capability')
             ->select([
-                'capability.name n',
-                'capability.created_at ct',
+                'capability.name name',
+                'capability.created_at created_at',
             ])
             ->where($builder->expr()->isNull('capability.deleted_at'));
     }
