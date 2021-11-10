@@ -13,6 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  * @method RouteEntity|null get(string $key)
  * @method RouteEntity|null first()
  * @method RouteEntity|null last()
+ *
+ * @deprecated DAL usage is discouraged. Use route specific actions instead
  */
 class RouteCollection extends EntityCollection
 {

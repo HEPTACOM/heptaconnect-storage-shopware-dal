@@ -14,6 +14,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
+/**
+ * @deprecated DAL usage is discouraged. Use route specific actions instead
+ */
 class RouteDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'heptaconnect_route';
