@@ -79,11 +79,24 @@ class RouteGet implements RouteGetActionInterface
                 'target_portal_node',
                 $builder->expr()->eq('target_portal_node.id', 'route.target_id')
             )
+            ->leftJoin(
+                'route',
+                'heptaconnect_route_has_capability',
+                'route_has_capability',
+                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
+            )
+            ->leftJoin(
+                'route_has_capability',
+                'heptaconnect_route_capability',
+                'capability',
+                $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id')
+            )
             ->select([
                 'route.id id',
                 'entity_type.type entity_type_name',
                 'source_portal_node.id source_portal_node_id',
                 'target_portal_node.id target_portal_node_id',
+                'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
             ])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
@@ -104,7 +117,8 @@ class RouteGet implements RouteGetActionInterface
             new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
-            (string) $row['entity_type_name']
+            (string) $row['entity_type_name'],
+            \explode(',', (string) $row['capability_name'])
         ));
     }
 }
