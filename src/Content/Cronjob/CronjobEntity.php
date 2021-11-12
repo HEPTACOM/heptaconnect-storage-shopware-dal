@@ -58,17 +58,11 @@ class CronjobEntity extends Entity implements CronjobInterface
         return $this;
     }
 
-    /**
-     * @return class-string<\Heptacom\HeptaConnect\Portal\Base\Webhook\Contract\WebhookHandlerContract>
-     */
     public function getHandler(): string
     {
         return $this->handler;
     }
 
-    /**
-     * @param class-string<\Heptacom\HeptaConnect\Portal\Base\Webhook\Contract\WebhookHandlerContract> $handler
-     */
     public function setHandler($handler): self
     {
         $this->handler = $handler;

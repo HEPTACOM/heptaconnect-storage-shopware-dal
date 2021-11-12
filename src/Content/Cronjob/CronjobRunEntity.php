@@ -61,17 +61,11 @@ class CronjobRunEntity extends Entity implements CronjobRunInterface
         $this->queuedFor = \date_create_from_format('U', '0');
     }
 
-    /**
-     * @return class-string<\Heptacom\HeptaConnect\Portal\Base\Webhook\Contract\WebhookHandlerContract>
-     */
     public function getHandler(): string
     {
         return $this->handler;
     }
 
-    /**
-     * @param class-string<\Heptacom\HeptaConnect\Portal\Base\Webhook\Contract\WebhookHandlerContract> $handler
-     */
     public function setHandler($handler): self
     {
         $this->handler = $handler;
