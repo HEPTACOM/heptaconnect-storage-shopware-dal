@@ -57,57 +57,57 @@ services:
     Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_mapping_node.repository.patched'
-            - '@heptaconnect_mapping.repository.patched'
+            - '@heptaconnect_mapping_node.repository'
+            - '@heptaconnect_mapping.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector:
         arguments:
-            - '@heptaconnect_mapping.repository.patched'
+            - '@heptaconnect_mapping.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage:
         arguments:
-            - '@heptaconnect_portal_node_storage.repository.patched'
+            - '@heptaconnect_portal_node_storage.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\CronjobRepository:
         arguments:
-            - '@heptaconnect_cronjob.repository.patched'
+            - '@heptaconnect_cronjob.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\CronjobRunRepository:
         arguments:
-            - '@heptaconnect_cronjob.repository.patched'
-            - '@heptaconnect_cronjob_run.repository.patched'
+            - '@heptaconnect_cronjob.repository'
+            - '@heptaconnect_cronjob_run.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingExceptionRepository:
         arguments:
-            - '@heptaconnect_mapping_error_message.repository.patched'
+            - '@heptaconnect_mapping_error_message.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_mapping_node.repository.patched'
-            - '@heptaconnect_mapping.repository.patched'
+            - '@heptaconnect_mapping_node.repository'
+            - '@heptaconnect_mapping.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_mapping.repository.patched'
+            - '@heptaconnect_mapping.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository:
         arguments:
-            - '@heptaconnect_portal_node.repository.patched'
+            - '@heptaconnect_portal_node.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
