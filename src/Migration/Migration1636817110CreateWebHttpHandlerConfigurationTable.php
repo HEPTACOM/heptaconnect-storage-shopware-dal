@@ -43,7 +43,6 @@ SQL;
         $this->executeSql($connection, self::UP);
         $this->addDateTimeIndex($connection, 'heptaconnect_web_http_handler_configuration', 'created_at');
         $this->addDateTimeIndex($connection, 'heptaconnect_web_http_handler_configuration', 'updated_at');
-        $this->addDateTimeIndex($connection, 'heptaconnect_web_http_handler_configuration', 'deleted_at');
     }
 
     public function updateDestructive(Connection $connection): void
