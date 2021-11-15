@@ -55,7 +55,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
         $handlerPathIds = $this->webHttpHandlerPathAccessor->getIdsForPaths($handlerPaths);
 
         foreach ($handlerPaths as $handlerPath) {
-            if (!\array_key_exists($handlerPath, $handlerPathIds)) {
+            if (!isset($handlerPathIds[$handlerPath])) {
                 /** @var WebHttpHandlerConfigurationSetPayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getPath() === $handlerPath) {
@@ -68,7 +68,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
         $handlerComponentIds = $this->webHttpHandlerAccessor->getIdsForHandlers($handlerComponents);
 
         foreach ($handlerComponents as $handlerComponentKey => $handlerComponent) {
-            if (!\array_key_exists($handlerComponentKey, $handlerComponentIds)) {
+            if (!isset($handlerComponentIds[$handlerComponentKey])) {
                 [$portalNodeKey, $path] = $handlerComponent;
 
                 /** @var WebHttpHandlerConfigurationSetPayload $payload */
