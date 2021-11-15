@@ -11,7 +11,6 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterfac
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\WebhookKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
@@ -26,7 +25,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\WebhookStorageKey;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class StorageKeyGenerator extends StorageKeyGeneratorContract
@@ -34,7 +32,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
     private const IMPLEMENTATION_MAP = [
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
-        WebhookKeyInterface::class => WebhookStorageKey::class,
         CronjobKeyInterface::class => CronjobStorageKey::class,
         CronjobRunKeyInterface::class => CronjobRunStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
@@ -47,7 +44,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
     private const ABBREVIATIONS = [
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
-        'Webhook' => WebhookStorageKey::class,
         'Cronjob' => CronjobStorageKey::class,
         'CronjobRun' => CronjobRunStorageKey::class,
         'Route' => RouteStorageKey::class,

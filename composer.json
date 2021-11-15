@@ -27,7 +27,7 @@
         "heptacom/heptaconnect-portal-base": "self.version",
         "heptacom/heptaconnect-storage-base": "self.version",
         "ramsey/uuid": "^3.5|^4",
-        "shopware/core": ">=6.2",
+        "shopware/core": ">=6.3",
         "symfony/lock": ">=4"
     },
     "conflict": {
@@ -50,7 +50,7 @@
         "phpstan/phpstan-strict-rules": ">=0.12",
         "phpunit/phpunit": ">=9.3 <10",
         "psalm/plugin-phpunit": ">=0.10",
-        "shopware/storefront": ">=6.2.3",
+        "shopware/storefront": ">=6.3",
         "vimeo/psalm": ">=4"
     },
     "autoload": {
