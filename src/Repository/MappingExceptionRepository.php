@@ -72,8 +72,11 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             }
 
             $resultKey ??= $key;
-            $exceptionAsJsonResult = \json_encode($exception->getTrace());
-            $stackTraceValue = \is_string($exceptionAsJsonResult) ? $exceptionAsJsonResult : 'Stacktrace encoding failed: '.\json_last_error_msg();
+
+            $exceptionAsJson = \json_encode($exception->getTrace(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+            $stackTrace = \is_string($exceptionAsJson) ? $exceptionAsJson : (string) \json_encode([
+                'json_last_error_msg' => \json_last_error_msg(),
+            ]);
 
             $insert[] = [
                 'id' => $key->getUuid(),
@@ -83,7 +86,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
                 'mappingNodeId' => $mappingNodeKey->getUuid(),
                 'type' => \get_class($exception),
                 'message' => $exception->getMessage(),
-                'stackTrace' => $stackTraceValue,
+                'stackTrace' => $stackTrace,
             ];
 
             $previousKey = $key;
