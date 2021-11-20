@@ -38,14 +38,7 @@ class ConfigurationStorage extends ConfigurationStorageContract
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $config = null;
-
-        if (!\is_null($data)) {
-            $value = $this->getConfigurationInternal($portalNodeKey->getUuid());
-            $config = \array_replace_recursive($value, $data);
-        }
-
-        $this->systemConfigService->set($this->buildConfigurationPrefix($portalNodeKey->getUuid()), $config);
+        $this->systemConfigService->set($this->buildConfigurationPrefix($portalNodeKey->getUuid()), $data);
     }
 
     private function buildConfigurationPrefix(string $portalNodeId): string
