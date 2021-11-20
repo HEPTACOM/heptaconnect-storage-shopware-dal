@@ -76,7 +76,7 @@ class MappingPersister extends MappingPersisterContract
                 continue;
             }
 
-            $create[$mappingNodeId.$portalNodeId.$externalId] ??= [
+            $create[$mappingNodeId . $portalNodeId . $externalId] ??= [
                 'id' => (string) Uuid::uuid4()->getHex(),
                 'mappingNodeId' => $mappingNodeId,
                 'portalNodeId' => $portalNodeId,
@@ -211,12 +211,12 @@ class MappingPersister extends MappingPersisterContract
         $typeConditions = [];
 
         foreach ($newMappings as $typeId => $externalIds) {
-            $typeParameterKey = 'typeId_'.Uuid::uuid4()->getHex();
-            $externalIdParameterKey = 'externalId_'.Uuid::uuid4()->getHex();
+            $typeParameterKey = 'typeId_' . Uuid::uuid4()->getHex();
+            $externalIdParameterKey = 'externalId_' . Uuid::uuid4()->getHex();
 
             $typeConditions[] = $expr->andX(
-                $expr->eq('mappingNode.type_id', ':'.$typeParameterKey),
-                $expr->in('mapping.external_id', ':'.$externalIdParameterKey)
+                $expr->eq('mappingNode.type_id', ':' . $typeParameterKey),
+                $expr->in('mapping.external_id', ':' . $externalIdParameterKey)
             );
 
             $queryBuilder->setParameter($typeParameterKey, \hex2bin($typeId));

@@ -10,7 +10,7 @@ class MigrationSource extends ShopwareMigrationSource
     public function __construct()
     {
         parent::__construct('HeptaConnectStorage', [
-            __DIR__.'/Migration' => 'Heptacom\HeptaConnect\Storage\ShopwareDal\Migration',
+            __DIR__ . '/Migration' => 'Heptacom\HeptaConnect\Storage\ShopwareDal\Migration',
         ]);
     }
 }

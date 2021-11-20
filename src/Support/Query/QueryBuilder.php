@@ -63,11 +63,11 @@ class QueryBuilder extends BaseQueryBuilder
             case self::SELECT:
             default:
                 if ($this->getMaxResults() !== null) {
-                    $result .= ' LIMIT :'.self::PARAM_MAX_RESULT;
+                    $result .= ' LIMIT :' . self::PARAM_MAX_RESULT;
                     $firstResult = $this->getFirstResult();
 
                     if (\is_int($firstResult) && $firstResult > 0) {
-                        $result .= ' OFFSET :'.self::PARAM_FIRST_RESULT;
+                        $result .= ' OFFSET :' . self::PARAM_FIRST_RESULT;
                     }
                 }
 

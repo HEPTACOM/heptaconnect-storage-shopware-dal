@@ -85,7 +85,7 @@ class EntityReflector extends EntityReflectorContract
 
                 $filtersPerPortalNode[] = $reflectedFilters[] = $mappingNodeId;
 
-                $createMappings[$sourcePortalNodeId.$mappingNodeId.$primaryKey] ??= [
+                $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] ??= [
                     'id' => Uuid::uuid4()->getHex(),
                     'externalId' => $primaryKey,
                     'mappingNodeId' => $mappingNodeId,
@@ -114,7 +114,7 @@ class EntityReflector extends EntityReflectorContract
 
         /** @var MappingEntity $mapping */
         foreach ($this->mappingRepository->search($criteria, $context)->getIterator() as $mapping) {
-            $key = $mapping->getPortalNodeId().$mapping->getMappingNodeId().$mapping->getExternalId();
+            $key = $mapping->getPortalNodeId() . $mapping->getMappingNodeId() . $mapping->getExternalId();
             unset($createMappings[$key]);
         }
 

@@ -1,6 +1,5 @@
 {
     "name": "heptacom/heptaconnect-storage-shopware-dal",
-    "version": "0.7.0",
     "type": "library",
     "description": "HEPTAconnect package to use shopware DAL as underlying storage system",
     "keywords": [
@@ -8,6 +7,7 @@
         "shopware",
         "shopware-platform"
     ],
+    "version": "0.7.0",
     "license": [
         "AGPL-3.0-or-later",
         "proprietary"
@@ -26,7 +26,7 @@
         "heptacom/heptaconnect-dataset-base": "self.version",
         "heptacom/heptaconnect-portal-base": "self.version",
         "heptacom/heptaconnect-storage-base": "self.version",
-        "ramsey/uuid": "^3.5|^4",
+        "ramsey/uuid": "^3.5 || ^4",
         "shopware/core": ">=6.3",
         "symfony/lock": ">=4"
     },
