@@ -57,7 +57,7 @@ class RouteCreate implements RouteCreateActionInterface
                 throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException(\get_class($sourceKey)));
             }
 
-            $targetKey = $payload->getTarget();
+            $targetKey = $payload->getTargetPortalNodeKey();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException(\get_class($targetKey)));
@@ -110,7 +110,7 @@ class RouteCreate implements RouteCreateActionInterface
             /** @var PortalNodeStorageKey $sourceKey */
             $sourceKey = $payload->getSourcePortalNodeKey();
             /** @var PortalNodeStorageKey $targetKey */
-            $targetKey = $payload->getTarget();
+            $targetKey = $payload->getTargetPortalNodeKey();
 
             $routeInserts[] = [
                 'id' => \hex2bin($key->getUuid()),
