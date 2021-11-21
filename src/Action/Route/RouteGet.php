@@ -32,7 +32,7 @@ class RouteGet implements RouteGetActionInterface
     {
         $ids = [];
 
-        foreach ($criteria->getRoutes() as $routeKey) {
+        foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($routeKey));
             }
