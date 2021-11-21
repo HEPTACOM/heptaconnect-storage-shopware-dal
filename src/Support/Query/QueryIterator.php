@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -24,12 +25,17 @@ class QueryIterator
         $maxResults = $query->getMaxResults();
 
         do {
-            $rows = $query->execute()->fetchAll($fetchMode) ?: [];
+            $statement = $query->execute();
 
-            if (\is_array($rows)) {
-                $rows = \array_values($rows);
+            if (!$statement instanceof ResultStatement) {
+                throw new \LogicException('$query->execute() should have returned a ResultStatement', 1637467900);
+            }
 
-                yield from \is_callable($pack) ? \array_map($pack, $rows) : $rows;
+            $rows = \array_values($statement->fetchAll($fetchMode));
+            yield from \is_callable($pack) ? \array_map($pack, $rows) : $rows;
+
+            if ($maxResults === null) {
+                break;
             }
 
             $query->setFirstResult(($query->getFirstResult() ?? 0) + $maxResults);

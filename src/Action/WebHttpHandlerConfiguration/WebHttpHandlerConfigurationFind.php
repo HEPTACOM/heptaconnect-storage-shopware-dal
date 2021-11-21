@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfigu
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindCriteria;
@@ -41,7 +42,13 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
         $builder->setParameter(':pathId', \hex2bin($this->pathIdResolver->getIdFromPath($criteria->getPath())), Type::BINARY);
         $builder->setParameter(':portalNodeKey', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
 
-        $row = $builder->execute()->fetch(FetchMode::ASSOCIATIVE);
+        $statement = $builder->execute();
+
+        if (!$statement instanceof Statement) {
+            throw new \LogicException('$builder->execute() should have returned a Statement', 1637467902);
+        }
+
+        $row = $statement->fetch(FetchMode::ASSOCIATIVE);
 
         if ($row === false) {
             return new WebHttpHandlerConfigurationFindResult(null);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewCriteria;
@@ -72,8 +73,14 @@ class RouteOverview implements RouteOverviewActionInterface
             }
         }
 
+        $statement = $builder->execute();
+
+        if (!$statement instanceof ResultStatement) {
+            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467905);
+        }
+
         yield from \iterable_map(
-            $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE),
+            $statement->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
                 (string) $row['entity_type_name'],

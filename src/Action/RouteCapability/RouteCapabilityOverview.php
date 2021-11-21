@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
@@ -61,8 +62,14 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             }
         }
 
+        $statement = $builder->execute();
+
+        if (!$statement instanceof ResultStatement) {
+            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467903);
+        }
+
         yield from \iterable_map(
-            $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE),
+            $statement->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at'])

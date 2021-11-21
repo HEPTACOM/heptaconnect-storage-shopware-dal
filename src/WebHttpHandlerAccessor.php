@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
@@ -74,9 +75,17 @@ class WebHttpHandlerAccessor
                 ];
             }
 
-            $rows = \array_column($b->execute()->fetchAll(FetchMode::ASSOCIATIVE), 'id', 'match_key');
+            $statement = $b->execute();
 
-            foreach ($rows as $match => $foundId) {
+            if (!$statement instanceof Statement) {
+                throw new \LogicException('$b->execute() should have returned a Statement', 1637467899);
+            }
+
+            /** @var array<int, string[]> $rows */
+            $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
+            $keyedRows = \array_column($rows, 'id', 'match_key');
+
+            foreach ($keyedRows as $match => $foundId) {
                 $result[$keyIndex[$match]] = \bin2hex($foundId);
 
                 unset($inserts[$match]);

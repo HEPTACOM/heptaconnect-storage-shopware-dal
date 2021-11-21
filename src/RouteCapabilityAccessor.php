@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 
 class RouteCapabilityAccessor
@@ -38,7 +39,13 @@ class RouteCapabilityAccessor
                 ->andWhere($builder->expr()->in('route_capability.name', ':names'))
                 ->setParameter('names', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
 
-            $rows = $builder->execute()->fetchAll(FetchMode::ASSOCIATIVE);
+            $statement = $builder->execute();
+
+            if (!$statement instanceof ResultStatement) {
+                throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467901);
+            }
+
+            $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
             $typeIds = \array_column($rows, 'id', 'name');
             $typeIds = \array_map('bin2hex', $typeIds);
             $this->knownCapabilities = \array_merge($this->knownCapabilities, $typeIds);

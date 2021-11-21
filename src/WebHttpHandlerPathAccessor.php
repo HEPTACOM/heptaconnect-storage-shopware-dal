@@ -5,6 +5,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Shopware\Core\Defaults;
 
@@ -34,6 +35,11 @@ class WebHttpHandlerPathAccessor
 
         if ($nonMatchingKeys !== []) {
             $nonMatchingHexes = \array_combine($nonMatchingKeys, \array_map([$this->pathIdResolver, 'getIdFromPath'], $nonMatchingKeys));
+
+            if (!\is_array($nonMatchingHexes)) {
+                throw new \LogicException('array_combine should not have returned false', 1637467897);
+            }
+
             $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
             $nonMatchingBytes = \array_map('hex2bin', $nonMatchingHexes);
 
@@ -44,7 +50,15 @@ class WebHttpHandlerPathAccessor
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
                 ->setParameter('ids', \array_values($nonMatchingBytes), Connection::PARAM_STR_ARRAY);
 
-            $typeIds = \array_map('bin2hex', $builder->execute()->fetchAll(FetchMode::COLUMN));
+            $statement = $builder->execute();
+
+            if (!$statement instanceof Statement) {
+                throw new \LogicException('$builder->execute() should have returned a Statement', 1637467898);
+            }
+
+            /** @var array<int, string> $rows */
+            $rows = $statement->fetchAll(FetchMode::COLUMN);
+            $typeIds = \array_map('bin2hex', $rows);
             $foundIds = [];
             $inserts = [];
             $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);

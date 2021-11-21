@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
@@ -45,7 +46,13 @@ class RouteFind implements RouteFindActionInterface
         $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
-        $id = $builder->execute()->fetchColumn();
+        $statement = $builder->execute();
+
+        if (!$statement instanceof ResultStatement) {
+            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467906);
+        }
+
+        $id = $statement->fetchColumn();
 
         if (!\is_string($id)) {
             return null;
