@@ -11,6 +11,9 @@ use Shopware\Core\Defaults;
 
 class WebHttpHandlerPathAccessor
 {
+    /**
+     * @var array<string, string>
+     */
     private array $known = [];
 
     private Connection $connection;

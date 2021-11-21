@@ -72,6 +72,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             $statement->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
+                /* @phpstan-ignore-next-line */
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at'])
             )
         );

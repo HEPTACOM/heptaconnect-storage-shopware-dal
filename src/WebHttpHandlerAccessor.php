@@ -24,7 +24,7 @@ class WebHttpHandlerAccessor
     }
 
     /**
-     * @psalm-param array<array-key, string> $httpHandler
+     * @psalm-param array<array-key, array> $httpHandlerPaths
      * @psalm-return array<array-key, string>
      */
     public function getIdsForHandlers(array $httpHandlerPaths): array
@@ -93,7 +93,7 @@ class WebHttpHandlerAccessor
         }
 
         if ($inserts !== []) {
-            $this->connection->transactional(function () use ($inserts) {
+            $this->connection->transactional(function () use ($inserts): void {
                 foreach ($inserts as $insert) {
                     $this->connection->insert('heptaconnect_web_http_handler', $insert, [
                         'id' => Type::BINARY,

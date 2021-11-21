@@ -83,7 +83,7 @@ class RouteCreate implements RouteCreateActionInterface
             }
         }
 
-        $keys = \iterable_to_traversable($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count()));
+        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count())));
         $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
         $routeInserts = [];
         $routeCapabilityInserts = [];
@@ -122,7 +122,7 @@ class RouteCreate implements RouteCreateActionInterface
         }
 
         try {
-            $this->connection->transactional(function () use ($routeCapabilityInserts, $routeInserts) {
+            $this->connection->transactional(function () use ($routeCapabilityInserts, $routeInserts): void {
                 // TODO batch
                 foreach ($routeInserts as $routeInsert) {
                     $this->connection->insert('heptaconnect_route', $routeInsert, [

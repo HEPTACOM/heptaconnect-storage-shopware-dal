@@ -124,6 +124,7 @@ class RouteGet implements RouteGetActionInterface
             new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
             new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+            /* @phpstan-ignore-next-line */
             (string) $row['entity_type_name'],
             \explode(',', (string) $row['capability_name'])
         ));

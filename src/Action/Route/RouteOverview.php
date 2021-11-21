@@ -83,11 +83,15 @@ class RouteOverview implements RouteOverviewActionInterface
             $statement->fetchAll(FetchMode::ASSOCIATIVE),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                /* @phpstan-ignore-next-line */
                 (string) $row['entity_type_name'],
                 new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+                /* @phpstan-ignore-next-line */
                 (string) $row['source_portal_node_class'],
                 new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+                /* @phpstan-ignore-next-line */
                 (string) $row['target_portal_node_class'],
+                /* @phpstan-ignore-next-line */
                 \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
                 \explode(',', (string) $row['capability_name'])
             )

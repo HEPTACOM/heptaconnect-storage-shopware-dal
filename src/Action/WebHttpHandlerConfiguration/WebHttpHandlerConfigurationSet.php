@@ -111,7 +111,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
         }
 
         try {
-            $this->connection->transactional(function () use ($upserts, $deletes) {
+            $this->connection->transactional(function () use ($upserts, $deletes): void {
                 // TODO batch
                 foreach ($deletes as $delete) {
                     $this->connection->delete('heptaconnect_web_http_handler_configuration', $delete, [

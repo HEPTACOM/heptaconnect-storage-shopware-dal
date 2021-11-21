@@ -15,6 +15,7 @@ class QueryBuilder extends BaseQueryBuilder
 
     public function setFirstResult($firstResult)
     {
+        /** @var int|mixed $firstResult */
         if (\is_int($firstResult) && $firstResult > 0) {
             return $this->setParameter(self::PARAM_FIRST_RESULT, $firstResult, Type::INTEGER);
         }
@@ -64,6 +65,7 @@ class QueryBuilder extends BaseQueryBuilder
             default:
                 if ($this->getMaxResults() !== null) {
                     $result .= ' LIMIT :' . self::PARAM_MAX_RESULT;
+                    /** @var int|mixed $firstResult */
                     $firstResult = $this->getFirstResult();
 
                     if (\is_int($firstResult) && $firstResult > 0) {
