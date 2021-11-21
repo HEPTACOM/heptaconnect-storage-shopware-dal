@@ -73,13 +73,23 @@ class RouteCreate implements RouteCreateActionInterface
 
         foreach ($allCapabilities as $capability) {
             if (!\array_key_exists($capability, $capabilityIds)) {
-                throw new InvalidCreatePayloadException($payload, 1636573805);
+                /** @var RouteCreatePayload $payload */
+                foreach ($payloads as $payload) {
+                    if (\in_array($capability, $payload->getCapabilities(), true)) {
+                        throw new InvalidCreatePayloadException($payload, 1636573805);
+                    }
+                }
             }
         }
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
-                throw new InvalidCreatePayloadException($payload, 1636573806);
+                /** @var RouteCreatePayload $payload */
+                foreach ($payloads as $payload) {
+                    if ($payload->getEntityType() === $entityType) {
+                        throw new InvalidCreatePayloadException($payload, 1636573806);
+                    }
+                }
             }
         }
 
