@@ -84,7 +84,7 @@ class RouteCreate implements RouteCreateActionInterface
         }
 
         $keys = \iterable_to_traversable($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count()));
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
         $routeInserts = [];
         $routeCapabilityInserts = [];
         $result = [];

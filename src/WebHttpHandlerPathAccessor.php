@@ -47,12 +47,13 @@ class WebHttpHandlerPathAccessor
             $typeIds = \array_map('bin2hex', $builder->execute()->fetchAll(FetchMode::COLUMN));
             $foundIds = [];
             $inserts = [];
+            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
             foreach ($nonMatchingKeys as $nonMatchingKey) {
                 $inserts[$nonMatchingHexes[$nonMatchingKey]] = [
                     'id' => $nonMatchingBytes[$nonMatchingKey],
                     'path' => $nonMatchingKey,
-                    'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+                    'created_at' => $now,
                 ];
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }

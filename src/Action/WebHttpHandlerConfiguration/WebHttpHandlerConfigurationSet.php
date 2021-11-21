@@ -80,7 +80,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             }
         }
 
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
         $deletes = [];
         $upserts = [];
 

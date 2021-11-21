@@ -42,7 +42,7 @@ class WebHttpHandlerAccessor
 
         $inserts = [];
         $result = [];
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
         foreach (\array_chunk($httpHandlerPaths, 25, true) as $httpHandlerPathChunks) {
             $b = clone $builder;
