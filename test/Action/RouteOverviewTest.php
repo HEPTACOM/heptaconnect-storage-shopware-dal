@@ -153,11 +153,11 @@ class RouteOverviewTest extends TestCase
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
-            if ($item->getRoute()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;
             }
 
-            if ($item->getRoute()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
                 $indexB = $index;
             }
         }
