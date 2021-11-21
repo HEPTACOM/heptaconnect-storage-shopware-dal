@@ -93,7 +93,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             if ($payload->getValue() === null) {
                 $deletes[] = [
                     'handler_id' => \hex2bin($handlerId),
-                    'key' => $payload->getKey(),
+                    'key' => $payload->getConfigurationKey(),
                 ];
 
                 continue;
@@ -102,7 +102,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             $upserts[] = [
                 'id' => Uuid::randomBytes(),
                 'handler_id' => \hex2bin($handlerId),
-                '`key`' => $payload->getKey(),
+                '`key`' => $payload->getConfigurationKey(),
                 'value' => \serialize($payload->getValue()),
                 'type' => 'serialized',
                 'created_at' => $now,
