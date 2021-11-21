@@ -38,7 +38,7 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
         }
 
         $builder = $this->getBuilderCached();
-        $builder->setParameter(':key', $criteria->getKey());
+        $builder->setParameter(':key', $criteria->getConfigurationKey());
         $builder->setParameter(':pathId', \hex2bin($this->pathIdResolver->getIdFromPath($criteria->getPath())), Type::BINARY);
         $builder->setParameter(':portalNodeKey', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
 
