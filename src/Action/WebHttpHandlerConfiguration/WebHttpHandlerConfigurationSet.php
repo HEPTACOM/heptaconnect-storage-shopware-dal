@@ -90,7 +90,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             $pathId = $handlerPathIds[$payload->getPath()];
             $handlerId = $handlerComponentIds[$portalNodeKey->getUuid() . $payload->getPath()];
 
-            if ($payload->getValue() === null) {
+            if ($payload->getConfigurationValue() === null) {
                 $deletes[] = [
                     'handler_id' => \hex2bin($handlerId),
                     'key' => $payload->getConfigurationKey(),
@@ -103,7 +103,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
                 'id' => Uuid::randomBytes(),
                 'handler_id' => \hex2bin($handlerId),
                 '`key`' => $payload->getConfigurationKey(),
-                'value' => \serialize($payload->getValue()),
+                'value' => \serialize($payload->getConfigurationValue()),
                 'type' => 'serialized',
                 'created_at' => $now,
                 'updated_at' => $now,
