@@ -39,35 +39,6 @@ class ConfigurationStorageTest extends TestCase
         $storage->setConfiguration(new PortalNodeStorageKey('2281f7b9f4e847d5b0bc084288b871b1'), ['foo' => 'bar']);
     }
 
-    public function testSetConfigurationNonArrayStored(): void
-    {
-        /** @var SystemConfigService&MockObject $systemConfigService */
-        $systemConfigService = $this->createMock(SystemConfigService::class);
-        $systemConfigService->expects(static::once())
-            ->method('get')
-            ->with(static::logicalAnd(
-                static::stringContains('2281f7b9f4e847d5b0bc084288b871b1'),
-                static::logicalNot(static::equalTo('2281f7b9f4e847d5b0bc084288b871b1'))
-            ))
-            ->willReturn('party');
-        $systemConfigService->expects(static::once())
-            ->method('set')
-            ->with(
-                static::logicalAnd(
-                    static::stringContains('2281f7b9f4e847d5b0bc084288b871b1'),
-                    static::logicalNot(static::equalTo('2281f7b9f4e847d5b0bc084288b871b1'))
-                ),
-                static::logicalAnd(
-                    static::isType(IsType::TYPE_ARRAY),
-                    static::arrayHasKey('foo'),
-                    static::arrayHasKey('value')
-                )
-            );
-
-        $storage = new ConfigurationStorage($systemConfigService);
-        $storage->setConfiguration(new PortalNodeStorageKey('2281f7b9f4e847d5b0bc084288b871b1'), ['foo' => 'bar']);
-    }
-
     public function testGetConfiguration(): void
     {
         /** @var SystemConfigService&MockObject $systemConfigService */
