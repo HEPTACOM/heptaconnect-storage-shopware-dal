@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindCriteria;
@@ -44,8 +44,8 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
 
         $statement = $builder->execute();
 
-        if (!$statement instanceof Statement) {
-            throw new \LogicException('$builder->execute() should have returned a Statement', 1637467902);
+        if (!$statement instanceof ResultStatement) {
+            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637542091);
         }
 
         $row = $statement->fetch(FetchMode::ASSOCIATIVE);
