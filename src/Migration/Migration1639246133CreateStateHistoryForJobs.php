@@ -14,7 +14,7 @@ CREATE TABLE `heptaconnect_job_state` (
   `name` VARBINARY(128) NOT NULL,
   `created_at` DATETIME(3) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `heptaconnect_job_state_name_uindex` (`name`)
+  UNIQUE KEY `uniq.heptaconnect_job_state.name` (`name`)
 )
 ENGINE=InnoDB
 DEFAULT CHARSET='binary'
