@@ -49,9 +49,9 @@ class JobStart implements JobStartActionInterface
                     ->fetchAll(FetchMode::COLUMN) ?: [];
 
                 $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
-                $result = $this->packResult($affectedJobIds, $skippedJobIds);
-
                 $jobIds = $affectedJobIds;
+            } else {
+                $skippedJobIds = [];
             }
 
             foreach ($jobIds as $jobId) {
@@ -68,7 +68,7 @@ class JobStart implements JobStartActionInterface
                 ]);
             }
 
-            return $result;
+            return $this->packResult($jobIds, $skippedJobIds);
         });
     }
 
