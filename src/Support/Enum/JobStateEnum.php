@@ -5,15 +5,17 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum;
 
 abstract class JobStateEnum
 {
+    private static ?string $open = null;
+
     private static ?string $started = null;
 
     private static ?string $failed = null;
 
     private static ?string $finished = null;
 
-    public static function open(): ?string
+    public static function open(): string
     {
-        return null;
+        return self::$open ??= \hex2bin('3aee495720734539b98f0605c33e59d2');
     }
 
     public static function started(): string
