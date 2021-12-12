@@ -21,6 +21,12 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor
  */
 class RouteCreateTest extends TestCase
