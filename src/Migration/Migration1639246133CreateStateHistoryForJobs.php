@@ -34,7 +34,7 @@ ENGINE=InnoDB
 DEFAULT CHARSET='binary'
 COLLATE='binary';
 
-ALTER TABLE heptaconnect_job ADD state_id BINARY(16) NULL AFTER payload_id;
+ALTER TABLE heptaconnect_job ADD state_id BINARY(16) NOT NULL AFTER payload_id;
 
 ALTER TABLE heptaconnect_job
     ADD CONSTRAINT `fk.heptaconnect_job.state_id`
