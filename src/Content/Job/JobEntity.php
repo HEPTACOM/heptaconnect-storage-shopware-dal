@@ -8,6 +8,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntit
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
+/**
+ * @deprecated DAL usage is discouraged. Use route specific actions instead
+ */
 class JobEntity extends Entity
 {
     use EntityIdTrait;
