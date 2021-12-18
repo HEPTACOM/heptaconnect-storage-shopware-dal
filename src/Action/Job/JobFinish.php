@@ -7,16 +7,16 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Start\JobStartActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Start\JobStartPayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Start\JobStartResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Finish\JobFinishActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Finish\JobFinishPayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Finish\JobFinishResult;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
-class JobStart implements JobStartActionInterface
+class JobFinish implements JobFinishActionInterface
 {
     private Connection $connection;
 
@@ -29,9 +29,9 @@ class JobStart implements JobStartActionInterface
         $this->connection = $connection;
     }
 
-    public function start(JobStartPayload $payload): JobStartResult
+    public function finish(JobFinishPayload $payload): JobFinishResult
     {
-        return $this->connection->transactional(function (Connection $connection) use ($payload): JobStartResult {
+        return $this->connection->transactional(function (Connection $connection) use ($payload): JobFinishResult {
             $jobIds = $this->getJobIds($payload);
             $createdAt = $payload->getCreatedAt()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
             $message = $payload->getMessage();
@@ -58,7 +58,7 @@ class JobStart implements JobStartActionInterface
                 $connection->insert('heptaconnect_job_history', [
                     'id' => Uuid::uuid4()->getBytes(),
                     'job_id' => $jobId,
-                    'state_id' => JobStateEnum::started(),
+                    'state_id' => JobStateEnum::finished(),
                     'message' => $message,
                     'created_at' => $createdAt,
                 ], [
@@ -72,7 +72,7 @@ class JobStart implements JobStartActionInterface
         });
     }
 
-    protected function getJobIds(JobStartPayload $payload): array
+    protected function getJobIds(JobFinishPayload $payload): array
     {
         $jobIds = [];
 
@@ -98,11 +98,12 @@ class JobStart implements JobStartActionInterface
         $expr = $builder->expr();
 
         return $this->updateQueryBuilder = $builder->update('heptaconnect_job', 'job')
-            ->set('job.state_id', ':stateId')
+            ->set('job.state_id', ':newStateId')
             ->set('job.transaction_id', ':transactionId')
             ->andWhere($expr->in('job.id', ':jobIds'))
-            ->andWhere($expr->neq('job.state_id', ':stateId'))
-            ->setParameter('stateId', JobStateEnum::started(), Types::BINARY);
+            ->andWhere($expr->eq('job.state_id', ':oldStateId'))
+            ->setParameter('newStateId', JobStateEnum::finished(), Types::BINARY)
+            ->setParameter('oldStateId', JobStateEnum::started(), Types::BINARY);
     }
 
     protected function getSelectQueryBuilder(Connection $connection): QueryBuilder
@@ -119,12 +120,12 @@ class JobStart implements JobStartActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
+    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobFinishResult
     {
-        $startedJobs = new JobKeyCollection();
+        $finishedJobs = new JobKeyCollection();
 
         foreach ($affectedJobIds as $affectedJobId) {
-            $startedJobs->push([new JobStorageKey($affectedJobId)]);
+            $finishedJobs->push([new JobStorageKey($affectedJobId)]);
         }
 
         $skippedJobs = new JobKeyCollection();
@@ -133,6 +134,6 @@ class JobStart implements JobStartActionInterface
             $skippedJobs->push([new JobStorageKey($skippedJobId)]);
         }
 
-        return new JobStartResult($startedJobs, $skippedJobs);
+        return new JobFinishResult($finishedJobs, $skippedJobs);
     }
 }
