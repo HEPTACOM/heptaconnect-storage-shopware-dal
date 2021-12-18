@@ -27,7 +27,7 @@ CREATE TABLE `heptaconnect_job_history` (
   `message` TEXT,
   `created_at` DATETIME(3) NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk.heptaconnect_job_history.job_id` FOREIGN KEY (`job_id`) REFERENCES `heptaconnect_job` (`id`),
+  CONSTRAINT `fk.heptaconnect_job_history.job_id` FOREIGN KEY (`job_id`) REFERENCES `heptaconnect_job` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `fk.heptaconnect_job_history.state_id` FOREIGN KEY (`state_id`) REFERENCES `heptaconnect_job_state` (`id`)
 )
 ENGINE=InnoDB
@@ -35,7 +35,7 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 
 ALTER TABLE heptaconnect_job
-    ADD state_id BINARY(16) NOT NULL AFTER payload_id;
+    ADD state_id BINARY(16) NULL AFTER payload_id;
 
 ALTER TABLE heptaconnect_job
     ADD transaction_id BINARY(16) NULL;
