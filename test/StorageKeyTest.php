@@ -5,7 +5,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
  */
@@ -44,6 +42,5 @@ class StorageKeyTest extends TestCase
         yield [new CronjobStorageKey('abc')];
         yield [new MappingNodeStorageKey('abc')];
         yield [new PortalNodeStorageKey('abc')];
-        yield [new JobPayloadStorageKey('abc')];
     }
 }

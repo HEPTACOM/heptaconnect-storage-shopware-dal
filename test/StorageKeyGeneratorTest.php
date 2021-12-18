@@ -132,6 +132,5 @@ class StorageKeyGeneratorTest extends TestCase
         yield [MappingKeyInterface::class];
         yield [MappingExceptionKeyInterface::class];
         yield [JobKeyInterface::class];
-        yield [JobPayloadKeyInterface::class];
     }
 }
