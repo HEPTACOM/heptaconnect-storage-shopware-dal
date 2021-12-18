@@ -52,7 +52,6 @@ class JobGet implements JobGetActionInterface
         }
 
         return $ids === [] ? [] : $this->yieldJobs($ids);
-
     }
 
     protected function getBuilderCached(): QueryBuilder
