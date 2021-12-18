@@ -95,7 +95,7 @@ class JobGet implements JobGetActionInterface
                 'job',
                 'heptaconnect_job_payload',
                 'job_payload',
-                $builder->expr()->eq('portal_node.id', 'job.portal_node_id')
+                $builder->expr()->eq('job_payload.id', 'job.payload_id')
             )
             ->select([
                 'job.id job_id',
