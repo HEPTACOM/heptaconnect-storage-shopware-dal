@@ -39,15 +39,19 @@ class JobGetTest extends TestCase
 
         $action = new JobGet($connection, new QueryIterator());
         $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
+        $count = 0;
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetResult $item */
         foreach ($action->get($criteria) as $item) {
+            ++$count;
             static::assertSame(Simple::class, $item->getMappingComponent()->getEntityType());
             static::assertSame('123', $item->getMappingComponent()->getExternalId());
             static::assertSame([
                 'foo' => 'bar',
             ], $item->getPayload());
         }
+
+        self::assertSame(1, $count);
     }
 
     protected function setUp(): void

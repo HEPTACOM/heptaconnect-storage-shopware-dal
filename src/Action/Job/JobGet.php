@@ -83,7 +83,7 @@ class JobGet implements JobGetActionInterface
                 'job',
                 'heptaconnect_job_type',
                 'job_type',
-                $builder->expr()->eq('entity_type.id', 'job.job_type_id')
+                $builder->expr()->eq('job_type.id', 'job.job_type_id')
             )
             ->innerJoin(
                 'job',
@@ -119,7 +119,7 @@ class JobGet implements JobGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
 
-        yield from $this->iterator->iterate($builder, static fn (array $row): JobGetResult => new JobGetResult(
+        yield from $this->iterator->iterate($builder, fn (array $row): JobGetResult => new JobGetResult(
             (string) $row['job_type_type'],
             new JobStorageKey(Uuid::fromBytesToHex((string) $row['job_id'])),
             new MappingComponentStruct(
