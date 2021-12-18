@@ -31,7 +31,7 @@ class JobStart implements JobStartActionInterface
 
     public function start(JobStartPayload $payload): JobStartResult
     {
-        return $this->connection->transactional(function (Connection $connection) use ($payload) {
+        return $this->connection->transactional(function (Connection $connection) use ($payload): JobStartResult {
             $jobIds = $this->getJobIds($payload);
             $createdAt = $payload->getCreatedAt()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
             $message = $payload->getMessage();
