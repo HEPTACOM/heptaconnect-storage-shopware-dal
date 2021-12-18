@@ -122,10 +122,10 @@ class JobFinish implements JobFinishActionInterface
 
     protected function packResult(array $affectedJobIds, array $skippedJobIds): JobFinishResult
     {
-        $startedJobs = new JobKeyCollection();
+        $finishedJobs = new JobKeyCollection();
 
         foreach ($affectedJobIds as $affectedJobId) {
-            $startedJobs->push([new JobStorageKey($affectedJobId)]);
+            $finishedJobs->push([new JobStorageKey($affectedJobId)]);
         }
 
         $skippedJobs = new JobKeyCollection();
@@ -134,6 +134,6 @@ class JobFinish implements JobFinishActionInterface
             $skippedJobs->push([new JobStorageKey($skippedJobId)]);
         }
 
-        return new JobFinishResult($startedJobs, $skippedJobs);
+        return new JobFinishResult($finishedJobs, $skippedJobs);
     }
 }
