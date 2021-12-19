@@ -22,6 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -102,83 +103,86 @@ class JobCreate implements JobCreateActionInterface
         }
 
         $jobPayloadChecksumIds = $this->getPayloadIds(\array_column($jobPayloads, 'checksum'));
-        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $jobInserts = [];
-        $payloadInserts = [];
         $result = new JobCreateResults();
 
-        /** @var JobCreatePayload $payload */
-        foreach ($payloads as $payloadId => $payload) {
-            $jobTypeId = $jobTypeIds[$payload->getJobType()];
-            $entityTypeId = $entityTypeIds[$payload->getMapping()->getEntityType()];
-            /** @var PortalNodeStorageKey $portalNodeKey */
-            $portalNodeKey = $payload->getMapping()->getPortalNodeKey();
+        $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds) {
+            $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
+            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $jobInserts = [];
+            $payloadInserts = [];
 
-            $key = $keys->current();
-            $keys->next();
+            /** @var JobCreatePayload $payload */
+            foreach ($payloads as $payloadId => $payload) {
+                $jobTypeId = $jobTypeIds[$payload->getJobType()];
+                $entityTypeId = $entityTypeIds[$payload->getMapping()->getEntityType()];
+                /** @var PortalNodeStorageKey $portalNodeKey */
+                $portalNodeKey = $payload->getMapping()->getPortalNodeKey();
 
-            if (!$key instanceof JobStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException(\get_class($key)));
+                $key = $keys->current();
+                $keys->next();
+
+                if (!$key instanceof JobStorageKey) {
+                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException(\get_class($key)));
+                }
+
+                $jobPayloadKey = null;
+                $jobPayload = $payload->getJobPayload();
+                $jobPayloadIndex = $jobPayloads[$payloadId] ?? null;
+
+                if ($jobPayloadIndex !== null && $jobPayload !== null) {
+                    $jobPayloadKey = $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] ?? null;
+
+                    if ($jobPayloadKey === null) {
+                        $jobPayloadKey = Uuid::uuid4()->getBytes();
+                        $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] = $jobPayloadKey;
+                        $payloadInserts[] = [
+                            'id' => $jobPayloadKey,
+                            'checksum' => $jobPayloadIndex['checksum'],
+                            'payload' => \gzcompress($jobPayloadIndex['serialized']),
+                            'format' => self::FORMAT_SERIALIZED_GZPRESS,
+                            'created_at' => $now,
+                        ];
+                    }
+                }
+
+                $jobInserts[] = [
+                    'id' => \hex2bin($key->getUuid()),
+                    'external_id' => $payload->getMapping()->getExternalId(),
+                    'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+                    'entity_type_id' => \hex2bin($entityTypeId),
+                    'job_type_id' => \hex2bin($jobTypeId),
+                    'payload_id' => $jobPayloadKey,
+                    'state_id' => JobStateEnum::open(),
+                    'created_at' => $now,
+                ];
+
+                $result->push([new JobCreateResult($key)]);
             }
 
-            $jobPayloadKey = null;
-            $jobPayload = $payload->getJobPayload();
-            $jobPayloadIndex = $jobPayloads[$payloadId] ?? null;
+            try {
+                $this->connection->transactional(function () use ($jobInserts, $payloadInserts): void {
+                    // TODO batch
+                    foreach ($payloadInserts as $insert) {
+                        $this->connection->insert('heptaconnect_job_payload', $insert, [
+                            'id' => Types::BINARY,
+                        ]);
+                    }
 
-            if ($jobPayloadIndex !== null && $jobPayload !== null) {
-                $jobPayloadKey = $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] ?? null;
-
-                if ($jobPayloadKey === null) {
-                    $jobPayloadKey = Uuid::uuid4()->getBytes();
-                    $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] = $jobPayloadKey;
-                    $payloadInserts[] = [
-                        'id' => $jobPayloadKey,
-                        'checksum' => $jobPayloadIndex['checksum'],
-                        'payload' => \gzcompress($jobPayloadIndex['serialized']),
-                        'format' => self::FORMAT_SERIALIZED_GZPRESS,
-                        'created_at' => $now,
-                    ];
-                }
+                    foreach ($jobInserts as $insert) {
+                        $this->connection->insert('heptaconnect_job', $insert, [
+                            'id' => Types::BINARY,
+                            'portal_node_id' => Types::BINARY,
+                            'entity_type_id' => Types::BINARY,
+                            'job_type_id' => Types::BINARY,
+                            'payload_id' => Types::BINARY,
+                            'state_id' => Types::BINARY,
+                        ]);
+                    }
+                });
+            } catch (\Throwable $throwable) {
+                throw new CreateException(1639268734, $throwable);
             }
-
-            $jobInserts[] = [
-                'id' => \hex2bin($key->getUuid()),
-                'external_id' => $payload->getMapping()->getExternalId(),
-                'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-                'entity_type_id' => \hex2bin($entityTypeId),
-                'job_type_id' => \hex2bin($jobTypeId),
-                'payload_id' => $jobPayloadKey,
-                'state_id' => JobStateEnum::open(),
-                'created_at' => $now,
-            ];
-
-            $result->push([new JobCreateResult($key)]);
-        }
-
-        try {
-            $this->connection->transactional(function () use ($jobInserts, $payloadInserts): void {
-                // TODO batch
-                foreach ($payloadInserts as $insert) {
-                    $this->connection->insert('heptaconnect_job_payload', $insert, [
-                        'id' => Types::BINARY,
-                    ]);
-                }
-
-                foreach ($jobInserts as $insert) {
-                    $this->connection->insert('heptaconnect_job', $insert, [
-                        'id' => Types::BINARY,
-                        'portal_node_id' => Types::BINARY,
-                        'entity_type_id' => Types::BINARY,
-                        'job_type_id' => Types::BINARY,
-                        'payload_id' => Types::BINARY,
-                        'state_id' => Types::BINARY,
-                    ]);
-                }
-            });
-        } catch (\Throwable $throwable) {
-            throw new CreateException(1639268734, $throwable);
-        }
+        });
 
         return $result;
     }
@@ -189,7 +193,7 @@ class JobCreate implements JobCreateActionInterface
      */
     private function getPayloadIds(array $checksums): array
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
@@ -199,6 +203,7 @@ class JobCreate implements JobCreateActionInterface
             ])
             ->where($builder->expr()->in('job_payload.checksum', ':checksums'))
             ->setParameter('checksums', $checksums, Connection::PARAM_STR_ARRAY);
+        $builder->setIsForUpdate(true);
 
         $statement = $builder->execute();
 
