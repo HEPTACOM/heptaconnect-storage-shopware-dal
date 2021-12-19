@@ -12,7 +12,6 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterfac
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\JobPayloadKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
