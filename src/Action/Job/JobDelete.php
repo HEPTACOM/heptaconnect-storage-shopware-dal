@@ -13,6 +13,21 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class JobDelete implements JobDeleteActionInterface
 {
+    private CONST DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
+DELETE
+    job_payload
+FROM
+    heptaconnect_job_payload job_payload
+LEFT JOIN
+    heptaconnect_job job
+ON
+    job.payload_id = job_payload.id
+WHERE
+    job.id IS NULL
+AND
+    job_payload.id IN (:ids)
+SQL;
+
     private Connection $connection;
 
     public function __construct(Connection $connection)
@@ -32,12 +47,24 @@ class JobDelete implements JobDeleteActionInterface
             $ids[] = Uuid::fromHexToBytes($jobKey->getUuid());
         }
 
-        $builder = new QueryBuilder($this->connection);
-        $builder
+        $selectBuilder = new QueryBuilder($this->connection);
+        $payloadIds = $selectBuilder
+            ->from('heptaconnect_job', 'job')
+            ->select('job.payload_id')
+            ->where($selectBuilder->expr()->in('id', ':ids'))
+            ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
+            ->execute()
+            ->fetchAll(\PDO::FETCH_COLUMN);
+
+        $deleteJobBuilder = new QueryBuilder($this->connection);
+        $deleteJobBuilder
             ->delete('heptaconnect_job')
-            ->where($builder->expr()->in('id', ':ids'))
+            ->where($deleteJobBuilder->expr()->in('id', ':ids'))
             ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
             ->execute();
-        // TODO lock payload check and delete unused payloads
+
+        if ($payloadIds !== []) {
+            $this->connection->executeStatement(self::DELETE_AFFECTED_JOBS_PAYLOAD, ['ids' => $payloadIds], ['ids' => Connection::PARAM_STR_ARRAY]);
+        }
     }
 }

@@ -35,6 +35,7 @@ class JobDeleteTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
+        self::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
         self::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
 
         $action = new JobDelete($connection);
@@ -42,6 +43,7 @@ class JobDeleteTest extends TestCase
         $action->delete($criteria);
 
         self::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
+        self::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
     }
 
     protected function setUp(): void
