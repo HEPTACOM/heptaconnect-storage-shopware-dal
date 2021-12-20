@@ -11,8 +11,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeCollect
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Bundle;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
@@ -31,9 +29,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\DefinitionNotFoundExc
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589662318CreateDatasetEntityTypeTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589673188CreateMappingNodeTable
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1589674916CreateMappingTable
@@ -134,25 +129,6 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('deletedAt'));
         } catch (DefinitionNotFoundException $e) {
             static::fail('Failed on loading heptaconnect_portal_node: '.$e->getMessage());
-        }
-
-        try {
-            $definition = $definitionRegistration->getByEntityName('heptaconnect_route');
-            static::assertEquals('heptaconnect_route', $definition->getEntityName());
-            static::assertEquals(RouteCollection::class, $definition->getCollectionClass());
-            static::assertEquals(RouteEntity::class, $definition->getEntityClass());
-            static::assertTrue($definition->getFields()->has('id'));
-            static::assertTrue($definition->getFields()->has('typeId'));
-            static::assertTrue($definition->getFields()->has('sourceId'));
-            static::assertTrue($definition->getFields()->has('targetId'));
-            static::assertTrue($definition->getFields()->has('createdAt'));
-            static::assertTrue($definition->getFields()->has('updatedAt'));
-            static::assertTrue($definition->getFields()->has('deletedAt'));
-            static::assertTrue($definition->getFields()->has('type'));
-            static::assertTrue($definition->getFields()->has('source'));
-            static::assertTrue($definition->getFields()->has('target'));
-        } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_route: '.$e->getMessage());
         }
     }
 }
