@@ -90,20 +90,4 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
             }
         }
     }
-
-    public function create(string $className): PortalNodeKeyInterface
-    {
-        $portalNodeKey = $this->storageKeyGenerator->generateKey(PortalNodeKeyInterface::class);
-
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $this->portalNodes->create([[
-            'id' => $portalNodeKey->getUuid(),
-            'className' => $className,
-        ]], $this->contextFactory->create());
-
-        return $portalNodeKey;
-    }
 }
