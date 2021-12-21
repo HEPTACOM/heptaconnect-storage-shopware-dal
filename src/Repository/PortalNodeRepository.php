@@ -106,18 +106,4 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
 
         return $portalNodeKey;
     }
-
-    public function delete(PortalNodeKeyInterface $portalNodeKey): void
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $context = $this->contextFactory->create();
-        $this->throwNotFoundWhenNoMatch($this->portalNodes, $portalNodeKey->getUuid(), $context);
-        $this->throwNotFoundWhenNoChange($this->portalNodes->update([[
-            'id' => $portalNodeKey->getUuid(),
-            'deletedAt' => \date_create(),
-        ]], $context));
-    }
 }
