@@ -41,7 +41,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
             return;
         }
 
-        $searchBuilder = $this->getDeleteQuery();
+        $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
         $foundIds = $searchBuilder->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
