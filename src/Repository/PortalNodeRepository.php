@@ -62,19 +62,6 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
         return $className;
     }
 
-    public function listAll(): iterable
-    {
-        $criteria = (new Criteria())->setLimit(50)->addFilter(new EqualsFilter('deletedAt', null));
-
-        $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
-
-        while (!\is_null($ids = $iterator->fetchIds())) {
-            foreach ($ids as $id) {
-                yield new PortalNodeStorageKey($id);
-            }
-        }
-    }
-
     public function listByClass(string $className): iterable
     {
         $criteria = (new Criteria())->setLimit(50)->addFilter(
