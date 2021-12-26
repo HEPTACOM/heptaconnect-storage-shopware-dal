@@ -12,7 +12,6 @@ use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -60,21 +59,5 @@ class PortalNodeRepository extends PortalNodeRepositoryContract
         $className = $portalNode->getClassName();
 
         return $className;
-    }
-
-    public function listByClass(string $className): iterable
-    {
-        $criteria = (new Criteria())->setLimit(50)->addFilter(
-            new EqualsFilter('deletedAt', null),
-            new EqualsFilter('className', $className)
-        );
-
-        $iterator = new RepositoryIterator($this->portalNodes, $this->contextFactory->create(), $criteria);
-
-        while (!\is_null($ids = $iterator->fetchIds())) {
-            foreach ($ids as $id) {
-                yield new PortalNodeStorageKey($id);
-            }
-        }
     }
 }
