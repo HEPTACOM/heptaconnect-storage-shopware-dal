@@ -3,61 +3,8 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\PortalNodeRepositoryContract;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
-use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
-use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class PortalNodeRepository extends PortalNodeRepositoryContract
 {
-    use EntityRepositoryChecksTrait;
-
-    private EntityRepositoryInterface $portalNodes;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private ContextFactory $contextFactory;
-
-    public function __construct(
-        EntityRepositoryInterface $portalNodes,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        ContextFactory $contextFactory
-    ) {
-        $this->portalNodes = $portalNodes;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->contextFactory = $contextFactory;
-    }
-
-    public function read(PortalNodeKeyInterface $portalNodeKey): string
-    {
-        if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-            return $portalNodeKey->getPortalType();
-        }
-
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $criteria = (new Criteria([$portalNodeKey->getUuid()]))
-            ->addFilter(new EqualsFilter('deletedAt', null));
-
-        $portalNode = $this->portalNodes->search($criteria, $this->contextFactory->create())->first();
-
-        if (!$portalNode instanceof PortalNodeEntity) {
-            throw new NotFoundException();
-        }
-
-        /** @var class-string<\Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract> $className */
-        $className = $portalNode->getClassName();
-
-        return $className;
-    }
 }
