@@ -35,7 +35,7 @@ class PortalNodeListTest extends TestCase
         static::assertCount(0, $resultItems);
     }
 
-    public function testCapability(): void
+    public function testNormal(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $portalNode = Uuid::randomBytes();
