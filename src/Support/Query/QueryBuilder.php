@@ -13,6 +13,18 @@ class QueryBuilder extends BaseQueryBuilder
 
     public const PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
+    private bool $isForUpdate = false;
+
+    public function getIsForUpdate(): bool
+    {
+        return $this->isForUpdate;
+    }
+
+    public function setIsForUpdate(bool $isForUpdate): void
+    {
+        $this->isForUpdate = $isForUpdate;
+    }
+
     public function setFirstResult($firstResult)
     {
         /** @var int|mixed $firstResult */
@@ -71,6 +83,8 @@ class QueryBuilder extends BaseQueryBuilder
                     if (\is_int($firstResult) && $firstResult > 0) {
                         $result .= ' OFFSET :' . self::PARAM_FIRST_RESULT;
                     }
+                } else if ($this->isForUpdate) {
+                    $result .= ' FOR UPDATE';
                 }
 
                 break;

@@ -13,6 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  * @method JobEntity|null get(string $key)
  * @method JobEntity|null first()
  * @method JobEntity|null last()
+ *
+ * @deprecated DAL usage is discouraged. Use job specific actions instead
  */
 class JobCollection extends EntityCollection
 {
