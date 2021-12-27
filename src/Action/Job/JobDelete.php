@@ -9,7 +9,6 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Delete\JobDeleteCrite
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class JobDelete implements JobDeleteActionInterface
 {
@@ -44,7 +43,7 @@ SQL;
                 throw new UnsupportedStorageKeyException(\get_class($jobKey));
             }
 
-            $ids[] = Uuid::fromHexToBytes($jobKey->getUuid());
+            $ids[] = \hex2bin($jobKey->getUuid());
         }
 
         $selectBuilder = new QueryBuilder($this->connection);

@@ -13,7 +13,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class JobGet implements JobGetActionInterface
 {
@@ -116,13 +115,13 @@ class JobGet implements JobGetActionInterface
     protected function yieldJobs(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', \array_map('hex2bin', $ids), Connection::PARAM_STR_ARRAY);
 
         yield from $this->iterator->iterate($builder, fn (array $row): JobGetResult => new JobGetResult(
             (string) $row['job_type_type'],
-            new JobStorageKey(Uuid::fromBytesToHex((string) $row['job_id'])),
+            new JobStorageKey(\bin2hex((string) $row['job_id'])),
             new MappingComponentStruct(
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['portal_node_id'])),
+                new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
                 (string) $row['job_entity_type'],
                 (string) $row['job_external_id']
             ),
