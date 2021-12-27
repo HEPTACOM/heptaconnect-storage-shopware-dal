@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Fail\JobFailActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Fail\JobFailPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Fail\JobFailResult;
+use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
@@ -78,8 +79,7 @@ class JobFail implements JobFailActionInterface
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                // TODO use custom exception
-                throw new \Exception();
+                throw new UnsupportedStorageKeyException(\get_class($jobKey));
             }
 
             $jobIds[\hex2bin($jobKey->getUuid())] = true;
