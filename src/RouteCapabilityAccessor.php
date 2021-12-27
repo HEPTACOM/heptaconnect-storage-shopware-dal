@@ -24,7 +24,7 @@ class RouteCapabilityAccessor
      */
     public function getIdsForNames(array $capabilities): array
     {
-        $capabilities = \array_unique($capabilities);
+        $capabilities = \array_keys(\array_flip($capabilities));
         $knownKeys = \array_keys($this->knownCapabilities);
         $nonMatchingKeys = \array_diff($capabilities, $knownKeys);
 

@@ -11,6 +11,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
+/**
+ * @deprecated DAL usage is discouraged. Use job specific actions instead
+ */
 class JobTypeDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'heptaconnect_job_type';

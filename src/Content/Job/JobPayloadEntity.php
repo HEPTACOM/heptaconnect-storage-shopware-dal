@@ -6,6 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
+/**
+ * @deprecated DAL usage is discouraged. Use job specific actions instead
+ */
 class JobPayloadEntity extends Entity
 {
     use EntityIdTrait;
