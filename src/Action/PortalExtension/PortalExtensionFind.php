@@ -37,12 +37,13 @@ class PortalExtensionFind implements PortalExtensionFindActionInterface
             ->fetchAllAssociative()
         ;
 
-        return new PortalExtensionFindResult(\array_map(static function (array $extension): array {
-            return [
-                'class' => (string) $extension['class_name'],
-                'active' => (bool) $extension['active'],
-            ];
-        }, $extensions));
+        $result = new PortalExtensionFindResult();
+
+        foreach ($extensions as $extension) {
+            $result->add((string) $extension['class_name'], (bool) $extension['active']);
+        }
+
+        return $result;
     }
 
     protected function getQueryBuilder(): QueryBuilder
