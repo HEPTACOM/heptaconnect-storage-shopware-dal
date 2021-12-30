@@ -39,7 +39,7 @@ class PortalNodeGet implements PortalNodeGetActionInterface
             $ids[] = $portalNodeKey->getUuid();
         }
 
-        return $ids === [] ? [] : $this->yieldPortalNodes($ids);
+        return $ids === [] ? [] : $this->iteratePortalNodes($ids);
     }
 
     protected function getBuilderCached(): QueryBuilder
@@ -76,7 +76,7 @@ class PortalNodeGet implements PortalNodeGetActionInterface
      *
      * @return iterable<PortalNodeGetResult>
      */
-    protected function yieldPortalNodes(array $ids): iterable
+    protected function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
