@@ -34,7 +34,7 @@ class RouteFind implements RouteFindActionInterface
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
         }
 
-        $targetKey = $criteria->getSource();
+        $targetKey = $criteria->getTarget();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($targetKey));
