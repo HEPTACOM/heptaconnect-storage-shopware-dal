@@ -6,19 +6,23 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Create\PortalNodeCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Create\PortalNodeCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Create\PortalNodeCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersistPayload;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
@@ -33,7 +37,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
@@ -41,11 +44,11 @@ class MappingPersisterTest extends TestCase
 {
     private MappingPersister $mappingPersister;
 
-    private PortalNodeRepository $portalNodeRepository;
-
     private MappingNodeRepository $mappingNodeRepository;
 
     private MappingRepository $mappingRepository;
+
+    private PortalNodeCreateActionInterface $portalNodeCreateAction;
 
     protected function setUp(): void
     {
@@ -69,11 +72,6 @@ class MappingPersisterTest extends TestCase
         $this->mappingPersister = new MappingPersister($shopwareMappingRepository, $connection);
         $storageKeyGenerator = new StorageKeyGenerator();
         $contextFactory = new ContextFactory();
-        $this->portalNodeRepository = new PortalNodeRepository(
-            $shopwarePortalNodeRepository,
-            $storageKeyGenerator,
-            $contextFactory
-        );
         $datasetEntityTypeAccessor = new EntityTypeAccessor($shopwareDatasetEntityTypeRepository);
         $this->mappingNodeRepository = new MappingNodeRepository(
             $storageKeyGenerator,
@@ -87,6 +85,7 @@ class MappingPersisterTest extends TestCase
             $shopwareMappingRepository,
             $contextFactory
         );
+        $this->portalNodeCreateAction = new PortalNodeCreate($connection, $storageKeyGenerator);
     }
 
     public function testPersistingSingleEntityMapping()
@@ -94,8 +93,12 @@ class MappingPersisterTest extends TestCase
         $externalIdSource = (string) Uuid::uuid4()->getHex();
         $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
@@ -130,8 +133,12 @@ class MappingPersisterTest extends TestCase
         $externalId2Source = (string) Uuid::uuid4()->getHex();
         $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey1 = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $mappingNodeKey2 = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
@@ -178,8 +185,12 @@ class MappingPersisterTest extends TestCase
         $externalId1Target = (string) Uuid::uuid4()->getHex();
         $externalId2Target = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
@@ -216,8 +227,12 @@ class MappingPersisterTest extends TestCase
         $externalId1Target = (string) Uuid::uuid4()->getHex();
         $externalId2Target = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
@@ -256,8 +271,12 @@ class MappingPersisterTest extends TestCase
         $externalIdSourceB = (string) Uuid::uuid4()->getHex();
         $externalIdTargetB = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKeyA = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $mappingNodeKeyB = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
@@ -312,8 +331,12 @@ class MappingPersisterTest extends TestCase
         $externalIdSource = (string) Uuid::uuid4()->getHex();
         $externalIdTarget = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
-        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
@@ -379,7 +402,10 @@ class MappingPersisterTest extends TestCase
     {
         $externalIdSource = (string) Uuid::uuid4()->getHex();
 
-        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
 
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
