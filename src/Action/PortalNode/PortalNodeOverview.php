@@ -83,7 +83,7 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 /* @phpstan-ignore-next-line */
                 (string) $row['portal_node_class_name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
+                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at']),
             )
         );
     }
@@ -109,7 +109,7 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
             ->select([
                 'portal_node.id id',
                 'portal_node.class_name portal_node_class_name',
-                'portal_node.created_at ct',
+                'portal_node.created_at created_at',
             ])
             ->where($builder->expr()->isNull('portal_node.deleted_at'));
     }
