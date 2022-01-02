@@ -189,6 +189,7 @@ class JobCreate implements JobCreateActionInterface
 
     /**
      * @param string[] $checksums
+     *
      * @return array<string, string>
      */
     private function getPayloadIds(array $checksums): array

@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 
 class JobDelete implements JobDeleteActionInterface
 {
-    private CONST DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
+    private const DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
 DELETE
     job_payload
 FROM

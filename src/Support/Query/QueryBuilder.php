@@ -83,7 +83,7 @@ class QueryBuilder extends BaseQueryBuilder
                     if (\is_int($firstResult) && $firstResult > 0) {
                         $result .= ' OFFSET :' . self::PARAM_FIRST_RESULT;
                     }
-                } else if ($this->isForUpdate) {
+                } elseif ($this->isForUpdate) {
                     $result .= ' FOR UPDATE';
                 }
 
