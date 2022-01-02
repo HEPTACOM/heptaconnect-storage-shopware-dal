@@ -17,8 +17,7 @@ create table heptaconnect_portal_node_extension
     active         bool                         not null,
     created_at     datetime(3)                  not null,
     updated_at     datetime(3)     default null null,
-    constraint heptaconnect_portal_node_extension_pk
-        primary key (id),
+    primary key (id),
     constraint `fk.heptaconnect_portal_node_extension.portal_node_id`
         foreign key (portal_node_id) references heptaconnect_portal_node (id)
             on update cascade on delete cascade
