@@ -11,11 +11,16 @@ use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalExtensionContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
-abstract class PortalExtensionSwitchActive
+abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private Connection $connection;
 
     private ?QueryBuilder $selectByClassNameQueryBuilder = null;
@@ -27,6 +32,7 @@ abstract class PortalExtensionSwitchActive
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+        $this->setLogger(new NullLogger());
     }
 
     abstract protected function getTargetActiveState(): int;
@@ -80,6 +86,8 @@ abstract class PortalExtensionSwitchActive
                     'portal_node_id' => Types::BINARY,
                 ]);
             } catch (\Throwable $exception) {
+                $this->logger->error($exception->getMessage());
+
                 continue;
             }
 
