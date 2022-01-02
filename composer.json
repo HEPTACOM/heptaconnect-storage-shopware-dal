@@ -62,5 +62,10 @@
             "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\Test\\": "test/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    },
     "website": "https://heptaconnect.io"
 }
