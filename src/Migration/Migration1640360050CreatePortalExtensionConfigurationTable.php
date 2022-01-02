@@ -11,11 +11,12 @@ class Migration1640360050CreatePortalExtensionConfigurationTable extends Migrati
     public const UP = <<<'SQL'
 create table heptaconnect_portal_node_extension
 (
-    id             binary(16)      not null,
-    portal_node_id binary(16)      not null,
-    class_name     varbinary(1020) not null,
-    active         bool            not null,
-    created_at     datetime(3)     not null,
+    id             binary(16)                   not null,
+    portal_node_id binary(16)                   not null,
+    class_name     varbinary(1020)              not null,
+    active         bool                         not null,
+    created_at     datetime(3)                  not null,
+    updated_at     datetime(3)     default null null,
     constraint heptaconnect_portal_node_extension_pk
         primary key (id),
     constraint `fk.heptaconnect_portal_node_extension.portal_node_id`

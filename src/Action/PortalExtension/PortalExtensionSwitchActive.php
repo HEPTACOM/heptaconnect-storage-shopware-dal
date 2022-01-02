@@ -93,6 +93,7 @@ abstract class PortalExtensionSwitchActive
 
             $affected = $this->getUpdateQueryBuilder()
                 ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
+                ->setParameter('now', $now)
                 ->execute();
 
             if ($affected === \count($updates)) {
@@ -166,6 +167,7 @@ abstract class PortalExtensionSwitchActive
             $this->updateQueryBuilder
                 ->update('heptaconnect_portal_node_extension', 'portal_node_extension')
                 ->set('portal_node_extension.active', $this->getTargetActiveState())
+                ->set('portal_node_extension.updated_at', ':now')
                 ->where($expr->in('portal_node_extension.id', ':ids'));
         }
 
