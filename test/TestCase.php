@@ -104,6 +104,10 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
+                if (\stripos($sql, 'INSERT INTO') === 0 && \stripos($sql, 'VALUES') !== false) {
+                    return;
+                }
+
                 $rawFrames = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS);
                 $startFrame = \array_search($this->parentClass, \array_column($rawFrames, 'class'), true);
 
