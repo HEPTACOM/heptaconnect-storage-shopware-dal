@@ -11,7 +11,6 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Get\PortalNode
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -76,7 +75,7 @@ class PortalNodeGetTest extends TestCase
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Get\PortalNodeGetResult $item */
         foreach ($action->get($criteria) as $item) {
-            static::assertSame(Simple::class, $item->getPortalClass());
+            static::assertSame(TestCase::class, $item->getPortalClass());
         }
     }
 }

@@ -47,6 +47,7 @@ class PortalExtensionDeactivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -91,6 +92,7 @@ class PortalExtensionDeactivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -126,7 +128,7 @@ class PortalExtensionDeactivateTest extends TestCase
         $payload->addExtension(self::class);
         $result = $action->deactivate($payload);
 
-        static::assertCount(0, $result->getPassedDeactivations());
+        static::assertCount(1, $result->getPassedDeactivations());
         static::assertFalse($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
@@ -135,6 +137,7 @@ class PortalExtensionDeactivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]

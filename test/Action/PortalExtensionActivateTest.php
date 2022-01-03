@@ -126,7 +126,7 @@ class PortalExtensionActivateTest extends TestCase
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
-        static::assertCount(0, $result->getPassedActivations());
+        static::assertCount(1, $result->getPassedActivations());
         static::assertFalse($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
