@@ -8,11 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayloads;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
@@ -83,7 +83,7 @@ class JobCreate implements JobCreateActionInterface
 
         foreach ($jobTypes as $jobType) {
             if (!\array_key_exists($jobType, $jobTypeIds)) {
-                /** @var JobCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getJobType() === $jobType) {
                         throw new InvalidCreatePayloadException($payload, 1639268731);
@@ -94,7 +94,7 @@ class JobCreate implements JobCreateActionInterface
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
-                /** @var JobCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getMapping()->getEntityType() === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1639268732);

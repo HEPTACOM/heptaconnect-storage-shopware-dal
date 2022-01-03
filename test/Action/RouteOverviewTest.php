@@ -6,8 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
@@ -172,7 +172,7 @@ class RouteOverviewTest extends TestCase
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_ASC,
         ]);
 
-        /** @var RouteOverviewResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_FIRST)));
 
@@ -190,7 +190,7 @@ class RouteOverviewTest extends TestCase
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_DESC,
         ]);
 
-        /** @var RouteOverviewResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_LAST)));
 
@@ -211,7 +211,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var RouteOverviewResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;
@@ -238,7 +238,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var RouteOverviewResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;

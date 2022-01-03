@@ -116,7 +116,7 @@ class JobFinishedListTest extends TestCase
         $count = 0;
         $finishedJobKey = new JobStorageKey(self::JOB_FINISHED);
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Listing\JobListFinishedResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Listing\JobListFinishedResult $item */
         foreach ($action->list() as $item) {
             ++$count;
             static::assertTrue($item->getJobKey()->equals($finishedJobKey));

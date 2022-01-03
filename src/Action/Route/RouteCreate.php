@@ -7,11 +7,11 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
@@ -50,7 +50,7 @@ class RouteCreate implements RouteCreateActionInterface
         $capabilities = [];
         $entityTypes = [];
 
-        /** @var RouteCreatePayload $payload */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
         foreach ($payloads as $payload) {
             $sourceKey = $payload->getSourcePortalNodeKey();
 
@@ -74,7 +74,7 @@ class RouteCreate implements RouteCreateActionInterface
 
         foreach ($allCapabilities as $capability) {
             if (!\array_key_exists($capability, $capabilityIds)) {
-                /** @var RouteCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if (\in_array($capability, $payload->getCapabilities(), true)) {
                         throw new InvalidCreatePayloadException($payload, 1636573805);
@@ -85,7 +85,7 @@ class RouteCreate implements RouteCreateActionInterface
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
-                /** @var RouteCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getEntityType() === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1636573806);
