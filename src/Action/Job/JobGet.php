@@ -130,9 +130,6 @@ class JobGet implements JobGetActionInterface
         ));
     }
 
-    /**
-     * @param mixed $payload
-     */
     private function unserializePayload($payload, string $format): ?array
     {
         if (!\is_string($payload)) {
