@@ -47,12 +47,13 @@ class PortalExtensionActivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('0', $activeEntries);
     }
 
     public function testActivateWithPreviousDeactivatedConfiguration(): void
@@ -91,12 +92,13 @@ class PortalExtensionActivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('0', $activeEntries);
     }
 
     public function testActivateWithPreviousActivatedConfiguration(): void
@@ -127,7 +129,7 @@ class PortalExtensionActivateTest extends TestCase
         $result = $action->activate($payload);
 
         static::assertCount(1, $result->getPassedActivations());
-        static::assertFalse($result->isSuccess());
+        static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
@@ -135,11 +137,12 @@ class PortalExtensionActivateTest extends TestCase
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
+            0,
             [
                 'id' => Types::BINARY,
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('1', $activeEntries);
     }
 }

@@ -53,7 +53,7 @@ class PortalExtensionDeactivateTest extends TestCase
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('0', $activeEntries);
     }
 
     public function testDeactivateWithPreviousDeactivatedConfiguration(): void
@@ -98,7 +98,7 @@ class PortalExtensionDeactivateTest extends TestCase
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('1', $activeEntries);
     }
 
     public function testDeactivateWithPreviousActivatedConfiguration(): void
@@ -129,7 +129,7 @@ class PortalExtensionDeactivateTest extends TestCase
         $result = $action->deactivate($payload);
 
         static::assertCount(1, $result->getPassedDeactivations());
-        static::assertFalse($result->isSuccess());
+        static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND NOT active',
@@ -143,6 +143,6 @@ class PortalExtensionDeactivateTest extends TestCase
             ]
         );
 
-        static::assertSame(1, $activeEntries);
+        static::assertSame('0', $activeEntries);
     }
 }
