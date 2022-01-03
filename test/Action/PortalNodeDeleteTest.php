@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -22,19 +23,6 @@ class PortalNodeDeleteTest extends TestCase
 {
     private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    public function testDelete(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        self::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
-
-        $action = new PortalNodeDelete($connection);
-        $criteria = new PortalNodeDeleteCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL)]));
-        $action->delete($criteria);
-
-        self::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,5 +36,18 @@ class PortalNodeDeleteTest extends TestCase
             'class_name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
+    }
+
+    public function testDelete(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
+
+        $action = new PortalNodeDelete($connection);
+        $criteria = new PortalNodeDeleteCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL)]));
+        $action->delete($criteria);
+
+        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
     }
 }

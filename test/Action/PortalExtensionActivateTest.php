@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -37,8 +38,8 @@ class PortalExtensionActivateTest extends TestCase
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
-        self::assertCount(1, $result->getPassedActivations());
-        self::assertTrue($result->isSuccess());
+        static::assertCount(1, $result->getPassedActivations());
+        static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
@@ -51,7 +52,7 @@ class PortalExtensionActivateTest extends TestCase
             ]
         );
 
-        self::assertSame(1, $activeEntries);
+        static::assertSame(1, $activeEntries);
     }
 
     public function testActivateWithPreviousDeactivatedConfiguration(): void
@@ -81,8 +82,8 @@ class PortalExtensionActivateTest extends TestCase
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
-        self::assertCount(1, $result->getPassedActivations());
-        self::assertTrue($result->isSuccess());
+        static::assertCount(1, $result->getPassedActivations());
+        static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
@@ -95,7 +96,7 @@ class PortalExtensionActivateTest extends TestCase
             ]
         );
 
-        self::assertSame(1, $activeEntries);
+        static::assertSame(1, $activeEntries);
     }
 
     public function testActivateWithPreviousActivatedConfiguration(): void
@@ -125,8 +126,8 @@ class PortalExtensionActivateTest extends TestCase
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
-        self::assertCount(0, $result->getPassedActivations());
-        self::assertFalse($result->isSuccess());
+        static::assertCount(0, $result->getPassedActivations());
+        static::assertFalse($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
@@ -139,6 +140,6 @@ class PortalExtensionActivateTest extends TestCase
             ]
         );
 
-        self::assertSame(1, $activeEntries);
+        static::assertSame(1, $activeEntries);
     }
 }

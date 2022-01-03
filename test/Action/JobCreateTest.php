@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -70,8 +71,8 @@ class JobCreateTest extends TestCase
         ]));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job`')->fetchColumn();
-        self::assertSame(3, $count);
+        static::assertSame(3, $count);
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job_payload`')->fetchColumn();
-        self::assertSame(1, $count);
+        static::assertSame(1, $count);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
@@ -43,9 +44,11 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
             switch ($field) {
                 case PortalNodeOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'portal_node.created_at';
+
                     break;
                 case PortalNodeOverviewCriteria::FIELD_CLASS_NAME:
                     $dbalFieldName = 'portal_node.class_name';
+
                     break;
             }
 

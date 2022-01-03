@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
@@ -46,7 +47,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $foundIds = $searchBuilder->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
         foreach ($ids as $id) {
-            if (!\in_array($id, $foundIds)) {
+            if (!\in_array($id, $foundIds, true)) {
                 throw new NotFoundException();
             }
         }

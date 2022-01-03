@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -45,10 +46,10 @@ class PortalStorageTest extends TestCase
         $storage->set($portalNodeKey, 'foobar ', 'foobar ', 'string');
         $storage->set($portalNodeKey, 'FooBar ', 'FooBar ', 'string');
 
-        self::assertSame('foobar', $storage->getValue($portalNodeKey, 'foobar'));
-        self::assertSame('FooBar', $storage->getValue($portalNodeKey, 'FooBar'));
-        self::assertSame('foobar ', $storage->getValue($portalNodeKey, 'foobar '));
-        self::assertSame('FooBar ', $storage->getValue($portalNodeKey, 'FooBar '));
+        static::assertSame('foobar', $storage->getValue($portalNodeKey, 'foobar'));
+        static::assertSame('FooBar', $storage->getValue($portalNodeKey, 'FooBar'));
+        static::assertSame('foobar ', $storage->getValue($portalNodeKey, 'foobar '));
+        static::assertSame('FooBar ', $storage->getValue($portalNodeKey, 'FooBar '));
     }
 
     public function testHtmlLikeNaming(): void
@@ -66,7 +67,7 @@ class PortalStorageTest extends TestCase
         $storage->set($portalNodeKey, '<foobar>', '<foobar>', 'string');
         $storage->set($portalNodeKey, 'Foo<Bar', 'Foo<Bar', 'string');
 
-        self::assertSame('<foobar>', $storage->getValue($portalNodeKey, '<foobar>'));
-        self::assertSame('Foo<Bar', $storage->getValue($portalNodeKey, 'Foo<Bar'));
+        static::assertSame('<foobar>', $storage->getValue($portalNodeKey, '<foobar>'));
+        static::assertSame('Foo<Bar', $storage->getValue($portalNodeKey, 'Foo<Bar'));
     }
 }

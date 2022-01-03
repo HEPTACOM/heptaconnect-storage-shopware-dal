@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -78,7 +79,7 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
 
-        $connection->getConfiguration()->setSQLLogger(new class ($pushQuery, $connection, $projectDir, static::class) implements SQLLogger {
+        $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, static::class) implements SQLLogger {
             /**
              * @var callable
              */
@@ -98,7 +99,7 @@ abstract class TestCase extends BaseTestCase
                 $this->parentClass = $parentClass;
             }
 
-            public function startQuery($sql, ?array $params = null, ?array $types = null)
+            public function startQuery($sql, ?array $params = null, ?array $types = null): void
             {
                 if (\stripos($sql, 'EXPLAIN') === 0 || \stripos($sql, 'SHOW WARNINGS') === 0) {
                     return;
@@ -134,7 +135,7 @@ abstract class TestCase extends BaseTestCase
                 $call($sql, $params, $types, $explanation, $frames, $warnings);
             }
 
-            public function stopQuery()
+            public function stopQuery(): void
             {
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -85,7 +86,7 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('createdAt'));
             static::assertTrue($definition->getFields()->has('updatedAt'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_entity_type: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_entity_type: ' . $e->getMessage());
         }
 
         try {
@@ -103,7 +104,7 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('updatedAt'));
             static::assertTrue($definition->getFields()->has('deletedAt'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_mappinge: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_mappinge: ' . $e->getMessage());
         }
 
         try {
@@ -120,7 +121,7 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('updatedAt'));
             static::assertTrue($definition->getFields()->has('deletedAt'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_mapping_node: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_mapping_node: ' . $e->getMessage());
         }
 
         try {
@@ -133,7 +134,7 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('updatedAt'));
             static::assertTrue($definition->getFields()->has('deletedAt'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_portal_node: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_portal_node: ' . $e->getMessage());
         }
 
         try {
@@ -152,7 +153,7 @@ class ShopwareIntegrationTest extends TestCase
             static::assertTrue($definition->getFields()->has('source'));
             static::assertTrue($definition->getFields()->has('target'));
         } catch (DefinitionNotFoundException $e) {
-            static::fail('Failed on loading heptaconnect_route: '.$e->getMessage());
+            static::fail('Failed on loading heptaconnect_route: ' . $e->getMessage());
         }
     }
 }

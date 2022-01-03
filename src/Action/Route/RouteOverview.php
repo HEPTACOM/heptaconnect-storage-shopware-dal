@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
@@ -38,17 +39,21 @@ class RouteOverview implements RouteOverviewActionInterface
             switch ($field) {
                 case RouteOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'route.created_at';
+
                     break;
                 case RouteOverviewCriteria::FIELD_ENTITY_TYPE:
                     $dbalFieldName = 'entity_type.type';
+
                     break;
                 case RouteOverviewCriteria::FIELD_SOURCE:
                     // TODO allow sort by portal name
                     $dbalFieldName = 'source_portal_node.class_name';
+
                     break;
                 case RouteOverviewCriteria::FIELD_TARGET:
                     // TODO allow sort by portal name
                     $dbalFieldName = 'target_portal_node.class_name';
+
                     break;
             }
 

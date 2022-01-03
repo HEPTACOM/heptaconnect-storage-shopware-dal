@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -34,7 +35,7 @@ class PortalExtensionFindTest extends TestCase
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 
-        self::assertTrue($result->isActive($portalExtension));
+        static::assertTrue($result->isActive($portalExtension));
     }
 
     public function testWithDeactivatedConfiguration(): void
@@ -63,7 +64,7 @@ class PortalExtensionFindTest extends TestCase
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 
-        self::assertFalse($result->isActive($portalExtension));
+        static::assertFalse($result->isActive($portalExtension));
     }
 
     public function testWithActivatedConfiguration(): void
@@ -92,6 +93,6 @@ class PortalExtensionFindTest extends TestCase
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 
-        self::assertTrue($result->isActive($portalExtension));
+        static::assertTrue($result->isActive($portalExtension));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -160,14 +161,14 @@ class EntityReflectorTest extends TestCase
                 'typeId' => $typeId,
                 'originPortalNodeId' => $sourcePortalNodeKey->getUuid(),
             ])['id'];
-            $mappings['s'.$sourceId] = [
+            $mappings['s' . $sourceId] = [
                 'id' => Uuid::randomHex(),
                 'mappingNodeId' => $nodeId,
                 'portalNodeId' => $sourcePortalNodeKey->getUuid(),
                 'externalId' => $sourceId,
             ];
             $targetId = Uuid::randomHex();
-            $mappings['t'.$sourceId] = [
+            $mappings['t' . $sourceId] = [
                 'id' => Uuid::randomHex(),
                 'mappingNodeId' => $nodeId,
                 'portalNodeId' => $targetPortalNodeKey->getUuid(),
@@ -383,10 +384,10 @@ class EntityReflectorTest extends TestCase
         $contextFactory = $this->createMock(ContextFactory::class);
         $mappingRepository = $this->createMock(EntityRepositoryInterface::class);
 
-        $contextFactory->expects(self::never())->method('create');
-        $mappingRepository->expects(self::never())->method('search');
-        $mappingRepository->expects(self::never())->method('searchIds');
-        $mappingRepository->expects(self::never())->method('aggregate');
+        $contextFactory->expects(static::never())->method('create');
+        $mappingRepository->expects(static::never())->method('search');
+        $mappingRepository->expects(static::never())->method('searchIds');
+        $mappingRepository->expects(static::never())->method('aggregate');
 
         $reflector = new EntityReflector($mappingRepository, $contextFactory);
         $reflector->reflectEntities(new MappedDatasetEntityCollection(), new PortalNodeStorageKey(Uuid::randomHex()));

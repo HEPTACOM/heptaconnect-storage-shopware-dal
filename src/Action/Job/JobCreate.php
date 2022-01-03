@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
@@ -105,7 +106,7 @@ class JobCreate implements JobCreateActionInterface
         $jobPayloadChecksumIds = $this->getPayloadIds(\array_column($jobPayloads, 'checksum'));
         $result = new JobCreateResults();
 
-        $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds) {
+        $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds): void {
             $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
             $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
             $jobInserts = [];

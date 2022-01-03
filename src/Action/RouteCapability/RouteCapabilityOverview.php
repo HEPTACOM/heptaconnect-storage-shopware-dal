@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
@@ -35,9 +36,11 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             switch ($field) {
                 case RouteCapabilityOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'capability.created_at';
+
                     break;
                 case RouteCapabilityOverviewCriteria::FIELD_NAME:
                     $dbalFieldName = 'capability.name';
+
                     break;
             }
 

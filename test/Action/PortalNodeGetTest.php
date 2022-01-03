@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -26,28 +27,6 @@ class PortalNodeGetTest extends TestCase
     private const PORTAL_B = '4632d49df5d4430f9b498ecd44cc7c58';
 
     private const PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
-
-    public function testDeletedAt(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new PortalNodeGet($connection, new QueryIterator());
-        $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
-
-        static::assertCount(0, $action->get($criteria));
-    }
-
-    public function testGet(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeGet($connection, new QueryIterator());
-        $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_A)]));
-
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Get\PortalNodeGetResult $item */
-        foreach ($action->get($criteria) as $item) {
-            static::assertSame(Simple::class, $item->getPortalClass());
-        }
-    }
 
     protected function setUp(): void
     {
@@ -77,5 +56,27 @@ class PortalNodeGetTest extends TestCase
             'created_at' => $now,
             'deleted_at' => $now,
         ], ['id' => Types::BINARY]);
+    }
+
+    public function testDeletedAt(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $action = new PortalNodeGet($connection, new QueryIterator());
+        $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
+
+        static::assertCount(0, $action->get($criteria));
+    }
+
+    public function testGet(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new PortalNodeGet($connection, new QueryIterator());
+        $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_A)]));
+
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\Get\PortalNodeGetResult $item */
+        foreach ($action->get($criteria) as $item) {
+            static::assertSame(Simple::class, $item->getPortalClass());
+        }
     }
 }

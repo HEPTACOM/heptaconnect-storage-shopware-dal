@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -19,13 +20,43 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class PortalNodeOverviewTest extends TestCase
 {
-    protected bool $setupQueryTracking = false;
-
     private const PORTAL_FIRST_CREATED = 'b43cbc506680462c8a50513fa02032a6';
 
     private const PORTAL_LAST_CREATED = '4632d49df5d4430f9b498ecd44cc7c58';
 
     private const PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
+
+    protected bool $setupQueryTracking = false;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $portalFirstCreated = Uuid::fromHexToBytes(self::PORTAL_FIRST_CREATED);
+        $portalLastCreated = Uuid::fromHexToBytes(self::PORTAL_LAST_CREATED);
+        $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
+        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+
+        $connection->insert('heptaconnect_portal_node', [
+            'id' => $portalFirstCreated,
+            'class_name' => TestCase::class,
+            'created_at' => $yesterday,
+        ], ['id' => Types::BINARY]);
+        $connection->insert('heptaconnect_portal_node', [
+            'id' => $portalLastCreated,
+            'class_name' => self::class,
+            'created_at' => $tomorrow,
+        ], ['id' => Types::BINARY]);
+        $connection->insert('heptaconnect_portal_node', [
+            'id' => $portalDeleted,
+            'class_name' => self::class,
+            'created_at' => $now,
+            'deleted_at' => $now,
+        ], ['id' => Types::BINARY]);
+    }
 
     public function testDeletedAt(): void
     {
@@ -68,7 +99,8 @@ class PortalNodeOverviewTest extends TestCase
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
-            self::assertTrue($item->getPortalNodeKey()->equals(new PortalNodeStorageKey(self::PORTAL_FIRST_CREATED)));
+            static::assertTrue($item->getPortalNodeKey()->equals(new PortalNodeStorageKey(self::PORTAL_FIRST_CREATED)));
+
             break;
         }
     }
@@ -85,7 +117,8 @@ class PortalNodeOverviewTest extends TestCase
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
-            self::assertTrue($item->getPortalNodeKey()->equals(new PortalNodeStorageKey(self::PORTAL_LAST_CREATED)));
+            static::assertTrue($item->getPortalNodeKey()->equals(new PortalNodeStorageKey(self::PORTAL_LAST_CREATED)));
+
             break;
         }
     }
@@ -152,41 +185,11 @@ class PortalNodeOverviewTest extends TestCase
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter([TestCase::class]);
 
-        self::assertCount(1, $action->overview($criteria));
+        static::assertCount(1, $action->overview($criteria));
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
-            self::assertSame(TestCase::class, $item->getPortalClass());
+            static::assertSame(TestCase::class, $item->getPortalClass());
         }
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $portalFirstCreated = Uuid::fromHexToBytes(self::PORTAL_FIRST_CREATED);
-        $portalLastCreated = Uuid::fromHexToBytes(self::PORTAL_LAST_CREATED);
-        $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-
-        $connection->insert('heptaconnect_portal_node', [
-            'id' => $portalFirstCreated,
-            'class_name' => TestCase::class,
-            'created_at' => $yesterday,
-        ], ['id' => Types::BINARY]);
-        $connection->insert('heptaconnect_portal_node', [
-            'id' => $portalLastCreated,
-            'class_name' => self::class,
-            'created_at' => $tomorrow,
-        ], ['id' => Types::BINARY]);
-        $connection->insert('heptaconnect_portal_node', [
-            'id' => $portalDeleted,
-            'class_name' => self::class,
-            'created_at' => $now,
-            'deleted_at' => $now,
-        ], ['id' => Types::BINARY]);
     }
 }

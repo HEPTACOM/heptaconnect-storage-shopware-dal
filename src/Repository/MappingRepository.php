@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
@@ -94,7 +95,7 @@ class MappingRepository extends MappingRepositoryContract
         );
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }
@@ -116,7 +117,7 @@ class MappingRepository extends MappingRepositoryContract
 
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }
@@ -139,7 +140,7 @@ class MappingRepository extends MappingRepositoryContract
 
         $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingStorageKey($id);
             }

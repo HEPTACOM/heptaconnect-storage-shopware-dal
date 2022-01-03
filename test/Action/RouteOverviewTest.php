@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -21,8 +22,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class RouteOverviewTest extends TestCase
 {
-    protected bool $setupQueryTracking = false;
-
     private const ENTITY_TYPE_A = 'c6aad9f6355b4bf78f548a73caa502aa';
 
     private const ENTITY_TYPE_B = '63b419caa57d4a08bd724604622473b7';
@@ -41,130 +40,7 @@ class RouteOverviewTest extends TestCase
 
     private const ROUTE_LAST = '632348c2f449436e99d3c8e491ef942d';
 
-    public function testDeletedAt(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria = new RouteOverviewCriteria();
-        static::assertCount(4, $action->overview($criteria));
-    }
-
-    public function testPagination(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria0 = new RouteOverviewCriteria();
-        $criteria0->setPageSize(1);
-        $criteria0->setPage(0);
-
-        $criteria1 = clone $criteria0;
-        $criteria1->setPage(1);
-
-        $criteria2 = clone $criteria0;
-        $criteria2->setPage(2);
-
-        $criteria3 = clone $criteria0;
-        $criteria3->setPage(3);
-
-        $criteria4 = clone $criteria0;
-        $criteria4->setPage(4);
-
-        static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(1, $action->overview($criteria1));
-        static::assertCount(1, $action->overview($criteria2));
-        static::assertCount(1, $action->overview($criteria3));
-        static::assertCount(0, $action->overview($criteria4));
-    }
-
-    public function testSortByDateAsc(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria = new RouteOverviewCriteria();
-        $criteria->setSort([
-            RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_ASC,
-        ]);
-
-        /** @var RouteOverviewResult $item */
-        foreach ($action->overview($criteria) as $item) {
-            self::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_FIRST)));
-            break;
-        }
-    }
-
-    public function testSortByDateDesc(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria = new RouteOverviewCriteria();
-        $criteria->setSort([
-            RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_DESC,
-        ]);
-
-        /** @var RouteOverviewResult $item */
-        foreach ($action->overview($criteria) as $item) {
-            self::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_LAST)));
-            break;
-        }
-    }
-
-    public function testSortByEntityTypeAsc(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria = new RouteOverviewCriteria();
-        $criteria->setSort([
-            RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_ASC,
-        ]);
-
-        $indexA = null;
-        $indexB = null;
-
-        /** @var RouteOverviewResult $item */
-        foreach ($action->overview($criteria) as $index => $item) {
-            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
-                $indexA = $index;
-            }
-
-            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
-                $indexB = $index;
-            }
-        }
-
-        static::assertGreaterThan($indexA, $indexB);
-    }
-
-    public function testSortByEntityTypeDesc(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
-        $criteria = new RouteOverviewCriteria();
-        $criteria->setSort([
-            RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_DESC,
-        ]);
-
-        $indexA = null;
-        $indexB = null;
-
-        /** @var RouteOverviewResult $item */
-        foreach ($action->overview($criteria) as $index => $item) {
-            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
-                $indexA = $index;
-            }
-
-            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
-                $indexB = $index;
-            }
-        }
-
-        static::assertGreaterThan($indexB, $indexA);
-    }
+    protected bool $setupQueryTracking = false;
 
     protected function setUp(): void
     {
@@ -247,5 +123,132 @@ class RouteOverviewTest extends TestCase
             'created_at' => $tomorrow,
             'deleted_at' => null,
         ], ['id' => Types::BINARY]);
+    }
+
+    public function testDeletedAt(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria = new RouteOverviewCriteria();
+        static::assertCount(4, $action->overview($criteria));
+    }
+
+    public function testPagination(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria0 = new RouteOverviewCriteria();
+        $criteria0->setPageSize(1);
+        $criteria0->setPage(0);
+
+        $criteria1 = clone $criteria0;
+        $criteria1->setPage(1);
+
+        $criteria2 = clone $criteria0;
+        $criteria2->setPage(2);
+
+        $criteria3 = clone $criteria0;
+        $criteria3->setPage(3);
+
+        $criteria4 = clone $criteria0;
+        $criteria4->setPage(4);
+
+        static::assertCount(1, $action->overview($criteria0));
+        static::assertCount(1, $action->overview($criteria1));
+        static::assertCount(1, $action->overview($criteria2));
+        static::assertCount(1, $action->overview($criteria3));
+        static::assertCount(0, $action->overview($criteria4));
+    }
+
+    public function testSortByDateAsc(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria = new RouteOverviewCriteria();
+        $criteria->setSort([
+            RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_ASC,
+        ]);
+
+        /** @var RouteOverviewResult $item */
+        foreach ($action->overview($criteria) as $item) {
+            static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_FIRST)));
+
+            break;
+        }
+    }
+
+    public function testSortByDateDesc(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria = new RouteOverviewCriteria();
+        $criteria->setSort([
+            RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_DESC,
+        ]);
+
+        /** @var RouteOverviewResult $item */
+        foreach ($action->overview($criteria) as $item) {
+            static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_LAST)));
+
+            break;
+        }
+    }
+
+    public function testSortByEntityTypeAsc(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria = new RouteOverviewCriteria();
+        $criteria->setSort([
+            RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_ASC,
+        ]);
+
+        $indexA = null;
+        $indexB = null;
+
+        /** @var RouteOverviewResult $item */
+        foreach ($action->overview($criteria) as $index => $item) {
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
+                $indexA = $index;
+            }
+
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
+                $indexB = $index;
+            }
+        }
+
+        static::assertGreaterThan($indexA, $indexB);
+    }
+
+    public function testSortByEntityTypeDesc(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteOverview($connection);
+        $criteria = new RouteOverviewCriteria();
+        $criteria->setSort([
+            RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_DESC,
+        ]);
+
+        $indexA = null;
+        $indexB = null;
+
+        /** @var RouteOverviewResult $item */
+        foreach ($action->overview($criteria) as $index => $item) {
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
+                $indexA = $index;
+            }
+
+            if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_B))) {
+                $indexB = $index;
+            }
+        }
+
+        static::assertGreaterThan($indexB, $indexA);
     }
 }
