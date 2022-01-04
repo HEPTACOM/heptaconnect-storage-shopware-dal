@@ -7,7 +7,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;

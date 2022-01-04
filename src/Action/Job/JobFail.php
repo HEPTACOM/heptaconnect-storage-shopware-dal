@@ -10,7 +10,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Fail\JobFailActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;

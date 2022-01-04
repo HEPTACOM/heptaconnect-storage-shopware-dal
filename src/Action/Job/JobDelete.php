@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Delete\JobDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;

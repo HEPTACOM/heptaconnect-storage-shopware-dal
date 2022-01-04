@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResults;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;

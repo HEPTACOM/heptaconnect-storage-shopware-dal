@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Deactivate\PortalExtensionDeactivatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Deactivate\PortalExtensionDeactivateResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\Deactivate\PortalExtensionDeactivateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface;
 
 class PortalExtensionDeactivate extends PortalExtensionSwitchActive implements PortalExtensionDeactivateActionInterface
 {
