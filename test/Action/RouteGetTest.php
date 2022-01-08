@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\RouteKeyCollection;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -98,7 +98,7 @@ class RouteGetTest extends TestCase
         $action = new RouteGet($connection, new QueryIterator());
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult $item */
         foreach ($action->get($criteria) as $item) {
             static::assertSame(Simple::class, $item->getEntityType());
         }

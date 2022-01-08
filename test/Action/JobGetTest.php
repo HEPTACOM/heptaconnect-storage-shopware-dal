@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -99,7 +99,7 @@ class JobGetTest extends TestCase
         $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $count = 0;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetResult $item */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult $item */
         foreach ($action->get($criteria) as $item) {
             ++$count;
             static::assertSame(Simple::class, $item->getMappingComponent()->getEntityType());

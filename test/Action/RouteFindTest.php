@@ -6,8 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;

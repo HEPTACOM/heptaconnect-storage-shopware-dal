@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
