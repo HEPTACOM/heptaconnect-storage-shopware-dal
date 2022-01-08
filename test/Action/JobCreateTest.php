@@ -33,8 +33,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class JobCreateTest extends TestCase
 {
-    protected bool $setupQueryTracking = false;
-
     public function testCreate(): void
     {
         $source = Uuid::randomBytes();
