@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
@@ -6,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ParameterType;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
@@ -34,7 +35,7 @@ class RouteFind implements RouteFindActionInterface
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
         }
 
-        $targetKey = $criteria->getSource();
+        $targetKey = $criteria->getTarget();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($targetKey));

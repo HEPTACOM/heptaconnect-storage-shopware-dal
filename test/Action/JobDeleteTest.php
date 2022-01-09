@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Delete\JobDeleteCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -30,21 +31,6 @@ class JobDeleteTest extends TestCase
     private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
     private const JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
-
-    public function testDelete(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        self::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
-        self::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
-
-        $action = new JobDelete($connection);
-        $criteria = new JobDeleteCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
-        $action->delete($criteria);
-
-        self::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
-        self::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
-    }
 
     protected function setUp(): void
     {
@@ -101,5 +87,20 @@ class JobDeleteTest extends TestCase
             'state_id' => Types::BINARY,
             'payload_id' => Types::BINARY,
         ]);
+    }
+
+    public function testDelete(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
+        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
+
+        $action = new JobDelete($connection);
+        $criteria = new JobDeleteCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
+        $action->delete($criteria);
+
+        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
+        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
     }
 }

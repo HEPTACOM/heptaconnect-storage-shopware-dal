@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -32,27 +33,6 @@ class JobGetTest extends TestCase
     private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
     private const JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
-
-    public function testGet(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new JobGet($connection, new QueryIterator());
-        $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
-        $count = 0;
-
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetResult $item */
-        foreach ($action->get($criteria) as $item) {
-            ++$count;
-            static::assertSame(Simple::class, $item->getMappingComponent()->getEntityType());
-            static::assertSame('123', $item->getMappingComponent()->getExternalId());
-            static::assertSame([
-                'foo' => 'bar',
-            ], $item->getPayload());
-        }
-
-        self::assertSame(1, $count);
-    }
 
     protected function setUp(): void
     {
@@ -109,5 +89,26 @@ class JobGetTest extends TestCase
             'job_type_id' => Types::BINARY,
             'payload_id' => Types::BINARY,
         ]);
+    }
+
+    public function testGet(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new JobGet($connection, new QueryIterator());
+        $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
+        $count = 0;
+
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult $item */
+        foreach ($action->get($criteria) as $item) {
+            ++$count;
+            static::assertSame(Simple::class, $item->getMappingComponent()->getEntityType());
+            static::assertSame('123', $item->getMappingComponent()->getExternalId());
+            static::assertSame([
+                'foo' => 'bar',
+            ], $item->getPayload());
+        }
+
+        static::assertSame(1, $count);
     }
 }

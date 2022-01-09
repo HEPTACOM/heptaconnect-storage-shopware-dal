@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
@@ -68,7 +69,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
             $key = \array_shift($keys) ?: null;
 
             if (!$key instanceof MappingExceptionStorageKey) {
-                throw new UnsupportedStorageKeyException(\is_null($key) ? 'null' : \get_class($key));
+                throw new UnsupportedStorageKeyException($key === null ? 'null' : \get_class($key));
             }
 
             $resultKey ??= $key;
@@ -108,7 +109,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         $criteria->addFilter(new EqualsFilter('mappingId', $mappingKey->getUuid()));
         $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingExceptionStorageKey($id);
             }
@@ -129,7 +130,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         );
         $iterator = new RepositoryIterator($this->mappingExceptions, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingExceptionStorageKey($id);
             }

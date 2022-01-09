@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
@@ -145,7 +146,7 @@ class CronjobRepository extends CronjobRepositoryContract
 
         $iterator = new RepositoryIterator($this->cronjobs, $context, $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new CronjobStorageKey($id);
             }

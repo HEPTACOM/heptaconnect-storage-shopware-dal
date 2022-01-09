@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
@@ -6,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
@@ -38,17 +39,21 @@ class RouteOverview implements RouteOverviewActionInterface
             switch ($field) {
                 case RouteOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'route.created_at';
+
                     break;
                 case RouteOverviewCriteria::FIELD_ENTITY_TYPE:
                     $dbalFieldName = 'entity_type.type';
+
                     break;
                 case RouteOverviewCriteria::FIELD_SOURCE:
                     // TODO allow sort by portal name
                     $dbalFieldName = 'source_portal_node.class_name';
+
                     break;
                 case RouteOverviewCriteria::FIELD_TARGET:
                     // TODO allow sort by portal name
                     $dbalFieldName = 'target_portal_node.class_name';
+
                     break;
             }
 

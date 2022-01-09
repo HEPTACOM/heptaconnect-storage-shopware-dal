@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 
 use Doctrine\DBAL\Connection;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
@@ -7,7 +8,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
@@ -49,10 +49,6 @@ class WebHttpHandlerAccessor
             $b = clone $builder;
             $keyIndex = [];
 
-            /**
-             * @var $portalNodeKey PortalNodeStorageKey
-             * @var $path          string
-             */
             foreach ($httpHandlerPathChunks as $key => [$portalNodeKey, $path]) {
                 $pathId = $this->pathIdResolver->getIdFromPath($path);
                 $match = $portalNodeKey->getUuid() . $pathId;

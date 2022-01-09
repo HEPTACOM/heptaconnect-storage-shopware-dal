@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
@@ -51,7 +52,7 @@ class ConfigurationStorage extends ConfigurationStorageContract
         /** @var mixed|array|null $value */
         $value = $this->systemConfigService->get($this->buildConfigurationPrefix($portalNodeId));
 
-        if (\is_null($value)) {
+        if ($value === null) {
             return [];
         }
 

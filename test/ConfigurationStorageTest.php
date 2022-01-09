@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -88,7 +89,7 @@ class ConfigurationStorageTest extends TestCase
         $storage->setConfiguration($portalNodeKey, ['test' => true]);
         $value = $storage->getConfiguration($portalNodeKey);
         static::assertArrayHasKey('test', $value);
-        static::assertEquals(true, $value['test']);
+        static::assertTrue($value['test']);
         $storage->setConfiguration($portalNodeKey, null);
         static::assertCount(0, $storage->getConfiguration($portalNodeKey));
     }

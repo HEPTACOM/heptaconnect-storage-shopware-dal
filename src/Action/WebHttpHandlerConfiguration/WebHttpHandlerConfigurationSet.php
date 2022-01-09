@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayloads;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -40,7 +40,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
         $handlerPaths = [];
         $handlerComponents = [];
 
-        /** @var WebHttpHandlerConfigurationSetPayload $payload */
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
         foreach ($payloads as $payload) {
             $portalNodeKey = $payload->getPortalNodeKey();
 
@@ -56,7 +56,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
 
         foreach ($handlerPaths as $handlerPath) {
             if (!isset($handlerPathIds[$handlerPath])) {
-                /** @var WebHttpHandlerConfigurationSetPayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getPath() === $handlerPath) {
                         throw new InvalidCreatePayloadException($payload, 1636827822);
@@ -71,7 +71,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             if (!isset($handlerComponentIds[$handlerComponentKey])) {
                 [$portalNodeKey, $path] = $handlerComponent;
 
-                /** @var WebHttpHandlerConfigurationSetPayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getPath() === $path && $payload->getPortalNodeKey()->equals($portalNodeKey)) {
                         throw new InvalidCreatePayloadException($payload, 1636827823);

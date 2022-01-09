@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -6,8 +7,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
@@ -32,8 +33,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
  */
 class JobCreateTest extends TestCase
 {
-    protected bool $setupQueryTracking = false;
-
     public function testCreate(): void
     {
         $source = Uuid::randomBytes();
@@ -70,8 +69,8 @@ class JobCreateTest extends TestCase
         ]));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job`')->fetchColumn();
-        self::assertSame(3, $count);
+        static::assertSame(3, $count);
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job_payload`')->fetchColumn();
-        self::assertSame(1, $count);
+        static::assertSame(1, $count);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister;
@@ -49,7 +50,7 @@ class MappingPersister extends MappingPersisterContract
 
         $this->validateMappingConflicts($portalNodeId, $create, $update, $delete);
 
-        $this->connection->transactional(function () use ($create, $update, $delete, $context) {
+        $this->connection->transactional(function () use ($create, $update, $delete, $context): void {
             $this->mappingRepository->create($create, $context);
             $this->mappingRepository->update([...$update, ...$delete], $context);
         });
@@ -256,8 +257,8 @@ class MappingPersister extends MappingPersisterContract
             $mappingNodeId = \bin2hex($row['mappingNodeId']);
             $externalId = $row['externalId'];
 
-            if (isset($changedMappings[$mappingNodeId]) &&
-                !isset($changedMappings[$mappingNodeId][$externalId])) {
+            if (isset($changedMappings[$mappingNodeId])
+                && !isset($changedMappings[$mappingNodeId][$externalId])) {
                 // conflict will be resolved in this changeset
 
                 continue;
@@ -321,13 +322,13 @@ class MappingPersister extends MappingPersisterContract
             $externalId = $operation['externalId'];
             $typeId = $typeIds[$mappingNodeId];
 
-            if (isset($newMappings[$typeId][$externalId]) &&
-                !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
+            if (isset($newMappings[$typeId][$externalId])
+                && !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
                 throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
             }
 
-            if (isset($newExternalIds[$typeId][$mappingNodeId]) &&
-                !isset($newExternalIds[$typeId][$mappingNodeId][$externalId])) {
+            if (isset($newExternalIds[$typeId][$mappingNodeId])
+                && !isset($newExternalIds[$typeId][$mappingNodeId][$externalId])) {
                 throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
             }
 

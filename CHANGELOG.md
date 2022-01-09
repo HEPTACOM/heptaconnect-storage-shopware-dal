@@ -15,18 +15,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639246133CreateStateHistoryForJobs` to add job state history
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639270114InsertJobStates` to add job states
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639860447UpdateExistingJobData` to migrate state date into job history
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Delete\JobDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Fail\JobFailActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Finish\JobFinishActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Get\JobGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Listing\JobListFinishedActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Schedule\JobScheduleActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule`
-- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Start\JobStartActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFinishActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete`
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate`
+- Add exception code `1640048751` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` when the key generator cannot generate a valid portal node key
+- Add exception code `1640405544` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` when the criteria has an invalid sorting option
+- Add exception code `1640405545` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` when query execution could not return a ResultStatement
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1640360050CreatePortalExtensionConfigurationTable` to add table for portal extension activity state
+- Add base class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive` to simplify implementations of `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` and `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionDeactivate`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind`
+
+### Changed
+
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Overview\RouteOverviewActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreateActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface`
+- Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface`
 
 ### Deprecated
 
 - Mark `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeDefinition` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeEntity` as deprecated as DAL usage is discouraged
+- Mark `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeCollection` as deprecated as DAL usage is discouraged
 
 ### Removed
 
@@ -34,6 +59,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobPayloadRepository` as base contract has been removed
 - Remove class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\JobRepository` as base contract has been removed
 - Remove class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobPayloadStorageKey` as base contract has been removed and its support in `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::read` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet::get` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::listAll` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList::list` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::listByClass` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete::delete` that allows for optimizations for different use-cases
+
+## [0.8.3] - 2022-01-05
+
+### Changed
+
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1641403938AddChecksumIndexToJobPayloadTable` to add index to `checksum` to table `heptaconnect_job_payload` for improved listings and searches
+
+## [0.8.2] - 2021-12-30
+
+### Fixed
+
+- Use target portal node key in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind` to query the target portal node instead of using the source portal node key
 
 ## [0.8.1] - 2021-11-22
 

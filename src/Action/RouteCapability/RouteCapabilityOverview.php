@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
@@ -6,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Defaults;
@@ -35,9 +36,11 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             switch ($field) {
                 case RouteCapabilityOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'capability.created_at';
+
                     break;
                 case RouteCapabilityOverviewCriteria::FIELD_NAME:
                     $dbalFieldName = 'capability.name';
+
                     break;
             }
 

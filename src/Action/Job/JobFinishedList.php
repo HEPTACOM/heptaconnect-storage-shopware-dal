@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Listing\JobListFinishedActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Listing\JobListFinishedResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Listing\JobListFinishedResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;

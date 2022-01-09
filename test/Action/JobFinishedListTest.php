@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -32,22 +33,6 @@ class JobFinishedListTest extends TestCase
     private const JOB_NOT_FINISHED = '4e836953e1eb4916b4410b9af2b9b2f9';
 
     private const JOB_FINISHED = '66d4a9d9f8724af1bcfec62fa3c54cdd';
-
-    public function testList(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new JobFinishedList($connection, new QueryIterator());
-        $count = 0;
-        $finishedJobKey = new JobStorageKey(self::JOB_FINISHED);
-
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Listing\JobListFinishedResult $item */
-        foreach ($action->list() as $item) {
-            ++$count;
-            static::assertTrue($item->getJobKey()->equals($finishedJobKey));
-        }
-
-        self::assertSame(1, $count);
-    }
 
     protected function setUp(): void
     {
@@ -122,5 +107,21 @@ class JobFinishedListTest extends TestCase
             'job_type_id' => Types::BINARY,
             'payload_id' => Types::BINARY,
         ]);
+    }
+
+    public function testList(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $action = new JobFinishedList($connection, new QueryIterator());
+        $count = 0;
+        $finishedJobKey = new JobStorageKey(self::JOB_FINISHED);
+
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Listing\JobListFinishedResult $item */
+        foreach ($action->list() as $item) {
+            ++$count;
+            static::assertTrue($item->getJobKey()->equals($finishedJobKey));
+        }
+
+        static::assertSame(1, $count);
     }
 }

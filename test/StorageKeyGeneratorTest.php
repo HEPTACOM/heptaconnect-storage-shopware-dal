@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
@@ -37,7 +38,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $this->expectException(UnsupportedStorageKeyException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Unsupported storage key class: '.AbstractStorageKey::class);
+        $this->expectExceptionMessage('Unsupported storage key class: ' . AbstractStorageKey::class);
 
         $generator = new StorageKeyGenerator();
         $generator->generateKey(AbstractStorageKey::class);
@@ -48,7 +49,7 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = new StorageKeyGenerator();
         $serialized = $generator->serialize(new PreviewPortalNodeKey(PortalContract::class));
 
-        self::assertStringContainsString(\addcslashes(PortalContract::class, '\\'), $serialized);
+        static::assertStringContainsString(\addcslashes(PortalContract::class, '\\'), $serialized);
     }
 
     public function testPreviewKeyDeserialization(): void
@@ -56,9 +57,9 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = new StorageKeyGenerator();
         $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Portal\\\\Base\\\\Portal\\\\Contract\\\\PortalContract"}');
 
-        self::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
+        static::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
         /* @var $deserialized PreviewPortalNodeKey */
-        self::assertSame(PortalContract::class, $deserialized->getPortalType());
+        static::assertSame(PortalContract::class, $deserialized->getPortalType());
     }
 
     /**
@@ -69,7 +70,7 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = $generator->generateKey($interface);
-        self::assertInstanceOf($interface, $key);
+        static::assertInstanceOf($interface, $key);
     }
 
     /**
@@ -79,10 +80,10 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = new StorageKeyGenerator();
         /* @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        self::assertCount(100, $generator->generateKeys($interface, 100));
-        self::assertCount(10, $generator->generateKeys($interface, 10));
-        self::assertCount(0, $generator->generateKeys($interface, 0));
-        self::assertCount(0, $generator->generateKeys($interface, -10));
+        static::assertCount(100, $generator->generateKeys($interface, 100));
+        static::assertCount(10, $generator->generateKeys($interface, 10));
+        static::assertCount(0, $generator->generateKeys($interface, 0));
+        static::assertCount(0, $generator->generateKeys($interface, -10));
     }
 
     /**
@@ -94,7 +95,7 @@ class StorageKeyGeneratorTest extends TestCase
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = $generator->generateKey($interface);
         $serialized = $generator->serialize($key);
-        self::assertStringContainsString($key->getUuid(), $serialized);
+        static::assertStringContainsString($key->getUuid(), $serialized);
     }
 
     /**
@@ -107,7 +108,7 @@ class StorageKeyGeneratorTest extends TestCase
         $key = $generator->generateKey($interface);
         $serialized = $generator->serialize($key);
         $deserialized = $generator->deserialize($serialized);
-        self::assertTrue($key->equals($deserialized), 'Keys are not equal');
+        static::assertTrue($key->equals($deserialized), 'Keys are not equal');
     }
 
     /**
@@ -118,7 +119,7 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = $generator->generateKey($interface);
-        self::assertStringContainsString($key->getUuid(), \json_encode($key));
+        static::assertStringContainsString($key->getUuid(), \json_encode($key));
     }
 
     public function provideKeyInterfaces(): iterable

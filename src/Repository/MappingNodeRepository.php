@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
@@ -92,7 +93,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         // TODO: Do not use iterator. We only expect one result.
         $iterator = new RepositoryIterator($this->mappingNodes, $this->contextFactory->create(), $criteria);
 
-        while (!\is_null($ids = $iterator->fetchIds())) {
+        while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
                 yield new MappingNodeStorageKey($id);
             }

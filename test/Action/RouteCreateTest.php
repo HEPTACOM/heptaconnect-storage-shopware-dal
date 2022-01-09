@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Create\RouteCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
@@ -64,15 +65,15 @@ class RouteCreateTest extends TestCase
         /** @var EntityRepositoryInterface $entityTypes */
         $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
 
-        $action = new RouteCreate($connection, new StorageKeyGenerator(),  new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
+        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
             new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),
         ])));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route')->fetchColumn();
-        self::assertSame(2, $count);
+        static::assertSame(2, $count);
         $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route_has_capability')->fetchColumn();
-        self::assertSame(1, $count);
+        static::assertSame(1, $count);
     }
 }

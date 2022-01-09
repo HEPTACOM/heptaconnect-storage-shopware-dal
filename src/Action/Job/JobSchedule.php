@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
@@ -7,9 +8,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Schedule\JobScheduleActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Schedule\JobSchedulePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Schedule\JobScheduleResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Schedule\JobSchedulePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Schedule\JobScheduleResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;

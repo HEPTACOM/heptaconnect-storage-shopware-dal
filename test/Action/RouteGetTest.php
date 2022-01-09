@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -6,8 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\RouteKeyCollection;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -33,28 +33,6 @@ class RouteGetTest extends TestCase
     private const ROUTE_DELETED = '6b4bf85d1ea541ea85b5fed5ac34d2f4';
 
     private const ROUTE_ACTIVE = '9f94ce0b915d4fe08223fb0be889daa3';
-
-    public function testDeletedAt(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new RouteGet($connection, new QueryIterator());
-        $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
-
-        static::assertCount(0, $action->get($criteria));
-    }
-
-    public function testGet(): void
-    {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteGet($connection, new QueryIterator());
-        $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
-
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Get\RouteGetResult $item */
-        foreach ($action->get($criteria) as $item) {
-            static::assertSame(Simple::class, $item->getEntityType());
-        }
-    }
 
     protected function setUp(): void
     {
@@ -102,5 +80,27 @@ class RouteGetTest extends TestCase
             'created_at' => $now,
             'deleted_at' => null,
         ], ['id' => Types::BINARY]);
+    }
+
+    public function testDeletedAt(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $action = new RouteGet($connection, new QueryIterator());
+        $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
+
+        static::assertCount(0, $action->get($criteria));
+    }
+
+    public function testGet(): void
+    {
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        $action = new RouteGet($connection, new QueryIterator());
+        $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
+
+        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult $item */
+        foreach ($action->get($criteria) as $item) {
+            static::assertSame(Simple::class, $item->getEntityType());
+        }
     }
 }

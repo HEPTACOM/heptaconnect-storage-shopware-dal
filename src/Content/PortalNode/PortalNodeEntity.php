@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode;
@@ -8,6 +9,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeCollect
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
+/**
+ * @deprecated DAL usage is discouraged. Use portal node specific actions instead
+ */
 class PortalNodeEntity extends Entity
 {
     use EntityIdTrait;
