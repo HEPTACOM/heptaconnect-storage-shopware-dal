@@ -6,6 +6,14 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Support\AbstractSingletonStorageFacade;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFinishActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
@@ -16,6 +24,14 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionIn
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
@@ -26,6 +42,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -45,10 +62,52 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?RouteCapabilityAccessor $routeCapabilityAccessor = null;
 
+    private ?JobTypeAccessor $jobTypeAccessor = null;
+
     public function __construct(Connection $connection, EntityRepositoryInterface $entityTypeRepository)
     {
         $this->connection = $connection;
         $this->entityTypeRepository = $entityTypeRepository;
+    }
+
+    protected function createJobCreateAction(): JobCreateActionInterface
+    {
+        return new JobCreate($this->connection, $this->getStorageKeyGenerator(), $this->getJobTypeAccessor(), $this->getEntityTypeAccessor());
+    }
+
+    protected function createJobDeleteAction(): JobDeleteActionInterface
+    {
+        return new JobDelete($this->connection);
+    }
+
+    protected function createJobFailAction(): JobFailActionInterface
+    {
+        return new JobFail($this->connection);
+    }
+
+    protected function createJobFinishAction(): JobFinishActionInterface
+    {
+        return new JobFinish($this->connection);
+    }
+
+    protected function createJobGetAction(): JobGetActionInterface
+    {
+        return new JobGet($this->connection, $this->getQueryIterator());
+    }
+
+    protected function createJobListFinishedAction(): JobListFinishedActionInterface
+    {
+        return new JobFinishedList($this->connection, $this->getQueryIterator());
+    }
+
+    protected function createJobScheduleAction(): JobScheduleActionInterface
+    {
+        return new JobSchedule($this->connection);
+    }
+
+    protected function createJobStartAction(): JobStartActionInterface
+    {
+        return new JobStart($this->connection);
     }
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
@@ -119,5 +178,10 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private function getRouteCapabilityAccessor(): RouteCapabilityAccessor
     {
         return $this->routeCapabilityAccessor ??= new RouteCapabilityAccessor($this->connection);
+    }
+
+    private function getJobTypeAccessor(): JobTypeAccessor
+    {
+        return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection);
     }
 }
