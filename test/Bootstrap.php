@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Dotenv\Dotenv;
 
 // custom test suite base class
-include_once __DIR__.'/../test-suite/TestCase.php';
+include_once __DIR__ . '/../test-suite/TestCase.php';
 
 /** @var Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__ . '/../vendor/autoload.php';
