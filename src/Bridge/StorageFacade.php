@@ -6,11 +6,21 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Support\AbstractSingletonStorageFacade;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
@@ -39,6 +49,31 @@ class StorageFacade extends AbstractSingletonStorageFacade
     {
         $this->connection = $connection;
         $this->entityTypeRepository = $entityTypeRepository;
+    }
+
+    protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
+    {
+        return new PortalNodeCreate($this->connection, $this->getStorageKeyGenerator());
+    }
+
+    protected function createPortalNodeDeleteAction(): PortalNodeDeleteActionInterface
+    {
+        return new PortalNodeDelete($this->connection);
+    }
+
+    protected function createPortalNodeGetAction(): PortalNodeGetActionInterface
+    {
+        return new PortalNodeGet($this->connection, $this->getQueryIterator());
+    }
+
+    protected function createPortalNodeListAction(): PortalNodeListActionInterface
+    {
+        return new PortalNodeList($this->connection, $this->getQueryIterator());
+    }
+
+    protected function createPortalNodeOverviewAction(): PortalNodeOverviewActionInterface
+    {
+        return new PortalNodeOverview($this->connection);
     }
 
     protected function createRouteCreateAction(): RouteCreateActionInterface
