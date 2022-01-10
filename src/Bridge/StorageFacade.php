@@ -26,6 +26,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListA
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
@@ -50,6 +51,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
@@ -194,6 +196,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createReceptionRouteListAction(): ReceptionRouteListActionInterface
     {
         return new ReceptionRouteList($this->connection, $this->getQueryIterator());
+    }
+
+    protected function createRouteOverviewAction(): RouteOverviewActionInterface
+    {
+        return new RouteOverview($this->connection);
     }
 
     protected function createRouteCapabilityOverviewAction(): RouteCapabilityOverviewActionInterface
