@@ -14,6 +14,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
@@ -32,6 +35,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionDeactivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
@@ -108,6 +114,21 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createJobStartAction(): JobStartActionInterface
     {
         return new JobStart($this->connection);
+    }
+
+    protected function createPortalExtensionActivateAction(): PortalExtensionActivateActionInterface
+    {
+        return new PortalExtensionActivate($this->connection);
+    }
+
+    protected function createPortalExtensionDeactivateAction(): PortalExtensionDeactivateActionInterface
+    {
+        return new PortalExtensionDeactivate($this->connection);
+    }
+
+    protected function createPortalExtensionFindAction(): PortalExtensionFindActionInterface
+    {
+        return new PortalExtensionFind($this->connection);
     }
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
