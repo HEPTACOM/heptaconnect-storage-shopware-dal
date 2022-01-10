@@ -27,6 +27,8 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionIn
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
@@ -49,12 +51,16 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 class StorageFacade extends AbstractSingletonStorageFacade
@@ -72,6 +78,12 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private ?RouteCapabilityAccessor $routeCapabilityAccessor = null;
 
     private ?JobTypeAccessor $jobTypeAccessor = null;
+
+    private ?WebHttpHandlerPathIdResolver $webHttpHandlerPathIdResolver = null;
+
+    private ?WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor = null;
+
+    private ?WebHttpHandlerAccessor $webHttpHandlerAccessor = null;
 
     public function __construct(Connection $connection, EntityRepositoryInterface $entityTypeRepository)
     {
@@ -189,6 +201,20 @@ class StorageFacade extends AbstractSingletonStorageFacade
         return new RouteCapabilityOverview($this->connection);
     }
 
+    protected function createWebHttpHandlerConfigurationFindAction(): WebHttpHandlerConfigurationFindActionInterface
+    {
+        return new WebHttpHandlerConfigurationFind($this->connection, $this->getWebHttpHandlerPathIdResolver());
+    }
+
+    protected function createWebHttpHandlerConfigurationSetAction(): WebHttpHandlerConfigurationSetActionInterface
+    {
+        return new WebHttpHandlerConfigurationSet(
+            $this->connection,
+            $this->getWebHttpHandlerPathAccessor(),
+            $this->getWebHttpHandlerAccessor()
+        );
+    }
+
     private function getStorageKeyGenerator(): StorageKeyGeneratorContract
     {
         return $this->storageKeyGenerator ??= new StorageKeyGenerator();
@@ -212,5 +238,26 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private function getJobTypeAccessor(): JobTypeAccessor
     {
         return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection);
+    }
+
+    private function getWebHttpHandlerPathIdResolver(): WebHttpHandlerPathIdResolver
+    {
+        return $this->webHttpHandlerPathIdResolver ??= new WebHttpHandlerPathIdResolver();
+    }
+
+    private function getWebHttpHandlerPathAccessor(): WebHttpHandlerPathAccessor
+    {
+        return $this->webHttpHandlerPathAccessor ??= new WebHttpHandlerPathAccessor(
+            $this->connection,
+            $this->getWebHttpHandlerPathIdResolver()
+        );
+    }
+
+    private function getWebHttpHandlerAccessor(): WebHttpHandlerAccessor
+    {
+        return $this->webHttpHandlerAccessor ??= new WebHttpHandlerAccessor(
+            $this->connection,
+            $this->getWebHttpHandlerPathIdResolver()
+        );
     }
 }
