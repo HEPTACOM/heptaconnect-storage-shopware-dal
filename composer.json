@@ -59,7 +59,6 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Heptacom\\HeptaConnect\\TestSuite\\Storage\\": "test-suite/",
             "Heptacom\\HeptaConnect\\Storage\\ShopwareDal\\Test\\": "test/"
         }
     },
