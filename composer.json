@@ -20,8 +20,8 @@
     "support": {
         "issues": "https://github.com/HEPTACOM/heptaconnect-storage-shopware-dal/issues",
         "source": "https://github.com/HEPTACOM/heptaconnect-storage-shopware-dal",
-        "docs": "https://connect.heptacom.de/",
-        "rss": "https://connect.heptacom.de/feed/rss2.xml"
+        "docs": "https://heptaconnect.io/",
+        "rss": "https://heptaconnect.io/news/rss2.xml"
     },
     "require": {
         "php": ">=7.4",
