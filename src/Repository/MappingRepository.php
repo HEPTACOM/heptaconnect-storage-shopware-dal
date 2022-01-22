@@ -132,7 +132,7 @@ class MappingRepository extends MappingRepositoryContract
         $criteria = new Criteria();
         $criteria->setLimit(50);
         $criteria->addFilter(
-            new EqualsFilter('mappingNode.type.type', $datasetEntityType),
+            new EqualsFilter('mappingNode.type.type', $entityType),
             new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
             new EqualsFilter('deletedAt', null)
         );
