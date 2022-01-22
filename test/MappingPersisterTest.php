@@ -53,11 +53,10 @@ class MappingPersisterTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
 
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
 
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
@@ -87,6 +86,35 @@ class MappingPersisterTest extends TestCase
             $contextFactory
         );
         $this->portalNodeCreateAction = new PortalNodeCreate($connection, $storageKeyGenerator);
+    }
+
+    public function testMergingMappingNodes(): void
+    {
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $mappingNodeKeySource = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
+
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
+        $mappingNodeKeyTarget = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeyTarget);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->create($mappingNodeKeySource, $externalIdTarget);
+
+        static::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
+        static::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
+
+        $this->mappingPersister->persist($payload);
+
+        static::assertCount(0, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
+        static::assertCount(2, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
     }
 
     public function testPersistingSingleEntityMapping(): void
