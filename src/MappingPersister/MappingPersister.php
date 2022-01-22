@@ -83,25 +83,6 @@ class MappingPersister extends MappingPersisterContract
         });
     }
 
-    private function mergeMappingNodes(string $from, string $into, \DateTimeInterface $now): void
-    {
-        $this->connection->update('heptaconnect_mapping', [
-            'mapping_node_id' => \hex2bin($into),
-        ], [
-            'mapping_node_id' => \hex2bin($from),
-        ], [
-            'mapping_node_id' => Type::BINARY,
-        ]);
-
-        $this->connection->update('heptaconnect_mapping_node', [
-            'deleted_at' => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-        ], [
-            'id' => \hex2bin($from),
-        ], [
-            'id' => Type::BINARY,
-        ]);
-    }
-
     protected function getCreatePayload(MappingPersistPayload $payload, string $portalNodeId): array
     {
         $create = [];
@@ -337,27 +318,6 @@ class MappingPersister extends MappingPersisterContract
         return $mappingNodesToMerge;
     }
 
-    private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
-    {
-        $queryBuilder = $this->connection->createQueryBuilder();
-        $expr = $queryBuilder->expr();
-
-        $hasConflict = (bool) $queryBuilder->select('1')
-            ->from('heptaconnect_mapping', 'mapping')
-            ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
-            ->groupBy('mapping.portal_node_id')
-            ->having($expr->gt('COUNT(mapping.id)', 1))
-            ->setParameter('mappingNodeIds', [
-                $fromMappingNodeId,
-                $intoMappingNodeId,
-            ], Connection::PARAM_STR_ARRAY)
-            ->execute()
-            ->fetchColumn()
-        ;
-
-        return !$hasConflict;
-    }
-
     private function fetchTypes(array $mappingNodeIds): array
     {
         $queryBuilder = $this->connection->createQueryBuilder();
@@ -394,6 +354,46 @@ class MappingPersister extends MappingPersisterContract
         }
 
         return $types;
+    }
+
+    private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $expr = $queryBuilder->expr();
+
+        $hasConflict = (bool) $queryBuilder->select('1')
+            ->from('heptaconnect_mapping', 'mapping')
+            ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
+            ->groupBy('mapping.portal_node_id')
+            ->having($expr->gt('COUNT(mapping.id)', 1))
+            ->setParameter('mappingNodeIds', [
+                $fromMappingNodeId,
+                $intoMappingNodeId,
+            ], Connection::PARAM_STR_ARRAY)
+            ->execute()
+            ->fetchColumn()
+        ;
+
+        return !$hasConflict;
+    }
+
+    private function mergeMappingNodes(string $from, string $into, \DateTimeInterface $now): void
+    {
+        $this->connection->update('heptaconnect_mapping', [
+            'mapping_node_id' => \hex2bin($into),
+        ], [
+            'mapping_node_id' => \hex2bin($from),
+        ], [
+            'mapping_node_id' => Type::BINARY,
+        ]);
+
+        $this->connection->update('heptaconnect_mapping_node', [
+            'deleted_at' => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+        ], [
+            'id' => \hex2bin($from),
+        ], [
+            'id' => Type::BINARY,
+        ]);
     }
 
     private function getNewMappings(array $create, array $update, array $typeIds, string $portalNodeId): array
