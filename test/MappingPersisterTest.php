@@ -49,11 +49,10 @@ class MappingPersisterTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
 
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
 
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
