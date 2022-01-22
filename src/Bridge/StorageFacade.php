@@ -22,6 +22,8 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDele
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
@@ -47,6 +49,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
@@ -171,6 +175,16 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createPortalNodeOverviewAction(): PortalNodeOverviewActionInterface
     {
         return new PortalNodeOverview($this->connection);
+    }
+
+    protected function createPortalNodeConfigurationGetAction(): PortalNodeConfigurationGetActionInterface
+    {
+        return new PortalNodeConfigurationGet($this->connection);
+    }
+
+    protected function createPortalNodeConfigurationSetAction(): PortalNodeConfigurationSetActionInterface
+    {
+        return new PortalNodeConfigurationSet($this->connection);
     }
 
     protected function createRouteCreateAction(): RouteCreateActionInterface
