@@ -66,6 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete::delete` that allows for optimizations for different use-cases
 
+## [0.8.4] - 2022-01-22
+
+### Added
+
+- The `\Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister` will now attempt to merge mapping-nodes when there are no conflicts. Now mappings can be integrated into an existing mapping-node during a reception.
+
 ## [0.8.3] - 2022-01-05
 
 ### Changed
