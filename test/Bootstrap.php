@@ -39,10 +39,6 @@ do {
     foreach ($tables as $table) {
         $table = "`$table`";
 
-        foreach ($connection->getSchemaManager()->listTableIndexes($table) as $index) {
-            $connection->getSchemaManager()->dropIndex($index, $table);
-        }
-
         try {
             $connection->getSchemaManager()->dropTable($table);
         } catch (\Throwable $throwable) {
