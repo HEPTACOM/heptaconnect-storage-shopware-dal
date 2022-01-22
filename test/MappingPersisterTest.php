@@ -102,6 +102,10 @@ class MappingPersisterTest extends TestCase
 
         $payload = new MappingPersistPayload($portalNodeKeyTarget);
         $payload->create($mappingNodeKeySource, $externalIdTarget);
+
+        self::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
+        self::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
+
         $this->mappingPersister->persist($payload);
 
         self::assertCount(0, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
