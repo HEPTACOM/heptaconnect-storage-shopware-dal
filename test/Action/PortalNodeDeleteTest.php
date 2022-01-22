@@ -34,6 +34,7 @@ class PortalNodeDeleteTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portal,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
     }

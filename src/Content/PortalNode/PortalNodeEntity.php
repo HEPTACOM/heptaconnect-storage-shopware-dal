@@ -18,6 +18,8 @@ class PortalNodeEntity extends Entity
 
     protected string $className;
 
+    protected array $configuration;
+
     protected ?\DateTimeInterface $deletedAt = null;
 
     protected ?MappingCollection $mappings = null;
@@ -34,6 +36,16 @@ class PortalNodeEntity extends Entity
         $this->className = $className;
 
         return $this;
+    }
+
+    public function getConfiguration(): array
+    {
+        return $this->configuration;
+    }
+
+    public function setConfiguration(array $configuration): void
+    {
+        $this->configuration = $configuration;
     }
 
     public function getDeletedAt(): ?\DateTimeInterface

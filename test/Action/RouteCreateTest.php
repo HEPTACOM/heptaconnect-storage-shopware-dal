@@ -51,11 +51,13 @@ class RouteCreateTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $target,
             'class_name' => TestCase::class,
+            'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 

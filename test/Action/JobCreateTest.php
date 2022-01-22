@@ -48,6 +48,7 @@ class JobCreateTest extends TestCase
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
+            'configuration' => '{}',
             'class_name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
