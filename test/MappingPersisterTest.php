@@ -88,6 +88,26 @@ class MappingPersisterTest extends TestCase
         );
     }
 
+    public function testMergingMappingNodes()
+    {
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeySource = $this->portalNodeRepository->create(PortalContract::class);
+        $mappingNodeKeySource = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
+
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeyTarget = $this->portalNodeRepository->create(PortalContract::class);
+        $mappingNodeKeyTarget = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeyTarget);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
+
+        $payload = new MappingPersistPayload($portalNodeKeyTarget);
+        $payload->create($mappingNodeKeySource, $externalIdTarget);
+        $this->mappingPersister->persist($payload);
+
+        self::assertCount(0, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
+        self::assertCount(2, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
+    }
+
     public function testPersistingSingleEntityMapping()
     {
         $externalIdSource = (string) Uuid::uuid4()->getHex();
