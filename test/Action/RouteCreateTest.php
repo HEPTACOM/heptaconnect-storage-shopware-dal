@@ -64,10 +64,7 @@ class RouteCreateTest extends TestCase
         $sourceHex = Uuid::fromBytesToHex($source);
         $targetHex = Uuid::fromBytesToHex($target);
 
-        /** @var EntityRepositoryInterface $entityTypes */
-        $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
-
-        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
+        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($connection), new RouteCapabilityAccessor($connection));
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
             new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),

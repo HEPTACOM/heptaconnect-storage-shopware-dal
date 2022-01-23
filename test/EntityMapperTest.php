@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
+use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\DatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
@@ -43,6 +44,8 @@ class EntityMapperTest extends TestCase
      */
     public function testMap(DatasetEntityContract $entity): void
     {
+        /** @var Connection $connect */
+        $connection = $this->kernel->getContainer()->get(Connection::class);
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
         /** @var ContextFactory $contextFactory */
@@ -51,7 +54,7 @@ class EntityMapperTest extends TestCase
         $mappingNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping_node');
         $mappingRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping');
         $portalNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_portal_node');
-        $entityTypeAccessor = new EntityTypeAccessor($entityTypeRepository);
+        $entityTypeAccessor = new EntityTypeAccessor($connection);
         $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $mappingRepository, $entityTypeAccessor, $contextFactory);
         $portalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
 

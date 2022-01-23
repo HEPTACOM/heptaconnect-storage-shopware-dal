@@ -20,7 +20,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 
 class RouteCreate implements RouteCreateActionInterface
 {
@@ -68,7 +67,7 @@ class RouteCreate implements RouteCreateActionInterface
         }
 
         $allCapabilities = \array_merge([], ...$capabilities);
-        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes, Context::createDefaultContext());
+        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes);
         $capabilityIds = $this->routeCapabilities->getIdsForNames($allCapabilities);
 
         foreach ($allCapabilities as $capability) {

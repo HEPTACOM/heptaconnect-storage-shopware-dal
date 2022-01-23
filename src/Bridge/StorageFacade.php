@@ -248,7 +248,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private function getEntityTypeAccessor(): EntityTypeAccessor
     {
-        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->entityTypeRepository);
+        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->connection);
     }
 
     private function getRouteCapabilityAccessor(): RouteCapabilityAccessor

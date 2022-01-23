@@ -148,14 +148,13 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(\get_class($mappingId));
         }
 
-        $context = $this->contextFactory->create();
-        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType]);
 
         $this->mappingNodes->create([[
             'id' => $mappingId->getUuid(),
             'originPortalNodeId' => $portalNodeKey->getUuid(),
             'typeId' => $typeIds[$entityType],
-        ]], $context);
+        ]], $this->contextFactory->create());
 
         return $mappingId;
     }
@@ -175,8 +174,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(MappingNodeKeyInterface::class);
         }
 
-        $context = $this->contextFactory->create();
-        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType]);
         $payload = [];
 
         /** @var MappingNodeKeyInterface $key */
@@ -193,7 +191,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         if ($payload !== []) {
-            $this->mappingNodes->create($payload, $context);
+            $this->mappingNodes->create($payload, $this->contextFactory->create());
         }
 
         return $result;

@@ -63,7 +63,7 @@ class EntityMapper extends EntityMapperContract
         $context = $this->contextFactory->create();
         $datasetEntities = \iterable_to_array($entityCollection);
         $neededTypes = \array_map('get_class', $datasetEntities);
-        $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes, $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes);
 
         $readMappingNodes = [];
         $readMappingNodesIndex = [];
