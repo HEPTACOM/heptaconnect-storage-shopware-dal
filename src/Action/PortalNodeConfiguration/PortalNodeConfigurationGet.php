@@ -10,6 +10,7 @@ use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Exception\ReadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -69,11 +70,25 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
 
         return \iterable_map(
             $statement->fetchAll(FetchMode::ASSOCIATIVE),
-            static fn (array $r): PortalNodeConfigurationGetResult => new PortalNodeConfigurationGetResult(
-                new PortalNodeStorageKey(\bin2hex((string) $r['portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (array) \json_decode((string) $r['portal_configuration'], true),
-            )
+            static function (array $r): PortalNodeConfigurationGetResult {
+                $portalNodeId = \bin2hex((string) $r['portal_node_id']);
+
+                try {
+                    $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR);
+                } catch (\JsonException $exception) {
+                    throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863472, $exception);
+                }
+
+                if (!\is_array($value)) {
+                    throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863473);
+                }
+
+                return new PortalNodeConfigurationGetResult(
+                    new PortalNodeStorageKey($portalNodeId),
+                    /* @phpstan-ignore-next-line */
+                    (array) $value,
+                );
+            }
         );
     }
 }
