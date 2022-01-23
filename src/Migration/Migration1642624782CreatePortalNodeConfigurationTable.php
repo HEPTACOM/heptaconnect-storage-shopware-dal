@@ -100,7 +100,7 @@ SQL;
 
             if ($configurationKey !== '' && $configurationValue !== '') {
                 try {
-                    $json = \json_decode($configurationValue, true, 512, JSON_THROW_ON_ERROR);
+                    $json = \json_decode($configurationValue, true, 512, \JSON_THROW_ON_ERROR);
                 } catch (\JsonException $e) {
                     throw new \RuntimeException('Cannot read and process JSON in configuration', 1642937283, $e);
                 }
@@ -113,7 +113,7 @@ SQL;
                 }
 
                 $value = $json['_value'] ?? null;
-                $jsonedValue = \json_encode($update, JSON_THROW_ON_ERROR);
+                $jsonedValue = \json_encode($update, \JSON_THROW_ON_ERROR);
 
                 if ($value === null || !\is_string($jsonedValue)) {
                     throw new \RuntimeException('Cannot write processed JSON in configuration', 1642937285);

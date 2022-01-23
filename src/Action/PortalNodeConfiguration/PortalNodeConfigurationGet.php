@@ -86,7 +86,7 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
                 return new PortalNodeConfigurationGetResult(
                     new PortalNodeStorageKey($portalNodeId),
                     /* @phpstan-ignore-next-line */
-                    (array)$value,
+                    (array) $value,
                 );
             }
         );
