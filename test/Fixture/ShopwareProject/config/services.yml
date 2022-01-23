@@ -6,14 +6,6 @@ services:
     Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory:
         public: true
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobDefinition:
-        tags:
-            - { name: shopware.entity.definition, entity: heptaconnect_cronjob }
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunDefinition:
-        tags:
-            - { name: shopware.entity.definition, entity: heptaconnect_cronjob_run }
-
     Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition:
         tags:
             - { name: shopware.entity.definition, entity: heptaconnect_entity_type }
