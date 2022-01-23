@@ -113,7 +113,7 @@ SQL;
                 }
 
                 $value = $json['_value'] ?? null;
-                $jsonedValue = \json_encode($update, \JSON_THROW_ON_ERROR);
+                $jsonedValue = \json_encode($value, \JSON_THROW_ON_ERROR);
 
                 if ($value === null || !\is_string($jsonedValue)) {
                     throw new \RuntimeException('Cannot write processed JSON in configuration', 1642937285);
