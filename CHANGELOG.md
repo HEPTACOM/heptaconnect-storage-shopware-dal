@@ -84,6 +84,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove previously deprecated `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobEntity`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Cronjob\CronjobRunEntity` as the feature of cronjobs in its current implementation is removed
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642885343RemoveCronjobAndCronjobRunTable` to remove the tables `heptaconnect_cronjob` and `heptaconnect_cronjob_run` as the feature of cronjobs in its current implementation is removed
 - Replace dependencies in `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor` from `\Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface` to `\Doctrine\DBAL\Connection` to drop Shopware DAL usage
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listByNodes` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::listByNodes`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listUnsavedExternalIds` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::listUnsavedExternalIds`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::updateExternalId` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::updateExternalId`
 
 ## [0.8.4] - 2022-01-22
 

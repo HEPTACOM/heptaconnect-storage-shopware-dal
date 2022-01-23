@@ -71,37 +71,6 @@ class MappingRepository extends MappingRepositoryContract
         return $mapping;
     }
 
-    public function listByNodes(
-        MappingNodeKeyInterface $mappingNodeKey,
-        PortalNodeKeyInterface $portalNodeKey
-    ): iterable {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
-        }
-
-        $criteria = new Criteria();
-        $criteria->setLimit(50);
-        $criteria->addFilter(
-            new EqualsFilter('mappingNodeId', $mappingNodeKey->getUuid()),
-            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-            new NotFilter(NotFilter::CONNECTION_AND, [
-                new EqualsFilter('externalId', null),
-            ]),
-            new EqualsFilter('deletedAt', null)
-        );
-        $iterator = new RepositoryIterator($this->mappings, $this->contextFactory->create(), $criteria);
-
-        while (($ids = $iterator->fetchIds()) !== null) {
-            foreach ($ids as $id) {
-                yield new MappingStorageKey($id);
-            }
-        }
-    }
-
     public function listByMappingNode(MappingNodeKeyInterface $mappingNodeKey): iterable
     {
         if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
@@ -145,36 +114,6 @@ class MappingRepository extends MappingRepositoryContract
                 yield new MappingStorageKey($id);
             }
         }
-    }
-
-    public function listUnsavedExternalIds(
-        PortalNodeKeyInterface $portalNodeKey,
-        string $entityType,
-        array $externalIdsToCheck
-    ): array {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('mappingNode.type.type', $entityType),
-            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-            new EqualsAnyFilter('externalId', $externalIdsToCheck),
-            new EqualsFilter('deletedAt', null)
-        );
-        $criteria->addAggregation(new TermsAggregation(
-            'externalIds',
-            'externalId'
-        ));
-        $aggrResult = $this->mappings->aggregate($criteria, $this->contextFactory->create());
-        $termResult = $aggrResult->get('externalIds');
-
-        if (!$termResult instanceof TermsResult) {
-            return $externalIdsToCheck;
-        }
-
-        return \array_diff($externalIdsToCheck, $termResult->getKeys());
     }
 
     public function create(
@@ -245,20 +184,6 @@ class MappingRepository extends MappingRepositoryContract
         }
 
         return $result;
-    }
-
-    public function updateExternalId(MappingKeyInterface $key, ?string $externalId): void
-    {
-        if (!$key instanceof MappingStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
-        }
-
-        $context = $this->contextFactory->create();
-        $this->throwNotFoundWhenNoMatch($this->mappings, $key->getUuid(), $context);
-        $this->throwNotFoundWhenNoChange($this->mappings->update([[
-            'id' => $key->getUuid(),
-            'externalId' => $externalId,
-        ]], $context));
     }
 
     public function delete(MappingKeyInterface $key): void
