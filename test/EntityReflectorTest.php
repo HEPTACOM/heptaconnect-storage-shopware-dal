@@ -101,9 +101,11 @@ class EntityReflectorTest extends TestCase
         $portalNodeRepository->create([[
             'id' => $sourcePortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ], [
             'id' => $targetPortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ]], $context);
         $entityTypeRepository->create(\array_values($types), $context);
         $mappingNodeRepository->create(\array_values($nodes), $context);
@@ -182,9 +184,11 @@ class EntityReflectorTest extends TestCase
         $portalNodeRepository->create([[
             'id' => $sourcePortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ], [
             'id' => $targetPortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ]], $context);
         $entityTypeRepository->create(\array_values($types), $context);
         $mappingNodeRepository->create(\array_values($nodes), $context);
@@ -287,12 +291,15 @@ class EntityReflectorTest extends TestCase
         $portalNodeRepository->create([[
             'id' => $sourcePortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ], [
             'id' => $targetPortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ], [
             'id' => $unrelatedPortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ]], $context);
         $entityTypeRepository->create(\array_values($types), $context);
         $mappingNodeRepository->create(\array_values($nodes), $context);
@@ -363,9 +370,11 @@ class EntityReflectorTest extends TestCase
         $portalNodeRepository->create([[
             'id' => $sourcePortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ], [
             'id' => $targetPortalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ]], $context);
         $entityTypeRepository->create(\array_values($types), $context);
         $mappingNodeRepository->create(\array_values($nodes), $context);

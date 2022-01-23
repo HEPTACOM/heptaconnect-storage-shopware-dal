@@ -26,6 +26,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -45,6 +46,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -74,6 +76,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,

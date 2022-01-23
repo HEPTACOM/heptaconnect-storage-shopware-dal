@@ -62,6 +62,7 @@ class EntityMapperTest extends TestCase
         $portalNodeRepository->create([[
             'id' => $portalNodeKey->getUuid(),
             'className' => PortalContract::class,
+            'configuration' => [],
         ]], $context);
         $entityTypeRepository->create([[
             'id' => $typeId,

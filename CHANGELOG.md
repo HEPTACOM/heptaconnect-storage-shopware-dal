@@ -36,6 +36,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate`
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionDeactivate`
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet`
+- Add exception code `1642863637` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet::set` when the payload has an invalid portal node key
+- Add exception code `1642863638` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet::set` when the payload value is not JSON serializable
+- Add exception code `1642863639` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet::set` when writing to the database fails
+- Add exception code `1642863471` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::get` when query execution could not return a ResultStatement
+- Add exception code `1642863472` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::get` when the configuration value is not a valid JSON
+- Add exception code `1642863473` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::get` when the configuration value is not a JSON array or JSON object
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable` to add table for portal node configuration and migrate from the previous storage
+- Add exception code `1642937283` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the JSON value from the old storage cannot be parsed
+- Add exception code `1642937284` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the JSON value from the old storage has an unexpected form
+- Add exception code `1642937285` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the read JSON from the old storage cannot be transformed into JSON for the new storage
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
 
 ### Changed
@@ -65,6 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::listByClass` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepositoryContract::create` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete::delete` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage::getConfiguration` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::get` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage::setConfiguration` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet::set` that allows for optimizations for different use-cases
 
 ## [0.8.4] - 2022-01-22
 
