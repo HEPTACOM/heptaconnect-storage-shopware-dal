@@ -69,13 +69,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 class StorageFacade extends AbstractSingletonStorageFacade
 {
     private Connection $connection;
-
-    private EntityRepositoryInterface $entityTypeRepository;
 
     private ?StorageKeyGeneratorContract $storageKeyGenerator = null;
 
@@ -93,10 +90,9 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?WebHttpHandlerAccessor $webHttpHandlerAccessor = null;
 
-    public function __construct(Connection $connection, EntityRepositoryInterface $entityTypeRepository)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->entityTypeRepository = $entityTypeRepository;
     }
 
     protected function createJobCreateAction(): JobCreateActionInterface
