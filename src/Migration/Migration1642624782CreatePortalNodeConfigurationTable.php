@@ -12,7 +12,11 @@ class Migration1642624782CreatePortalNodeConfigurationTable extends MigrationSte
 {
     public const UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`
-    ADD COLUMN `configuration` JSON NULL AFTER `class_name`;
+    ADD COLUMN `configuration`
+        LONGTEXT
+        NULL
+        COLLATE 'binary'
+        AFTER `class_name`;
 
 UPDATE
     `heptaconnect_portal_node`
@@ -20,14 +24,22 @@ SET
     `configuration` = '{}';
 
 ALTER TABLE `heptaconnect_portal_node`
-    MODIFY COLUMN `configuration` JSON NOT NULL;
+    MODIFY COLUMN `configuration`
+        LONGTEXT
+        NOT NULL
+        COLLATE 'binary';
+SQL;
+
+    public const REVERSE_UP = <<<'SQL'
+ALTER TABLE `heptaconnect_portal_node`
+    DROP COLUMN `configuration`;
 SQL;
 
     public const DESTRUCTIVE = <<<'SQL'
 DELETE FROM
     `system_config`
 WHERE
-    `configuration_key` LIKE 'heptacom.heptaConnect.portalNodeConfiguration%'
+    `configuration_key` LIKE 'heptacom.heptaConnect.portalNodeConfiguration.%'
 SQL;
 
     public function getCreationTimestamp(): int
@@ -39,46 +51,14 @@ SQL;
     {
         $this->executeSql($connection, self::UP);
 
-        if ($connection->getSchemaManager()->tablesExist('system_config')) {
-            $select = $connection->createQueryBuilder();
-            $migrateableConfiguration = $select->from('system_config')
-                ->select([
-                    'configuration_key',
-                    'configuration_value',
-                ])
-                ->where($select->expr()->like('configuration_key', ':pattern'))
-                ->setParameter('pattern', 'heptacom.heptaConnect.portalNodeConfiguration%')
-                ->execute()
-                ->fetchAll();
+        try {
+            $this->migrateConfiguration($connection);
+        } catch (\Throwable $throwable) {
+            $this->executeSql($connection, self::REVERSE_UP);
 
-            $update = $connection->createQueryBuilder();
-            $update->update('heptaconnect_portal_node')
-                ->set('configuration', ':config')
-                ->where($update->expr()->eq('id', ':id'));
-
-            foreach ($migrateableConfiguration as $row) {
-                $configurationKey = (string) ($row['configuration_key'] ?? null);
-                $configurationValue = (string) ($row['configuration_value'] ?? null);
-
-                if ($configurationKey !== '' && $configurationValue !== '') {
-                    $json = \json_decode($configurationValue, true);
-                    $portalNodeKey = \mb_substr($configurationKey, \mb_strlen('heptacom.heptaConnect.portalNodeConfiguration'));
-                    $portalNodeId = \hex2bin($portalNodeKey);
-
-                    if (\is_array($json) && \is_string($portalNodeId)) {
-                        $value = $json['_value'] ?? null;
-                        $jsonedValue = \json_encode($update);
-
-                        if ($value !== null && \is_string($jsonedValue)) {
-                            $update
-                                ->setParameter('id', $portalNodeId, Types::BINARY)
-                                ->setParameter('config', $jsonedValue, Types::BINARY)
-                                ->execute();
-                        }
-                    }
-                }
-            }
+            throw $throwable;
         }
+
         $this->executeSql($connection, self::DESTRUCTIVE);
     }
 
@@ -93,6 +73,57 @@ SQL;
             $connection->executeStatement($sql);
         } else {
             $connection->exec($sql);
+        }
+    }
+
+    private function migrateConfiguration(Connection $connection): void
+    {
+        $select = $connection->createQueryBuilder();
+        $migrateableConfiguration = $select->from('system_config')
+            ->select([
+                'configuration_key',
+                'configuration_value',
+            ])
+            ->where($select->expr()->like('configuration_key', ':pattern'))
+            ->setParameter('pattern', 'heptacom.heptaConnect.portalNodeConfiguration.%')
+            ->execute()
+            ->fetchAll();
+
+        $update = $connection->createQueryBuilder();
+        $update->update('heptaconnect_portal_node')
+            ->set('configuration', ':config')
+            ->where($update->expr()->eq('id', ':id'));
+
+        foreach ($migrateableConfiguration as $row) {
+            $configurationKey = (string) ($row['configuration_key'] ?? null);
+            $configurationValue = (string) ($row['configuration_value'] ?? null);
+
+            if ($configurationKey !== '' && $configurationValue !== '') {
+                try {
+                    $json = \json_decode($configurationValue, true, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    throw new \RuntimeException('Cannot read and process JSON in configuration', 1642937283, $e);
+                }
+
+                $portalNodeKey = \mb_substr($configurationKey, \mb_strlen('heptacom.heptaConnect.portalNodeConfiguration.'));
+                $portalNodeId = \hex2bin($portalNodeKey);
+
+                if (!\is_array($json) || !\is_string($portalNodeId)) {
+                    throw new \RuntimeException('Cannot update configuration', 1642937284);
+                }
+
+                $value = $json['_value'] ?? null;
+                $jsonedValue = \json_encode($update, JSON_THROW_ON_ERROR);
+
+                if ($value === null || !\is_string($jsonedValue)) {
+                    throw new \RuntimeException('Cannot write processed JSON in configuration', 1642937285);
+                }
+
+                $update
+                    ->setParameter('id', $portalNodeId, Types::BINARY)
+                    ->setParameter('config', $jsonedValue, Types::BINARY)
+                    ->execute();
+            }
         }
     }
 }
