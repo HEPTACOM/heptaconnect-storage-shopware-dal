@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Map\MappingMapPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Map\MappingMapResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Mapping;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Mapping\MappingMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
