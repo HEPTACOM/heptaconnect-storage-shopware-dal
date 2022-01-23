@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersister\Contract\MappingPersisterContract;
 use Heptacom\HeptaConnect\Storage\Base\MappingPersister\Exception\MappingConflictException;
@@ -13,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -48,9 +50,35 @@ class MappingPersister extends MappingPersisterContract
         $update = $this->getUpdatePayload($payload, $portalNodeId, $context);
         $delete = $this->getDeletePayload($payload, $portalNodeId, $context);
 
-        $this->validateMappingConflicts($portalNodeId, $create, $update, $delete);
+        $mappingNodesToMerge = $this->validateMappingConflicts($portalNodeId, $create, $update, $delete);
 
-        $this->connection->transactional(function () use ($create, $update, $delete, $context): void {
+        foreach ($mappingNodesToMerge as $mergeCommand) {
+            foreach ($create as $key => $createCommand) {
+                if ($createCommand['mappingNodeId'] === $mergeCommand['fromMappingNodeId']) {
+                    unset($create[$key]);
+
+                    break;
+                }
+            }
+        }
+
+        $this->connection->transactional(function () use (
+            $mappingNodesToMerge,
+            $create,
+            $update,
+            $delete,
+            $context
+        ): void {
+            $now = new \DateTimeImmutable();
+
+            foreach ($mappingNodesToMerge as $mergeCommand) {
+                $this->mergeMappingNodes(
+                    $mergeCommand['fromMappingNodeId'],
+                    $mergeCommand['intoMappingNodeId'],
+                    $now
+                );
+            }
+
             $this->mappingRepository->create($create, $context);
             $this->mappingRepository->update([...$update, ...$delete], $context);
         });
@@ -199,7 +227,7 @@ class MappingPersister extends MappingPersisterContract
         array $create,
         array $update,
         array $delete
-    ): void {
+    ): array {
         $typeIds = $this->fetchTypes(\array_column([...$create, ...$update, ...$delete], 'mappingNodeId'));
 
         $newMappings = $this->getNewMappings($create, $update, $typeIds, $portalNodeId);
@@ -229,13 +257,14 @@ class MappingPersister extends MappingPersisterContract
         }
 
         if ($typeConditions === []) {
-            return;
+            return [];
         }
 
         $queryBuilder
             ->select([
                 'mapping.mapping_node_id AS mappingNodeId',
                 'mapping.external_id AS externalId',
+                'mappingNode.type_id AS typeId',
             ])
             ->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -253,25 +282,41 @@ class MappingPersister extends MappingPersisterContract
             ->setParameter('portalNodeId', \hex2bin($portalNodeId))
         ;
 
+        $mappingNodesToMerge = [];
+
         foreach ($queryBuilder->execute()->fetchAll() as $row) {
-            $mappingNodeId = \bin2hex($row['mappingNodeId']);
+            $intoMappingNodeId = \bin2hex($row['mappingNodeId']);
             $externalId = $row['externalId'];
+            $typeId = \bin2hex($row['typeId']);
 
-            if (isset($changedMappings[$mappingNodeId])
-                && !isset($changedMappings[$mappingNodeId][$externalId])) {
+            if (isset($changedMappings[$intoMappingNodeId])
+                && !isset($changedMappings[$intoMappingNodeId][$externalId])) {
                 // conflict will be resolved in this changeset
 
                 continue;
             }
 
-            if (isset($deletedMappings[$mappingNodeId])) {
+            if (isset($deletedMappings[$intoMappingNodeId])) {
                 // conflict will be resolved in this changeset
 
                 continue;
             }
 
-            throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            $fromMappingNodeId = \array_key_first($newMappings[$typeId][$externalId]);
+
+            if ($this->validateMappingNodesCanBeMerged($fromMappingNodeId, $intoMappingNodeId)) {
+                $mappingNodesToMerge[] = [
+                    'fromMappingNodeId' => $fromMappingNodeId,
+                    'intoMappingNodeId' => $intoMappingNodeId,
+                ];
+
+                continue;
+            }
+
+            throw new MappingConflictException(\sprintf(MappingConflictException::FORMAT, $portalNodeId, $intoMappingNodeId, $externalId), new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($intoMappingNodeId), $externalId);
         }
+
+        return $mappingNodesToMerge;
     }
 
     private function fetchTypes(array $mappingNodeIds): array
@@ -310,6 +355,46 @@ class MappingPersister extends MappingPersisterContract
         }
 
         return $types;
+    }
+
+    private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $expr = $queryBuilder->expr();
+
+        $hasConflict = (bool) $queryBuilder->select('1')
+            ->from('heptaconnect_mapping', 'mapping')
+            ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
+            ->groupBy('mapping.portal_node_id')
+            ->having($expr->gt('COUNT(mapping.id)', 1))
+            ->setParameter('mappingNodeIds', [
+                $fromMappingNodeId,
+                $intoMappingNodeId,
+            ], Connection::PARAM_STR_ARRAY)
+            ->execute()
+            ->fetchColumn()
+        ;
+
+        return !$hasConflict;
+    }
+
+    private function mergeMappingNodes(string $from, string $into, \DateTimeInterface $now): void
+    {
+        $this->connection->update('heptaconnect_mapping', [
+            'mapping_node_id' => \hex2bin($into),
+        ], [
+            'mapping_node_id' => \hex2bin($from),
+        ], [
+            'mapping_node_id' => Type::BINARY,
+        ]);
+
+        $this->connection->update('heptaconnect_mapping_node', [
+            'deleted_at' => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+        ], [
+            'id' => \hex2bin($from),
+        ], [
+            'id' => Type::BINARY,
+        ]);
     }
 
     private function getNewMappings(array $create, array $update, array $typeIds, string $portalNodeId): array
