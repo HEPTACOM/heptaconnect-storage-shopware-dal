@@ -87,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listByNodes` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::listByNodes`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::listUnsavedExternalIds` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::listUnsavedExternalIds`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository::updateExternalId` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingRepositoryContract::updateExternalId`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalId` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::listByTypeAndPortalNodeAndExternalId`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::create` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::create`
 
 ## [0.8.4] - 2022-01-22
 
