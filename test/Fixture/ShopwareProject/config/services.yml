@@ -1,8 +1,4 @@
 services:
-    Heptacom\HeptaConnect\Storage\ShopwareDal\ConfigurationStorage:
-        arguments:
-            - '@Shopware\Core\System\SystemConfig\SystemConfigService'
-
     Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory:
         public: true
 
@@ -82,12 +78,6 @@ services:
         arguments:
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@heptaconnect_mapping.repository'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\PortalNodeRepository:
-        arguments:
-            - '@heptaconnect_portal_node.repository'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\MigrationSource:
