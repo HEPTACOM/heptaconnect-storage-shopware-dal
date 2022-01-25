@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Support\AbstractSingletonStorageFacade;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
@@ -34,6 +35,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
@@ -69,13 +71,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 class StorageFacade extends AbstractSingletonStorageFacade
 {
     private Connection $connection;
-
-    private EntityRepositoryInterface $entityTypeRepository;
 
     private ?StorageKeyGeneratorContract $storageKeyGenerator = null;
 
@@ -93,10 +92,14 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?WebHttpHandlerAccessor $webHttpHandlerAccessor = null;
 
-    public function __construct(Connection $connection, EntityRepositoryInterface $entityTypeRepository)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->entityTypeRepository = $entityTypeRepository;
+    }
+
+    protected function createIdentityMapAction(): IdentityMapActionInterface
+    {
+        return new IdentityMap($this->getStorageKeyGenerator(), $this->getEntityTypeAccessor(), $this->connection);
     }
 
     protected function createJobCreateAction(): JobCreateActionInterface
@@ -255,7 +258,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private function getEntityTypeAccessor(): EntityTypeAccessor
     {
-        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->entityTypeRepository);
+        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->connection);
     }
 
     private function getRouteCapabilityAccessor(): RouteCapabilityAccessor

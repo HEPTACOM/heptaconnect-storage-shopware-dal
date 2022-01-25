@@ -8,7 +8,6 @@ use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\TestSuite\Storage\Action\PortalNodeConfigurationTestContract;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
@@ -29,9 +28,7 @@ class PortalNodeConfigurationTest extends PortalNodeConfigurationTestContract
         $kernel = $this->kernel;
         /** @var Connection $connection */
         $connection = $kernel->getContainer()->get(Connection::class);
-        /** @var EntityRepositoryInterface $entityTypeRepository */
-        $entityTypeRepository = $kernel->getContainer()->get('heptaconnect_entity_type.repository');
 
-        return new StorageFacade($connection, $entityTypeRepository);
+        return new StorageFacade($connection);
     }
 }

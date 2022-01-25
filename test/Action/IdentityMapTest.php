@@ -2,24 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
+use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\DatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapPayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\ProvideEntitiesTrait;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
@@ -34,7 +42,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
-class EntityMapperTest extends TestCase
+class IdentityMapTest extends TestCase
 {
     use ProvideEntitiesTrait;
 
@@ -43,27 +51,27 @@ class EntityMapperTest extends TestCase
      */
     public function testMap(DatasetEntityContract $entity): void
     {
+        $facade = $this->createStorageFacade();
+        $portalNodeCreate = $facade->getPortalNodeCreateAction();
+
+        /** @var PortalNodeKeyInterface $portalNodeKey */
+        $portalNodeKey = $portalNodeCreate->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]))->first()->getPortalNodeKey();
+
+        /** @var Connection $connect */
+        $connection = $this->kernel->getContainer()->get(Connection::class);
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
-        /** @var ContextFactory $contextFactory */
-        $contextFactory = $this->kernel->getContainer()->get(ContextFactory::class);
         $entityTypeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_entity_type');
         $mappingNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping_node');
         $mappingRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping');
-        $portalNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_portal_node');
-        $entityTypeAccessor = new EntityTypeAccessor($entityTypeRepository);
-        $mapper = new EntityMapper(new StorageKeyGenerator(), $mappingNodeRepository, $mappingRepository, $entityTypeAccessor, $contextFactory);
-        $portalNodeKey = new PortalNodeStorageKey(Uuid::randomHex());
+        $mapper = new IdentityMap(new StorageKeyGenerator(), new EntityTypeAccessor($connection), $connection);
 
         $entity->setPrimaryKey($entity->getPrimaryKey() ?? Uuid::randomHex());
         $context = Context::createDefaultContext();
         $getClass = \get_class($entity);
         $typeId = Uuid::randomHex();
-        $portalNodeRepository->create([[
-            'id' => $portalNodeKey->getUuid(),
-            'className' => PortalContract::class,
-            'configuration' => [],
-        ]], $context);
         $entityTypeRepository->create([[
             'id' => $typeId,
             'type' => $getClass,
@@ -81,7 +89,8 @@ class EntityMapperTest extends TestCase
             'externalId' => $entity->getPrimaryKey(),
         ]], $context);
 
-        $mappedEntities = $mapper->mapEntities(new DatasetEntityCollection([$entity, (new DeepCloneContract())->deepClone($entity)]), $portalNodeKey);
+        $mappedEntities = $mapper->map(new IdentityMapPayload($portalNodeKey, new DatasetEntityCollection([$entity, (new DeepCloneContract())->deepClone($entity)])))->getMappedDatasetEntityCollection();
+
         /** @var MappedDatasetEntityStruct|null $firstEntity */
         $firstEntity = $mappedEntities->first();
         /** @var MappedDatasetEntityStruct|null $secondEntity */
@@ -97,5 +106,14 @@ class EntityMapperTest extends TestCase
 
         static::assertNotSame($firstEntity, $secondEntity);
         static::assertCount(2, $mappedEntities);
+    }
+
+    private function createStorageFacade(): StorageFacadeInterface
+    {
+        $kernel = $this->kernel;
+        /** @var Connection $connection */
+        $connection = $kernel->getContainer()->get(Connection::class);
+
+        return new StorageFacade($connection);
     }
 }
