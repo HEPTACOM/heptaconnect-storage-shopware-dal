@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Mapping;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
@@ -12,10 +12,10 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Map\MappingMapPayload;
-use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Map\MappingMapResult;
-use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Mapping;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Mapping\MappingMapActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapPayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Mapping;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -25,7 +25,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
-class MappingMap implements MappingMapActionInterface
+class IdentityMap implements IdentityMapActionInterface
 {
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
@@ -43,7 +43,7 @@ class MappingMap implements MappingMapActionInterface
         $this->connection = $connection;
     }
 
-    public function map(MappingMapPayload $payload): MappingMapResult
+    public function map(IdentityMapPayload $payload): IdentityMapResult
     {
         $portalNodeKey = $payload->getPortalNodeKey();
 
@@ -177,7 +177,7 @@ class MappingMap implements MappingMapActionInterface
             }
         }
 
-        $result = new MappingMapResult(new MappedDatasetEntityCollection());
+        $result = new IdentityMapResult(new MappedDatasetEntityCollection());
 
         foreach ($datasetEntities as $key => $entity) {
             if (isset($resultMappings[$key])) {

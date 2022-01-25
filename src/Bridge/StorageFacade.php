@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Support\AbstractSingletonStorageFacade;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
@@ -14,7 +15,6 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Mapping\MappingMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface;
@@ -34,6 +34,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
@@ -42,7 +43,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Mapping\MappingMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionDeactivate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind;
@@ -95,6 +95,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
         $this->connection = $connection;
     }
 
+    protected function createIdentityMapAction(): IdentityMapActionInterface
+    {
+        return new IdentityMap($this->getStorageKeyGenerator(), $this->getEntityTypeAccessor(), $this->connection);
+    }
+
     protected function createJobCreateAction(): JobCreateActionInterface
     {
         return new JobCreate($this->connection, $this->getStorageKeyGenerator(), $this->getJobTypeAccessor(), $this->getEntityTypeAccessor());
@@ -133,11 +138,6 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createJobStartAction(): JobStartActionInterface
     {
         return new JobStart($this->connection);
-    }
-
-    protected function createMappingMapAction(): MappingMapActionInterface
-    {
-        return new MappingMap($this->getStorageKeyGenerator(), $this->getEntityTypeAccessor(), $this->connection);
     }
 
     protected function createPortalExtensionActivateAction(): PortalExtensionActivateActionInterface
