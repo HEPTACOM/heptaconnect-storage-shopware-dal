@@ -59,7 +59,6 @@ class IdentityMapTest extends TestCase
             new PortalNodeCreatePayload(PortalContract::class),
         ]))->first()->getPortalNodeKey();
 
-        /** @var Connection $connect */
         $connection = $this->kernel->getContainer()->get(Connection::class);
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
