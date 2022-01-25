@@ -54,11 +54,7 @@ class JobCreateTest extends TestCase
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Uuid::fromBytesToHex($source);
-
-        /** @var EntityRepositoryInterface $entityTypes */
-        $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
-
-        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($entityTypes));
+        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($connection));
         $action->create(new JobCreatePayloads([
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
                 'party' => 'people',
