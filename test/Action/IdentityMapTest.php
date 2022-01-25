@@ -11,11 +11,11 @@ use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\Support\Contract\DeepCloneContract;
-use Heptacom\HeptaConnect\Storage\Base\Action\Mapping\Map\MappingMapPayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Mapping\MappingMap;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
@@ -26,7 +26,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Mapping\MappingMap
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
@@ -42,7 +42,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
-class MappingMapTest extends TestCase
+class IdentityMapTest extends TestCase
 {
     use ProvideEntitiesTrait;
 
@@ -66,7 +66,7 @@ class MappingMapTest extends TestCase
         $entityTypeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_entity_type');
         $mappingNodeRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping_node');
         $mappingRepository = $definitionInstanceRegistry->getRepository('heptaconnect_mapping');
-        $mapper = new MappingMap(new StorageKeyGenerator(), new EntityTypeAccessor($connection), $connection);
+        $mapper = new IdentityMap(new StorageKeyGenerator(), new EntityTypeAccessor($connection), $connection);
 
         $entity->setPrimaryKey($entity->getPrimaryKey() ?? Uuid::randomHex());
         $context = Context::createDefaultContext();
@@ -89,7 +89,7 @@ class MappingMapTest extends TestCase
             'externalId' => $entity->getPrimaryKey(),
         ]], $context);
 
-        $mappedEntities = $mapper->map(new MappingMapPayload($portalNodeKey, new DatasetEntityCollection([$entity, (new DeepCloneContract())->deepClone($entity)])))->getMappedDatasetEntityCollection();
+        $mappedEntities = $mapper->map(new IdentityMapPayload($portalNodeKey, new DatasetEntityCollection([$entity, (new DeepCloneContract())->deepClone($entity)])))->getMappedDatasetEntityCollection();
 
         /** @var MappedDatasetEntityStruct|null $firstEntity */
         $firstEntity = $mappedEntities->first();
