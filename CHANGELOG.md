@@ -54,6 +54,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add exception code `1642951893` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::map` when query execution could not return a ResultStatement
 - Add exception code `1642951894` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::map` when query execution could not return a ResultStatement
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Action\Contract\Route\Delete\RouteDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete` to delete routes
+- Add exception code `1643144707` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when check for same external id and having different mapping nodes fails
+- Add exception code `1643144708` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when check for same mapping node and having different external ids fails
+- Add exception code `1643144709` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when instructed identity mapping cannot be performed as related identities conflict
+- Add exception code `1643148870` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when query execution could not return a ResultStatement
+- Add exception code `1643148871` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when query execution could not return a ResultStatement
+- Add exception code `1643149115` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the create-payload refers to a mapping node with an invalid mapping node key
+- Add exception code `1643149116` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the update-payload refers to a mapping node with an invalid mapping node key
+- Add exception code `1643149117` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the delete-payload refers to a mapping node with an invalid mapping node key
+- Add exception code `1643149290` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the update-payload refers to an entry that is not present in storage
+- Add exception code `1643149291` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the delete-payload refers to an entry that is not present in storage
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
 
 ### Changed
@@ -67,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface`
 - Change interface of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet` from `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetActionInterface` to `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface`
 - Rename `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap` and implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface`
+- Rename `\Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist` and implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface`
 
 ### Deprecated
 
