@@ -106,6 +106,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $updateData['id'] = \hex2bin($updateData['id']);
                 $updateData['mapping_node_id'] = \hex2bin($updateData['mapping_node_id']);
                 $updateData['updated_at'] = $now;
+                $updateData['deleted_at'] = $now;
                 $id = $updateData['id'];
                 unset($updateData['id']);
 
