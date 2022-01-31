@@ -274,7 +274,6 @@ class IdentityPersist implements IdentityPersistActionInterface
         }
 
         $mappings = $statement->fetchAll(\PDO::FETCH_ASSOC);
-        $deletedAt = \date_create();
 
         foreach ($mappings as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
@@ -285,7 +284,6 @@ class IdentityPersist implements IdentityPersistActionInterface
             $delete[] = [
                 'id' => $mappingId,
                 'mapping_node_id' => $mappingNodeId,
-                'deleted_at' => $deletedAt->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ];
         }
 
