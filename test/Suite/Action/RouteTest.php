@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Action\RouteTestContract;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor

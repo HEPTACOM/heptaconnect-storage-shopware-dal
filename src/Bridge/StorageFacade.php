@@ -28,6 +28,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\P
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
@@ -57,6 +58,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\Por
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
@@ -205,6 +207,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
             $this->getEntityTypeAccessor(),
             $this->getRouteCapabilityAccessor()
         );
+    }
+
+    protected function createRouteDeleteAction(): RouteDeleteActionInterface
+    {
+        return new RouteDelete($this->connection);
     }
 
     protected function createRouteFindAction(): RouteFindActionInterface
