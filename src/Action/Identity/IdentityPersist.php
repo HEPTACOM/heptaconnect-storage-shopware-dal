@@ -385,7 +385,14 @@ class IdentityPersist implements IdentityPersistActionInterface
                 continue;
             }
 
-            throw new IdentityConflictException(\sprintf(IdentityConflictException::FORMAT, $portalNodeId, $intoMappingNodeId, $externalId), 1643144709, new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($intoMappingNodeId), $externalId);
+            // instructed identity mapping cannot be performed as related identities conflict
+            throw new IdentityConflictException(
+                \sprintf(IdentityConflictException::FORMAT, $portalNodeId, $intoMappingNodeId, $externalId),
+                1643144709,
+                new PortalNodeStorageKey($portalNodeId),
+                new MappingNodeStorageKey($intoMappingNodeId),
+                $externalId
+            );
         }
 
         return $mappingNodesToMerge;
@@ -473,14 +480,30 @@ class IdentityPersist implements IdentityPersistActionInterface
             $externalId = $operation['external_id'];
             $typeId = $typeIds[$mappingNodeId];
 
-            if (isset($newMappings[$typeId][$externalId])
-                && !isset($newMappings[$typeId][$externalId][$mappingNodeId])) {
-                throw new IdentityConflictException(\sprintf(IdentityConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), 1643144707, new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            $mappingNodeHasBeenFoundBefore = isset($newMappings[$typeId][$externalId]);
+            $mappingNodeHasNotBeenFoundWithThisExternalId = !isset($newMappings[$typeId][$externalId][$mappingNodeId]);
+
+            if ($mappingNodeHasBeenFoundBefore && $mappingNodeHasNotBeenFoundWithThisExternalId) {
+                throw new IdentityConflictException(
+                    \sprintf(IdentityConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId),
+                    1643144707,
+                    new PortalNodeStorageKey($portalNodeId),
+                    new MappingNodeStorageKey($mappingNodeId),
+                    $externalId
+                );
             }
 
-            if (isset($newExternalIds[$typeId][$mappingNodeId])
-                && !isset($newExternalIds[$typeId][$mappingNodeId][$externalId])) {
-                throw new IdentityConflictException(\sprintf(IdentityConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId), 1643144708, new PortalNodeStorageKey($portalNodeId), new MappingNodeStorageKey($mappingNodeId), $externalId);
+            $externalIdHasBeenFoundBefore = isset($newExternalIds[$typeId][$mappingNodeId]);
+            $externalIdHasNotBeenFoundWithThisMappingNode = !isset($newExternalIds[$typeId][$mappingNodeId][$externalId]);
+
+            if ($externalIdHasBeenFoundBefore && $externalIdHasNotBeenFoundWithThisMappingNode) {
+                throw new IdentityConflictException(
+                    \sprintf(IdentityConflictException::FORMAT, $portalNodeId, $mappingNodeId, $externalId),
+                    1643144708,
+                    new PortalNodeStorageKey($portalNodeId),
+                    new MappingNodeStorageKey($mappingNodeId),
+                    $externalId
+                );
             }
 
             $newMappings[$typeId][$externalId][$mappingNodeId] = true;
