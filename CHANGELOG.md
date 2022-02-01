@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Reset array keys after merging mapping nodes in `\Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister` to avoid InvalidArgumentException `Expected input to be non associative array.` to get thrown by `\Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter`.
+
 ## [0.8.4] - 2022-01-22
 
 ### Added
