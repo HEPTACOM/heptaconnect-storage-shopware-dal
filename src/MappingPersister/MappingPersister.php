@@ -61,6 +61,8 @@ class MappingPersister extends MappingPersisterContract
             }
         }
 
+        $create = \array_values($create);
+
         $this->connection->transactional(function () use (
             $mappingNodesToMerge,
             $create,
