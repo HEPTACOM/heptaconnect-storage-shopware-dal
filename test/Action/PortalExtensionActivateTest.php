@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class PortalExtensionActivateTest extends TestCase
 {
