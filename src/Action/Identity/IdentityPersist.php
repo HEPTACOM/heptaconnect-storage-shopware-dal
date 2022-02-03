@@ -124,7 +124,7 @@ class IdentityPersist implements IdentityPersistActionInterface
     {
         $create = [];
 
-        foreach ($payload->getMappingPersistPayloads() as $createMapping) {
+        foreach ($payload->getIdentityPersistPayloads() as $createMapping) {
             if (!$createMapping instanceof IdentityPersistCreatePayload) {
                 continue;
             }
@@ -153,7 +153,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $update = [];
         $mappingNodes = [];
 
-        foreach ($payload->getMappingPersistPayloads() as $updateMapping) {
+        foreach ($payload->getIdentityPersistPayloads() as $updateMapping) {
             if (!$updateMapping instanceof IdentityPersistUpdatePayload) {
                 continue;
             }
@@ -229,7 +229,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $delete = [];
         $mappingNodeIds = [];
 
-        foreach ($payload->getMappingPersistPayloads() as $deleteMapping) {
+        foreach ($payload->getIdentityPersistPayloads() as $deleteMapping) {
             if (!$deleteMapping instanceof IdentityPersistDeletePayload) {
                 continue;
             }
