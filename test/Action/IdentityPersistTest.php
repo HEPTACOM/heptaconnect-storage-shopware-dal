@@ -30,6 +30,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
@@ -106,12 +107,12 @@ class IdentityPersistTest extends TestCase
         $externalIdSource = (string) Uuid::uuid4()->getHex();
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $mappingNodeKeySource = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
 
         $externalIdTarget = (string) Uuid::uuid4()->getHex();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
         $mappingNodeKeyTarget = $this->createMappingNode(Simple::class, $portalNodeKeyTarget);
-        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
+        $this->createMapping($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistCreatePayload($mappingNodeKeySource, $externalIdTarget),
@@ -139,7 +140,7 @@ class IdentityPersistTest extends TestCase
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistCreatePayload($mappingNodeKey, $externalIdTarget),
@@ -182,8 +183,8 @@ class IdentityPersistTest extends TestCase
 
         $mappingNodeKey1 = $this->createMappingNode(Simple::class, $portalNodeKeySource);
         $mappingNodeKey2 = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey1, $externalId1Source);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey2, $externalId2Source);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey1, $externalId1Source);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey2, $externalId2Source);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistCreatePayload($mappingNodeKey1, $externalIdTarget),
@@ -234,7 +235,7 @@ class IdentityPersistTest extends TestCase
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistCreatePayload($mappingNodeKey, $externalId1Target),
@@ -277,7 +278,7 @@ class IdentityPersistTest extends TestCase
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistCreatePayload($mappingNodeKey, $externalId1Target),
@@ -323,10 +324,10 @@ class IdentityPersistTest extends TestCase
 
         $mappingNodeKeyA = $this->createMappingNode(Simple::class, $portalNodeKeySource);
         $mappingNodeKeyB = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeyA, $externalIdSourceA);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeyB, $externalIdSourceB);
-        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyA, $externalIdTargetA);
-        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyB, $externalIdTargetB);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKeyA, $externalIdSourceA);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKeyB, $externalIdSourceB);
+        $this->createMapping($portalNodeKeyTarget, $mappingNodeKeyA, $externalIdTargetA);
+        $this->createMapping($portalNodeKeyTarget, $mappingNodeKeyB, $externalIdTargetB);
 
         $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
             new IdentityPersistUpdatePayload($mappingNodeKeyA, $externalIdTargetB),
@@ -383,8 +384,8 @@ class IdentityPersistTest extends TestCase
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
 
         $mappingNodeKey = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
-        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKey, $externalIdTarget);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->createMapping($portalNodeKeyTarget, $mappingNodeKey, $externalIdTarget);
 
         static::assertCount(1, \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -454,7 +455,7 @@ class IdentityPersistTest extends TestCase
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
 
         $mappingNodeKey = $this->createMappingNode(Simple::class, $portalNodeKeySource);
-        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
         static::assertCount(1, \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -506,7 +507,7 @@ class IdentityPersistTest extends TestCase
         return \iterable_to_array($this->identityOverviewAction->overview($criteria));
     }
 
-    public function createMappingNode(string $entityType, PortalNodeKeyInterface $portalNodeKey): MappingNodeKeyInterface
+    private function createMappingNode(string $entityType, PortalNodeKeyInterface $portalNodeKey): MappingNodeStorageKey
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
@@ -531,5 +532,29 @@ class IdentityPersistTest extends TestCase
         ]);
 
         return $result;
+    }
+
+    private function createMapping(
+        PortalNodeStorageKey $portalNodeKey,
+        MappingNodeStorageKey $mappingNodeKey,
+        string $externalId
+    ): void {
+        $key = $this->storageKeyGenerator->generateKey(MappingKeyInterface::class);
+
+        if (!$key instanceof MappingStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($key));
+        }
+
+        $this->connection->insert('heptaconnect_mapping', [
+            'id' => \hex2bin($key->getUuid()),
+            'mapping_node_id' => \hex2bin($mappingNodeKey->getUuid()),
+            'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+            'external_id' => $externalId,
+            'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+        ], [
+            'id' => Types::BINARY,
+            'mapping_node_id' => Types::BINARY,
+            'portal_node_id' => Types::BINARY,
+        ]);
     }
 }
