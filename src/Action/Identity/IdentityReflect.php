@@ -6,9 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\Query\Expression\CompositeExpression;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
@@ -106,15 +105,15 @@ class IdentityReflect implements IdentityReflectActionInterface
         $mappingNodeExpressions = [];
 
         foreach ($filters as $sourcePortalNodeId => $mappingNodeIds) {
-            $mappingNodeExpressions[] = CompositeExpression::and(
+            $mappingNodeExpressions[] = $builder->expr()->andX(
                 $builder->expr()->eq('portal_node.id', ':portalNode' . $sourcePortalNodeId),
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
-            $builder->setParameter('portalNode' . $sourcePortalNodeId, \hex2bin($sourcePortalNodeId), Types::BINARY);
+            $builder->setParameter('portalNode' . $sourcePortalNodeId, \hex2bin($sourcePortalNodeId), Type::BINARY);
             $builder->setParameter('mappingNodes' . $sourcePortalNodeId, \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
-        $builder->andWhere(new CompositeExpression(CompositeExpression::TYPE_OR, $mappingNodeExpressions));
+        $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
 
         $statement = $builder->execute();
 
@@ -141,9 +140,9 @@ class IdentityReflect implements IdentityReflectActionInterface
                         $createMapping['created_at'] = $now;
 
                         $this->connection->insert('mapping', $createMapping, [
-                            'id' => Types::BINARY,
-                            'mapping_node_id' => Types::BINARY,
-                            'portal_node_id' => Types::BINARY,
+                            'id' => Type::BINARY,
+                            'mapping_node_id' => Type::BINARY,
+                            'portal_node_id' => Type::BINARY,
                         ]);
                     }
                 });
@@ -157,7 +156,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-        $builder->setParameter('portalNodeId', \hex2bin($targetPortalNodeId));
+        $builder->setParameter('portalNodeId', \hex2bin($targetPortalNodeId), Type::BINARY);
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
         $statement = $builder->execute();
