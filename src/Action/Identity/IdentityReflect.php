@@ -132,7 +132,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         if ($createMappings !== []) {
             try {
-                $this->connection->transactional(function () use ($createMappings) {
+                $this->connection->transactional(function () use ($createMappings): void {
                     $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
                     foreach ($createMappings as $createMapping) {

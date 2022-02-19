@@ -7,6 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistDeletePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistPayload;
@@ -14,7 +17,9 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistPa
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistUpdatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
@@ -28,6 +33,7 @@ use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
@@ -55,6 +61,8 @@ class IdentityPersistTest extends TestCase
     private MappingRepository $mappingRepository;
 
     private PortalNodeCreateActionInterface $portalNodeCreateAction;
+
+    private IdentityOverviewActionInterface $identityOverviewAction;
 
     protected function setUp(): void
     {
@@ -87,6 +95,7 @@ class IdentityPersistTest extends TestCase
             $contextFactory
         );
         $this->portalNodeCreateAction = new PortalNodeCreate($connection, $storageKeyGenerator);
+        $this->identityOverviewAction = new IdentityOverview($connection);
     }
 
     public function testMergingMappingNodes(): void
@@ -110,13 +119,13 @@ class IdentityPersistTest extends TestCase
             new IdentityPersistCreatePayload($mappingNodeKeySource, $externalIdTarget),
         ]));
 
-        static::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
-        static::assertCount(1, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
+        static::assertCount(1, $this->listByMappingNode($mappingNodeKeySource));
+        static::assertCount(1, $this->listByMappingNode($mappingNodeKeyTarget));
 
         $this->identityPersistAction->persist($payload);
 
-        static::assertCount(0, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeySource)));
-        static::assertCount(2, iterable_to_array($this->mappingRepository->listByMappingNode($mappingNodeKeyTarget)));
+        static::assertCount(0, $this->listByMappingNode($mappingNodeKeySource));
+        static::assertCount(2, $this->listByMappingNode($mappingNodeKeyTarget));
     }
 
     public function testPersistingSingleEntityMapping(): void
@@ -486,5 +495,16 @@ class IdentityPersistTest extends TestCase
         if (!$failed) {
             static::fail('mappingPersister->persist should have failed');
         }
+    }
+
+    /**
+     * @return IdentityOverviewResult[]
+     */
+    private function listByMappingNode(MappingNodeKeyInterface $mappingNodeKey): array
+    {
+        $criteria = new IdentityOverviewCriteria();
+        $criteria->getMappingNodeKeyFilter()->push([$mappingNodeKey]);
+
+        return \iterable_to_array($this->identityOverviewAction->overview($criteria));
     }
 }
