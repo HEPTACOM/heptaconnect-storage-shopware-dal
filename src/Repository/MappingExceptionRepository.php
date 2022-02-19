@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
 
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingExceptionKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingExceptionRepos
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -45,7 +45,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         PortalNodeKeyInterface $portalNodeKey,
         MappingNodeKeyInterface $mappingNodeKey,
         \Throwable $throwable
-    ): MappingExceptionKeyInterface {
+    ): IdentityErrorKeyInterface {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
@@ -61,14 +61,14 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
         $exceptions = self::unwrapException($throwable);
 
         $keys = \iterable_to_array($this->storageKeyGenerator->generateKeys(
-            MappingExceptionKeyInterface::class,
+            IdentityErrorKeyInterface::class,
             \count($exceptions)
         ));
 
         foreach ($exceptions as $exception) {
             $key = \array_shift($keys) ?: null;
 
-            if (!$key instanceof MappingExceptionStorageKey) {
+            if (!$key instanceof IdentityErrorStorageKey) {
                 throw new UnsupportedStorageKeyException($key === null ? 'null' : \get_class($key));
             }
 
@@ -111,7 +111,7 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
 
         while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
-                yield new MappingExceptionStorageKey($id);
+                yield new IdentityErrorStorageKey($id);
             }
         }
     }
@@ -132,14 +132,14 @@ class MappingExceptionRepository extends MappingExceptionRepositoryContract
 
         while (($ids = $iterator->fetchIds()) !== null) {
             foreach ($ids as $id) {
-                yield new MappingExceptionStorageKey($id);
+                yield new IdentityErrorStorageKey($id);
             }
         }
     }
 
-    public function delete(MappingExceptionKeyInterface $key): void
+    public function delete(IdentityErrorKeyInterface $key): void
     {
-        if (!$key instanceof MappingExceptionStorageKey) {
+        if (!$key instanceof IdentityErrorStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
