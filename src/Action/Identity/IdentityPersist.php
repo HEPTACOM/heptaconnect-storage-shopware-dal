@@ -518,8 +518,8 @@ class IdentityPersist implements IdentityPersistActionInterface
         $changedMappings = [];
 
         foreach ($update as $operation) {
-            $mappingNodeId = $operation['mappingNodeId'];
-            $externalId = $operation['externalId'];
+            $mappingNodeId = $operation['mapping_node_id'];
+            $externalId = $operation['external_id'];
 
             $changedMappings[$mappingNodeId][$externalId] = true;
         }
@@ -532,7 +532,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $deletedMappings = [];
 
         foreach ($delete as $operation) {
-            $mappingNodeId = $operation['mappingNodeId'];
+            $mappingNodeId = $operation['mapping_node_id'];
 
             $deletedMappings[$mappingNodeId] = true;
         }
