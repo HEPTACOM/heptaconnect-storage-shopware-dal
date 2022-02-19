@@ -37,7 +37,7 @@ class IdentityMappingTest extends IdentityMappingTestContract
         $reflector = new IdentityReflect($connection);
         $reflector->reflect(new IdentityReflectPayload(new PortalNodeStorageKey(Uuid::randomHex()), new MappedDatasetEntityCollection()));
 
-        self::assertSame([], $this->trackedQueries);
+        static::assertSame([], $this->trackedQueries);
     }
 
     protected function createStorageFacade(): StorageFacadeInterface
