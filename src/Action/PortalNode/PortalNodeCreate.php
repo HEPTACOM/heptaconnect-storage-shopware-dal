@@ -48,6 +48,7 @@ class PortalNodeCreate implements PortalNodeCreateActionInterface
 
             $inserts[] = [
                 'id' => \hex2bin($key->getUuid()),
+                'alias' => $payload->getAlias(),
                 'class_name' => $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,

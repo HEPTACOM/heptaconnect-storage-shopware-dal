@@ -1,0 +1,101 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
+
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
+use Shopware\Core\Framework\Migration\MigrationStep;
+
+class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
+{
+    public const UP = <<<'SQL'
+ALTER TABLE `heptaconnect_portal_node`
+    ADD COLUMN `alias`
+        VARCHAR(255)
+        UNIQUE
+        NULL
+        COLLATE 'binary'
+        AFTER `id`;
+SQL;
+
+    public const REVERSE_UP = <<<'SQL'
+ALTER TABLE `heptaconnect_portal_node`
+    DROP COLUMN `alias`;
+SQL;
+
+    public const DESTRUCTIVE = <<<'SQL'
+DROP TABLE heptaconnect_bridge_key_alias
+SQL;
+
+    public function getCreationTimestamp(): int
+    {
+        return 1643220550;
+    }
+
+    public function update(Connection $connection): void
+    {
+        $this->executeSql($connection, self::UP);
+
+        try {
+            $this->migrateAlias($connection);
+        } catch (\Throwable $throwable) {
+            $this->executeSql($connection, self::REVERSE_UP);
+
+            throw $throwable;
+        }
+
+        $this->executeSql($connection, self::DESTRUCTIVE);
+    }
+
+    public function updateDestructive(Connection $connection): void
+    {
+    }
+
+    private function executeSql(Connection $connection, string $sql): void
+    {
+        // doctrine/dbal 2 support
+        if (\method_exists($connection, 'executeStatement')) {
+            $connection->executeStatement($sql);
+        } else {
+            $connection->exec($sql);
+        }
+    }
+
+    private function migrateAlias(Connection $connection): void
+    {
+        $queryBuilderSelect = $connection->createQueryBuilder();
+        $migrateableAlias = $queryBuilderSelect
+            ->select([
+                'original',
+                'alias',
+            ])
+            ->from('heptaconnect_bridge_key_alias')
+            ->execute()
+            ->fetchAll();
+
+        $queryBuilderUpdate = $connection->createQueryBuilder();
+        $queryBuilderUpdate->update('heptaconnect_portal_node')
+            ->set('alias', ':alias')
+            ->where($queryBuilderUpdate->expr()->eq('id', ':id'));
+
+        foreach ($migrateableAlias as $row) {
+            $original = (string) ($row['original'] ?? null);
+            $alias = (string) ($row['alias'] ?? null);
+
+            [$type, $key] = \explode(':', $original, 2);
+            $portalNodeId = \hex2bin($key);
+            if ($type === 'PortalNode') {
+                try {
+                    $queryBuilderUpdate
+                        ->setParameter('id', $portalNodeId, Types::BINARY)
+                        ->setParameter('alias', $alias, Types::BINARY)
+                        ->execute();
+                } catch (\Exception $exception) {
+                    throw new \Exception('Migration of PortalNode-Alias failed.', 1643286092);
+                }
+            }
+        }
+    }
+}
