@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class PortalExtensionActivateTest extends TestCase
 {
@@ -27,6 +28,7 @@ class PortalExtensionActivateTest extends TestCase
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
+            'configuration' => '{}',
             'class_name' => Portal::class,
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
@@ -62,6 +64,7 @@ class PortalExtensionActivateTest extends TestCase
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
+            'configuration' => '{}',
             'class_name' => Portal::class,
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
@@ -107,6 +110,7 @@ class PortalExtensionActivateTest extends TestCase
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
+            'configuration' => '{}',
             'class_name' => Portal::class,
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [

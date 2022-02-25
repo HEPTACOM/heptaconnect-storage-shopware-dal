@@ -26,7 +26,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 
 class JobCreate implements JobCreateActionInterface
 {
@@ -79,7 +78,7 @@ class JobCreate implements JobCreateActionInterface
         }
 
         $jobTypeIds = $this->jobTypes->getIdsForTypes($jobTypes);
-        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes, Context::createDefaultContext());
+        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes);
 
         foreach ($jobTypes as $jobType) {
             if (!\array_key_exists($jobType, $jobTypeIds)) {

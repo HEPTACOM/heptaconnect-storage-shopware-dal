@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
 class PortalExtensionFindTest extends TestCase
 {
@@ -26,6 +27,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -45,6 +47,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -74,6 +77,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,

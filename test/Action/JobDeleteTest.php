@@ -56,6 +56,7 @@ class JobDeleteTest extends TestCase
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portal,
+            'configuration' => '{}',
             'class_name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);

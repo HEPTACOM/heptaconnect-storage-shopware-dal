@@ -17,7 +17,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -51,21 +50,20 @@ class RouteCreateTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $target,
             'class_name' => TestCase::class,
+            'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Uuid::fromBytesToHex($source);
         $targetHex = Uuid::fromBytesToHex($target);
 
-        /** @var EntityRepositoryInterface $entityTypes */
-        $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
-
-        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($entityTypes), new RouteCapabilityAccessor($connection));
+        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($connection), new RouteCapabilityAccessor($connection));
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
             new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),

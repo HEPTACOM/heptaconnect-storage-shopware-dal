@@ -2,27 +2,39 @@
 
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistDeletePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistPayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistPayloadCollection;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistUpdatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\MappingPersistPayload;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
@@ -35,15 +47,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  */
-class MappingPersisterTest extends TestCase
+class IdentityPersistTest extends TestCase
 {
-    private MappingPersister $mappingPersister;
+    private IdentityPersist $identityPersistAction;
 
     private MappingNodeRepository $mappingNodeRepository;
 
@@ -51,13 +62,14 @@ class MappingPersisterTest extends TestCase
 
     private PortalNodeCreateActionInterface $portalNodeCreateAction;
 
+    private IdentityOverviewActionInterface $identityOverviewAction;
+
     protected function setUp(): void
     {
-        parent::setup();
+        parent::setUp();
 
         /** @var Connection $connection */
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $connection->beginTransaction();
 
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->kernel->getContainer()->get(DefinitionInstanceRegistry::class);
@@ -65,15 +77,11 @@ class MappingPersisterTest extends TestCase
             ->getRepository('heptaconnect_mapping_node');
         $shopwareMappingRepository = $definitionInstanceRegistry
             ->getRepository('heptaconnect_mapping');
-        $shopwarePortalNodeRepository = $definitionInstanceRegistry
-            ->getRepository('heptaconnect_portal_node');
-        $shopwareDatasetEntityTypeRepository = $definitionInstanceRegistry
-            ->getRepository('heptaconnect_entity_type');
 
-        $this->mappingPersister = new MappingPersister($shopwareMappingRepository, $connection);
+        $this->identityPersistAction = new IdentityPersist($connection);
         $storageKeyGenerator = new StorageKeyGenerator();
         $contextFactory = new ContextFactory();
-        $datasetEntityTypeAccessor = new EntityTypeAccessor($shopwareDatasetEntityTypeRepository);
+        $datasetEntityTypeAccessor = new EntityTypeAccessor($connection);
         $this->mappingNodeRepository = new MappingNodeRepository(
             $storageKeyGenerator,
             $shopwareMappingNodeRepository,
@@ -87,6 +95,37 @@ class MappingPersisterTest extends TestCase
             $contextFactory
         );
         $this->portalNodeCreateAction = new PortalNodeCreate($connection, $storageKeyGenerator);
+        $this->identityOverviewAction = new IdentityOverview($connection);
+    }
+
+    public function testMergingMappingNodes(): void
+    {
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+
+        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $mappingNodeKeySource = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
+        $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
+
+        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
+        $mappingNodeKeyTarget = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeyTarget);
+        $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
+
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKeySource, $externalIdTarget),
+        ]));
+
+        static::assertCount(1, $this->listByMappingNode($mappingNodeKeySource));
+        static::assertCount(1, $this->listByMappingNode($mappingNodeKeyTarget));
+
+        $this->identityPersistAction->persist($payload);
+
+        static::assertCount(0, $this->listByMappingNode($mappingNodeKeySource));
+        static::assertCount(2, $this->listByMappingNode($mappingNodeKeyTarget));
     }
 
     public function testPersistingSingleEntityMapping(): void
@@ -104,9 +143,11 @@ class MappingPersisterTest extends TestCase
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->create($mappingNodeKey, $externalIdTarget);
-        $this->mappingPersister->persist($payload);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKey, $externalIdTarget),
+        ]));
+
+        $this->identityPersistAction->persist($payload);
 
         $targetMappings = \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -146,14 +187,15 @@ class MappingPersisterTest extends TestCase
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey1, $externalId1Source);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey2, $externalId2Source);
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->create($mappingNodeKey1, $externalIdTarget);
-        $payload->create($mappingNodeKey2, $externalIdTarget);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKey1, $externalIdTarget),
+            new IdentityPersistCreatePayload($mappingNodeKey2, $externalIdTarget),
+        ]));
 
         $failed = false;
 
         try {
-            $this->mappingPersister->persist($payload);
+            $this->identityPersistAction->persist($payload);
         } catch (\Throwable $t) {
             $failed = true;
         }
@@ -196,14 +238,15 @@ class MappingPersisterTest extends TestCase
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->create($mappingNodeKey, $externalId1Target);
-        $payload->create($mappingNodeKey, $externalId2Target);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKey, $externalId1Target),
+            new IdentityPersistCreatePayload($mappingNodeKey, $externalId2Target),
+        ]));
 
         $failed = false;
 
         try {
-            $this->mappingPersister->persist($payload);
+            $this->identityPersistAction->persist($payload);
         } catch (\Throwable $t) {
             $failed = true;
         }
@@ -238,14 +281,15 @@ class MappingPersisterTest extends TestCase
         $mappingNodeKey = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKey, $externalIdSource);
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->create($mappingNodeKey, $externalId1Target);
-        $payload->update($mappingNodeKey, $externalId2Target);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKey, $externalId1Target),
+            new IdentityPersistUpdatePayload($mappingNodeKey, $externalId2Target),
+        ]));
 
         $failed = false;
 
         try {
-            $this->mappingPersister->persist($payload);
+            $this->identityPersistAction->persist($payload);
         } catch (\Throwable $t) {
             $failed = true;
         }
@@ -286,11 +330,12 @@ class MappingPersisterTest extends TestCase
         $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyA, $externalIdTargetA);
         $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyB, $externalIdTargetB);
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->update($mappingNodeKeyA, $externalIdTargetB);
-        $payload->update($mappingNodeKeyB, $externalIdTargetA);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistUpdatePayload($mappingNodeKeyA, $externalIdTargetB),
+            new IdentityPersistUpdatePayload($mappingNodeKeyB, $externalIdTargetA),
+        ]));
 
-        $this->mappingPersister->persist($payload);
+        $this->identityPersistAction->persist($payload);
 
         $targetMappingsA = \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKeyA),
@@ -358,10 +403,11 @@ class MappingPersisterTest extends TestCase
                 ->equals($portalNodeKeyTarget)
         )));
 
-        $payload = new MappingPersistPayload($portalNodeKeyTarget);
-        $payload->delete($mappingNodeKey);
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistDeletePayload($mappingNodeKey),
+        ]));
 
-        $this->mappingPersister->persist($payload);
+        $this->identityPersistAction->persist($payload);
 
         static::assertCount(1, \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -378,10 +424,11 @@ class MappingPersisterTest extends TestCase
                 ->equals($portalNodeKeyTarget)
         )));
 
-        $payload = new MappingPersistPayload($portalNodeKeySource);
-        $payload->delete($mappingNodeKey);
+        $payload = new IdentityPersistPayload($portalNodeKeySource, new IdentityPersistPayloadCollection([
+            new IdentityPersistDeletePayload($mappingNodeKey),
+        ]));
 
-        $this->mappingPersister->persist($payload);
+        $this->identityPersistAction->persist($payload);
 
         static::assertCount(0, \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -419,10 +466,11 @@ class MappingPersisterTest extends TestCase
                 ->equals($portalNodeKeySource)
         )));
 
-        $payload = new MappingPersistPayload($portalNodeKeySource);
-        $payload->delete($mappingNodeKey);
+        $payload = new IdentityPersistPayload($portalNodeKeySource, new IdentityPersistPayloadCollection([
+            new IdentityPersistDeletePayload($mappingNodeKey),
+        ]));
 
-        $this->mappingPersister->persist($payload);
+        $this->identityPersistAction->persist($payload);
 
         static::assertCount(0, \iterable_to_array(\iterable_filter(
             $this->mappingRepository->listByMappingNode($mappingNodeKey),
@@ -432,13 +480,14 @@ class MappingPersisterTest extends TestCase
                 ->equals($portalNodeKeySource)
         )));
 
-        $payload = new MappingPersistPayload($portalNodeKeySource);
-        $payload->delete($mappingNodeKey);
+        $payload = new IdentityPersistPayload($portalNodeKeySource, new IdentityPersistPayloadCollection([
+            new IdentityPersistDeletePayload($mappingNodeKey),
+        ]));
 
         $failed = false;
 
         try {
-            $this->mappingPersister->persist($payload);
+            $this->identityPersistAction->persist($payload);
         } catch (\Throwable $t) {
             $failed = true;
         }
@@ -446,5 +495,16 @@ class MappingPersisterTest extends TestCase
         if (!$failed) {
             static::fail('mappingPersister->persist should have failed');
         }
+    }
+
+    /**
+     * @return IdentityOverviewResult[]
+     */
+    private function listByMappingNode(MappingNodeKeyInterface $mappingNodeKey): array
+    {
+        $criteria = new IdentityOverviewCriteria();
+        $criteria->getMappingNodeKeyFilter()->push([$mappingNodeKey]);
+
+        return \iterable_to_array($this->identityOverviewAction->overview($criteria));
     }
 }

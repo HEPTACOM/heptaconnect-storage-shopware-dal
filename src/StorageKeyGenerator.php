@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\CronjobRunKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingExceptionKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
@@ -17,8 +15,6 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobRunStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
@@ -33,8 +29,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
     private const IMPLEMENTATION_MAP = [
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
-        CronjobKeyInterface::class => CronjobStorageKey::class,
-        CronjobRunKeyInterface::class => CronjobRunStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
         MappingKeyInterface::class => MappingStorageKey::class,
         MappingExceptionKeyInterface::class => MappingExceptionStorageKey::class,
@@ -45,8 +39,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
     private const ABBREVIATIONS = [
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
-        'Cronjob' => CronjobStorageKey::class,
-        'CronjobRun' => CronjobRunStorageKey::class,
         'Route' => RouteStorageKey::class,
         'Mapping' => MappingStorageKey::class,
         'MappingException' => MappingExceptionStorageKey::class,

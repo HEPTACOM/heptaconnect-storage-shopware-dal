@@ -17,7 +17,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -30,6 +29,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class JobCreateTest extends TestCase
 {
@@ -48,16 +48,13 @@ class JobCreateTest extends TestCase
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
+            'configuration' => '{}',
             'class_name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Uuid::fromBytesToHex($source);
-
-        /** @var EntityRepositoryInterface $entityTypes */
-        $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
-
-        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($entityTypes));
+        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($connection));
         $action->create(new JobCreatePayloads([
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
                 'party' => 'people',

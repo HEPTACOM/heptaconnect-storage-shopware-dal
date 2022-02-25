@@ -17,7 +17,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class PortalNodeGetTest extends TestCase
 {
@@ -42,16 +44,19 @@ class PortalNodeGetTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalA,
             'class_name' => TestCase::class,
+            'configuration' => '{}',
             'created_at' => $yesterday,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalB,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => $tomorrow,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalDeleted,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => $now,
             'deleted_at' => $now,
         ], ['id' => Types::BINARY]);

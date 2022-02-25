@@ -29,6 +29,7 @@ class RouteFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -65,6 +66,7 @@ class RouteFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
