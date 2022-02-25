@@ -12,12 +12,14 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterfac
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobRunStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\CronjobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
@@ -37,6 +39,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         MappingKeyInterface::class => MappingStorageKey::class,
         MappingExceptionKeyInterface::class => MappingExceptionStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
+        FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class
     ];
 
     private const ABBREVIATIONS = [
@@ -48,6 +51,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         'Mapping' => MappingStorageKey::class,
         'MappingException' => MappingExceptionStorageKey::class,
         'Job' => JobStorageKey::class,
+        'FileReferenceRequest' => FileReferenceRequestStorageKey::class,
     ];
 
     public function generateKey(string $keyClassName): StorageKeyInterface
