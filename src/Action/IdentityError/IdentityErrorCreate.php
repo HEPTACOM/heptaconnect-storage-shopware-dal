@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayload;
@@ -19,6 +18,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 
 class IdentityErrorCreate implements IdentityErrorCreateActionInterface
@@ -188,7 +188,7 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
     private function getBuilder(): QueryBuilder
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -209,6 +209,7 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 'entity_type',
                 $builder->expr()->eq('mapping_node.type_id', 'entity_type.id')
             )
+            ->addOrderBy('mapping.id')
             ->select([
                 'portal_node.id portal_node_id',
                 'entity_type.type entity_type_type',
