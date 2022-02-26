@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Exception\IdentityConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
@@ -18,6 +17,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
@@ -25,9 +25,26 @@ class IdentityPersist implements IdentityPersistActionInterface
 {
     private Connection $connection;
 
-    public function __construct(Connection $connection)
-    {
+    private int $typeQueryFallbackPageSize;
+
+    private int $deletePayloadQueryFallbackPageSize;
+
+    private int $updatePayloadQueryFallbackPageSize;
+
+    private int $validateConflictsQueryFallbackPageSize;
+
+    public function __construct(
+        Connection $connection,
+        int $typeQueryFallbackPageSize,
+        int $deletePayloadQueryFallbackPageSize,
+        int $updatePayloadQueryFallbackPageSize,
+        int $validateConflictsQueryFallbackPageSize
+    ) {
         $this->connection = $connection;
+        $this->typeQueryFallbackPageSize = $typeQueryFallbackPageSize;
+        $this->deletePayloadQueryFallbackPageSize = $deletePayloadQueryFallbackPageSize;
+        $this->updatePayloadQueryFallbackPageSize = $updatePayloadQueryFallbackPageSize;
+        $this->validateConflictsQueryFallbackPageSize = $validateConflictsQueryFallbackPageSize;
     }
 
     public function persist(IdentityPersistPayload $payload): void
@@ -171,7 +188,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
@@ -184,6 +201,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mapping_node',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
@@ -191,15 +209,8 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
-        $statement = $builder->execute();
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643148870);
-        }
-
-        $mappings = $statement->fetchAll(\PDO::FETCH_ASSOC);
-
-        foreach ($mappings as $mapping) {
+        foreach ($builder->fetchAssocPaginated($this->updatePayloadQueryFallbackPageSize) as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
             $externalId = $mappingNodes[$mappingNodeId] ?? null;
@@ -247,7 +258,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
+        $builder = new QueryBuilder($this->connection);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
@@ -260,6 +271,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mapping_node',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
@@ -267,15 +279,8 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
-        $statement = $builder->execute();
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643148871);
-        }
-
-        $mappings = $statement->fetchAll(\PDO::FETCH_ASSOC);
-
-        foreach ($mappings as $mapping) {
+        foreach ($builder->fetchAssocPaginated($this->deletePayloadQueryFallbackPageSize) as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
 
@@ -306,7 +311,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $changedMappings = $this->getChangedMappings($update);
         $deletedMappings = $this->getDeletedMappings($delete);
 
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = new QueryBuilder($this->connection);
         $expr = $queryBuilder->expr();
 
         $typeConditions = [];
@@ -345,6 +350,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mappingNode',
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
+            ->addOrderBy('mapping.id')
             ->where($expr->andX(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
@@ -356,7 +362,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $mappingNodesToMerge = [];
 
-        foreach ($queryBuilder->execute()->fetchAll() as $row) {
+        foreach ($queryBuilder->fetchAssocPaginated($this->validateConflictsQueryFallbackPageSize) as $row) {
             $intoMappingNodeId = \bin2hex($row['mappingNodeId']);
             $externalId = $row['externalId'];
             $typeId = \bin2hex($row['typeId']);
@@ -400,7 +406,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
     private function fetchTypes(array $mappingNodeIds): array
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = new QueryBuilder($this->connection);
         $expr = $queryBuilder->expr();
 
         $queryBuilder
@@ -418,12 +424,13 @@ class IdentityPersist implements IdentityPersistActionInterface
                     $expr->isNull('mappingNode.deleted_at'),
                 )
             )
+            ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
             ->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
         $types = [];
 
-        foreach ($queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($queryBuilder->fetchAssocPaginated($this->typeQueryFallbackPageSize) as $row) {
             $types[\bin2hex($row['mappingNodeId'])] = \bin2hex($row['typeId']);
         }
 
@@ -432,11 +439,12 @@ class IdentityPersist implements IdentityPersistActionInterface
 
     private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = new QueryBuilder($this->connection);
         $expr = $queryBuilder->expr();
 
         $hasConflict = (bool) $queryBuilder->select('1')
             ->from('heptaconnect_mapping', 'mapping')
+            ->addOrderBy('mapping.id')
             ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
             ->groupBy('mapping.portal_node_id')
             ->having($expr->gt('COUNT(mapping.id)', 1))
@@ -444,9 +452,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $fromMappingNodeId,
                 $intoMappingNodeId,
             ], Connection::PARAM_STR_ARRAY)
-            ->execute()
-            ->fetchColumn()
-        ;
+            ->fetchAssocSingleValue();
 
         return !$hasConflict;
     }

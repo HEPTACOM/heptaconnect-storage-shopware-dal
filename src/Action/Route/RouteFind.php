@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
@@ -47,13 +46,7 @@ class RouteFind implements RouteFindActionInterface
         $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467906);
-        }
-
-        $id = $statement->fetchColumn();
+        $id = $builder->fetchAssocSingleValue();
 
         if (!\is_string($id)) {
             return null;
@@ -87,6 +80,7 @@ class RouteFind implements RouteFindActionInterface
                 $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
             ->select(['route.id id'])
+            ->orderBy('route.id')
             ->setMaxResults(1)
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),

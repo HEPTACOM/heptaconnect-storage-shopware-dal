@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
@@ -198,22 +196,22 @@ class JobCreate implements JobCreateActionInterface
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
+            ->addOrderBy('job_payload.id')
             ->select([
                 'job_payload.checksum checksum',
                 'job_payload.id id',
             ])
             ->where($builder->expr()->in('job_payload.checksum', ':checksums'))
+            ->setMaxResults(\count($checksums))
             ->setParameter('checksums', $checksums, Connection::PARAM_STR_ARRAY);
         $builder->setIsForUpdate(true);
 
-        $statement = $builder->execute();
+        $rows = [];
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1639268735);
+        foreach ($builder->fetchAssocPaginated(\count($checksums)) as $row) {
+            $rows[$row['checksum']] = $row['id'];
         }
 
-        $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
-
-        return \array_column($rows, 'id', 'checksum');
+        return $rows;
     }
 }

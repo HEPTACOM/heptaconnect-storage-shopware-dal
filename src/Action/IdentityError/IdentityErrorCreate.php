@@ -27,12 +27,16 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private int $queryFallbackPageSize;
+
     public function __construct(
         Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        int $queryFallbackPageSize
     ) {
         $this->connection = $connection;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->queryFallbackPageSize = $queryFallbackPageSize;
     }
 
     public function create(IdentityErrorCreatePayloads $payloads): IdentityErrorCreateResults
@@ -170,9 +174,8 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
             foreach ($externalIdsByEntityType as $entityType => $externalIds) {
                 $builder->setParameter('entityType', $entityType);
                 $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
-                $statement = $builder->execute();
 
-                foreach ($statement->fetchAll(\PDO::FETCH_ASSOC) as $match) {
+                foreach ($builder->fetchAssocPaginated($this->queryFallbackPageSize) as $match) {
                     $matchPortalNodeId = \bin2hex((string) $match['portal_node_id']);
                     $matchMappingNodeId = \bin2hex((string) $match['mapping_node_id']);
                     $matchExternalId = (string) $match['mapping_external_id'];

@@ -105,6 +105,7 @@ class RouteGet implements RouteGetActionInterface
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])
+            ->addOrderBy('route.id')
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')

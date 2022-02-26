@@ -10,6 +10,8 @@ parameters:
 		- ../dev-ops/bin/phpstan/src/
 		- ../src/
 	tmpDir: ../.build/phpstan/
+	scanDirectories:
+		- ../vendor/
 	ignoreErrors:
 		-
 			# internal deprecation note

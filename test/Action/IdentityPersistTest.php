@@ -23,9 +23,8 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreate
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
@@ -40,6 +39,7 @@ use Shopware\Core\Defaults;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
@@ -53,6 +53,7 @@ use Shopware\Core\Defaults;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class IdentityPersistTest extends TestCase
 {
@@ -71,11 +72,12 @@ class IdentityPersistTest extends TestCase
         parent::setUp();
 
         $this->connection = $this->kernel->getContainer()->get(Connection::class);
-        $this->identityPersistAction = new IdentityPersist($this->connection);
+        $facade = new StorageFacade($this->connection);
+        $this->identityPersistAction = $facade->getIdentityPersistAction();
         $this->storageKeyGenerator = new StorageKeyGenerator();
-        $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->connection);
-        $this->portalNodeCreateAction = new PortalNodeCreate($this->connection, $this->storageKeyGenerator);
-        $this->identityOverviewAction = new IdentityOverview($this->connection);
+        $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->connection, 500);
+        $this->portalNodeCreateAction = $facade->getPortalNodeCreateAction();
+        $this->identityOverviewAction = $facade->getIdentityOverviewAction();
     }
 
     public function testMergingMappingNodes(): void

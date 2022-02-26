@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
@@ -19,9 +19,12 @@ class EntityTypeAccessor
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private int $queryFallbackPageSize;
+
+    public function __construct(Connection $connection, int $queryFallbackPageSize)
     {
         $this->connection = $connection;
+        $this->queryFallbackPageSize = $queryFallbackPageSize;
     }
 
     /**
@@ -76,7 +79,7 @@ class EntityTypeAccessor
 
     private function queryIdsForTypes(array $types): array
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = new QueryBuilder($this->connection);
 
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([
@@ -84,17 +87,15 @@ class EntityTypeAccessor
                 'type.type type_type',
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
+            ->addOrderBy('type.id')
             ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
 
-        $statement = $queryBuilder->execute();
+        $result = [];
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642940743);
+        foreach ($queryBuilder->fetchAssocPaginated($this->queryFallbackPageSize) as $row) {
+            $result[$row['type_type']] = \bin2hex($row['type_id']);
         }
 
-        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
-        $result = \array_column($rows, 'type_id', 'type_type');
-
-        return \array_map('bin2hex', $result);
+        return $result;
     }
 }

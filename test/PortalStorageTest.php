@@ -28,6 +28,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
  */
 class PortalStorageTest extends TestCase
 {
+    protected bool $setupQueryTracking = false;
+
     public function testUniqueNaming(): void
     {
         $contextFactory = new ContextFactory();

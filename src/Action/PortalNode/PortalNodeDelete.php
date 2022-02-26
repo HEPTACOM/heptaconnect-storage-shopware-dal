@@ -21,9 +21,12 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private int $queryFallbackPageSize;
+
+    public function __construct(Connection $connection, int $queryFallbackPageSize)
     {
         $this->connection = $connection;
+        $this->queryFallbackPageSize = $queryFallbackPageSize;
     }
 
     public function delete(PortalNodeDeleteCriteria $criteria): void
@@ -44,12 +47,16 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $foundIds = $searchBuilder->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
-        foreach ($ids as $id) {
-            if (!\in_array($id, $foundIds, true)) {
-                throw new NotFoundException();
-            }
+        $idsCheck = \array_combine($ids, $ids);
+
+        foreach ($searchBuilder->fetchAssocPaginated($this->queryFallbackPageSize) as $row) {
+            $id = \current($row);
+            unset($idsCheck[$id]);
+        }
+
+        if ($idsCheck !== []) {
+            throw new NotFoundException();
         }
 
         $deleteBuilder = $this->getDeleteQuery();
@@ -90,6 +97,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $builder->select('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
+        $builder->addOrderBy('id');
 
         return $builder;
     }

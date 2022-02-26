@@ -48,6 +48,7 @@ class PortalNodeList implements PortalNodeListActionInterface
         $this->searchBuilder = $builder = new QueryBuilder($this->connection);
 
         $builder->from('heptaconnect_portal_node');
+        $builder->addOrderBy('id');
         $builder->select('id');
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 
