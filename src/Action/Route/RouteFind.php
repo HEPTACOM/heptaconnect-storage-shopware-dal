@@ -80,6 +80,7 @@ class RouteFind implements RouteFindActionInterface
                 $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
             ->select(['route.id id'])
+            ->orderBy('route.id')
             ->setMaxResults(1)
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),

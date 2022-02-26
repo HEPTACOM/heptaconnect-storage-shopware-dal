@@ -42,6 +42,7 @@ class JobTypeAccessor
                     'job_type.id id',
                     'job_type.type type',
                 ])
+                ->addOrderBy('job_type.id')
                 ->andWhere($builder->expr()->in('job_type.type', ':types'))
                 ->setParameter('types', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
 

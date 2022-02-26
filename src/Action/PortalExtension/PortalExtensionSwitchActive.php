@@ -146,6 +146,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     'portal_node_extension.active',
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
+                ->addOrderBy('portal_node_extension.id')
                 ->where(
                     $expr->eq('portal_node_extension.portal_node_id', ':portalNodeId'),
                     $expr->in('portal_node_extension.class_name', ':extensionClassNames')
@@ -168,6 +169,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     'portal_node_extension.active',
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
+                ->addOrderBy('portal_node_extension.id')
                 ->where($expr->in('portal_node_extension.id', ':ids'));
         }
 

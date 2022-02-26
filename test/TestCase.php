@@ -170,6 +170,10 @@ abstract class TestCase extends BaseTestCase
                 static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
             }
 
+            if (\mb_stripos($trackedQuery, 'limit') !== false) {
+                static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
+            }
+
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {

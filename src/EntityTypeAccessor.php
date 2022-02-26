@@ -87,6 +87,7 @@ class EntityTypeAccessor
                 'type.type type_type',
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
+            ->addOrderBy('type.id')
             ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
 
         $result = [];

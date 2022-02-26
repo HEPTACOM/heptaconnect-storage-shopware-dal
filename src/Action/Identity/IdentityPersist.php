@@ -201,6 +201,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mapping_node',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
@@ -270,6 +271,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mapping_node',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
@@ -348,6 +350,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'mappingNode',
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
+            ->addOrderBy('mapping.id')
             ->where($expr->andX(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
@@ -421,6 +424,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                     $expr->isNull('mappingNode.deleted_at'),
                 )
             )
+            ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
             ->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
@@ -440,6 +444,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $hasConflict = (bool) $queryBuilder->select('1')
             ->from('heptaconnect_mapping', 'mapping')
+            ->addOrderBy('mapping.id')
             ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
             ->groupBy('mapping.portal_node_id')
             ->having($expr->gt('COUNT(mapping.id)', 1))

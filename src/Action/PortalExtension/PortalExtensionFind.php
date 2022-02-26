@@ -57,6 +57,7 @@ class PortalExtensionFind implements PortalExtensionFindActionInterface
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
                 ->where($expr->eq('portal_node_id', ':portalNodeId'))
+                ->addOrderBy('portal_node_extension.id')
             ;
         }
 

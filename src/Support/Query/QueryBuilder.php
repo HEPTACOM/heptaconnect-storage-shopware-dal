@@ -158,6 +158,10 @@ class QueryBuilder extends BaseQueryBuilder
             throw new \LogicException('Fallback page size is too small', 1645901524);
         }
 
+        if ($this->getQueryPart('orderBy') === []) {
+            throw new \LogicException('Pagination without order is not reliable', 1645901525);
+        }
+
         return $this->fetchAllPages();
     }
 

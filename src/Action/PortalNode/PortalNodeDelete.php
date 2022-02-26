@@ -97,6 +97,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $builder->select('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
+        $builder->addOrderBy('id');
 
         return $builder;
     }

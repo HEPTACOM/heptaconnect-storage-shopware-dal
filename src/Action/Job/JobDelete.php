@@ -50,6 +50,7 @@ SQL;
         $selectBuilder = new QueryBuilder($this->connection);
         $payloadIds = $selectBuilder
             ->from('heptaconnect_job', 'job')
+            ->addOrderBy('job.id')
             ->select('job.payload_id')
             ->where($selectBuilder->expr()->in('id', ':ids'))
             ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)

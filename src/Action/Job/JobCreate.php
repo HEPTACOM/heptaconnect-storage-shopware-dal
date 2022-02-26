@@ -196,6 +196,7 @@ class JobCreate implements JobCreateActionInterface
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
+            ->addOrderBy('job_payload.id')
             ->select([
                 'job_payload.checksum checksum',
                 'job_payload.id id',

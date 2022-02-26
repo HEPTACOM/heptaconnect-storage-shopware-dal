@@ -105,6 +105,7 @@ class JobGet implements JobGetActionInterface
                 'job_payload.payload job_payload_payload',
                 'job_payload.format job_payload_format',
             ])
+            ->addOrderBy('job.id')
             ->where($builder->expr()->in('job.id', ':ids'));
     }
 

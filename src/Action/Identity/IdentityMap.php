@@ -214,6 +214,7 @@ class IdentityMap implements IdentityMapActionInterface
                 'mapping',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->select([
                 'type.type mapping_node_type',
                 'mapping.external_id mapping_external_id',
@@ -267,6 +268,7 @@ class IdentityMap implements IdentityMapActionInterface
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])
+            ->addOrderBy('mapping_node.id')
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))

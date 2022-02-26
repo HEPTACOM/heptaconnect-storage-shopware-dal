@@ -87,6 +87,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 'capability',
                 $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id')
             )
+            ->addOrderBy('route.id')
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
