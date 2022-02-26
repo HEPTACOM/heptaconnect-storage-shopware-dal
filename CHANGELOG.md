@@ -54,17 +54,12 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1642937283` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the JSON value from the old storage cannot be parsed
 - Add exception code `1642937284` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the JSON value from the old storage has an unexpected form
 - Add exception code `1642937285` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1642624782CreatePortalNodeConfigurationTable::migrate` when the read JSON from the old storage cannot be transformed into JSON for the new storage
-- Add exception code `1642940743` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::getIdsForTypes` when query execution could not return a ResultStatement
 - Add exception code `1642940744` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::getIdsForTypes` when writing to the database fails
 - Add exception code `1642951892` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::map` when writing to the database fails
-- Add exception code `1642951893` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::map` when query execution could not return a ResultStatement
-- Add exception code `1642951894` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::map` when query execution could not return a ResultStatement
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Action\Contract\Route\Delete\RouteDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete` to delete routes
 - Add exception code `1643144707` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when check for same external id and having different mapping nodes fails
 - Add exception code `1643144708` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when check for same mapping node and having different external ids fails
 - Add exception code `1643144709` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when instructed identity mapping cannot be performed as related identities conflict
-- Add exception code `1643148870` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when query execution could not return a ResultStatement
-- Add exception code `1643148871` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when query execution could not return a ResultStatement
 - Add exception code `1643149115` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the create-payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643149116` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the update-payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643149117` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the delete-payload refers to a mapping node with an invalid mapping node key
@@ -77,7 +72,6 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643877525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643877526` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a portal node with an invalid portal node key
 - Add exception code `1643877527` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the criteria has an invalid sorting option
-- Add exception code `1643877528` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when query execution could not return a ResultStatement
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
 
 ### Changed

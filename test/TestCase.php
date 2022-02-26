@@ -158,6 +158,18 @@ abstract class TestCase extends BaseTestCase
         $trackedQueries = $this->trackedQueries;
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
+            $context = \implode(\PHP_EOL, [
+                '',
+                $trackedQuery,
+                \json_encode($params, \JSON_PRETTY_PRINT),
+                \json_encode($warnings, \JSON_PRETTY_PRINT),
+                ...$frames,
+            ]);
+
+            if (\mb_stripos($trackedQuery, 'select') !== false) {
+                static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
+            }
+
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
@@ -174,15 +186,8 @@ abstract class TestCase extends BaseTestCase
 
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
-                $context = \implode(\PHP_EOL, [
-                    '',
-                    $trackedQuery,
-                    \json_encode($params, \JSON_PRETTY_PRINT),
-                    \json_encode($explanation, \JSON_PRETTY_PRINT),
-                    \json_encode($warnings, \JSON_PRETTY_PRINT),
-                    ...$frames,
-                ]);
-                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $context);
+                $explanationContext = $explanation . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
+                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext);
             }
         }
 

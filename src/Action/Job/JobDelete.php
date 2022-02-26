@@ -53,6 +53,7 @@ SQL;
             ->select('job.payload_id')
             ->where($selectBuilder->expr()->in('id', ':ids'))
             ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
+            ->setMaxResults(\count($ids))
             ->execute()
             ->fetchAll(\PDO::FETCH_COLUMN);
 

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
@@ -20,9 +18,12 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private int $queryFallbackPageSize;
+
+    public function __construct(Connection $connection, int $queryFallbackPageSize)
     {
         $this->connection = $connection;
+        $this->queryFallbackPageSize = $queryFallbackPageSize;
     }
 
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
@@ -65,14 +66,8 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467903);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+        return \iterable_map(
+            $builder->fetchAssocPaginated($this->queryFallbackPageSize),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 /* @phpstan-ignore-next-line */
