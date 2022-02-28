@@ -149,7 +149,10 @@ class RouteOverview implements RouteOverviewActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id')
+                $builder->expr()->andX(
+                    $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id'),
+                    $builder->expr()->isNull('capability.deleted_at')
+                )
             )
             ->select([
                 'route.id id',
@@ -170,6 +173,10 @@ class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.class_name',
                 'route.created_at',
             ])
-            ->where($builder->expr()->isNull('route.deleted_at'));
+            ->where(
+                $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at')
+            );
     }
 }
