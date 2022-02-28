@@ -31,7 +31,7 @@ class JobFinishedList implements JobListFinishedActionInterface
 
     public function list(): iterable
     {
-        yield from \iterable_map(
+        return \iterable_map(
             \iterable_map($this->iterator->iterateColumn($this->getBuilderCached()), 'bin2hex'),
             static fn (string $id) => new JobListFinishedResult(new JobStorageKey($id))
         );
