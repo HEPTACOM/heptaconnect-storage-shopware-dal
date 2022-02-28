@@ -448,7 +448,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $fromMappingNodeId,
                 $intoMappingNodeId,
             ], Connection::PARAM_STR_ARRAY)
-            ->fetchAssocSingleValue();
+            ->fetchSingleValue();
 
         return !$hasConflict;
     }

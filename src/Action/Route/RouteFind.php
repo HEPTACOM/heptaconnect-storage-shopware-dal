@@ -48,7 +48,7 @@ class RouteFind implements RouteFindActionInterface
         $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
-        $id = $builder->fetchAssocSingleValue();
+        $id = $builder->fetchSingleValue();
 
         if (!\is_string($id)) {
             return null;

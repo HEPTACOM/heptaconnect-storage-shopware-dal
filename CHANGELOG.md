@@ -74,7 +74,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643877527` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the criteria has an invalid sorting option
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
 - Add exception code `1645901521` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssoc` when query execution could not return a ResultStatement
-- Add exception code `1645901522` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocSingleValue` when more than 1 row can be fetched from a query that expects only a single row
+- Add exception code `1645901522` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchSingleValue` when more than 1 row can be fetched from a query that expects only a single row
 - Add exception code `1645901523` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocSingleRow` when more than 1 row can be fetched from a query that expects only a single row
 - Add exception code `1645901524` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when an invalid fallback pagination size is given
 - Add exception code `1645901525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when the query will be paginated without order statement

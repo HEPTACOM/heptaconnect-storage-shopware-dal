@@ -109,7 +109,7 @@ class QueryBuilder extends BaseQueryBuilder
     /**
      * @return mixed|null
      */
-    public function fetchAssocSingleValue()
+    public function fetchSingleValue()
     {
         $oldLimit = $this->getMaxResults();
         $oldOffset = $this->getFirstResult();
