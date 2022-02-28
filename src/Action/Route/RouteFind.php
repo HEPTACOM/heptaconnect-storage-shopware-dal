@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
@@ -13,17 +12,20 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteFind implements RouteFindActionInterface
 {
+    public const LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
@@ -69,7 +71,7 @@ class RouteFind implements RouteFindActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')

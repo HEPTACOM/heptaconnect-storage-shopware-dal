@@ -4,26 +4,25 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 
 class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    private int $queryFallbackPageSize;
-
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
@@ -67,7 +66,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         }
 
         return \iterable_map(
-            $builder->fetchAssocPaginated($this->queryFallbackPageSize),
+            $builder->fetchAssocPaginated(),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 /* @phpstan-ignore-next-line */
@@ -90,7 +89,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route_capability', 'capability')

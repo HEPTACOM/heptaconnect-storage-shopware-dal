@@ -21,12 +21,14 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class JobCreate implements JobCreateActionInterface
 {
+    public const PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
+
     private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     private Connection $connection;
@@ -37,16 +39,20 @@ class JobCreate implements JobCreateActionInterface
 
     private EntityTypeAccessor $entityTypes;
 
+    private QueryFactory $queryFactory;
+
     public function __construct(
         Connection $connection,
         StorageKeyGeneratorContract $storageKeyGenerator,
         JobTypeAccessor $jobTypes,
-        EntityTypeAccessor $entityTypes
+        EntityTypeAccessor $entityTypes,
+        QueryFactory $queryFactory
     ) {
         $this->connection = $connection;
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->jobTypes = $jobTypes;
         $this->entityTypes = $entityTypes;
+        $this->queryFactory = $queryFactory;
     }
 
     public function create(JobCreatePayloads $payloads): JobCreateResults
@@ -192,7 +198,7 @@ class JobCreate implements JobCreateActionInterface
      */
     private function getPayloadIds(array $checksums): array
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::PAYLOAD_LOOKUP_QUERY);
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
@@ -208,7 +214,7 @@ class JobCreate implements JobCreateActionInterface
 
         $rows = [];
 
-        foreach ($builder->fetchAssocPaginated(\count($checksums)) as $row) {
+        foreach ($builder->fetchAssocPaginated() as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
 

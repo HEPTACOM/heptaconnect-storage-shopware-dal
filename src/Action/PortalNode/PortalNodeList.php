@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Listing\PortalNodeListResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class PortalNodeList implements PortalNodeListActionInterface
 {
+    public const LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
+
     private ?QueryBuilder $searchBuilder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $queryIterator;
 
-    public function __construct(Connection $connection, QueryIterator $queryIterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $queryIterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->queryIterator = $queryIterator;
     }
 
@@ -45,7 +47,7 @@ class PortalNodeList implements PortalNodeListActionInterface
             return clone $builder;
         }
 
-        $this->searchBuilder = $builder = new QueryBuilder($this->connection);
+        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->addOrderBy('id');

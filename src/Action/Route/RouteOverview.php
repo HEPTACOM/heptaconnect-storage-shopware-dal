@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
@@ -14,18 +13,21 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaExceptio
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteOverview implements RouteOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(RouteOverviewCriteria $criteria): iterable
@@ -117,7 +119,7 @@ class RouteOverview implements RouteOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')

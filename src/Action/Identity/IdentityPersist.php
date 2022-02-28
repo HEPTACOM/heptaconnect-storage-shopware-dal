@@ -17,34 +17,30 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class IdentityPersist implements IdentityPersistActionInterface
 {
+    public const TYPE_LOOKUP_QUERY = '4adbdc58-1ec7-45c0-9a5b-0ac983460505';
+
+    public const DELETE_PAYLOAD_QUERY = 'db92d189-494e-4d0b-be0b-492e4ded99c1';
+
+    public const UPDATE_PAYLOAD_QUERY = 'ddad865c-0608-42cd-89f1-148a44ed8f31';
+
+    public const VALIDATE_CONFLICTS_QUERY = '38d26bce-b577-4def-9fe3-d055cb63495d';
+
+    public const VALIDATE_MERGE_QUERY = 'd8bb9156-edcc-4b1b-8e7e-fae2e8932434';
+
     private Connection $connection;
 
-    private int $typeQueryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
-    private int $deletePayloadQueryFallbackPageSize;
-
-    private int $updatePayloadQueryFallbackPageSize;
-
-    private int $validateConflictsQueryFallbackPageSize;
-
-    public function __construct(
-        Connection $connection,
-        int $typeQueryFallbackPageSize,
-        int $deletePayloadQueryFallbackPageSize,
-        int $updatePayloadQueryFallbackPageSize,
-        int $validateConflictsQueryFallbackPageSize
-    ) {
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
+    {
         $this->connection = $connection;
-        $this->typeQueryFallbackPageSize = $typeQueryFallbackPageSize;
-        $this->deletePayloadQueryFallbackPageSize = $deletePayloadQueryFallbackPageSize;
-        $this->updatePayloadQueryFallbackPageSize = $updatePayloadQueryFallbackPageSize;
-        $this->validateConflictsQueryFallbackPageSize = $validateConflictsQueryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function persist(IdentityPersistPayload $payload): void
@@ -188,7 +184,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::UPDATE_PAYLOAD_QUERY);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
@@ -210,7 +206,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
 
-        foreach ($builder->fetchAssocPaginated($this->updatePayloadQueryFallbackPageSize) as $mapping) {
+        foreach ($builder->fetchAssocPaginated() as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
             $externalId = $mappingNodes[$mappingNodeId] ?? null;
@@ -258,7 +254,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::DELETE_PAYLOAD_QUERY);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
@@ -280,7 +276,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
 
-        foreach ($builder->fetchAssocPaginated($this->deletePayloadQueryFallbackPageSize) as $mapping) {
+        foreach ($builder->fetchAssocPaginated() as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
 
@@ -311,7 +307,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $changedMappings = $this->getChangedMappings($update);
         $deletedMappings = $this->getDeletedMappings($delete);
 
-        $queryBuilder = new QueryBuilder($this->connection);
+        $queryBuilder = $this->queryFactory->createBuilder(self::VALIDATE_CONFLICTS_QUERY);
         $expr = $queryBuilder->expr();
 
         $typeConditions = [];
@@ -362,7 +358,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $mappingNodesToMerge = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated($this->validateConflictsQueryFallbackPageSize) as $row) {
+        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
             $intoMappingNodeId = \bin2hex($row['mappingNodeId']);
             $externalId = $row['externalId'];
             $typeId = \bin2hex($row['typeId']);
@@ -406,7 +402,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
     private function fetchTypes(array $mappingNodeIds): array
     {
-        $queryBuilder = new QueryBuilder($this->connection);
+        $queryBuilder = $this->queryFactory->createBuilder(self::TYPE_LOOKUP_QUERY);
         $expr = $queryBuilder->expr();
 
         $queryBuilder
@@ -430,7 +426,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $types = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated($this->typeQueryFallbackPageSize) as $row) {
+        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
             $types[\bin2hex($row['mappingNodeId'])] = \bin2hex($row['typeId']);
         }
 
@@ -439,7 +435,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
     private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
     {
-        $queryBuilder = new QueryBuilder($this->connection);
+        $queryBuilder = $this->queryFactory->createBuilder(self::VALIDATE_MERGE_QUERY);
         $expr = $queryBuilder->expr();
 
         $hasConflict = (bool) $queryBuilder->select('1')

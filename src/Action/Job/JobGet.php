@@ -13,10 +13,13 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 class JobGet implements JobGetActionInterface
 {
+    public const FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
+
     /**
      * @deprecated TODO remove serialized format
      */
@@ -29,13 +32,13 @@ class JobGet implements JobGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $iterator;
 
-    public function __construct(Connection $connection, QueryIterator $iterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->iterator = $iterator;
     }
 
@@ -68,7 +71,7 @@ class JobGet implements JobGetActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_job', 'job')

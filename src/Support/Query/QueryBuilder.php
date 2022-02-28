@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
 use Doctrine\DBAL\Types\Type;
@@ -15,6 +16,17 @@ class QueryBuilder extends BaseQueryBuilder
     public const PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
     private bool $isForUpdate = false;
+
+    private string $identifier;
+
+    private int $paginationPageSize;
+
+    public function __construct(Connection $connection, string $identifier, int $paginationPageSize)
+    {
+        parent::__construct($connection);
+        $this->paginationPageSize = $paginationPageSize;
+        $this->identifier = $identifier;
+    }
 
     public function getIsForUpdate(): bool
     {
@@ -91,7 +103,7 @@ class QueryBuilder extends BaseQueryBuilder
                 break;
         }
 
-        return $result;
+        return ' # heptaconnect-query-id ' . $this->identifier . \PHP_EOL . $result;
     }
 
     /**
@@ -146,13 +158,15 @@ class QueryBuilder extends BaseQueryBuilder
     /**
      * @return iterable<int, array>
      */
-    public function fetchAssocPaginated(int $fallbackPageSize): iterable
+    public function fetchAssocPaginated(): iterable
     {
         $maxResults = $this->getMaxResults();
 
         if (\is_int($maxResults)) {
             return $this->fetchAssoc();
         }
+
+        $fallbackPageSize = $this->paginationPageSize;
 
         if ($fallbackPageSize < 1) {
             throw new \LogicException('Fallback page size is too small', 1645901524);
@@ -162,19 +176,18 @@ class QueryBuilder extends BaseQueryBuilder
             throw new \LogicException('Pagination without order is not reliable', 1645901525);
         }
 
-        return $this->fetchAllPages();
+        return $this->fetchAllPages($fallbackPageSize);
     }
 
     /**
      * @return iterable<int, array>
      */
-    private function fetchAllPages(): iterable
+    private function fetchAllPages(int $limit): iterable
     {
         $oldLimit = $this->getMaxResults();
         $oldOffset = $this->getFirstResult();
         $rowId = 0;
         $offset = 0;
-        $limit = 50;
 
         $this->setMaxResults($limit);
 
