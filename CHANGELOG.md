@@ -73,11 +73,45 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643877526` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a portal node with an invalid portal node key
 - Add exception code `1643877527` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the criteria has an invalid sorting option
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` to always paginate even when no max result is given with the fallback pagination size parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct`
 - Add exception code `1645901521` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssoc` when query execution could not return a ResultStatement
 - Add exception code `1645901522` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchSingleValue` when more than 1 row can be fetched from a query that expects only a single row
 - Add exception code `1645901523` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocSingleRow` when more than 1 row can be fetched from a query that expects only a single row
 - Add exception code `1645901524` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when an invalid fallback pagination size is given
 - Add exception code `1645901525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when the query will be paginated without order statement
+- Add query identifier parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct` that is added on query execution
+- Add factory `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` with configurable fallback pagination size for every builder
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::LOOKUP_QUERY` as `992a88ac-a232-4d99-b1cc-4165da81ba77` to identify a query used for looking up entity types
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor::LOOKUP_QUERY` as `28ef8980-146b-416c-8338-f1e394ac8c5f` to identify a query used for looking up job types
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::MAPPING_NODE_QUERY` as `0d104088-b0d4-4158-8f95-0bc8a6880cc8` to identify a query used for loading related mapping nodes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::MAPPING_QUERY` as `3c3f73e2-a95c-4ff3-89c5-c5f166195c24` to identify a query used for loading related mappings
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::OVERVIEW_QUERY` as `510bb5ac-4bcb-4ddf-927c-05971298bc55` to identify a query used for loading an overview page for identities
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::TYPE_LOOKUP_QUERY` as `4adbdc58-1ec7-45c0-9a5b-0ac983460505` to identify a query used for looking up related entity types
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::BUILD_DELETE_PAYLOAD_QUERY` as `db92d189-494e-4d0b-be0b-492e4ded99c1` to identify a query used for reading identities that have to be deleted
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::BUILD_UPDATE_PAYLOAD_QUERY` as `ddad865c-0608-42cd-89f1-148a44ed8f31` to identify a query used for reading identities that have be updated
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_CONFLICTS_QUERY` as `38d26bce-b577-4def-9fe3-d055cb63495d` to identify a query used for identifying possible conflicts
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_MERGE_QUERY` as `d8bb9156-edcc-4b1b-8e7e-fae2e8932434` to identify a query used for identifying possible merges
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::PAYLOAD_LOOKUP_QUERY` as `b2234327-93a0-4854-ac52-fba75f71da74` to identify a query used for looking up payload entries
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::DELETE_QUERY` as `f60b01fc-8f9a-4a37-a009-a00db9a64b11` to identify a query used for deleting jobs
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::LOOKUP_QUERY` as `c1c41a80-6aec-4499-a07a-26ee57b07594` to identify a query used for looking up jobs that can be deleted
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList::LIST_QUERY` as `008ced6c-7517-46f8-a8a0-8f3c31b50467` to identify a query used for listing finished jobs
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet::FETCH_QUERY` as `809ecd5e-291f-417c-9c76-003c7ead65e9` to identify a query used for reading job data
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind::LOOKUP_QUERY` as `82bb12c6-ed9c-4646-901a-4ff7e8e4e88c` to identify a query used for looking up portal extension configurations
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::CLASS_NAME_LOOKUP_QUERY` as `a6bbbe3b-bf42-455d-824e-8c1aac4453b6` to identify a query used for looking up class name references
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::ID_LOOKUP_QUERY` as `2fc478d7-4f03-4a3d-a335-d6daf4244c27` to identify a query used for looking up existing configuration ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::SWITCH_QUERY` as `5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a` to identify a query used for switching active states of portal extensions
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete::DELETE_QUERY` as `219156bb-0598-49df-8205-6d10e8f92a61` to identify a query used for deleting portal nodes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete::LOOKUP_QUERY` as `aafca974-b95e-46ea-a680-834a93d13140` to identify a query used for looking up portal nodes that can be deleted
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet::FETCH_QUERY` as `efbd19ba-bc8e-412c-afb2-8a21f35e21f9` to identify a query used for reading portal node data
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList::LIST_QUERY` as `52e85ba9-3610-403b-be28-b8d138481ace` to identify a query used for listing up all portal nodes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList::LIST_QUERY` as `a2dc9481-5738-448a-9c85-617fec45a00d` to identify a query used for listing up all routes that are configured for reception
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete::LOOKUP_QUERY` as `b270142d-c897-4d1d-bddb-7641fbfb95a2` to identify a query used for looking up routes to delete
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete::DELETE_QUERY` as `384f50ca-1e0a-464b-80fd-824fc83b87ca` to identify a query used for deleting routes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind::LOOKUP_QUERY` as `1f0d7c11-0d1c-4834-8b15-148d826d64e8` to identify a query used for looking up routes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet::FETCH_QUERY` as `24ab04cd-03f5-40c8-af25-715856281314` to identify a query used for reading route data
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for route
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` as `329b4aa3-e576-4930-b89f-c63dca05c16e` to identify a query used for loading an overview page for route capabilities
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::LOOKUP_QUERY` as `6c5db7b-004d-40c8-b9cc-53707aab658b` to identify a query used for looking up HTTP handler configurations
 
 ### Changed
 
