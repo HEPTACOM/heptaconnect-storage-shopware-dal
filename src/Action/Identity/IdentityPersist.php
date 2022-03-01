@@ -25,9 +25,9 @@ class IdentityPersist implements IdentityPersistActionInterface
 {
     public const TYPE_LOOKUP_QUERY = '4adbdc58-1ec7-45c0-9a5b-0ac983460505';
 
-    public const DELETE_PAYLOAD_QUERY = 'db92d189-494e-4d0b-be0b-492e4ded99c1';
+    public const BUILD_DELETE_PAYLOAD_QUERY = 'db92d189-494e-4d0b-be0b-492e4ded99c1';
 
-    public const UPDATE_PAYLOAD_QUERY = 'ddad865c-0608-42cd-89f1-148a44ed8f31';
+    public const BUILD_UPDATE_PAYLOAD_QUERY = 'ddad865c-0608-42cd-89f1-148a44ed8f31';
 
     public const VALIDATE_CONFLICTS_QUERY = '38d26bce-b577-4def-9fe3-d055cb63495d';
 
@@ -184,7 +184,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::UPDATE_PAYLOAD_QUERY);
+        $builder = $this->queryFactory->createBuilder(self::BUILD_UPDATE_PAYLOAD_QUERY);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
@@ -254,7 +254,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::DELETE_PAYLOAD_QUERY);
+        $builder = $this->queryFactory->createBuilder(self::BUILD_DELETE_PAYLOAD_QUERY);
         $builder
             ->from('heptaconnect_mapping', 'mapping')
             ->select([
