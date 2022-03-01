@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
@@ -113,7 +114,7 @@ class JobFinishedListTest extends TestCase
     public function testList(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new JobFinishedList($connection, new QueryIterator());
+        $action = new JobFinishedList(new QueryFactory($connection, [], 500), new QueryIterator());
         $count = 0;
         $finishedJobKey = new JobStorageKey(self::JOB_FINISHED);
 

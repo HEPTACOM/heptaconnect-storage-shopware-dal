@@ -7,8 +7,10 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
@@ -130,7 +132,7 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria = new RouteOverviewCriteria();
         static::assertCount(4, $action->overview($criteria));
     }
@@ -139,7 +141,7 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria0 = new RouteOverviewCriteria();
         $criteria0->setPageSize(1);
         $criteria0->setPage(0);
@@ -167,13 +169,13 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_ASC,
         ]);
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_FIRST)));
 
@@ -185,13 +187,13 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_DESC,
         ]);
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_LAST)));
 
@@ -203,7 +205,7 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_ASC,
@@ -212,7 +214,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;
@@ -230,7 +232,7 @@ class RouteOverviewTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteOverview($connection);
+        $action = new RouteOverview(new QueryFactory($connection, [], 500));
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_DESC,
@@ -239,7 +241,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;

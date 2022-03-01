@@ -190,7 +190,7 @@ abstract class TestCase extends BaseTestCase
 
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
-                $explanationContext = $explanation . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
+                $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT) . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
                 static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext);
             }
         }

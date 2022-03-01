@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\RouteKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
@@ -87,7 +88,7 @@ class RouteGetTest extends TestCase
     public function testDeletedAt(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new RouteGet($connection, new QueryIterator());
+        $action = new RouteGet(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
 
         static::assertCount(0, $action->get($criteria));
@@ -97,7 +98,7 @@ class RouteGetTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new RouteGet($connection, new QueryIterator());
+        $action = new RouteGet(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult $item */

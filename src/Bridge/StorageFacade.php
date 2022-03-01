@@ -144,7 +144,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createJobDeleteAction(): JobDeleteActionInterface
     {
-        return new JobDelete($this->getQueryFactory());
+        return new JobDelete($this->connection, $this->getQueryFactory());
     }
 
     protected function createJobFailAction(): JobFailActionInterface

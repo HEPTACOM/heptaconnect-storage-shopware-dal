@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
@@ -65,7 +66,7 @@ class PortalNodeGetTest extends TestCase
     public function testDeletedAt(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new PortalNodeGet($connection, new QueryIterator());
+        $action = new PortalNodeGet(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
 
         static::assertCount(0, $action->get($criteria));
@@ -75,7 +76,7 @@ class PortalNodeGetTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new PortalNodeGet($connection, new QueryIterator());
+        $action = new PortalNodeGet(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_A)]));
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult $item */
