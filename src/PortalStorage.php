@@ -63,28 +63,6 @@ class PortalStorage extends PortalStorageContract
         $this->portalNodeStorages->upsert([$upsert], $this->contextFactory->create());
     }
 
-    public function unset(PortalNodeKeyInterface $portalNodeKey, string $key): void
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $context = $this->contextFactory->create();
-        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
-        $criteria = new Criteria([$storageId]);
-        $criteria->setLimit(1);
-        $searchResult = $this->portalNodeStorages->searchIds($criteria, $context);
-        $storageId = $searchResult->firstId();
-
-        if ($storageId === null) {
-            return;
-        }
-
-        $this->portalNodeStorages->delete([[
-            'id' => $storageId,
-        ]], $context);
-    }
-
     public function getValue(PortalNodeKeyInterface $portalNodeKey, string $key): string
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
@@ -155,26 +133,6 @@ class PortalStorage extends PortalStorageContract
         return $searchResult->getTotal() > 0;
     }
 
-    public function clear(PortalNodeKeyInterface $portalNodeKey): void
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-        $context = $this->contextFactory->create();
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('portalNodeId', $portalNodeKey->getUuid())
-        );
-        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
-        while (($removeIds = $iterator->fetchIds()) !== null) {
-            $this->portalNodeStorages->delete(\array_map(
-                static fn (string $removeId): array => ['id' => $removeId],
-                $removeIds
-            ), $context);
-            $criteria->setOffset(0);
-        }
-    }
-
     public function getMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys): array
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
@@ -201,30 +159,6 @@ class PortalStorage extends PortalStorageContract
         }
 
         return $values;
-    }
-
-    public function deleteMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys): void
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-        $context = $this->contextFactory->create();
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new MultiFilter(MULTIFILTER::CONNECTION_AND, [
-                new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-                new EqualsAnyFilter('key', $keys),
-            ])
-        );
-
-        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
-        while (($removeIds = $iterator->fetchIds()) !== null) {
-            $this->portalNodeStorages->delete(\array_map(
-                static fn (string $removeId): array => ['id' => $removeId],
-                $removeIds
-            ), $context);
-            $criteria->setOffset(0);
-        }
     }
 
     private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
