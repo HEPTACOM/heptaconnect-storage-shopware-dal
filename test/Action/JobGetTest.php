@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
@@ -96,7 +97,7 @@ class JobGetTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
-        $action = new JobGet($connection, new QueryIterator());
+        $action = new JobGet(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $count = 0;
 

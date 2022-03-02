@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Type;
@@ -14,19 +13,22 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfigurati
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
 class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
 {
+    public const LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private WebHttpHandlerPathIdResolver $pathIdResolver;
 
-    public function __construct(Connection $connection, WebHttpHandlerPathIdResolver $pathIdResolver)
+    public function __construct(QueryFactory $queryFactory, WebHttpHandlerPathIdResolver $pathIdResolver)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->pathIdResolver = $pathIdResolver;
     }
 
@@ -86,7 +88,7 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         return $builder
             ->from('heptaconnect_web_http_handler_configuration', 'config')

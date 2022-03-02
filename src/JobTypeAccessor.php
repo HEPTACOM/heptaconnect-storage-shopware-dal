@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class JobTypeAccessor
 {
+    public const LOOKUP_QUERY = '28ef8980-146b-416c-8338-f1e394ac8c5f';
+
     private array $known = [];
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     /**
@@ -33,25 +37,23 @@ class JobTypeAccessor
         $nonMatchingKeys = \array_diff($types, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $builder = $this->connection->createQueryBuilder();
+            $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_job_type', 'job_type')
                 ->select([
                     'job_type.id id',
                     'job_type.type type',
                 ])
+                ->addOrderBy('job_type.id')
                 ->andWhere($builder->expr()->in('job_type.type', ':types'))
                 ->setParameter('types', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
 
-            $statement = $builder->execute();
+            $typeIds = [];
 
-            if (!$statement instanceof ResultStatement) {
-                throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1639265928);
+            foreach ($builder->fetchAssocPaginated() as $row) {
+                $typeIds[$row['type']] = \bin2hex($row['id']);
             }
 
-            $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
-            $typeIds = \array_column($rows, 'id', 'type');
-            $typeIds = \array_map('bin2hex', $typeIds);
             $inserts = [];
             $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 

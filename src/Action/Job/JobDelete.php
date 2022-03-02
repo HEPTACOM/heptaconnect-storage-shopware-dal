@@ -9,10 +9,14 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class JobDelete implements JobDeleteActionInterface
 {
+    public const DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
+
+    public const LOOKUP_QUERY = 'c1c41a80-6aec-4499-a07a-26ee57b07594';
+
     private const DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
 DELETE
     job_payload
@@ -30,9 +34,12 @@ SQL;
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function delete(JobDeleteCriteria $criteria): void
@@ -47,16 +54,18 @@ SQL;
             $ids[] = \hex2bin($jobKey->getUuid());
         }
 
-        $selectBuilder = new QueryBuilder($this->connection);
+        $selectBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
         $payloadIds = $selectBuilder
             ->from('heptaconnect_job', 'job')
+            ->addOrderBy('job.id')
             ->select('job.payload_id')
             ->where($selectBuilder->expr()->in('id', ':ids'))
             ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
+            ->setMaxResults(\count($ids))
             ->execute()
             ->fetchAll(\PDO::FETCH_COLUMN);
 
-        $deleteJobBuilder = new QueryBuilder($this->connection);
+        $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteJobBuilder
             ->delete('heptaconnect_job')
             ->where($deleteJobBuilder->expr()->in('id', ':ids'))

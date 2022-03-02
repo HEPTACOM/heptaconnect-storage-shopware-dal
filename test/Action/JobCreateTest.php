@@ -9,11 +9,8 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
@@ -21,6 +18,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
@@ -39,6 +37,7 @@ class JobCreateTest extends TestCase
         $entityType = Uuid::randomBytes();
         $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
@@ -54,7 +53,7 @@ class JobCreateTest extends TestCase
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Uuid::fromBytesToHex($source);
-        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($connection));
+        $action = $facade->getJobCreateAction();
         $action->create(new JobCreatePayloads([
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
                 'party' => 'people',

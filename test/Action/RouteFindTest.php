@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -53,7 +54,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind($connection);
+        $action = new RouteFind(new QueryFactory($connection, [], 500));
         $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
         static::assertNull($action->find($criteria));
     }
@@ -89,7 +90,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new RouteFind($connection);
+        $action = new RouteFind(new QueryFactory($connection, [], 500));
         $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
         static::assertInstanceOf(RouteFindResult::class, $action->find($criteria));
     }

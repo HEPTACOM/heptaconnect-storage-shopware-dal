@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCr
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
@@ -65,7 +66,7 @@ class ReceptionRouteListTest extends TestCase
             'route_capability_id' => Types::BINARY,
         ]);
 
-        $action = new ReceptionRouteList($connection, new QueryIterator());
+        $action = new ReceptionRouteList(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
@@ -104,7 +105,7 @@ class ReceptionRouteListTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new ReceptionRouteList($connection, new QueryIterator());
+        $action = new ReceptionRouteList(new QueryFactory($connection, [], 500), new QueryIterator());
         $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
