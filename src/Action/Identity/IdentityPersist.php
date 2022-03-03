@@ -445,8 +445,8 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->groupBy('mapping.portal_node_id')
             ->having($expr->gt('COUNT(mapping.id)', 1))
             ->setParameter('mappingNodeIds', [
-                $fromMappingNodeId,
-                $intoMappingNodeId,
+                \hex2bin($fromMappingNodeId),
+                \hex2bin($intoMappingNodeId),
             ], Connection::PARAM_STR_ARRAY)
             ->fetchSingleValue();
 
