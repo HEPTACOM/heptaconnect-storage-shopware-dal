@@ -12,15 +12,22 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 
 class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 {
+    public const DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
+
+    public const DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
+
+    private QueryFactory $queryFactory;
+
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory, Connection $connection)
     {
+        $this->queryFactory = $queryFactory;
         $this->connection = $connection;
     }
 
@@ -37,7 +44,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
         }
 
         $now = new \DateTimeImmutable();
-        $deleteExpiredBuilder = new QueryBuilder($this->connection);
+        $deleteExpiredBuilder = $this->queryFactory->createBuilder(self::DELETE_EXPIRED_QUERY);
         $deleteExpiredBuilder
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteExpiredBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
@@ -46,7 +53,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
 
-        $deleteBuilder = new QueryBuilder($this->connection);
+        $deleteBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteBuilder
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteBuilder->expr()->eq('portal_node_id', ':portal_node_id'))

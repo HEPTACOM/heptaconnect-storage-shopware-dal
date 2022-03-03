@@ -6,20 +6,14 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\PortalStorageContract;
-use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStorageCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeStorageEntity;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\Dbal\Common\RepositoryIterator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 
 class PortalStorage extends PortalStorageContract
 {
@@ -63,36 +57,6 @@ class PortalStorage extends PortalStorageContract
         $this->portalNodeStorages->upsert([$upsert], $this->contextFactory->create());
     }
 
-    public function getValue(PortalNodeKeyInterface $portalNodeKey, string $key): string
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $result = $this->innerGet($portalNodeKey->getUuid(), $key);
-
-        if (!$result instanceof PortalNodeStorageEntity) {
-            throw new NotFoundException();
-        }
-
-        return $result->getValue();
-    }
-
-    public function getType(PortalNodeKeyInterface $portalNodeKey, string $key): string
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $result = $this->innerGet($portalNodeKey->getUuid(), $key);
-
-        if (!$result instanceof PortalNodeStorageEntity) {
-            throw new NotFoundException();
-        }
-
-        return $result->getType();
-    }
-
     public function list(PortalNodeKeyInterface $portalNodeKey): iterable
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
@@ -117,65 +81,5 @@ class PortalStorage extends PortalStorageContract
                 }
             }
         }
-    }
-
-    public function has(PortalNodeKeyInterface $portalNodeKey, string $key): bool
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
-        $criteria = new Criteria([$storageId]);
-        $criteria->setLimit(1);
-        $searchResult = $this->portalNodeStorages->searchIds($criteria, $this->contextFactory->create());
-
-        return $searchResult->getTotal() > 0;
-    }
-
-    public function getMultiple(PortalNodeKeyInterface $portalNodeKey, array $keys): array
-    {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $context = $this->contextFactory->create();
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new MultiFilter(MULTIFILTER::CONNECTION_AND, [
-                new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
-                new EqualsAnyFilter('key', $keys),
-            ])
-        );
-        $iterator = new RepositoryIterator($this->portalNodeStorages, $context, $criteria);
-        $values = [];
-        /*
-         * @var PortalNodeStorageEntity $result
-         */
-        while (($entities = $iterator->fetch()) !== null) {
-            foreach ($entities->getEntities() as $entity) {
-                $values[$entity->getKey()] = $entity->getValue();
-            }
-        }
-
-        return $values;
-    }
-
-    private function innerGet(string $portalNodeId, string $key): ?PortalNodeStorageEntity
-    {
-        $storageId = (string) Uuid::uuid5($portalNodeId, $key)->getHex();
-        $criteria = new Criteria([$storageId]);
-        $criteria->setLimit(1);
-        $criteria->addFilter(new MultiFilter(MultiFilter::CONNECTION_OR, [
-            new EqualsFilter('expiredAt', null),
-            new RangeFilter('expiredAt', [
-                RangeFilter::GT => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            ]),
-        ]));
-
-        /** @var PortalNodeStorageCollection $entities */
-        $entities = $this->portalNodeStorages->search($criteria, $this->contextFactory->create())->getEntities();
-
-        return $entities->first();
     }
 }
