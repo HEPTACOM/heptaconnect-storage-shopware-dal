@@ -27,36 +27,6 @@ class PortalStorage extends PortalStorageContract
         $this->contextFactory = $contextFactory;
     }
 
-    public function set(
-        PortalNodeKeyInterface $portalNodeKey,
-        string $key,
-        string $value,
-        string $type,
-        ?\DateInterval $ttl = null
-    ): void {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $storageId = (string) Uuid::uuid5($portalNodeKey->getUuid(), $key)->getHex();
-
-        $upsert = [
-            'id' => $storageId,
-            'portalNodeId' => $portalNodeKey->getUuid(),
-            'key' => $key,
-            'value' => $value,
-            'type' => $type,
-        ];
-
-        if ($ttl instanceof \DateInterval) {
-            $upsert['expiredAt'] = (new \DateTimeImmutable())->add($ttl);
-        } else {
-            $upsert['expiredAt'] = null;
-        }
-
-        $this->portalNodeStorages->upsert([$upsert], $this->contextFactory->create());
-    }
-
     public function list(PortalNodeKeyInterface $portalNodeKey): iterable
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {

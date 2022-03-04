@@ -118,6 +118,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::CLEAR_QUERY` as `1087e0dc-07fe-48d7-903c-9353167c3e89` to identity query used for deleting all portal node storage entries
 - Add exception code `1646209691` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::clear` when writing to the database fails
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet::FETCH_QUERY` as `679d6e76-bb9c-410d-ac22-17c64afcb7cc` to identity query used for reading portal node storage entries
+- Add exception code `1646341933` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::set` when writing to the database fails
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::UPDATE_PREPARATION_QUERY` as `75fada39-34f0-4e03-b3b5-141da358181d` to identity query used for reading portal node storage entries to prepare update statements
 
 ### Changed
 
@@ -165,6 +167,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::unset` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::deleteMultiple` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete::delete` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::clear` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::clear` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getValue`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getType`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::has` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getMultiple` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet::get` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::set` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::set` that allows for optimizations for different use-cases
 
 ### Fixed
 
