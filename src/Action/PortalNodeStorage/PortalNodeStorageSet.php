@@ -49,7 +49,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
             $storageKey = $set->getStorageKey();
             $keysToCheck[] = $storageKey;
             $instructions[$storageKey] = [
-                'key' => $set->getStorageKey(),
+                '`key`' => $set->getStorageKey(),
                 'value' => $set->getValue(),
                 'type' => $set->getType(),
                 'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),

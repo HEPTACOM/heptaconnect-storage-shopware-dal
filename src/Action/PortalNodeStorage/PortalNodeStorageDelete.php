@@ -57,7 +57,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
         $deleteBuilder
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
-            ->andWhere($deleteBuilder->expr()->in('key', ':keys'))
+            ->andWhere($deleteBuilder->expr()->in('`key`', ':keys'))
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
 
         $idsPayloads = \array_chunk(\iterable_to_array($criteria->getStorageKeys()), 50);
