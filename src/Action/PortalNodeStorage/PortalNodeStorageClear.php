@@ -47,7 +47,7 @@ class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
 
         try {
-            $this->connection->transactional(function () use ($deleteBuilder) {
+            $this->connection->transactional(function () use ($deleteBuilder): void {
                 $deleteBuilder->execute();
             });
         } catch (\Throwable $throwable) {

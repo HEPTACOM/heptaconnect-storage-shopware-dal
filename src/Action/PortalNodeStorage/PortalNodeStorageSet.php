@@ -83,9 +83,8 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $nowFormatted);
 
-
         try {
-            $this->connection->transactional(static function () use ($instructions, $keysToCheck, $fetchBuilder) {
+            $this->connection->transactional(function () use ($instructions, $keysToCheck, $fetchBuilder): void {
                 $keysToUpdate = \array_fill_keys($keysToCheck, false);
 
                 $fetchBuilder->setIsForUpdate(true);

@@ -63,7 +63,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
         $idsPayloads = \array_chunk(\iterable_to_array($criteria->getStorageKeys()), 50);
 
         try {
-            $this->connection->transactional(function () use ($idsPayloads, $deleteBuilder, $deleteExpiredBuilder) {
+            $this->connection->transactional(function () use ($idsPayloads, $deleteBuilder, $deleteExpiredBuilder): void {
                 $deleteExpiredBuilder->execute();
 
                 foreach ($idsPayloads as $idsPayload) {
