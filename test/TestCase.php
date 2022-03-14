@@ -51,9 +51,8 @@ abstract class TestCase extends BaseTestCase
     {
         $this->kernel = new ShopwareKernel();
         $this->kernel->boot();
+        $connection = $this->getConnection();
 
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
         $connection->beginTransaction();
         $connection->executeStatement('SET SESSION innodb_lock_wait_timeout = 5');
 
@@ -64,8 +63,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function downKernel(): void
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $connection->getConfiguration()->setSQLLogger();
         $connection->rollBack();
         $this->kernel->shutdown();
@@ -193,5 +191,13 @@ abstract class TestCase extends BaseTestCase
         }
 
         $this->trackedQueries = [];
+    }
+
+    protected function getConnection(): Connection
+    {
+        /** @var Connection $connection */
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        return $connection;
     }
 }

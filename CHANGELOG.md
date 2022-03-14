@@ -80,6 +80,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1645901524` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when an invalid fallback pagination size is given
 - Add exception code `1645901525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` when the query will be paginated without order statement
 - Add query identifier parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct` that is added on query execution
+- Add exception code `1645901524` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` when an invalid safe fetch size is given
+- Add exception code `1645901525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` when the query will be paginated without order statement
 - Add factory `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` with configurable fallback pagination size for every builder
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::LOOKUP_QUERY` as `992a88ac-a232-4d99-b1cc-4165da81ba77` to identify a query used for looking up entity types
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor::LOOKUP_QUERY` as `28ef8980-146b-416c-8338-f1e394ac8c5f` to identify a query used for looking up job types
@@ -128,6 +130,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Rename `\Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist` and implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface`
 - Remove exception code `1637467903` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::overview` expect exception code `1645901521` instead
 - Remove exception code `1637467906` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind::find` expect exception code `1645901521` instead
+- Move exception code `1637467900` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::doIterate` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::getExecuteStatement` that is used as central point for this exception to happen
 
 ### Deprecated
 
