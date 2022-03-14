@@ -122,16 +122,19 @@ class JobGet implements JobGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', \array_map('hex2bin', $ids), Connection::PARAM_STR_ARRAY);
 
-        yield from $this->iterator->iterate($builder, fn (array $row): JobGetResult => new JobGetResult(
-            (string) $row['job_type_type'],
-            new JobStorageKey(\bin2hex((string) $row['job_id'])),
-            new MappingComponentStruct(
-                new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
-                (string) $row['job_entity_type'],
-                (string) $row['job_external_id']
-            ),
-            $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])
-        ));
+        return \iterable_map(
+            $this->iterator->iterate($builder),
+            fn (array $row): JobGetResult => new JobGetResult(
+                (string) $row['job_type_type'],
+                new JobStorageKey(\bin2hex((string) $row['job_id'])),
+                new MappingComponentStruct(
+                    new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
+                    (string) $row['job_entity_type'],
+                    (string) $row['job_external_id']
+                ),
+                $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])
+            )
+        );
     }
 
     private function unserializePayload($payload, string $format): ?array

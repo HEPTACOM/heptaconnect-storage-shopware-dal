@@ -125,13 +125,16 @@ class RouteGet implements RouteGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
 
-        yield from $this->iterator->iterate($builder, static fn (array $row): RouteGetResult => new RouteGetResult(
-            new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
-            /* @phpstan-ignore-next-line */
-            (string) $row['entity_type_name'],
-            \explode(',', (string) $row['capability_name'])
-        ));
+        return \iterable_map(
+            $this->iterator->iterate($builder),
+            static fn (array $row): RouteGetResult => new RouteGetResult(
+                new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+                /* @phpstan-ignore-next-line */
+                (string) $row['entity_type_name'],
+                \explode(',', (string) $row['capability_name'])
+            )
+        );
     }
 }
