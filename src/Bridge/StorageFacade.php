@@ -331,6 +331,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
     {
         return $this->queryFactory ??= new QueryFactory(
             $this->connection,
+            $this->getQueryIterator(),
             [],
             500
         );

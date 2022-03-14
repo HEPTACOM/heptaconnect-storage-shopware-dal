@@ -10,6 +10,8 @@ class QueryFactory
 {
     private Connection $connection;
 
+    private QueryIterator $queryIterator;
+
     /**
      * @var array<string, int>
      */
@@ -20,9 +22,14 @@ class QueryFactory
     /**
      * @param array<string, int> $fallbackPageSizes
      */
-    public function __construct(Connection $connection, array $fallbackPageSizes, int $fallbackPageSize)
-    {
+    public function __construct(
+        Connection $connection,
+        QueryIterator $queryIterator,
+        array $fallbackPageSizes,
+        int $fallbackPageSize
+    ) {
         $this->connection = $connection;
+        $this->queryIterator = $queryIterator;
         $this->fallbackPageSizes = $fallbackPageSizes;
         $this->fallbackPageSize = $fallbackPageSize;
     }
@@ -31,6 +38,7 @@ class QueryFactory
     {
         return new QueryBuilder(
             $this->connection,
+            $this->queryIterator,
             $identifier,
             $this->fallbackPageSizes[$identifier] ?? $this->fallbackPageSize
         );
