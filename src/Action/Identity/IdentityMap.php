@@ -234,7 +234,7 @@ class IdentityMap implements IdentityMapActionInterface
         foreach ($filtersByType as $typeId => $externalIds) {
             $builder->setParameter('typeId', \hex2bin($typeId), Types::BINARY);
             $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
-            $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
 
             yield from $builder->fetchAssocPaginated();
         }
