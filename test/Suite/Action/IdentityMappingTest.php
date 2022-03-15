@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Suite\Action;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\TestSuite\Storage\Action\IdentityMappingTestContract;
@@ -35,10 +33,7 @@ class IdentityMappingTest extends IdentityMappingTestContract
 {
     public function testNoDatabaseLookupsOnEmptyPayload(): void
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $reflector = new IdentityReflect($connection);
+        $reflector = $this->createStorageFacade()->getIdentityReflectAction();
         $reflector->reflect(new IdentityReflectPayload(new PortalNodeStorageKey(Uuid::randomHex()), new MappedDatasetEntityCollection()));
 
         static::assertSame([], $this->trackedQueries);
@@ -46,9 +41,6 @@ class IdentityMappingTest extends IdentityMappingTestContract
 
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        return new StorageFacade($connection);
+        return new StorageFacade($this->getConnection());
     }
 }

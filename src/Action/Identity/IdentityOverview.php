@@ -13,21 +13,21 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class IdentityOverview implements IdentityOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    private int $queryFallbackPageSize;
-
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(IdentityOverviewCriteria $criteria): iterable
@@ -127,7 +127,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
         }
 
         return \iterable_map(
-            $builder->fetchAssocPaginated($this->queryFallbackPageSize),
+            $builder->iterateRows(),
             static fn (array $row): IdentityOverviewResult => new IdentityOverviewResult(
                 new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['portal_node_id'])),
                 new MappingNodeStorageKey(Uuid::fromBytesToHex((string) $row['mapping_node_id'])),
@@ -153,7 +153,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

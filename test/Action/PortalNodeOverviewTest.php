@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
@@ -64,18 +65,16 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         static::assertCount(2, $action->overview($criteria));
     }
 
     public function testPagination(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria0 = new PortalNodeOverviewCriteria();
         $criteria0->setPageSize(1);
         $criteria0->setPage(0);
@@ -93,9 +92,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CREATED => PortalNodeOverviewCriteria::SORT_ASC,
@@ -111,9 +109,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CREATED => PortalNodeOverviewCriteria::SORT_DESC,
@@ -129,9 +126,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CLASS_NAME => PortalNodeOverviewCriteria::SORT_ASC,
@@ -156,9 +152,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CLASS_NAME => PortalNodeOverviewCriteria::SORT_DESC,
@@ -183,9 +178,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testFilterPortalNodeClass(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter([TestCase::class]);
 

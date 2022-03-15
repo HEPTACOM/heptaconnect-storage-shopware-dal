@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Find\PortalExtensionFindResult;
@@ -12,19 +11,19 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExt
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalExtensionFind implements PortalExtensionFindActionInterface
 {
-    private Connection $connection;
+    public const LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
 
     private ?QueryBuilder $queryBuilder = null;
 
-    private int $queryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function find(PortalNodeKeyInterface $portalNodeKey): PortalExtensionFindResult
@@ -37,7 +36,7 @@ class PortalExtensionFind implements PortalExtensionFindActionInterface
         $builder = $this->getQueryBuilder()->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
         $result = new PortalExtensionFindResult();
 
-        foreach ($builder->fetchAssocPaginated($this->queryFallbackPageSize) as $extension) {
+        foreach ($builder->iterateRows() as $extension) {
             $result->add((string) $extension['class_name'], (bool) $extension['active']);
         }
 
@@ -47,7 +46,7 @@ class PortalExtensionFind implements PortalExtensionFindActionInterface
     protected function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder instanceof QueryBuilder) {
-            $this->queryBuilder = new QueryBuilder($this->connection);
+            $this->queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
             $expr = $this->queryBuilder->expr();
 
             $this->queryBuilder

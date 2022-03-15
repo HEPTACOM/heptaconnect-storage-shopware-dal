@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
@@ -97,7 +98,8 @@ class JobDeleteTest extends TestCase
         static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
         static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
 
-        $action = new JobDelete($connection);
+        $facade = new StorageFacade($connection);
+        $action = $facade->getJobDeleteAction();
         $criteria = new JobDeleteCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $action->delete($criteria);
 

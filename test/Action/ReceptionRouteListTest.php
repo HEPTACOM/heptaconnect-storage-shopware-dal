@@ -8,15 +8,15 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -65,7 +65,8 @@ class ReceptionRouteListTest extends TestCase
             'route_capability_id' => Types::BINARY,
         ]);
 
-        $action = new ReceptionRouteList($connection, new QueryIterator());
+        $facade = new StorageFacade($connection);
+        $action = $facade->getReceptionRouteListAction();
         $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
@@ -104,7 +105,8 @@ class ReceptionRouteListTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new ReceptionRouteList($connection, new QueryIterator());
+        $facade = new StorageFacade($connection);
+        $action = $facade->getReceptionRouteListAction();
         $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);

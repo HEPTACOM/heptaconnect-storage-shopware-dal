@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
@@ -14,18 +11,21 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaExceptio
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteOverview implements RouteOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(RouteOverviewCriteria $criteria): iterable
@@ -78,14 +78,8 @@ class RouteOverview implements RouteOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467905);
-        }
-
         yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+            $builder->iterateRows(),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
                 /* @phpstan-ignore-next-line */
@@ -117,7 +111,7 @@ class RouteOverview implements RouteOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -149,7 +143,10 @@ class RouteOverview implements RouteOverviewActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id')
+                $builder->expr()->andX(
+                    $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id'),
+                    $builder->expr()->isNull('capability.deleted_at')
+                )
             )
             ->select([
                 'route.id id',
@@ -170,6 +167,10 @@ class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.class_name',
                 'route.created_at',
             ])
-            ->where($builder->expr()->isNull('route.deleted_at'));
+            ->where(
+                $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at')
+            );
     }
 }

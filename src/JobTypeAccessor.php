@@ -6,22 +6,24 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class JobTypeAccessor
 {
+    public const LOOKUP_QUERY = '28ef8980-146b-416c-8338-f1e394ac8c5f';
+
     private array $known = [];
 
     private Connection $connection;
 
-    private int $queryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     /**
@@ -35,7 +37,7 @@ class JobTypeAccessor
         $nonMatchingKeys = \array_diff($types, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $builder = new QueryBuilder($this->connection);
+            $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_job_type', 'job_type')
                 ->select([
@@ -48,7 +50,7 @@ class JobTypeAccessor
 
             $typeIds = [];
 
-            foreach ($builder->fetchAssocPaginated($this->queryFallbackPageSize) as $row) {
+            foreach ($builder->iterateRows() as $row) {
                 $typeIds[$row['type']] = \bin2hex($row['id']);
             }
 

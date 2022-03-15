@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
-use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
 use Doctrine\DBAL\Types\Type;
 
@@ -15,6 +15,24 @@ class QueryBuilder extends BaseQueryBuilder
     public const PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
     private bool $isForUpdate = false;
+
+    private QueryIterator $queryIterator;
+
+    private string $identifier;
+
+    private int $paginationPageSize;
+
+    public function __construct(
+        Connection $connection,
+        QueryIterator $queryIterator,
+        string $identifier,
+        int $paginationPageSize
+    ) {
+        parent::__construct($connection);
+        $this->queryIterator = $queryIterator;
+        $this->paginationPageSize = $paginationPageSize;
+        $this->identifier = $identifier;
+    }
 
     public function getIsForUpdate(): bool
     {
@@ -91,120 +109,35 @@ class QueryBuilder extends BaseQueryBuilder
                 break;
         }
 
-        return $result;
+        return ' # heptaconnect-query-id ' . $this->identifier . \PHP_EOL . $result;
+    }
+
+    public function fetchSingleValue(): ?string
+    {
+        return $this->queryIterator->fetchSingleValue($this);
     }
 
     /**
-     * @return mixed|null
+     * @return array<string, string|null>|null
      */
-    public function fetchAssocSingleValue()
+    public function fetchSingleRow(): ?array
     {
-        $oldLimit = $this->getMaxResults();
-        $oldOffset = $this->getFirstResult();
-
-        $this->setFirstResult(0);
-        $this->setMaxResults(2);
-
-        $rows = $this->fetchAssoc();
-
-        $this->setMaxResults($oldLimit);
-        $this->setFirstResult($oldOffset);
-
-        switch (\count($rows)) {
-            case 0:
-                return null;
-            case 1:
-                return \current(\current($rows));
-            default:
-                throw new \LogicException('Too many rows in result for a single value selection', 1645901522);
-        }
-    }
-
-    public function fetchAssocSingleRow(): ?array
-    {
-        $oldLimit = $this->getMaxResults();
-        $oldOffset = $this->getFirstResult();
-
-        $this->setFirstResult(0);
-        $this->setMaxResults(2);
-
-        $rows = $this->fetchAssoc();
-
-        $this->setMaxResults($oldLimit);
-        $this->setFirstResult($oldOffset);
-
-        switch (\count($rows)) {
-            case 0:
-                return null;
-            case 1:
-                return \current($rows);
-            default:
-                throw new \LogicException('Too many rows in result for a single row selection', 1645901523);
-        }
+        return $this->queryIterator->fetchSingleRow($this);
     }
 
     /**
-     * @return iterable<int, array>
+     * @return iterable<int, array<string, string|null>>
      */
-    public function fetchAssocPaginated(int $fallbackPageSize): iterable
+    public function iterateRows(): iterable
     {
-        $maxResults = $this->getMaxResults();
-
-        if (\is_int($maxResults)) {
-            return $this->fetchAssoc();
-        }
-
-        if ($fallbackPageSize < 1) {
-            throw new \LogicException('Fallback page size is too small', 1645901524);
-        }
-
-        if ($this->getQueryPart('orderBy') === []) {
-            throw new \LogicException('Pagination without order is not reliable', 1645901525);
-        }
-
-        return $this->fetchAllPages();
+        return $this->queryIterator->iterate($this, $this->paginationPageSize);
     }
 
     /**
-     * @return iterable<int, array>
+     * @return iterable<int, string|null>
      */
-    private function fetchAllPages(): iterable
+    public function iterateColumn(): iterable
     {
-        $oldLimit = $this->getMaxResults();
-        $oldOffset = $this->getFirstResult();
-        $rowId = 0;
-        $offset = 0;
-        $limit = 50;
-
-        $this->setMaxResults($limit);
-
-        do {
-            $this->setFirstResult($offset);
-
-            $rows = $this->fetchAssoc();
-
-            foreach ($rows as $row) {
-                yield $rowId++ => $row;
-            }
-
-            $offset += $limit;
-        } while ($rows !== []);
-
-        $this->setMaxResults($oldLimit);
-        $this->setFirstResult($oldOffset);
-    }
-
-    /**
-     * @return array<int, array>
-     */
-    private function fetchAssoc(): array
-    {
-        $statement = $this->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1645901521);
-        }
-
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->queryIterator->iterateColumn($this, $this->paginationPageSize);
     }
 }

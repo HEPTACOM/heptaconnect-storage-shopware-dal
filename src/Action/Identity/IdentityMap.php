@@ -21,34 +21,34 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class IdentityMap implements IdentityMapActionInterface
 {
+    public const MAPPING_NODE_QUERY = '0d104088-b0d4-4158-8f95-0bc8a6880cc8';
+
+    public const MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
+
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
     private EntityTypeAccessor $entityTypeAccessor;
 
     private Connection $connection;
 
-    private int $mappingNodeQueryFallbackPageSize;
-
-    private int $mappingQueryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityTypeAccessor $entityTypeAccessor,
         Connection $connection,
-        int $mappingNodeQueryFallbackPageSize,
-        int $mappingQueryFallbackPageSize
+        QueryFactory $queryFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->entityTypeAccessor = $entityTypeAccessor;
         $this->connection = $connection;
-        $this->mappingNodeQueryFallbackPageSize = $mappingNodeQueryFallbackPageSize;
-        $this->mappingQueryFallbackPageSize = $mappingQueryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function map(IdentityMapPayload $payload): IdentityMapResult
@@ -200,7 +200,7 @@ class IdentityMap implements IdentityMapActionInterface
 
     private function getMappingNodes(array $readMappingNodes, array $typeIds, string $portalNodeId): iterable
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::MAPPING_NODE_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
@@ -234,9 +234,9 @@ class IdentityMap implements IdentityMapActionInterface
         foreach ($filtersByType as $typeId => $externalIds) {
             $builder->setParameter('typeId', \hex2bin($typeId), Types::BINARY);
             $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
-            $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
 
-            yield from $builder->fetchAssocPaginated($this->mappingNodeQueryFallbackPageSize);
+            yield from $builder->iterateRows();
         }
     }
 
@@ -249,7 +249,7 @@ class IdentityMap implements IdentityMapActionInterface
             return [];
         }
 
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::MAPPING_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
@@ -277,6 +277,6 @@ class IdentityMap implements IdentityMapActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
-        return $builder->fetchAssocPaginated($this->mappingQueryFallbackPageSize);
+        return $builder->iterateRows();
     }
 }

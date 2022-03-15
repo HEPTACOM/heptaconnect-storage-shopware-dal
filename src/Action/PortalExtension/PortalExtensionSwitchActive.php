@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -21,7 +22,11 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private Connection $connection;
+    public const CLASS_NAME_LOOKUP_QUERY = 'a6bbbe3b-bf42-455d-824e-8c1aac4453b6';
+
+    public const ID_LOOKUP_QUERY = '2fc478d7-4f03-4a3d-a335-d6daf4244c27';
+
+    public const SWITCH_QUERY = '5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a';
 
     private ?QueryBuilder $selectByClassNameQueryBuilder = null;
 
@@ -29,19 +34,15 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
-    private int $classNameQueryFallbackPageSize;
+    private Connection $connection;
 
-    private int $idQueryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
-    public function __construct(
-        Connection $connection,
-        int $classNameQueryFallbackPageSize,
-        int $idQueryFallbackPageSize
-    ) {
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
+    {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->setLogger(new NullLogger());
-        $this->classNameQueryFallbackPageSize = $classNameQueryFallbackPageSize;
-        $this->idQueryFallbackPageSize = $idQueryFallbackPageSize;
     }
 
     abstract protected function getTargetActiveState(): int;
@@ -62,7 +63,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
             ->setParameter('extensionClassNames', $payloadExtensions, Connection::PARAM_STR_ARRAY)
-            ->fetchAssocPaginated($this->classNameQueryFallbackPageSize);
+            ->iterateRows();
 
         foreach ($existingExtensionRows as $existingExtension) {
             $className = $existingExtension['class_name'];
@@ -120,7 +121,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             } else {
                 $existingExtensions = $this->getSelectByIdQueryBuilder()
                     ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
-                    ->fetchAssocPaginated($this->idQueryFallbackPageSize);
+                    ->iterateRows();
 
                 foreach ($existingExtensions as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
@@ -136,7 +137,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
     protected function getSelectByClassNameQueryBuilder(): QueryBuilder
     {
         if (!$this->selectByClassNameQueryBuilder instanceof QueryBuilder) {
-            $this->selectByClassNameQueryBuilder = new QueryBuilder($this->connection);
+            $this->selectByClassNameQueryBuilder = $this->queryFactory->createBuilder(self::CLASS_NAME_LOOKUP_QUERY);
             $expr = $this->selectByClassNameQueryBuilder->expr();
 
             $this->selectByClassNameQueryBuilder
@@ -159,7 +160,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
     protected function getSelectByIdQueryBuilder(): QueryBuilder
     {
         if (!$this->selectByIdQueryBuilder instanceof QueryBuilder) {
-            $this->selectByIdQueryBuilder = new QueryBuilder($this->connection);
+            $this->selectByIdQueryBuilder = $this->queryFactory->createBuilder(self::ID_LOOKUP_QUERY);
             $expr = $this->selectByIdQueryBuilder->expr();
 
             $this->selectByIdQueryBuilder
@@ -179,7 +180,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
     protected function getUpdateQueryBuilder(): QueryBuilder
     {
         if (!$this->updateQueryBuilder instanceof QueryBuilder) {
-            $this->updateQueryBuilder = new QueryBuilder($this->connection);
+            $this->updateQueryBuilder = $this->queryFactory->createBuilder(self::SWITCH_QUERY);
             $expr = $this->updateQueryBuilder->expr();
 
             $this->updateQueryBuilder

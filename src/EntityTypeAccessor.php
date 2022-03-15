@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
@@ -15,16 +15,18 @@ class EntityTypeAccessor
 {
     public const ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
 
+    public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
+
     private array $entityTypeIds = [];
 
     private Connection $connection;
 
-    private int $queryFallbackPageSize;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     /**
@@ -79,7 +81,7 @@ class EntityTypeAccessor
 
     private function queryIdsForTypes(array $types): array
     {
-        $queryBuilder = new QueryBuilder($this->connection);
+        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([
@@ -92,7 +94,7 @@ class EntityTypeAccessor
 
         $result = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated($this->queryFallbackPageSize) as $row) {
+        foreach ($queryBuilder->iterateRows() as $row) {
             $result[$row['type_type']] = \bin2hex($row['type_id']);
         }
 

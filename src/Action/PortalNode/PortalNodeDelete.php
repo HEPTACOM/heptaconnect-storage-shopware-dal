@@ -11,22 +11,24 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 
 class PortalNodeDelete implements PortalNodeDeleteActionInterface
 {
+    public const DELETE_QUERY = '219156bb-0598-49df-8205-6d10e8f92a61';
+
+    public const LOOKUP_QUERY = 'aafca974-b95e-46ea-a680-834a93d13140';
+
     private ?QueryBuilder $deleteBuilder = null;
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    private int $queryFallbackPageSize;
-
-    public function __construct(Connection $connection, int $queryFallbackPageSize)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
+        $this->queryFactory = $queryFactory;
     }
 
     public function delete(PortalNodeDeleteCriteria $criteria): void
@@ -50,7 +52,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $idsCheck = \array_combine($ids, $ids);
 
-        foreach ($searchBuilder->fetchAssocPaginated($this->queryFallbackPageSize) as $row) {
+        foreach ($searchBuilder->iterateRows() as $row) {
             $id = \current($row);
             unset($idsCheck[$id]);
         }
@@ -73,7 +75,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
             return clone $builder;
         }
 
-        $this->deleteBuilder = $builder = new QueryBuilder($this->connection);
+        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
         $builder->update('heptaconnect_portal_node');
         $builder->set('deleted_at', ':now');
@@ -91,7 +93,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
             return clone $builder;
         }
 
-        $this->searchBuilder = $builder = new QueryBuilder($this->connection);
+        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->select('id');

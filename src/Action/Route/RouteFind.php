@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
@@ -13,17 +12,20 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteFind implements RouteFindActionInterface
 {
+    public const LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
@@ -46,7 +48,7 @@ class RouteFind implements RouteFindActionInterface
         $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
-        $id = $builder->fetchAssocSingleValue();
+        $id = $builder->fetchSingleValue();
 
         if (!\is_string($id)) {
             return null;
@@ -69,7 +71,7 @@ class RouteFind implements RouteFindActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -79,11 +81,25 @@ class RouteFind implements RouteFindActionInterface
                 'entity_type',
                 $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
+            )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
+            )
             ->select(['route.id id'])
             ->orderBy('route.id')
             ->setMaxResults(1)
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('route.target_id', ':target_key'),
                 $builder->expr()->eq('entity_type.type', ':type'),
