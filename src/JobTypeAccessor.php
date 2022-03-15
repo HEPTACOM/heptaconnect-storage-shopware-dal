@@ -50,7 +50,7 @@ class JobTypeAccessor
 
             $typeIds = [];
 
-            foreach ($builder->fetchAssocPaginated() as $row) {
+            foreach ($builder->iterateRows() as $row) {
                 $typeIds[$row['type']] = \bin2hex($row['id']);
             }
 

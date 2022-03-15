@@ -66,7 +66,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         }
 
         return \iterable_map(
-            $builder->fetchAssocPaginated(),
+            $builder->iterateRows(),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 /* @phpstan-ignore-next-line */

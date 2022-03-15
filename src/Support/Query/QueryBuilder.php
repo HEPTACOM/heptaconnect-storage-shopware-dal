@@ -112,37 +112,32 @@ class QueryBuilder extends BaseQueryBuilder
         return ' # heptaconnect-query-id ' . $this->identifier . \PHP_EOL . $result;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function fetchSingleValue()
+    public function fetchSingleValue(): ?string
     {
-        $oldLimit = $this->getMaxResults();
-        $oldOffset = $this->getFirstResult();
+        return $this->queryIterator->fetchSingleValue($this);
+    }
 
-        $this->setFirstResult(0);
-        $this->setMaxResults(2);
-
-        $rows = $this->queryIterator->fetchAssociateRows($this);
-
-        $this->setMaxResults($oldLimit);
-        $this->setFirstResult($oldOffset);
-
-        switch (\count($rows)) {
-            case 0:
-                return null;
-            case 1:
-                return \current(\current($rows));
-            default:
-                throw new \LogicException('Too many rows in result for a single value selection', 1645901522);
-        }
+    /**
+     * @return array<string, string|null>|null
+     */
+    public function fetchSingleRow(): ?array
+    {
+        return $this->queryIterator->fetchSingleRow($this);
     }
 
     /**
      * @return iterable<int, array<string, string|null>>
      */
-    public function fetchAssocPaginated(): iterable
+    public function iterateRows(): iterable
     {
         return $this->queryIterator->iterate($this, $this->paginationPageSize);
+    }
+
+    /**
+     * @return iterable<int, string|null>
+     */
+    public function iterateColumn(): iterable
+    {
+        return $this->queryIterator->iterateColumn($this, $this->paginationPageSize);
     }
 }

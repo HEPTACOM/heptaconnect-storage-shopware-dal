@@ -236,7 +236,7 @@ class IdentityMap implements IdentityMapActionInterface
             $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
             $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
 
-            yield from $builder->fetchAssocPaginated();
+            yield from $builder->iterateRows();
         }
     }
 
@@ -277,6 +277,6 @@ class IdentityMap implements IdentityMapActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
-        return $builder->fetchAssocPaginated();
+        return $builder->iterateRows();
     }
 }

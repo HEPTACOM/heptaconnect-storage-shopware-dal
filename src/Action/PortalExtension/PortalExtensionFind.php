@@ -36,7 +36,7 @@ class PortalExtensionFind implements PortalExtensionFindActionInterface
         $builder = $this->getQueryBuilder()->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
         $result = new PortalExtensionFindResult();
 
-        foreach ($builder->fetchAssocPaginated() as $extension) {
+        foreach ($builder->iterateRows() as $extension) {
             $result->add((string) $extension['class_name'], (bool) $extension['active']);
         }
 

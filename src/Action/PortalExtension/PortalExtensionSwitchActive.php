@@ -63,7 +63,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
             ->setParameter('extensionClassNames', $payloadExtensions, Connection::PARAM_STR_ARRAY)
-            ->fetchAssocPaginated();
+            ->iterateRows();
 
         foreach ($existingExtensionRows as $existingExtension) {
             $className = $existingExtension['class_name'];
@@ -121,7 +121,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             } else {
                 $existingExtensions = $this->getSelectByIdQueryBuilder()
                     ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
-                    ->fetchAssocPaginated();
+                    ->iterateRows();
 
                 foreach ($existingExtensions as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
