@@ -41,9 +41,6 @@ class IdentityMappingTest extends IdentityMappingTestContract
 
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        return new StorageFacade($connection);
+        return new StorageFacade($this->getConnection());
     }
 }
