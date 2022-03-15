@@ -219,7 +219,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeConfigurationGetAction(): PortalNodeConfigurationGetActionInterface
     {
-        return new PortalNodeConfigurationGet($this->connection);
+        return new PortalNodeConfigurationGet($this->getQueryFactory());
     }
 
     protected function createPortalNodeConfigurationSetAction(): PortalNodeConfigurationSetActionInterface
