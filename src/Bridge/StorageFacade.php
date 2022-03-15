@@ -128,7 +128,10 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createIdentityReflectAction(): IdentityReflectActionInterface
     {
-        return new IdentityReflect($this->connection);
+        return new IdentityReflect(
+            $this->connection,
+            $this->getQueryFactory()
+        );
     }
 
     protected function createJobCreateAction(): JobCreateActionInterface

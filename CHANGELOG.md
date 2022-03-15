@@ -63,9 +63,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643149117` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the delete-payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643149290` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the update-payload refers to an entry that is not present in storage
 - Add exception code `1643149291` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::persist` when the delete-payload refers to an entry that is not present in storage
-- Add exception code `1643746494` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::reflect` when query execution could not return a ResultStatement
 - Add exception code `1643746495` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::reflect` when writing to the database fails
-- Add exception code `1643746496` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::reflect` when query execution could not return a ResultStatement
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview` to list identities
 - Add exception code `1643877525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643877526` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a portal node with an invalid portal node key
@@ -115,6 +113,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` as `329b4aa3-e576-4930-b89f-c63dca05c16e` to identify a query used for loading an overview page for route capabilities
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::LOOKUP_QUERY` as `6c5db7b-004d-40c8-b9cc-53707aab658b` to identify a query used for looking up HTTP handler configurations
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_QUERY` as `64211df0-e928-4fc9-87c1-09a4c03cf98a` to identify a query used for looking up existing mappings
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_NODE_QUERY` as `f6b0f467-0a73-4e1f-ad75-d669899df133` to identify a query used for looking up existing mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::OVERVIEW_QUERY` as `478b14da-d0a8-44fd-bd1a-0a60ef948dd7` to identify a query used for loading an overview page for portal nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::FETCH_QUERY` as `be4a9934-2ab2-4c62-8a86-4600c96bc7be` to identify a query used for loading an overview page for portal nodes
 
