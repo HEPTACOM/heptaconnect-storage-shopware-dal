@@ -114,7 +114,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete::DELETE_QUERY` as `384f50ca-1e0a-464b-80fd-824fc83b87ca` to identify a query used for deleting routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind::LOOKUP_QUERY` as `1f0d7c11-0d1c-4834-8b15-148d826d64e8` to identify a query used for looking up routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet::FETCH_QUERY` as `24ab04cd-03f5-40c8-af25-715856281314` to identify a query used for reading route data
-- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for route
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` as `329b4aa3-e576-4930-b89f-c63dca05c16e` to identify a query used for loading an overview page for route capabilities
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::LOOKUP_QUERY` as `6c5db7b-004d-40c8-b9cc-53707aab658b` to identify a query used for looking up HTTP handler configurations
 
