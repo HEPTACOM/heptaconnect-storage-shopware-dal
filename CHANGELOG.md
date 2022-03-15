@@ -135,6 +135,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove exception code `1637467906` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind::find` expect exception code `1645901521` instead
 - Move exception code `1637467900` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::doIterate` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::getExecuteStatement` that is used as central point for this exception to happen
 - Remove exception code `1637467905` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview` expect exception code `1637467900` instead
+- Remove exception code `1637542091` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::find` expect exception code `1645901522` instead
 
 ### Deprecated
 
