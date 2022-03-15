@@ -85,6 +85,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::LOOKUP_QUERY` as `992a88ac-a232-4d99-b1cc-4165da81ba77` to identify a query used for looking up entity types
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor::LOOKUP_QUERY` as `28ef8980-146b-416c-8338-f1e394ac8c5f` to identify a query used for looking up job types
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor::FETCH_QUERY` as `93fd2b30-ca58-4d60-b29e-d14115b5ea2b` to identify a query used for reading route capability data
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor::FETCH_QUERY` as `900bdcb4-3a2a-4092-9eed-f5902e97b02f` to identify a query used for reading web HTTP handler data
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::MAPPING_NODE_QUERY` as `0d104088-b0d4-4158-8f95-0bc8a6880cc8` to identify a query used for loading related mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::MAPPING_QUERY` as `3c3f73e2-a95c-4ff3-89c5-c5f166195c24` to identify a query used for loading related mappings
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::OVERVIEW_QUERY` as `510bb5ac-4bcb-4ddf-927c-05971298bc55` to identify a query used for loading an overview page for identities
@@ -138,6 +139,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove exception code `1637467905` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview` expect exception code `1637467900` instead
 - Remove exception code `1637542091` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::find` expect exception code `1645901522` instead
 - Remove exception code `1637467901` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor::getIdsForNames` expect exception code `1637467900` instead
+- Remove exception code `1637467899` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor::getIdsForHandlers` expect exception code `1637467900` instead
 
 ### Deprecated
 

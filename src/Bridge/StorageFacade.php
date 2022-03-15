@@ -326,6 +326,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
     {
         return $this->webHttpHandlerAccessor ??= new WebHttpHandlerAccessor(
             $this->connection,
+            $this->getQueryFactory(),
             $this->getWebHttpHandlerPathIdResolver()
         );
     }

@@ -5,21 +5,28 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class WebHttpHandlerAccessor
 {
+    public const FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
+
     private Connection $connection;
+
+    private QueryFactory $queryFactory;
 
     private WebHttpHandlerPathIdResolver $pathIdResolver;
 
-    public function __construct(Connection $connection, WebHttpHandlerPathIdResolver $pathIdResolver)
-    {
+    public function __construct(
+        Connection $connection,
+        QueryFactory $queryFactory,
+        WebHttpHandlerPathIdResolver $pathIdResolver
+    ) {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->pathIdResolver = $pathIdResolver;
     }
 
@@ -33,7 +40,7 @@ class WebHttpHandlerAccessor
             return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
         $builder
             ->from('heptaconnect_web_http_handler', 'handler')
             ->select([
@@ -71,20 +78,11 @@ class WebHttpHandlerAccessor
                 ];
             }
 
-            $statement = $b->execute();
+            /** @var array{id: string, match_key: string} $row */
+            foreach ($b->iterateRows() as $row) {
+                $result[$keyIndex[$row['match_key']]] = \bin2hex($row['id']);
 
-            if (!$statement instanceof Statement) {
-                throw new \LogicException('$b->execute() should have returned a Statement', 1637467899);
-            }
-
-            /** @var array<int, string[]> $rows */
-            $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
-            $keyedRows = \array_column($rows, 'id', 'match_key');
-
-            foreach ($keyedRows as $match => $foundId) {
-                $result[$keyIndex[$match]] = \bin2hex($foundId);
-
-                unset($inserts[$match]);
+                unset($inserts[$row['match_key']]);
             }
         }
 
