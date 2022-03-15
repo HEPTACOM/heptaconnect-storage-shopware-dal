@@ -85,10 +85,13 @@ class PortalNodeGet implements PortalNodeGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
 
-        return $this->iterator->iterate($builder, static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            /* @phpstan-ignore-next-line */
-            (string) $row['portal_node_class_name']
-        ));
+        return \iterable_map(
+            $this->iterator->iterate($builder),
+            static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
+                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                /* @phpstan-ignore-next-line */
+                (string) $row['portal_node_class_name']
+            )
+        );
     }
 }

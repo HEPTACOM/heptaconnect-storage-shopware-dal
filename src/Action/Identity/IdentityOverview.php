@@ -127,7 +127,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
         }
 
         return \iterable_map(
-            $builder->fetchAssocPaginated(),
+            $builder->iterateRows(),
             static fn (array $row): IdentityOverviewResult => new IdentityOverviewResult(
                 new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['portal_node_id'])),
                 new MappingNodeStorageKey(Uuid::fromBytesToHex((string) $row['mapping_node_id'])),

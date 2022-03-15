@@ -88,9 +88,8 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $keysToUpdate = \array_fill_keys($keysToCheck, false);
 
                 $fetchBuilder->setIsForUpdate(true);
-                foreach ($fetchBuilder->fetchAssocPaginated() as $row) {
-                    $storageKey = (string) $row['storage_key'];
 
+                foreach ($fetchBuilder->iterateColumn() as $storageKey) {
                     $keysToUpdate[$storageKey] = true;
                 }
 

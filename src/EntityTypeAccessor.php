@@ -94,7 +94,7 @@ class EntityTypeAccessor
 
         $result = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
+        foreach ($queryBuilder->iterateRows() as $row) {
             $result[$row['type_type']] = \bin2hex($row['type_id']);
         }
 

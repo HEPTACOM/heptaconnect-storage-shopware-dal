@@ -27,6 +27,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -84,7 +85,7 @@ class IdentityPersistTest extends TestCase
         $this->identityPersistAction = $facade->getIdentityPersistAction();
         $storageKeyGenerator = new StorageKeyGenerator();
         $contextFactory = new ContextFactory();
-        $queryFactory = new QueryFactory($connection, [], 500);
+        $queryFactory = new QueryFactory($connection, new QueryIterator(), [], 500);
         $datasetEntityTypeAccessor = new EntityTypeAccessor($connection, $queryFactory);
         $this->mappingNodeRepository = new MappingNodeRepository(
             $storageKeyGenerator,

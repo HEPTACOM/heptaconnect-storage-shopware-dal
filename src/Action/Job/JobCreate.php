@@ -214,7 +214,7 @@ class JobCreate implements JobCreateActionInterface
 
         $rows = [];
 
-        foreach ($builder->fetchAssocPaginated() as $row) {
+        foreach ($builder->iterateRows() as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
 

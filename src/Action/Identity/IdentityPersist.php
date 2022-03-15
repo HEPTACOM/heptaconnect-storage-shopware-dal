@@ -206,7 +206,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
 
-        foreach ($builder->fetchAssocPaginated() as $mapping) {
+        foreach ($builder->iterateRows() as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
             $externalId = $mappingNodes[$mappingNodeId] ?? null;
@@ -276,7 +276,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
 
-        foreach ($builder->fetchAssocPaginated() as $mapping) {
+        foreach ($builder->iterateRows() as $mapping) {
             $mappingId = \bin2hex($mapping['mapping_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
 
@@ -358,7 +358,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $mappingNodesToMerge = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
+        foreach ($queryBuilder->iterateRows() as $row) {
             $intoMappingNodeId = \bin2hex($row['mappingNodeId']);
             $externalId = $row['externalId'];
             $typeId = \bin2hex($row['typeId']);
@@ -426,7 +426,7 @@ class IdentityPersist implements IdentityPersistActionInterface
 
         $types = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
+        foreach ($queryBuilder->iterateRows() as $row) {
             $types[\bin2hex($row['mappingNodeId'])] = \bin2hex($row['typeId']);
         }
 

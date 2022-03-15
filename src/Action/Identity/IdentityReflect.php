@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
@@ -16,16 +14,25 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class IdentityReflect implements IdentityReflectActionInterface
 {
+    public const LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
+
+    public const LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
+
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function reflect(IdentityReflectPayload $payload): void
@@ -115,13 +122,8 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643746494);
-        }
-
-        foreach ($statement->fetchAllAssociative() as $mapping) {
+        /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string} $mapping */
+        foreach ($builder->iterateRows() as $mapping) {
             $portalNodeId = \bin2hex($mapping['portal_node_id']);
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
@@ -159,13 +161,8 @@ class IdentityReflect implements IdentityReflectActionInterface
         $builder->setParameter('portalNodeId', \hex2bin($targetPortalNodeId), Type::BINARY);
         $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643746496);
-        }
-
-        foreach ($statement->fetchAllAssociative() as $mapping) {
+        /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
+        foreach ($builder->iterateRows() as $mapping) {
             $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
             $reflectionMapping = null;
@@ -224,7 +221,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
     private function getSearchExistingMappingsQueryBuilder(): QueryBuilder
     {
-        $result = $this->connection->createQueryBuilder();
+        $result = $this->queryFactory->createBuilder(self::LOOKUP_EXISTING_MAPPING_QUERY);
 
         $result->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -244,6 +241,7 @@ class IdentityReflect implements IdentityReflectActionInterface
                 'mapping_node.id mapping_node_id',
                 'mapping.external_id mapping_external_id',
             ])
+            ->addOrderBy('mapping.id')
             ->andWhere($result->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping.deleted_at'));
@@ -253,7 +251,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
     private function getSearchExistingMappingNodesQueryBuilder(): QueryBuilder
     {
-        $result = $this->connection->createQueryBuilder();
+        $result = $this->queryFactory->createBuilder(self::LOOKUP_EXISTING_MAPPING_NODE_QUERY);
 
         $result->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -278,6 +276,7 @@ class IdentityReflect implements IdentityReflectActionInterface
                 'mapping_node.id mapping_node_id',
                 'mapping.external_id mapping_external_id',
             ])
+            ->addOrderBy('mapping.id')
             ->andWhere($result->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping.deleted_at'));

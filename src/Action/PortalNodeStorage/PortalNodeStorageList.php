@@ -64,7 +64,7 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
             ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
 
         return \iterable_map(
-            $fetchBuilder->fetchAssocPaginated(),
+            $fetchBuilder->iterateRows(),
             static fn (array $row): PortalNodeStorageListResult => new PortalNodeStorageListResult(
                 new PortalNodeStorageKey(\bin2hex((string) $row['storage_value'])),
                 (string) $row['storage_key'],
