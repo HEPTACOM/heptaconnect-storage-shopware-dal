@@ -36,7 +36,6 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate`
 - Add exception code `1640048751` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` when the key generator cannot generate a valid portal node key
 - Add exception code `1640405544` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` when the criteria has an invalid sorting option
-- Add exception code `1640405545` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` when query execution could not return a ResultStatement
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1640360050CreatePortalExtensionConfigurationTable` to add table for portal extension activity state
 - Add base class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive` to simplify implementations of `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` and `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface`
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate`
@@ -117,6 +116,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` as `329b4aa3-e576-4930-b89f-c63dca05c16e` to identify a query used for loading an overview page for route capabilities
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::LOOKUP_QUERY` as `6c5db7b-004d-40c8-b9cc-53707aab658b` to identify a query used for looking up HTTP handler configurations
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::OVERVIEW_QUERY` as `478b14da-d0a8-44fd-bd1a-0a60ef948dd7` to identify a query used for loading an overview page for portal nodes
 
 ### Changed
 
