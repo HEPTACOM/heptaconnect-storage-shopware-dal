@@ -73,12 +73,15 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643877526` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a portal node with an invalid portal node key
 - Add exception code `1643877527` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the criteria has an invalid sorting option
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
-- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssocPaginated` to always paginate even when no max result is given with the fallback pagination size parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct`
 - Add exception code `1645901521` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchAssoc` when query execution could not return a ResultStatement
-- Add exception code `1645901522` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::fetchSingleValue` when more than 1 row can be fetched from a query that expects only a single row
 - Add query identifier parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct` that is added on query execution
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::fetchRow` to fetch a row keyed by column names
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::fetchColumn` to fetch a row and return its' first value
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::fetchSingleRow` to fetch a row keyed by column names and verify it is exactly a single row
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` to always paginate over rows keyed by column names even when no max result is given with the given safe pagination size parameter
 - Add exception code `1645901524` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` when an invalid safe fetch size is given
 - Add exception code `1645901525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` when the query will be paginated without order statement
+- Add exception code `1645901522` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::fetchSingleRow` when more than 1 row can be fetched from a query that expects only a single row
 - Add factory `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` with configurable fallback pagination size for every builder
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor::LOOKUP_QUERY` as `992a88ac-a232-4d99-b1cc-4165da81ba77` to identify a query used for looking up entity types
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor::LOOKUP_QUERY` as `28ef8980-146b-416c-8338-f1e394ac8c5f` to identify a query used for looking up job types

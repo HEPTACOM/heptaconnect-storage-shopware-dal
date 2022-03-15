@@ -93,4 +93,25 @@ final class QueryIteratorTest extends TestCase
         static::assertSame(\array_map('strval', \range(12, 19)), $rows);
         static::assertCount(2, $this->trackedQueries);
     }
+
+    public function testSingleRowDetectsTooManyResults(): void
+    {
+        $connection = $this->getConnection();
+        $builder = $connection->createQueryBuilder();
+        $builder->from('storage_test_iterator');
+        $builder->select(['id']);
+        $builder->andWhere($builder->expr()->in('id', ':id1, :id2'));
+        $builder->setParameter('id1', 1);
+        $builder->setParameter('id2', 2);
+        $builder->addOrderBy('id');
+
+        $iterator = new QueryIterator();
+
+        try {
+            $iterator->fetchSingleValue($builder);
+            static::fail();
+        } catch (\LogicException $exception) {
+            static::assertStringContainsStringIgnoringCase('too', $exception->getMessage());
+        }
+    }
 }

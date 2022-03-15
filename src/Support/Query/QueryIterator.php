@@ -16,7 +16,7 @@ class QueryIterator
     {
         return $this->iterateSafelyPaginated(
             $query,
-            \Closure::fromCallable([$this, 'fetchAssociateRows']),
+            \Closure::fromCallable([$this, 'fetchRows']),
             $pageSize,
         );
     }
@@ -36,14 +36,61 @@ class QueryIterator
     /**
      * @return array<int, array<string, string|null>>
      */
-    public function fetchAssociateRows(QueryBuilder $query): array
+    public function fetchRows(QueryBuilder $query): array
     {
         return $this->getExecuteStatement($query)->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function fetchSingleValue(QueryBuilder $query): ?string
+    /**
+     * @return array<string, string|null>|null
+     */
+    public function fetchRow(QueryBuilder $query): ?array
+    {
+        return $this->getExecuteStatement($query)->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function fetchColumn(QueryBuilder $query): ?string
     {
         return $this->getExecuteStatement($query)->fetchColumn() ?: null;
+    }
+
+    public function fetchSingleValue(QueryBuilder $query): ?string
+    {
+        $row = $this->fetchSingleRow($query);
+
+        if (\is_array($row)) {
+            return \current($row);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, string|null>|null
+     */
+    public function fetchSingleRow(QueryBuilder $query): ?array
+    {
+        $oldLimit = $query->getMaxResults();
+        $oldOffset = $query->getFirstResult();
+
+        $query->setFirstResult(0);
+        $query->setMaxResults(2);
+
+        try {
+            $rows = $this->fetchRows($query);
+        } finally {
+            $query->setMaxResults($oldLimit);
+            $query->setFirstResult($oldOffset);
+        }
+
+        switch (\count($rows)) {
+            case 0:
+                return null;
+            case 1:
+                return \current($rows);
+            default:
+                throw new \LogicException('Too many rows in result for a single value selection', 1645901522);
+        }
     }
 
     /**
