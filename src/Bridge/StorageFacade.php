@@ -301,7 +301,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private function getRouteCapabilityAccessor(): RouteCapabilityAccessor
     {
-        return $this->routeCapabilityAccessor ??= new RouteCapabilityAccessor($this->connection);
+        return $this->routeCapabilityAccessor ??= new RouteCapabilityAccessor($this->getQueryFactory());
     }
 
     private function getJobTypeAccessor(): JobTypeAccessor
