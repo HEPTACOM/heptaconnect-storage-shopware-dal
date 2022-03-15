@@ -142,6 +142,9 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove exception code `1637467901` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor::getIdsForNames` expect exception code `1637467900` instead
 - Remove exception code `1637467899` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor::getIdsForHandlers` expect exception code `1637467900` instead
 - Remove exception code `1637467898` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor::getIdsForPaths` expect exception code `1637467900` instead
+- Change dependency in `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor` from `\Doctrine\DBAL\Connection` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory`
+- Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor`
+- Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor`
 
 ### Deprecated
 
