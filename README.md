@@ -12,6 +12,11 @@ Read more in the [documentation](https://heptaconnect.io/).
 * PHP 7.4 or above
 
 
+## Changelog
+
+See the attached [CHANGELOG.md](./CHANGELOG.md) file for a complete version history and release notes.
+
+
 ## Additional development requirements
 
 * Make
@@ -33,7 +38,7 @@ Thank you for considering contributing to this package! Be sure to sign the [CLA
 
 ### Check your changes
 
-1. Check and fix code style `make csfix && make cs`
+1. Check and fix code style `make cs-fix && make cs`
 2. Check tests `make test`
 3. Check whether test code coverage is same or higher `make coverage`
 4. Check whether tests can find future obscurities `make infection`

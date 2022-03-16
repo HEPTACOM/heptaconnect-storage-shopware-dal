@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Repository;
@@ -69,36 +70,6 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         return $item;
     }
 
-    public function listByTypeAndPortalNodeAndExternalId(
-        string $entityType,
-        PortalNodeKeyInterface $portalNodeKey,
-        string $externalId
-    ): iterable {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $criteria = (new Criteria())
-            ->setLimit(1)
-            ->addFilter(
-                new EqualsFilter('deletedAt', null),
-                new EqualsFilter('type.type', $entityType),
-                new EqualsFilter('mappings.deletedAt', null),
-                new EqualsFilter('mappings.externalId', $externalId),
-                new EqualsFilter('mappings.portalNode.deletedAt', null),
-                new EqualsFilter('mappings.portalNode.id', $portalNodeKey->getUuid()),
-            );
-
-        // TODO: Do not use iterator. We only expect one result.
-        $iterator = new RepositoryIterator($this->mappingNodes, $this->contextFactory->create(), $criteria);
-
-        while (!\is_null($ids = $iterator->fetchIds())) {
-            foreach ($ids as $id) {
-                yield new MappingNodeStorageKey($id);
-            }
-        }
-    }
-
     public function listByTypeAndPortalNodeAndExternalIds(
         string $entityType,
         PortalNodeKeyInterface $portalNodeKey,
@@ -133,32 +104,6 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
     }
 
-    public function create(
-        string $entityType,
-        PortalNodeKeyInterface $portalNodeKey
-    ): MappingNodeKeyInterface {
-        if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-        }
-
-        $mappingId = $this->storageKeyGenerator->generateKey(MappingNodeKeyInterface::class);
-
-        if (!$mappingId instanceof MappingNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($mappingId));
-        }
-
-        $context = $this->contextFactory->create();
-        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
-
-        $this->mappingNodes->create([[
-            'id' => $mappingId->getUuid(),
-            'originPortalNodeId' => $portalNodeKey->getUuid(),
-            'typeId' => $typeIds[$entityType],
-        ]], $context);
-
-        return $mappingId;
-    }
-
     public function createList(
         string $entityType,
         PortalNodeKeyInterface $portalNodeKey,
@@ -174,8 +119,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
             throw new UnsupportedStorageKeyException(MappingNodeKeyInterface::class);
         }
 
-        $context = $this->contextFactory->create();
-        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType], $context);
+        $typeIds = $this->entityTypeAccessor->getIdsForTypes([$entityType]);
         $payload = [];
 
         /** @var MappingNodeKeyInterface $key */
@@ -192,7 +136,7 @@ class MappingNodeRepository extends MappingNodeRepositoryContract
         }
 
         if ($payload !== []) {
-            $this->mappingNodes->create($payload, $context);
+            $this->mappingNodes->create($payload, $this->contextFactory->create());
         }
 
         return $result;

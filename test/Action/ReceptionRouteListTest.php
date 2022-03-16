@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -31,6 +32,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -78,6 +80,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'configuration' => '{}',
             'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,

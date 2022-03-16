@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
@@ -75,7 +76,7 @@ class PortalStorage extends PortalStorageContract
         $searchResult = $this->portalNodeStorages->searchIds($criteria, $context);
         $storageId = $searchResult->firstId();
 
-        if (\is_null($storageId)) {
+        if ($storageId === null) {
             return;
         }
 
@@ -182,7 +183,8 @@ class PortalStorage extends PortalStorageContract
 
         $context = $this->contextFactory->create();
         $criteria = new Criteria();
-        $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
+        $criteria->addFilter(
+            new MultiFilter(MULTIFILTER::CONNECTION_AND, [
                 new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
                 new EqualsAnyFilter('key', $keys),
             ])
@@ -208,7 +210,8 @@ class PortalStorage extends PortalStorageContract
         }
         $context = $this->contextFactory->create();
         $criteria = new Criteria();
-        $criteria->addFilter(new MultiFilter(MULTIFILTER::CONNECTION_AND, [
+        $criteria->addFilter(
+            new MultiFilter(MULTIFILTER::CONNECTION_AND, [
                 new EqualsFilter('portalNodeId', $portalNodeKey->getUuid()),
                 new EqualsAnyFilter('key', $keys),
             ])

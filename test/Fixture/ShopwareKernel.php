@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture;
@@ -14,7 +15,7 @@ class ShopwareKernel extends Kernel
     public function __construct()
     {
         /** @var \Composer\Autoload\ClassLoader $classLoader */
-        $classLoader = require __DIR__.'/../../vendor/autoload.php';
+        $classLoader = require __DIR__ . '/../../vendor/autoload.php';
 
         parent::__construct(
             'prod',
@@ -23,7 +24,7 @@ class ShopwareKernel extends Kernel
             'prod',
             self::SHOPWARE_FALLBACK_VERSION,
             null,
-            __DIR__.'/ShopwareProject'
+            __DIR__ . '/ShopwareProject'
         );
     }
 
@@ -31,7 +32,7 @@ class ShopwareKernel extends Kernel
     {
         return \sprintf(
             '%s/var/cache/%s_h%s',
-            __DIR__.'/../../.build/ShopwareProject',
+            __DIR__ . '/../../.build/ShopwareProject',
             $this->getEnvironment(),
             $this->getCacheHash()
         );
@@ -39,7 +40,7 @@ class ShopwareKernel extends Kernel
 
     public function getLogDir(): string
     {
-        return __DIR__.'/../../.build/ShopwareProject/var/log';
+        return __DIR__ . '/../../.build/ShopwareProject/var/log';
     }
 
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
@@ -53,7 +54,7 @@ class ShopwareKernel extends Kernel
         ]);
     }
 
-    protected function build(ContainerBuilder $container)
+    protected function build(ContainerBuilder $container): void
     {
         parent::build($container);
         $container->getDefinition(CachedLanguageLoader::class)->setPublic(true);

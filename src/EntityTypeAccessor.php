@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Ramsey\Uuid\Uuid;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Defaults;
 
 class EntityTypeAccessor
 {
@@ -16,29 +17,26 @@ class EntityTypeAccessor
 
     private array $entityTypeIds = [];
 
-    private EntityRepositoryInterface $entityTypes;
+    private Connection $connection;
 
-    public function __construct(EntityRepositoryInterface $entityTypes)
+    public function __construct(Connection $connection)
     {
-        $this->entityTypes = $entityTypes;
+        $this->connection = $connection;
     }
 
     /**
      * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $entityTypes
      * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
      */
-    public function getIdsForTypes(array $entityTypes, Context $context): array
+    public function getIdsForTypes(array $entityTypes): array
     {
         $entityTypes = \array_unique($entityTypes);
         $knownKeys = \array_keys($this->entityTypeIds);
         $nonMatchingKeys = \array_diff($entityTypes, $knownKeys);
+        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
         if ($nonMatchingKeys !== []) {
-            $criteria = new Criteria();
-            $criteria->addFilter(new EqualsAnyFilter('type', $nonMatchingKeys));
-            /** @var EntityTypeCollection $datasetTypeEntities */
-            $datasetTypeEntities = $this->entityTypes->search($criteria, $context)->getEntities();
-            $typeIds = $datasetTypeEntities->groupByType();
+            $typeIds = $this->queryIdsForTypes($nonMatchingKeys);
             $inserts = [];
 
             foreach ($nonMatchingKeys as $nonMatchingKey) {
@@ -48,19 +46,55 @@ class EntityTypeAccessor
                     continue;
                 }
 
-                $id = (string) Uuid::uuid5(self::ENTITY_TYPE_ID_NS, $nonMatchingKey)->getHex();
+                $id = Uuid::uuid5(self::ENTITY_TYPE_ID_NS, $nonMatchingKey)->getBytes();
                 $inserts[] = [
                     'id' => $id,
                     'type' => $nonMatchingKey,
+                    'created_at' => $now,
                 ];
-                $this->entityTypeIds[$nonMatchingKey] = $id;
+                $this->entityTypeIds[$nonMatchingKey] = \bin2hex($id);
             }
 
             if ($inserts !== []) {
-                $this->entityTypes->create($inserts, $context);
+                try {
+                    $this->connection->transactional(function () use ($inserts): void {
+                        // TODO batch
+                        foreach ($inserts as $insert) {
+                            $this->connection->insert('heptaconnect_entity_type', $insert, [
+                                'id' => Types::BINARY,
+                            ]);
+                        }
+                    });
+                } catch (\Throwable $throwable) {
+                    throw new CreateException(1642940744, $throwable);
+                }
             }
         }
 
         return \array_intersect_key($this->entityTypeIds, \array_fill_keys($entityTypes, true));
+    }
+
+    private function queryIdsForTypes(array $types): array
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+
+        $queryBuilder->from('heptaconnect_entity_type', 'type')
+            ->select([
+                'type.id type_id',
+                'type.type type_type',
+            ])
+            ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
+            ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
+
+        $statement = $queryBuilder->execute();
+
+        if (!$statement instanceof ResultStatement) {
+            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642940743);
+        }
+
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $result = \array_column($rows, 'type_id', 'type_type');
+
+        return \array_map('bin2hex', $result);
     }
 }

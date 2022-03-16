@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
@@ -6,8 +7,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
@@ -16,7 +17,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -29,11 +29,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class JobCreateTest extends TestCase
 {
-    protected bool $setupQueryTracking = false;
-
     public function testCreate(): void
     {
         $source = Uuid::randomBytes();
@@ -49,16 +48,13 @@ class JobCreateTest extends TestCase
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
+            'configuration' => '{}',
             'class_name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Uuid::fromBytesToHex($source);
-
-        /** @var EntityRepositoryInterface $entityTypes */
-        $entityTypes = $this->kernel->getContainer()->get('heptaconnect_entity_type.repository');
-
-        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($entityTypes));
+        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($connection));
         $action->create(new JobCreatePayloads([
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
                 'party' => 'people',
@@ -70,8 +66,8 @@ class JobCreateTest extends TestCase
         ]));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job`')->fetchColumn();
-        self::assertSame(3, $count);
+        static::assertSame(3, $count);
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job_payload`')->fetchColumn();
-        self::assertSame(1, $count);
+        static::assertSame(1, $count);
     }
 }

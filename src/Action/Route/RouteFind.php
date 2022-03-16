@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
@@ -6,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\ParameterType;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
@@ -34,7 +35,7 @@ class RouteFind implements RouteFindActionInterface
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
         }
 
-        $targetKey = $criteria->getSource();
+        $targetKey = $criteria->getTarget();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($targetKey));
@@ -85,10 +86,24 @@ class RouteFind implements RouteFindActionInterface
                 'entity_type',
                 $builder->expr()->eq('entity_type.id', 'route.type_id')
             )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
+            )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
+            )
             ->select(['route.id id'])
             ->setMaxResults(1)
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('route.target_id', ':target_key'),
                 $builder->expr()->eq('entity_type.type', ':type'),

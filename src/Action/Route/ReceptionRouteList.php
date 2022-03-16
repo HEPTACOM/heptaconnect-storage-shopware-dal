@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\Listing\ReceptionRouteListResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListResult;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -76,6 +77,18 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
             )
             ->innerJoin(
                 'route',
+                'heptaconnect_portal_node',
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
+            )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
+            )
+            ->innerJoin(
+                'route',
                 'heptaconnect_route_has_capability',
                 'route_has_capability',
                 $builder->expr()->eq('route_has_capability.route_id', 'route.id')
@@ -84,11 +97,16 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id')
+                $builder->expr()->andX(
+                    $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id'),
+                    $builder->expr()->isNull('capability.deleted_at')
+                )
             )
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('entity_type.type', ':type'),
                 $builder->expr()->eq('capability.name', ':capability')

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
@@ -7,11 +8,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreatePayloads;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateResult;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\Create\JobCreateResults;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResults;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
@@ -25,7 +26,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 
 class JobCreate implements JobCreateActionInterface
 {
@@ -78,11 +78,11 @@ class JobCreate implements JobCreateActionInterface
         }
 
         $jobTypeIds = $this->jobTypes->getIdsForTypes($jobTypes);
-        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes, Context::createDefaultContext());
+        $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes);
 
         foreach ($jobTypes as $jobType) {
             if (!\array_key_exists($jobType, $jobTypeIds)) {
-                /** @var JobCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getJobType() === $jobType) {
                         throw new InvalidCreatePayloadException($payload, 1639268731);
@@ -93,7 +93,7 @@ class JobCreate implements JobCreateActionInterface
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
-                /** @var JobCreatePayload $payload */
+                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getMapping()->getEntityType() === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1639268732);
@@ -105,7 +105,7 @@ class JobCreate implements JobCreateActionInterface
         $jobPayloadChecksumIds = $this->getPayloadIds(\array_column($jobPayloads, 'checksum'));
         $result = new JobCreateResults();
 
-        $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds) {
+        $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds): void {
             $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
             $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
             $jobInserts = [];
@@ -189,6 +189,7 @@ class JobCreate implements JobCreateActionInterface
 
     /**
      * @param string[] $checksums
+     *
      * @return array<string, string>
      */
     private function getPayloadIds(array $checksums): array
