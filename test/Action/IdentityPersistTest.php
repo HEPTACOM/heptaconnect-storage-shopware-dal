@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
@@ -67,17 +66,16 @@ class IdentityPersistTest extends TestCase
 
     private StorageKeyGenerator $storageKeyGenerator;
 
-    private Connection $connection;
+    private EntityTypeAccessor $datasetEntityTypeAccessor;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->connection = $this->kernel->getContainer()->get(Connection::class);
-        $facade = new StorageFacade($this->connection);
+        $facade = new StorageFacade($this->getConnection());
         $this->identityPersistAction = $facade->getIdentityPersistAction();
         $this->storageKeyGenerator = new StorageKeyGenerator();
-        $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->connection, 500);
+        $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->getConnection(), new QueryFactory($this->getConnection(), new QueryIterator(), [], 500));
         $this->portalNodeCreateAction = $facade->getPortalNodeCreateAction();
         $this->identityOverviewAction = $facade->getIdentityOverviewAction();
     }
@@ -405,7 +403,7 @@ class IdentityPersistTest extends TestCase
             throw new UnsupportedStorageKeyException(\get_class($result));
         }
 
-        $this->connection->insert('heptaconnect_mapping_node', [
+        $this->getConnection()->insert('heptaconnect_mapping_node', [
             'id' => \hex2bin($result->getUuid()),
             'origin_portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
             'type_id' => \hex2bin($typeIds[$entityType]),
@@ -430,7 +428,7 @@ class IdentityPersistTest extends TestCase
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $this->connection->insert('heptaconnect_mapping', [
+        $this->getConnection()->insert('heptaconnect_mapping', [
             'id' => \hex2bin($key->getUuid()),
             'mapping_node_id' => \hex2bin($mappingNodeKey->getUuid()),
             'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),

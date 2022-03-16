@@ -19,24 +19,27 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 
 class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
+    public const LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
+
     private Connection $connection;
+
+    private QueryFactory $queryFactory;
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
-    private int $queryFallbackPageSize;
-
     public function __construct(
         Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        int $queryFallbackPageSize
+        QueryFactory $queryFactory,
+        StorageKeyGeneratorContract $storageKeyGenerator
     ) {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->queryFallbackPageSize = $queryFallbackPageSize;
     }
 
     public function create(IdentityErrorCreatePayloads $payloads): IdentityErrorCreateResults
@@ -175,11 +178,12 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 $builder->setParameter('entityType', $entityType);
                 $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
 
-                foreach ($builder->fetchAssocPaginated($this->queryFallbackPageSize) as $match) {
-                    $matchPortalNodeId = \bin2hex((string) $match['portal_node_id']);
-                    $matchMappingNodeId = \bin2hex((string) $match['mapping_node_id']);
-                    $matchExternalId = (string) $match['mapping_external_id'];
-                    $matchEntityType = (string) $match['entity_type_type'];
+                /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string, mapping_node_id: string} $match */
+                foreach ($builder->iterateRows() as $match) {
+                    $matchPortalNodeId = \bin2hex($match['portal_node_id']);
+                    $matchMappingNodeId = \bin2hex($match['mapping_node_id']);
+                    $matchExternalId = $match['mapping_external_id'];
+                    $matchEntityType = $match['entity_type_type'];
 
                     $result[$matchPortalNodeId][$matchEntityType][$matchExternalId] = $matchMappingNodeId;
                 }
@@ -191,7 +195,7 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
     private function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

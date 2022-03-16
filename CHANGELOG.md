@@ -99,6 +99,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::BUILD_UPDATE_PAYLOAD_QUERY` as `ddad865c-0608-42cd-89f1-148a44ed8f31` to identify a query used for reading identities that have be updated
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_CONFLICTS_QUERY` as `38d26bce-b577-4def-9fe3-d055cb63495d` to identify a query used for identifying possible conflicts
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_MERGE_QUERY` as `d8bb9156-edcc-4b1b-8e7e-fae2e8932434` to identify a query used for identifying possible merges
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::LOOKUP_QUERY` as `95f2537a-eda2-4123-824d-72f6c871e8a8` to identify a query used for looking up related mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::PAYLOAD_LOOKUP_QUERY` as `b2234327-93a0-4854-ac52-fba75f71da74` to identify a query used for looking up payload entries
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::DELETE_QUERY` as `f60b01fc-8f9a-4a37-a009-a00db9a64b11` to identify a query used for deleting jobs
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::LOOKUP_QUERY` as `c1c41a80-6aec-4499-a07a-26ee57b07594` to identify a query used for looking up jobs that can be deleted
