@@ -122,6 +122,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalId` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::listByTypeAndPortalNodeAndExternalId`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::create` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::create`
 - Remove deprecated `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteCollection`
+- Integrate `\Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage` into `heptacom/heptaconnect-core` as `\Heptacom\HeptaConnect\Core\Parallelization\ResourceLockStorage`
 
 ### Fixed
 
