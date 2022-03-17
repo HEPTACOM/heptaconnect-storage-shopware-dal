@@ -38,9 +38,18 @@ services:
         tags:
             - { name: shopware.entity.definition, entity: heptaconnect_job_type }
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition:
-        tags:
-            - { name: shopware.entity.definition, entity: heptaconnect_route }
+    Heptacom\HeptaConnect\Storage\ShopwareDal\EntityMapper:
+        arguments:
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
+            - '@heptaconnect_mapping_node.repository'
+            - '@heptaconnect_mapping.repository'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
+
+    Heptacom\HeptaConnect\Storage\ShopwareDal\EntityReflector:
+        arguments:
+            - '@heptaconnect_mapping.repository'
+            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage:
         arguments:
