@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\PortalExtension\PortalExtension;
@@ -16,13 +16,16 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class PortalExtensionFindTest extends TestCase
 {
     public function testWithoutConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -33,7 +36,7 @@ class PortalExtensionFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionFind($connection);
+        $action = $facade->getPortalExtensionFindAction();
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 
@@ -43,6 +46,7 @@ class PortalExtensionFindTest extends TestCase
     public function testWithDeactivatedConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -63,7 +67,7 @@ class PortalExtensionFindTest extends TestCase
             'portal_node_id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionFind($connection);
+        $action = $facade->getPortalExtensionFindAction();
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 
@@ -73,6 +77,7 @@ class PortalExtensionFindTest extends TestCase
     public function testWithActivatedConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -93,7 +98,7 @@ class PortalExtensionFindTest extends TestCase
             'portal_node_id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionFind($connection);
+        $action = $facade->getPortalExtensionFindAction();
         $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $portalExtension = new PortalExtension();
 

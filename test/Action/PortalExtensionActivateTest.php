@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExtensionActivatePayload;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\PortalExtension\PortalExtension;
@@ -18,13 +18,16 @@ use Shopware\Core\Framework\Uuid\Uuid;
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class PortalExtensionActivateTest extends TestCase
 {
     public function testActivateWithoutConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -35,7 +38,7 @@ class PortalExtensionActivateTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionActivate($connection);
+        $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
@@ -61,6 +64,7 @@ class PortalExtensionActivateTest extends TestCase
     public function testActivateWithPreviousDeactivatedConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -81,7 +85,7 @@ class PortalExtensionActivateTest extends TestCase
             'portal_node_id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionActivate($connection);
+        $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
@@ -107,6 +111,7 @@ class PortalExtensionActivateTest extends TestCase
     public function testActivateWithPreviousActivatedConfiguration(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
+        $facade = new StorageFacade($connection);
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -127,7 +132,7 @@ class PortalExtensionActivateTest extends TestCase
             'portal_node_id' => Types::BINARY,
         ]);
 
-        $action = new PortalExtensionActivate($connection);
+        $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);

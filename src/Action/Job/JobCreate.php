@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
@@ -23,12 +21,14 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class JobCreate implements JobCreateActionInterface
 {
+    public const PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
+
     private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     private Connection $connection;
@@ -39,16 +39,20 @@ class JobCreate implements JobCreateActionInterface
 
     private EntityTypeAccessor $entityTypes;
 
+    private QueryFactory $queryFactory;
+
     public function __construct(
         Connection $connection,
         StorageKeyGeneratorContract $storageKeyGenerator,
         JobTypeAccessor $jobTypes,
-        EntityTypeAccessor $entityTypes
+        EntityTypeAccessor $entityTypes,
+        QueryFactory $queryFactory
     ) {
         $this->connection = $connection;
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->jobTypes = $jobTypes;
         $this->entityTypes = $entityTypes;
+        $this->queryFactory = $queryFactory;
     }
 
     public function create(JobCreatePayloads $payloads): JobCreateResults
@@ -194,26 +198,26 @@ class JobCreate implements JobCreateActionInterface
      */
     private function getPayloadIds(array $checksums): array
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::PAYLOAD_LOOKUP_QUERY);
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
+            ->addOrderBy('job_payload.id')
             ->select([
                 'job_payload.checksum checksum',
                 'job_payload.id id',
             ])
             ->where($builder->expr()->in('job_payload.checksum', ':checksums'))
+            ->setMaxResults(\count($checksums))
             ->setParameter('checksums', $checksums, Connection::PARAM_STR_ARRAY);
         $builder->setIsForUpdate(true);
 
-        $statement = $builder->execute();
+        $rows = [];
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1639268735);
+        foreach ($builder->iterateRows() as $row) {
+            $rows[$row['checksum']] = $row['id'];
         }
 
-        $rows = $statement->fetchAll(FetchMode::ASSOCIATIVE);
-
-        return \array_column($rows, 'id', 'checksum');
+        return $rows;
     }
 }

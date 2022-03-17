@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListResult;
@@ -14,20 +13,23 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
+    public const LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $iterator;
 
-    public function __construct(Connection $connection, QueryIterator $iterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->iterator = $iterator;
     }
 
@@ -65,7 +67,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -102,6 +104,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                     $builder->expr()->isNull('capability.deleted_at')
                 )
             )
+            ->addOrderBy('route.id')
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),

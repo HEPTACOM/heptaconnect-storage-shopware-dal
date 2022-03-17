@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Suite\Action;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\TestSuite\Storage\Action\PortalExtensionTestContract;
@@ -30,10 +29,6 @@ class PortalExtensionTest extends PortalExtensionTestContract
 {
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        $kernel = $this->kernel;
-        /** @var Connection $connection */
-        $connection = $kernel->getContainer()->get(Connection::class);
-
-        return new StorageFacade($connection);
+        return new StorageFacade($this->getConnection());
     }
 }

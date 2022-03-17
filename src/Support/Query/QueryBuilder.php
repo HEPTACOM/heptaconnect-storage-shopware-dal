@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
 use Doctrine\DBAL\Types\Type;
 
@@ -14,6 +15,24 @@ class QueryBuilder extends BaseQueryBuilder
     public const PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
     private bool $isForUpdate = false;
+
+    private QueryIterator $queryIterator;
+
+    private string $identifier;
+
+    private int $paginationPageSize;
+
+    public function __construct(
+        Connection $connection,
+        QueryIterator $queryIterator,
+        string $identifier,
+        int $paginationPageSize
+    ) {
+        parent::__construct($connection);
+        $this->queryIterator = $queryIterator;
+        $this->paginationPageSize = $paginationPageSize;
+        $this->identifier = $identifier;
+    }
 
     public function getIsForUpdate(): bool
     {
@@ -90,6 +109,35 @@ class QueryBuilder extends BaseQueryBuilder
                 break;
         }
 
-        return $result;
+        return ' # heptaconnect-query-id ' . $this->identifier . \PHP_EOL . $result;
+    }
+
+    public function fetchSingleValue(): ?string
+    {
+        return $this->queryIterator->fetchSingleValue($this);
+    }
+
+    /**
+     * @return array<string, string|null>|null
+     */
+    public function fetchSingleRow(): ?array
+    {
+        return $this->queryIterator->fetchSingleRow($this);
+    }
+
+    /**
+     * @return iterable<int, array<string, string|null>>
+     */
+    public function iterateRows(): iterable
+    {
+        return $this->queryIterator->iterate($this, $this->paginationPageSize);
+    }
+
+    /**
+     * @return iterable<int, string|null>
+     */
+    public function iterateColumn(): iterable
+    {
+        return $this->queryIterator->iterateColumn($this, $this->paginationPageSize);
     }
 }

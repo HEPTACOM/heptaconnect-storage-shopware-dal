@@ -13,10 +13,13 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 class JobGet implements JobGetActionInterface
 {
+    public const FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
+
     /**
      * @deprecated TODO remove serialized format
      */
@@ -29,13 +32,13 @@ class JobGet implements JobGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $iterator;
 
-    public function __construct(Connection $connection, QueryIterator $iterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->iterator = $iterator;
     }
 
@@ -68,7 +71,7 @@ class JobGet implements JobGetActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_job', 'job')
@@ -105,6 +108,7 @@ class JobGet implements JobGetActionInterface
                 'job_payload.payload job_payload_payload',
                 'job_payload.format job_payload_format',
             ])
+            ->addOrderBy('job.id')
             ->where($builder->expr()->in('job.id', ':ids'));
     }
 
@@ -118,16 +122,19 @@ class JobGet implements JobGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', \array_map('hex2bin', $ids), Connection::PARAM_STR_ARRAY);
 
-        yield from $this->iterator->iterate($builder, fn (array $row): JobGetResult => new JobGetResult(
-            (string) $row['job_type_type'],
-            new JobStorageKey(\bin2hex((string) $row['job_id'])),
-            new MappingComponentStruct(
-                new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
-                (string) $row['job_entity_type'],
-                (string) $row['job_external_id']
-            ),
-            $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])
-        ));
+        return \iterable_map(
+            $this->iterator->iterate($builder),
+            fn (array $row): JobGetResult => new JobGetResult(
+                (string) $row['job_type_type'],
+                new JobStorageKey(\bin2hex((string) $row['job_id'])),
+                new MappingComponentStruct(
+                    new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
+                    (string) $row['job_entity_type'],
+                    (string) $row['job_external_id']
+                ),
+                $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])
+            )
+        );
     }
 
     private function unserializePayload($payload, string $format): ?array
