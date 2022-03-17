@@ -65,6 +65,7 @@ final class QueryIteratorTest extends TestCase
             $queryCounts[] = \count($this->trackedQueries);
         }
 
+        // compare query count from each iteration. As fetch size is 3, the query count will only increase every 3 steps
         static::assertSame([
             1,
             1,
@@ -111,7 +112,7 @@ final class QueryIteratorTest extends TestCase
             $iterator->fetchSingleValue($builder);
             static::fail();
         } catch (\LogicException $exception) {
-            static::assertStringContainsStringIgnoringCase('too', $exception->getMessage());
+            static::assertStringContainsStringIgnoringCase(1645901522, $exception->getCode());
         }
     }
 }
