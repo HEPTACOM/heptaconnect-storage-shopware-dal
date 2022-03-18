@@ -123,7 +123,7 @@ class RouteGet implements RouteGetActionInterface
     protected function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', \array_map([Id::class, 'toBinary'], $ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
 
         return \iterable_map(
             $this->iterator->iterate($builder),

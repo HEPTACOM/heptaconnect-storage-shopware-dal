@@ -204,7 +204,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
 
         foreach ($builder->iterateRows() as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -274,7 +274,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
 
         foreach ($builder->iterateRows() as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -422,7 +422,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             )
             ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
-            ->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            ->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
         $types = [];
 

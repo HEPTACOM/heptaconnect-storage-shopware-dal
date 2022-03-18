@@ -53,7 +53,7 @@ class WebHttpHandlerPathAccessor
             }
 
             $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
-            $nonMatchingBytes = \array_map([Id::class, 'toBinary'], $nonMatchingHexes);
+            $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
             $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
             $builder
@@ -75,7 +75,7 @@ class WebHttpHandlerPathAccessor
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }
 
-            foreach (\iterable_map($builder->iterateColumn(), [Id::class, 'toHex']) as $typeId) {
+            foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
                 $path = $flippedNonMatchingHexes[$typeId];
                 $foundIds[$path] = $typeId;
 

@@ -47,10 +47,10 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
         $builder->setParameter('type', $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        $ids = $this->iterator->iterateColumn($builder);
-        $hexIds = \iterable_map($ids, [Id::class, 'toHex']);
-
-        return \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
+        return \iterable_map(
+            Id::toHexIterable($this->iterator->iterateColumn($builder)),
+            static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id))
+        );
     }
 
     protected function getBuilderCached(): QueryBuilder

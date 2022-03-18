@@ -275,7 +275,7 @@ class IdentityMap implements IdentityMapActionInterface
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
-        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
         return $builder->iterateRows();
     }

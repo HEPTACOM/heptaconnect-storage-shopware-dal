@@ -117,7 +117,7 @@ class IdentityReflect implements IdentityReflectActionInterface
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
             $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Type::BINARY);
-            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, \array_map([Id::class, 'toBinary'], $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
         $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
@@ -159,7 +159,7 @@ class IdentityReflect implements IdentityReflectActionInterface
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
         $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Type::BINARY);
-        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], $reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
