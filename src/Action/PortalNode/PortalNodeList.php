@@ -7,10 +7,10 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Listing\PortalNodeListResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class PortalNodeList implements PortalNodeListActionInterface
 {
@@ -31,11 +31,8 @@ class PortalNodeList implements PortalNodeListActionInterface
     public function list(): iterable
     {
         return \iterable_map(
-            \iterable_map(
-                $this->queryIterator->iterateColumn($this->getSearchQuery()),
-                [Uuid::class, 'fromBytesToHex']
-            ),
-            static fn (string $id) => new PortalNodeListResult(new PortalNodeStorageKey($id))
+            $this->queryIterator->iterateColumn($this->getSearchQuery()),
+            static fn (string $id) => new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)))
         );
     }
 

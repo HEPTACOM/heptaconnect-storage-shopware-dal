@@ -10,14 +10,15 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
 class RouteFindTest extends TestCase
@@ -25,8 +26,8 @@ class RouteFindTest extends TestCase
     public function testDeletedAt(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
@@ -35,7 +36,7 @@ class RouteFindTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
@@ -44,7 +45,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
         $connection->insert('heptaconnect_route', [
-            'id' => Uuid::randomBytes(),
+            'id' => Id::randomBinary(),
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
@@ -63,8 +64,8 @@ class RouteFindTest extends TestCase
     public function testFind(): void
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
@@ -73,7 +74,7 @@ class RouteFindTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
@@ -82,7 +83,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
         $connection->insert('heptaconnect_route', [
-            'id' => Uuid::randomBytes(),
+            'id' => Id::randomBinary(),
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,

@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class PortalNodeGet implements PortalNodeGetActionInterface
 {
@@ -83,12 +83,12 @@ class PortalNodeGet implements PortalNodeGetActionInterface
     protected function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', \array_map([Id::class, 'toBinary'], $ids), Connection::PARAM_STR_ARRAY);
 
         return \iterable_map(
             $this->iterator->iterate($builder),
             static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['portal_node_class_name']
             )

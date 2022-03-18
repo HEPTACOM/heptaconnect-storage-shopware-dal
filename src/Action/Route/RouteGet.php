@@ -11,10 +11,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInter
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteGet implements RouteGetActionInterface
 {
@@ -123,14 +123,14 @@ class RouteGet implements RouteGetActionInterface
     protected function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', \array_map([Id::class, 'toBinary'], $ids), Connection::PARAM_STR_ARRAY);
 
         return \iterable_map(
             $this->iterator->iterate($builder),
             static fn (array $row): RouteGetResult => new RouteGetResult(
-                new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+                new RouteStorageKey(Id::toHex((string) $row['id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['entity_type_name'],
                 \explode(',', (string) $row['capability_name'])

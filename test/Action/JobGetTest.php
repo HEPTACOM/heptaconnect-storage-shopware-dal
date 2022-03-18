@@ -11,16 +11,17 @@ use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
@@ -39,11 +40,11 @@ class JobGetTest extends TestCase
         parent::setUp();
 
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $entityType = Uuid::fromHexToBytes(self::ENTITY_TYPE);
-        $jobType = Uuid::fromHexToBytes(self::JOB_TYPE);
-        $portal = Uuid::fromHexToBytes(self::PORTAL);
-        $job = Uuid::fromHexToBytes(self::JOB);
-        $jobPayload = Uuid::randomBytes();
+        $entityType = Id::toBinary(self::ENTITY_TYPE);
+        $jobType = Id::toBinary(self::JOB_TYPE);
+        $portal = Id::toBinary(self::PORTAL);
+        $job = Id::toBinary(self::JOB);
+        $jobPayload = Id::randomBinary();
         $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
         $connection->insert('heptaconnect_entity_type', [

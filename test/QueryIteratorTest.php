@@ -7,6 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 /**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 final class QueryIteratorTest extends TestCase

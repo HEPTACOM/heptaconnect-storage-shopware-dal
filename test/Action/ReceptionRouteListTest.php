@@ -10,14 +10,15 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCr
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
@@ -27,8 +28,8 @@ class ReceptionRouteListTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $receptionId = $this->getReceptionCapability();
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
@@ -37,7 +38,7 @@ class ReceptionRouteListTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
@@ -45,7 +46,7 @@ class ReceptionRouteListTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $routeId = Uuid::randomBytes();
+        $routeId = Id::randomBinary();
         $connection->insert('heptaconnect_route', [
             'id' => $routeId,
             'type_id' => $entityType,
@@ -76,8 +77,8 @@ class ReceptionRouteListTest extends TestCase
     {
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $receptionId = $this->getReceptionCapability();
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
@@ -86,7 +87,7 @@ class ReceptionRouteListTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
@@ -94,7 +95,7 @@ class ReceptionRouteListTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $routeId = Uuid::randomBytes();
+        $routeId = Id::randomBinary();
         $connection->insert('heptaconnect_route', [
             'id' => $routeId,
             'type_id' => $entityType,

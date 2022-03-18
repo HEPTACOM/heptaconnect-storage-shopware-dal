@@ -20,7 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
@@ -98,7 +98,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
 
     private function createKey(string $interface, ?string $uuid): StorageKeyInterface
     {
-        $uuid ??= Uuid::randomHex();
+        $uuid ??= Id::randomHex();
 
         if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
             throw new UnsupportedStorageKeyException($interface);
