@@ -11,8 +11,8 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalN
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
@@ -107,7 +107,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                         ]);
                     } else {
                         unset($instruction['updated_at']);
-                        $instruction['id'] = Uuid::uuid4()->getBytes();
+                        $instruction['id'] = Id::randomBinary();
 
                         $this->connection->insert('heptaconnect_portal_node_storage', $instruction, [
                             'id' => Type::BINARY,

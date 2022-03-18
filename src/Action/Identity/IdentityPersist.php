@@ -17,8 +17,8 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class IdentityPersist implements IdentityPersistActionInterface
@@ -151,7 +151,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeId = $mappingNodeKey->getUuid();
             $externalId = $createMapping->getExternalId();
             $create[$mappingNodeId . $portalNodeId . $externalId] ??= [
-                'id' => (string) Uuid::uuid4()->getHex(),
+                'id' => Id::randomHex(),
                 'mapping_node_id' => $mappingNodeId,
                 'portal_node_id' => $portalNodeId,
                 'external_id' => $externalId,
@@ -313,8 +313,8 @@ class IdentityPersist implements IdentityPersistActionInterface
         $typeConditions = [];
 
         foreach ($newMappings as $typeId => $externalIds) {
-            $typeParameterKey = 'typeId_' . Uuid::uuid4()->getHex();
-            $externalIdParameterKey = 'externalId_' . Uuid::uuid4()->getHex();
+            $typeParameterKey = 'typeId_' . Id::randomHex();
+            $externalIdParameterKey = 'externalId_' . Id::randomHex();
 
             $typeConditions[] = $expr->andX(
                 $expr->eq('mappingNode.type_id', ':' . $typeParameterKey),

@@ -26,11 +26,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 /**
@@ -102,12 +102,12 @@ class IdentityPersistTest extends TestCase
             new PortalNodeCreatePayload(PortalContract::class),
         ]));
 
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $mappingNodeKeySource = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeySource);
         $this->mappingRepository->create($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
 
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdTarget = Id::randomHex();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
         $mappingNodeKeyTarget = $this->mappingNodeRepository->create(Simple::class, $portalNodeKeyTarget);
         $this->mappingRepository->create($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
@@ -127,8 +127,8 @@ class IdentityPersistTest extends TestCase
 
     public function testPersistingSingleEntityMapping(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -168,9 +168,9 @@ class IdentityPersistTest extends TestCase
 
     public function testPersistingSameExternalIdToTwoDifferentMappingNodes(): void
     {
-        $externalId1Source = (string) Uuid::uuid4()->getHex();
-        $externalId2Source = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalId1Source = Id::randomHex();
+        $externalId2Source = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -221,9 +221,9 @@ class IdentityPersistTest extends TestCase
 
     public function testCreatingDifferentExternalIdToTwoSameMappingNodes(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalId1Target = (string) Uuid::uuid4()->getHex();
-        $externalId2Target = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalId1Target = Id::randomHex();
+        $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -264,9 +264,9 @@ class IdentityPersistTest extends TestCase
 
     public function testCreatingAndUpdatingDifferentExternalIdToTwoSameMappingNodes(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalId1Target = (string) Uuid::uuid4()->getHex();
-        $externalId2Target = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalId1Target = Id::randomHex();
+        $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -307,11 +307,11 @@ class IdentityPersistTest extends TestCase
 
     public function testSwappingExternalIdsOfTwoMappings(): void
     {
-        $externalIdSourceA = (string) Uuid::uuid4()->getHex();
-        $externalIdTargetA = (string) Uuid::uuid4()->getHex();
+        $externalIdSourceA = Id::randomHex();
+        $externalIdTargetA = Id::randomHex();
 
-        $externalIdSourceB = (string) Uuid::uuid4()->getHex();
-        $externalIdTargetB = (string) Uuid::uuid4()->getHex();
+        $externalIdSourceB = Id::randomHex();
+        $externalIdTargetB = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -371,8 +371,8 @@ class IdentityPersistTest extends TestCase
 
     public function testDeletingMappingNode(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -445,7 +445,7 @@ class IdentityPersistTest extends TestCase
 
     public function testDeletingMappingNodesTwice(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),

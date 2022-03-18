@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
-use Ramsey\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Shopware\Core\Defaults;
 
 class JobStart implements JobStartActionInterface
@@ -37,7 +37,7 @@ class JobStart implements JobStartActionInterface
             $jobIds = $this->getJobIds($payload);
             $createdAt = $payload->getCreatedAt()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
             $message = $payload->getMessage();
-            $transactionId = Uuid::uuid4()->getBytes();
+            $transactionId = Id::randomBinary();
 
             $affected = $this->getUpdateQueryBuilder($connection)
                 ->setParameter('jobIds', $jobIds, Connection::PARAM_STR_ARRAY)
@@ -58,7 +58,7 @@ class JobStart implements JobStartActionInterface
 
             foreach ($jobIds as $jobId) {
                 $connection->insert('heptaconnect_job_history', [
-                    'id' => Uuid::uuid4()->getBytes(),
+                    'id' => Id::randomBinary(),
                     'job_id' => $jobId,
                     'state_id' => JobStateEnum::started(),
                     'message' => $message,

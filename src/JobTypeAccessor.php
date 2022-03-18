@@ -6,8 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class JobTypeAccessor
@@ -59,7 +59,7 @@ class JobTypeAccessor
 
             foreach ($types as $type) {
                 if (!\array_key_exists($type, $typeIds)) {
-                    $id = Uuid::uuid4()->getBytes();
+                    $id = Id::randomBinary();
                     $inserts[] = [
                         'id' => $id,
                         'type' => $type,

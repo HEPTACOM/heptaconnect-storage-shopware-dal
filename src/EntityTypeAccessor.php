@@ -7,8 +7,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class EntityTypeAccessor
@@ -51,7 +51,7 @@ class EntityTypeAccessor
                     continue;
                 }
 
-                $id = Uuid::uuid5(self::ENTITY_TYPE_ID_NS, $nonMatchingKey)->getBytes();
+                $id = Id::hashedBinary(self::ENTITY_TYPE_ID_NS, $nonMatchingKey);
                 $inserts[] = [
                     'id' => $id,
                     'type' => $nonMatchingKey,

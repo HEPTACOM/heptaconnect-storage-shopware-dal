@@ -21,8 +21,8 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class IdentityMap implements IdentityMapActionInterface
@@ -146,7 +146,7 @@ class IdentityMap implements IdentityMapActionInterface
                     // TODO batch
                     foreach ($createMappingNodes as $insert) {
                         $mapping = $insert['mapping'];
-                        $mapping['id'] = Uuid::uuid4()->getBytes();
+                        $mapping['id'] = Id::randomBinary();
                         $mapping['mapping_node_id'] = $insert['id'];
 
                         unset($insert['mapping']);

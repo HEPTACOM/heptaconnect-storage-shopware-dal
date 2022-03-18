@@ -6,8 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 class WebHttpHandlerAccessor
@@ -68,7 +68,7 @@ class WebHttpHandlerAccessor
                 $b->setParameter('pn' . $match, \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
                 $b->setParameter('p' . $match, \hex2bin($pathId), Type::BINARY);
 
-                $insertableId = Uuid::uuid4()->getBytes();
+                $insertableId = Id::randomBinary();
                 $result[$keyIndex[$match]] = \bin2hex($insertableId);
                 $inserts[$match] = [
                     'id' => $insertableId,
