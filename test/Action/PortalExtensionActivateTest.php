@@ -40,7 +40,7 @@ class PortalExtensionActivateTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionActivateAction();
-        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
@@ -87,7 +87,7 @@ class PortalExtensionActivateTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionActivateAction();
-        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 
@@ -134,7 +134,7 @@ class PortalExtensionActivateTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionActivateAction();
-        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $payload->addExtension(self::class);
         $result = $action->activate($payload);
 

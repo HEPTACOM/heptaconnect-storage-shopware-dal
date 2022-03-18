@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionIn
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
@@ -40,7 +41,7 @@ class RouteDelete implements RouteDeleteActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($routeKey));
             }
 
-            $ids[] = \hex2bin($routeKey->getUuid());
+            $ids[] = Id::toBinary($routeKey->getUuid());
         }
 
         if ($ids === []) {

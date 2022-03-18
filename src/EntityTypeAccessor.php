@@ -57,7 +57,7 @@ class EntityTypeAccessor
                     'type' => $nonMatchingKey,
                     'created_at' => $now,
                 ];
-                $this->entityTypeIds[$nonMatchingKey] = \bin2hex($id);
+                $this->entityTypeIds[$nonMatchingKey] = Id::toHex($id);
             }
 
             if ($inserts !== []) {
@@ -95,7 +95,7 @@ class EntityTypeAccessor
         $result = [];
 
         foreach ($queryBuilder->iterateRows() as $row) {
-            $result[$row['type_type']] = \bin2hex($row['type_id']);
+            $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
 
         return $result;

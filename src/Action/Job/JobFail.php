@@ -83,7 +83,7 @@ class JobFail implements JobFailActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($jobKey));
             }
 
-            $jobIds[\hex2bin($jobKey->getUuid())] = true;
+            $jobIds[Id::toBinary($jobKey->getUuid())] = true;
         }
 
         return \array_keys($jobIds);

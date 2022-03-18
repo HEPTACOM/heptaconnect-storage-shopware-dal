@@ -19,6 +19,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Shopware\Core\Defaults;
 
 class RouteCreate implements RouteCreateActionInterface
@@ -112,17 +113,17 @@ class RouteCreate implements RouteCreateActionInterface
             $targetKey = $payload->getTargetPortalNodeKey();
 
             $routeInserts[] = [
-                'id' => \hex2bin($key->getUuid()),
-                'source_id' => \hex2bin($sourceKey->getUuid()),
-                'target_id' => \hex2bin($targetKey->getUuid()),
-                'type_id' => \hex2bin($entityTypeIds[$payload->getEntityType()]),
+                'id' => Id::toBinary($key->getUuid()),
+                'source_id' => Id::toBinary($sourceKey->getUuid()),
+                'target_id' => Id::toBinary($targetKey->getUuid()),
+                'type_id' => Id::toBinary($entityTypeIds[$payload->getEntityType()]),
                 'created_at' => $now,
             ];
 
             foreach ($payload->getCapabilities() as $capability) {
                 $routeCapabilityInserts[] = [
-                    'route_id' => \hex2bin($key->getUuid()),
-                    'route_capability_id' => \hex2bin($capabilityIds[$capability]),
+                    'route_id' => Id::toBinary($key->getUuid()),
+                    'route_capability_id' => Id::toBinary($capabilityIds[$capability]),
                     'created_at' => $now,
                 ];
             }

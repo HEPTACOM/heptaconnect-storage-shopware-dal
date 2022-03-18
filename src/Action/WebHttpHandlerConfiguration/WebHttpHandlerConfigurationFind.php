@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Find\W
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
@@ -40,8 +41,8 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
 
         $builder = $this->getBuilderCached();
         $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', \hex2bin($this->pathIdResolver->getIdFromPath($criteria->getPath())), Type::BINARY);
-        $builder->setParameter(':portalNodeKey', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
+        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getPath())), Type::BINARY);
+        $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
         $row = $builder->fetchSingleRow();

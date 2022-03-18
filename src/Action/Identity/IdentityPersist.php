@@ -88,9 +88,9 @@ class IdentityPersist implements IdentityPersistActionInterface
             $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
             foreach ($create as $insert) {
-                $insert['id'] = \hex2bin($insert['id']);
-                $insert['mapping_node_id'] = \hex2bin($insert['mapping_node_id']);
-                $insert['portal_node_id'] = \hex2bin($insert['portal_node_id']);
+                $insert['id'] = Id::toBinary($insert['id']);
+                $insert['mapping_node_id'] = Id::toBinary($insert['mapping_node_id']);
+                $insert['portal_node_id'] = Id::toBinary($insert['portal_node_id']);
                 $insert['created_at'] = $now;
 
                 $this->connection->insert('heptaconnect_mapping', $insert, [
@@ -101,8 +101,8 @@ class IdentityPersist implements IdentityPersistActionInterface
             }
 
             foreach ($update as $updateData) {
-                $updateData['id'] = \hex2bin($updateData['id']);
-                $updateData['mapping_node_id'] = \hex2bin($updateData['mapping_node_id']);
+                $updateData['id'] = Id::toBinary($updateData['id']);
+                $updateData['mapping_node_id'] = Id::toBinary($updateData['mapping_node_id']);
                 $updateData['updated_at'] = $now;
                 $id = $updateData['id'];
                 unset($updateData['id']);
@@ -116,8 +116,8 @@ class IdentityPersist implements IdentityPersistActionInterface
             }
 
             foreach ($delete as $updateData) {
-                $updateData['id'] = \hex2bin($updateData['id']);
-                $updateData['mapping_node_id'] = \hex2bin($updateData['mapping_node_id']);
+                $updateData['id'] = Id::toBinary($updateData['id']);
+                $updateData['mapping_node_id'] = Id::toBinary($updateData['mapping_node_id']);
                 $updateData['updated_at'] = $now;
                 $updateData['deleted_at'] = $now;
                 $id = $updateData['id'];
@@ -203,12 +203,12 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
-        $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
-        $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
+        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], \array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
 
         foreach ($builder->iterateRows() as $mapping) {
-            $mappingId = \bin2hex($mapping['mapping_id']);
-            $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
+            $mappingId = Id::toHex($mapping['mapping_id']);
+            $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = $mappingNodes[$mappingNodeId] ?? null;
 
             if (!\is_string($externalId)) {
@@ -273,12 +273,12 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
-        $builder->setParameter('portalNodeId', \hex2bin($portalNodeId));
-        $builder->setParameter('mappingNodeIds', \array_map('hex2bin', \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
+        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], \array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
 
         foreach ($builder->iterateRows() as $mapping) {
-            $mappingId = \bin2hex($mapping['mapping_id']);
-            $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
+            $mappingId = Id::toHex($mapping['mapping_id']);
+            $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
 
             unset($mappingNodeIds[$mappingNodeId]);
 
@@ -321,7 +321,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $expr->in('mapping.external_id', ':' . $externalIdParameterKey)
             );
 
-            $queryBuilder->setParameter($typeParameterKey, \hex2bin($typeId));
+            $queryBuilder->setParameter($typeParameterKey, Id::toBinary($typeId));
             $queryBuilder->setParameter(
                 $externalIdParameterKey,
                 \array_keys($externalIds),
@@ -353,15 +353,15 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $expr->eq('mapping.portal_node_id', ':portalNodeId'),
                 $expr->orX(...$typeConditions)
             ))
-            ->setParameter('portalNodeId', \hex2bin($portalNodeId))
+            ->setParameter('portalNodeId', Id::toBinary($portalNodeId))
         ;
 
         $mappingNodesToMerge = [];
 
         foreach ($queryBuilder->iterateRows() as $row) {
-            $intoMappingNodeId = \bin2hex($row['mappingNodeId']);
+            $intoMappingNodeId = Id::toHex($row['mappingNodeId']);
             $externalId = $row['externalId'];
-            $typeId = \bin2hex($row['typeId']);
+            $typeId = Id::toHex($row['typeId']);
 
             if (isset($changedMappings[$intoMappingNodeId])
                 && !isset($changedMappings[$intoMappingNodeId][$externalId])) {
@@ -422,12 +422,12 @@ class IdentityPersist implements IdentityPersistActionInterface
             )
             ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
-            ->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            ->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
         $types = [];
 
         foreach ($queryBuilder->iterateRows() as $row) {
-            $types[\bin2hex($row['mappingNodeId'])] = \bin2hex($row['typeId']);
+            $types[Id::toHex($row['mappingNodeId'])] = Id::toHex($row['typeId']);
         }
 
         return $types;
@@ -456,9 +456,9 @@ class IdentityPersist implements IdentityPersistActionInterface
     private function mergeMappingNodes(string $from, string $into, \DateTimeInterface $now): void
     {
         $this->connection->update('heptaconnect_mapping', [
-            'mapping_node_id' => \hex2bin($into),
+            'mapping_node_id' => Id::toBinary($into),
         ], [
-            'mapping_node_id' => \hex2bin($from),
+            'mapping_node_id' => Id::toBinary($from),
         ], [
             'mapping_node_id' => Type::BINARY,
         ]);
@@ -466,7 +466,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         $this->connection->update('heptaconnect_mapping_node', [
             'deleted_at' => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
-            'id' => \hex2bin($from),
+            'id' => Id::toBinary($from),
         ], [
             'id' => Type::BINARY,
         ]);

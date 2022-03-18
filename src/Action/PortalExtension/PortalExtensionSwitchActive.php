@@ -70,7 +70,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             $existingExtensions[] = $className;
 
             if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
-                $pass[\bin2hex($existingExtension['id'])] = $className;
+                $pass[Id::toHex($existingExtension['id'])] = $className;
             } else {
                 $updates[] = [
                     'id' => $existingExtension['id'],
@@ -116,7 +116,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
             if ($affected === \count($updates)) {
                 foreach ($updates as $updatePayload) {
-                    $pass[\bin2hex($updatePayload['id'])] = $updatePayload['class_name'];
+                    $pass[Id::toHex($updatePayload['id'])] = $updatePayload['class_name'];
                 }
             } else {
                 $existingExtensions = $this->getSelectByIdQueryBuilder()
@@ -125,7 +125,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
                 foreach ($existingExtensions as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
-                        $pass[\bin2hex($existingExtension['id'])] = $existingExtension['class_name'];
+                        $pass[Id::toHex($existingExtension['id'])] = $existingExtension['class_name'];
                     }
                 }
             }
@@ -199,6 +199,6 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        return \hex2bin($portalNodeKey->getUuid());
+        return Id::toBinary($portalNodeKey->getUuid());
     }
 }

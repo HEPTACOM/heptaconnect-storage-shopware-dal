@@ -150,11 +150,11 @@ class JobCreate implements JobCreateActionInterface
                 }
 
                 $jobInserts[] = [
-                    'id' => \hex2bin($key->getUuid()),
+                    'id' => Id::toBinary($key->getUuid()),
                     'external_id' => $payload->getMapping()->getExternalId(),
-                    'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-                    'entity_type_id' => \hex2bin($entityTypeId),
-                    'job_type_id' => \hex2bin($jobTypeId),
+                    'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+                    'entity_type_id' => Id::toBinary($entityTypeId),
+                    'job_type_id' => Id::toBinary($jobTypeId),
                     'payload_id' => $jobPayloadKey,
                     'state_id' => JobStateEnum::open(),
                     'created_at' => $now,

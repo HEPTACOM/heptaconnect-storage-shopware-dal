@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum;
 
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+
 abstract class JobStateEnum
 {
     private static ?string $open = null;
@@ -16,21 +18,21 @@ abstract class JobStateEnum
 
     public static function open(): string
     {
-        return self::$open ??= \hex2bin('3aee495720734539b98f0605c33e59d2');
+        return self::$open ??= Id::toBinary('3aee495720734539b98f0605c33e59d2');
     }
 
     public static function started(): string
     {
-        return self::$started ??= \hex2bin('ca5ef83ffd114913a81477efafa14272');
+        return self::$started ??= Id::toBinary('ca5ef83ffd114913a81477efafa14272');
     }
 
     public static function failed(): string
     {
-        return self::$failed ??= \hex2bin('28ff3666f0f746cf84770c1148600605');
+        return self::$failed ??= Id::toBinary('28ff3666f0f746cf84770c1148600605');
     }
 
     public static function finished(): string
     {
-        return self::$finished ??= \hex2bin('6575ad837c71416f887d0e516a1bd813');
+        return self::$finished ??= Id::toBinary('6575ad837c71416f887d0e516a1bd813');
     }
 }

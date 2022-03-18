@@ -38,7 +38,7 @@ class PortalExtensionFindTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionFindAction();
-        $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $result = $action->find(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $portalExtension = new PortalExtension();
 
         static::assertTrue($result->isActive($portalExtension));
@@ -69,7 +69,7 @@ class PortalExtensionFindTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionFindAction();
-        $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $result = $action->find(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $portalExtension = new PortalExtension();
 
         static::assertFalse($result->isActive($portalExtension));
@@ -100,7 +100,7 @@ class PortalExtensionFindTest extends TestCase
         ]);
 
         $action = $facade->getPortalExtensionFindAction();
-        $result = $action->find(new PortalNodeStorageKey(\bin2hex($portalNode)));
+        $result = $action->find(new PortalNodeStorageKey(Id::toHex($portalNode)));
         $portalExtension = new PortalExtension();
 
         static::assertTrue($result->isActive($portalExtension));

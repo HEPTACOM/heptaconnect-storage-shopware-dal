@@ -90,12 +90,12 @@ class IdentityMap implements IdentityMapActionInterface
             $readMappingNodesIndex[$type][$primaryKey][] = $key;
 
             $createMappingNodes[$key] = [
-                'type_id' => \hex2bin($typeId),
-                'origin_portal_node_id' => \hex2bin($portalNodeId),
+                'type_id' => Id::toBinary($typeId),
+                'origin_portal_node_id' => Id::toBinary($portalNodeId),
                 'created_at' => $now,
                 'mapping' => [
                     'external_id' => $primaryKey,
-                    'portal_node_id' => \hex2bin($portalNodeId),
+                    'portal_node_id' => Id::toBinary($portalNodeId),
                     'created_at' => $now,
                 ],
             ];
@@ -111,7 +111,7 @@ class IdentityMap implements IdentityMapActionInterface
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     unset($createMappingNodes[$key]);
 
-                    $mappingNodeId = \bin2hex((string) $mappingNode['mapping_node_id']);
+                    $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
                     $resultMappings[$key] = new Mapping(
                         $mappingExternalId,
                         $portalNodeKey,
@@ -137,7 +137,7 @@ class IdentityMap implements IdentityMapActionInterface
                 }
 
                 $mappingNodeId = $mappingNodeKey->getUuid();
-                $createMappingNodes[$key]['id'] = \hex2bin($mappingNodeId);
+                $createMappingNodes[$key]['id'] = Id::toBinary($mappingNodeId);
                 $readMappings[$key] = $mappingNodeId;
             }
 
@@ -172,7 +172,7 @@ class IdentityMap implements IdentityMapActionInterface
             foreach ($this->getMappings($readMappings, $portalNodeId) as $mappingNode) {
                 $mappingExternalId = (string) $mappingNode['mapping_external_id'];
                 $mappingNodeType = (string) $mappingNode['mapping_node_type'];
-                $mappingNodeId = \bin2hex((string) $mappingNode['mapping_node_id']);
+                $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
 
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     $resultMappings[$key] = new Mapping(
@@ -232,8 +232,8 @@ class IdentityMap implements IdentityMapActionInterface
         }
 
         foreach ($filtersByType as $typeId => $externalIds) {
-            $builder->setParameter('typeId', \hex2bin($typeId), Types::BINARY);
-            $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
+            $builder->setParameter('typeId', Id::toBinary($typeId), Types::BINARY);
+            $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
             $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
 
             yield from $builder->iterateRows();
@@ -274,8 +274,8 @@ class IdentityMap implements IdentityMapActionInterface
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'));
 
-        $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
-        $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
+        $builder->setParameter('mappingNodeIds', \array_map([Id::class, 'toBinary'], $mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
         return $builder->iterateRows();
     }

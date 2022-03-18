@@ -16,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Shopware\Core\Defaults;
 
 class PortalNodeCreate implements PortalNodeCreateActionInterface
@@ -47,7 +48,7 @@ class PortalNodeCreate implements PortalNodeCreateActionInterface
             }
 
             $inserts[] = [
-                'id' => \hex2bin($key->getUuid()),
+                'id' => Id::toBinary($key->getUuid()),
                 'class_name' => $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,

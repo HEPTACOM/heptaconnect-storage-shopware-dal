@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
@@ -44,7 +45,7 @@ class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
         $deleteBuilder
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
-            ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
 
         try {
             $this->connection->transactional(function () use ($deleteBuilder): void {

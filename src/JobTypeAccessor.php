@@ -51,7 +51,7 @@ class JobTypeAccessor
             $typeIds = [];
 
             foreach ($builder->iterateRows() as $row) {
-                $typeIds[$row['type']] = \bin2hex($row['id']);
+                $typeIds[$row['type']] = Id::toHex($row['id']);
             }
 
             $inserts = [];
@@ -65,7 +65,7 @@ class JobTypeAccessor
                         'type' => $type,
                         'created_at' => $now,
                     ];
-                    $typeIds[$type] = \bin2hex($id);
+                    $typeIds[$type] = Id::toHex($id);
                 }
             }
 

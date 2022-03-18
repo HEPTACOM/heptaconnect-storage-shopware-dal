@@ -52,7 +52,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 '`key`' => $set->getStorageKey(),
                 'value' => $set->getValue(),
                 'type' => $set->getType(),
-                'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+                'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
                 'created_at' => $nowFormatted,
                 'updated_at' => $nowFormatted,
                 'expired_at' => $expiresAt instanceof \DateTimeInterface ? $expiresAt->format(Defaults::STORAGE_DATE_TIME_FORMAT) : null,
@@ -80,7 +80,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $fetchBuilder->expr()->gte('expired_at', ':now')
             ))
             ->setParameter('ids', $keysToCheck)
-            ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $nowFormatted);
 
         try {

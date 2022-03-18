@@ -46,7 +46,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
                     throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
                 }
 
-                $mappingNodeIds[] = \hex2bin($mappingNodeKey->getUuid());
+                $mappingNodeIds[] = Id::toBinary($mappingNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
@@ -71,7 +71,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
                     throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
                 }
 
-                $portalNodeIds[] = \hex2bin($portalNodeKey->getUuid());
+                $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('portal_node.id', ':portalNodeIds'));

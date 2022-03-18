@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInterface
 {
@@ -60,7 +61,7 @@ class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInte
                     $this->connection->update('heptaconnect_portal_node', [
                         'configuration' => $configuration,
                     ], [
-                        'id' => \hex2bin($portalNodeId),
+                        'id' => Id::toBinary($portalNodeId),
                     ], [
                         'id' => Types::BINARY,
                     ]);

@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalN
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
 
@@ -60,13 +61,13 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gte('expired_at', ':now')
             ))
-            ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
 
         return \iterable_map(
             $fetchBuilder->iterateRows(),
             static fn (array $row): PortalNodeStorageListResult => new PortalNodeStorageListResult(
-                new PortalNodeStorageKey(\bin2hex((string) $row['storage_value'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['storage_value'])),
                 (string) $row['storage_key'],
                 (string) $row['storage_type'],
                 (string) $row['storage_value']
