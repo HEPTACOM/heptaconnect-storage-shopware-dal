@@ -11,9 +11,9 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Get\PortalNodeSt
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
 {
@@ -34,7 +34,6 @@ class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $now = new \DateTimeImmutable();
         $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
@@ -60,7 +59,7 @@ class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
             ))
             ->setParameter('ids', \iterable_to_array($criteria->getStorageKeys()), Connection::PARAM_STR_ARRAY)
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
-            ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+            ->setParameter('now', DateTime::nowToStorage());
 
         return \iterable_map(
             $fetchBuilder->iterateRows(),

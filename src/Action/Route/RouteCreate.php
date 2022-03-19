@@ -19,8 +19,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Shopware\Core\Defaults;
 
 class RouteCreate implements RouteCreateActionInterface
 {
@@ -94,7 +94,7 @@ class RouteCreate implements RouteCreateActionInterface
         }
 
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count())));
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
         $routeInserts = [];
         $routeCapabilityInserts = [];
         $result = [];

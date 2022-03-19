@@ -11,9 +11,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalN
 use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 {
@@ -39,7 +39,6 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $now = new \DateTimeImmutable();
         $deleteExpiredBuilder = $this->queryFactory->createBuilder(self::DELETE_EXPIRED_QUERY);
         $deleteExpiredBuilder
             ->delete('heptaconnect_portal_node_storage')
@@ -47,7 +46,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->andWhere($deleteExpiredBuilder->expr()->isNotNull('expired_at'))
             ->andWhere($deleteExpiredBuilder->expr()->lte('expired_at', ':now'))
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
-            ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+            ->setParameter('now', DateTime::nowToStorage());
 
         $deleteBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteBuilder

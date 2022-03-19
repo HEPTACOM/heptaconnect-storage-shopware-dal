@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewAction
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class RouteOverview implements RouteOverviewActionInterface
 {
@@ -91,7 +91,7 @@ class RouteOverview implements RouteOverviewActionInterface
                 /* @phpstan-ignore-next-line */
                 (string) $row['target_portal_node_class'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
+                DateTime::fromStorage((string) $row['ct']),
                 \explode(',', (string) $row['capability_name'])
             )
         );

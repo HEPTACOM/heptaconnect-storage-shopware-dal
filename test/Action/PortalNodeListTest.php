@@ -6,15 +6,16 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -29,8 +30,8 @@ class PortalNodeListTest extends TestCase
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            'deleted_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
+            'deleted_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -49,7 +50,7 @@ class PortalNodeListTest extends TestCase
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);

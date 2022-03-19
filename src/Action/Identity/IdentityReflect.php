@@ -14,10 +14,10 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class IdentityReflect implements IdentityReflectActionInterface
 {
@@ -135,7 +135,7 @@ class IdentityReflect implements IdentityReflectActionInterface
         if ($createMappings !== []) {
             try {
                 $this->connection->transactional(function () use ($createMappings): void {
-                    $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+                    $now = DateTime::nowToStorage();
 
                     foreach ($createMappings as $createMapping) {
                         $createMapping['id'] = Id::randomBinary();

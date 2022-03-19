@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */

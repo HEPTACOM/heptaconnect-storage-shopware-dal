@@ -9,14 +9,15 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
@@ -31,7 +32,7 @@ class RouteFindTest extends TestCase
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -39,7 +40,7 @@ class RouteFindTest extends TestCase
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -48,8 +49,8 @@ class RouteFindTest extends TestCase
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            'deleted_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
+            'deleted_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -69,7 +70,7 @@ class RouteFindTest extends TestCase
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -77,7 +78,7 @@ class RouteFindTest extends TestCase
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -86,7 +87,7 @@ class RouteFindTest extends TestCase
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);

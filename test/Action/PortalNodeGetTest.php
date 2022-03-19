@@ -9,14 +9,15 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -37,9 +38,8 @@ class PortalNodeGetTest extends TestCase
         $portalA = Id::toBinary(self::PORTAL_A);
         $portalB = Id::toBinary(self::PORTAL_B);
         $portalDeleted = Id::toBinary(self::PORTAL_DELETED);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
+        $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalA,
@@ -57,8 +57,8 @@ class PortalNodeGetTest extends TestCase
             'id' => $portalDeleted,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => $now,
-            'deleted_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
+            'deleted_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
     }
 

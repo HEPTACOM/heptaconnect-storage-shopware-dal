@@ -21,9 +21,9 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class IdentityMap implements IdentityMapActionInterface
 {
@@ -64,7 +64,7 @@ class IdentityMap implements IdentityMapActionInterface
         $neededTypes = \array_map('get_class', $datasetEntities);
         $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes);
 
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
         $readMappingNodes = [];
         $readMappingNodesIndex = [];
         $createMappingNodes = [];

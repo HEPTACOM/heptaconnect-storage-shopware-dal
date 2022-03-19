@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOver
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
@@ -81,7 +81,7 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 /* @phpstan-ignore-next-line */
                 (string) $row['portal_node_class_name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at']),
+                DateTime::fromStorage((string) $row['created_at']),
             )
         );
     }

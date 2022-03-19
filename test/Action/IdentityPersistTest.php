@@ -29,12 +29,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
@@ -45,6 +45,7 @@ use Shopware\Core\Defaults;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  */
@@ -399,7 +400,7 @@ class IdentityPersistTest extends TestCase
             'id' => Id::toBinary($result->getUuid()),
             'origin_portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
             'type_id' => Id::toBinary($typeIds[$entityType]),
-            'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'origin_portal_node_id' => Types::BINARY,
@@ -425,7 +426,7 @@ class IdentityPersistTest extends TestCase
             'mapping_node_id' => Id::toBinary($mappingNodeKey->getUuid()),
             'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
             'external_id' => $externalId,
-            'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'mapping_node_id' => Types::BINARY,

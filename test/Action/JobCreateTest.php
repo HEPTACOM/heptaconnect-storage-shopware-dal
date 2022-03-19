@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate
@@ -22,6 +22,7 @@ use Shopware\Core\Defaults;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
@@ -32,21 +33,20 @@ class JobCreateTest extends TestCase
     {
         $source = Id::randomBinary();
         $entityType = Id::randomBinary();
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
         $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => Simple::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
             'configuration' => '{}',
             'class_name' => self::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Id::toHex($source);

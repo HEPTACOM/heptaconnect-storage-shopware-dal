@@ -135,6 +135,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_QUERY` as `64211df0-e928-4fc9-87c1-09a4c03cf98a` to identify a query used for looking up existing mappings
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_NODE_QUERY` as `f6b0f467-0a73-4e1f-ad75-d669899df133` to identify a query used for looking up existing mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id` as central utility for generation and converting UUIDs
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime` as central utility for converting dates from and into storage layer acceptable formats
 
 ### Changed
 

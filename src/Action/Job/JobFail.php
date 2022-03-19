@@ -14,9 +14,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterfac
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Shopware\Core\Defaults;
 
 class JobFail implements JobFailActionInterface
 {
@@ -35,7 +35,7 @@ class JobFail implements JobFailActionInterface
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobFailResult {
             $jobIds = $this->getJobIds($payload);
-            $createdAt = $payload->getCreatedAt()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $createdAt = DateTime::toStorage($payload->getCreatedAt());
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 

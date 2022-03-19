@@ -17,9 +17,9 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class IdentityPersist implements IdentityPersistActionInterface
 {
@@ -85,7 +85,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 );
             }
 
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
 
             foreach ($create as $insert) {
                 $insert['id'] = Id::toBinary($insert['id']);
@@ -464,7 +464,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ]);
 
         $this->connection->update('heptaconnect_mapping_node', [
-            'deleted_at' => $now->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'deleted_at' => DateTime::nowToStorage(),
         ], [
             'id' => Id::toBinary($from),
         ], [

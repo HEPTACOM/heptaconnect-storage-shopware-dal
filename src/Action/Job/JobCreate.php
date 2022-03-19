@@ -20,10 +20,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class JobCreate implements JobCreateActionInterface
 {
@@ -111,7 +111,7 @@ class JobCreate implements JobCreateActionInterface
 
         $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds): void {
             $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
             $jobInserts = [];
             $payloadInserts = [];
 

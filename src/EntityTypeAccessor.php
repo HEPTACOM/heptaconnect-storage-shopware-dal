@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class EntityTypeAccessor
 {
@@ -38,7 +38,7 @@ class EntityTypeAccessor
         $entityTypes = \array_unique($entityTypes);
         $knownKeys = \array_keys($this->entityTypeIds);
         $nonMatchingKeys = \array_diff($entityTypes, $knownKeys);
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         if ($nonMatchingKeys !== []) {
             $typeIds = $this->queryIdsForTypes($nonMatchingKeys);

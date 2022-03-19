@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class WebHttpHandlerAccessor
 {
@@ -50,7 +50,7 @@ class WebHttpHandlerAccessor
 
         $inserts = [];
         $result = [];
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         foreach (\array_chunk($httpHandlerPaths, 25, true) as $httpHandlerPathChunks) {
             $b = clone $builder;

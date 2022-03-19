@@ -16,8 +16,8 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Shopware\Core\Defaults;
 
 class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
@@ -34,7 +34,7 @@ class PortalNodeCreate implements PortalNodeCreateActionInterface
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
     {
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(PortalNodeKeyInterface::class, $payloads->count())));
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
         $inserts = [];
         $result = [];
 

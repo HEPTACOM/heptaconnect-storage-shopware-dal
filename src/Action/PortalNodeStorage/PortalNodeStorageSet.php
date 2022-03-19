@@ -11,9 +11,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalN
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
@@ -40,7 +40,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
         $keysToCheck = [];
         $instructions = [];
         $now = new \DateTimeImmutable();
-        $nowFormatted = $now->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $nowFormatted = DateTime::toStorage($now);
 
         foreach ($payload->getSets() as $set) {
             $expiresIn = $set->getExpiresIn();
@@ -55,7 +55,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
                 'created_at' => $nowFormatted,
                 'updated_at' => $nowFormatted,
-                'expired_at' => $expiresAt instanceof \DateTimeInterface ? $expiresAt->format(Defaults::STORAGE_DATE_TIME_FORMAT) : null,
+                'expired_at' => $expiresAt instanceof \DateTimeInterface ? DateTime::toStorage($expiresAt) : null,
             ];
         }
 

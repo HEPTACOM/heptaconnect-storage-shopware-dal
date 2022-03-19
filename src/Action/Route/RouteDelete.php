@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionIn
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class RouteDelete implements RouteDeleteActionInterface
 {
@@ -59,7 +59,7 @@ class RouteDelete implements RouteDeleteActionInterface
         }
 
         $deleteBuilder = $this->getDeleteQuery();
-        $deleteBuilder->setParameter('now', (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+        $deleteBuilder->setParameter('now', DateTime::nowToStorage());
         $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
         $deleteBuilder->execute();
     }

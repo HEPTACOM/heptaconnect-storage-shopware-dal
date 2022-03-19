@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class WebHttpHandlerPathAccessor
 {
@@ -64,7 +64,7 @@ class WebHttpHandlerPathAccessor
 
             $foundIds = [];
             $inserts = [];
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
 
             foreach ($nonMatchingKeys as $nonMatchingKey) {
                 $inserts[$nonMatchingHexes[$nonMatchingKey]] = [

@@ -7,16 +7,17 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
@@ -45,23 +46,22 @@ class JobFinishedListTest extends TestCase
         $jobFinished = Id::toBinary(self::JOB_FINISHED);
         $jobNotFinished = Id::toBinary(self::JOB_NOT_FINISHED);
         $jobPayload = Id::randomBinary();
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => Simple::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_type', [
             'id' => $jobType,
             'type' => 'act',
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portal,
             'configuration' => '{}',
             'class_name' => self::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_payload', [
             'id' => $jobPayload,
@@ -69,7 +69,7 @@ class JobFinishedListTest extends TestCase
                 'foo' => 'bar',
             ])),
             'format' => 'serialized+gzpress',
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'payload' => Types::BINARY,
@@ -82,7 +82,7 @@ class JobFinishedListTest extends TestCase
             'job_type_id' => $jobType,
             'payload_id' => $jobPayload,
             'state_id' => JobStateEnum::open(),
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'state_id' => Types::BINARY,
@@ -99,7 +99,7 @@ class JobFinishedListTest extends TestCase
             'job_type_id' => $jobType,
             'payload_id' => $jobPayload,
             'state_id' => JobStateEnum::finished(),
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'state_id' => Types::BINARY,
