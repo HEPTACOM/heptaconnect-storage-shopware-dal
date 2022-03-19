@@ -33,8 +33,7 @@
         "heptacom/heptaconnect-portal-base": "^0.8",
         "heptacom/heptaconnect-storage-base": "^0.8",
         "ramsey/uuid": "^3.5 || ^4",
-        "shopware/core": ">=6.3",
-        "symfony/lock": ">=4"
+        "shopware/core": ">=6.3"
     },
     "require-dev": {
         "ext-json": "*",

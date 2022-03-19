@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
+use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class RouteOverviewTest extends TestCase
 {
@@ -45,14 +50,14 @@ class RouteOverviewTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $typeA = Uuid::fromHexToBytes(self::ENTITY_TYPE_A);
-        $typeB = Uuid::fromHexToBytes(self::ENTITY_TYPE_B);
-        $portalA = Uuid::fromHexToBytes(self::PORTAL_A);
-        $portalB = Uuid::fromHexToBytes(self::PORTAL_B);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $connection = $this->getConnection();
+        $typeA = Id::toBinary(self::ENTITY_TYPE_A);
+        $typeB = Id::toBinary(self::ENTITY_TYPE_B);
+        $portalA = Id::toBinary(self::PORTAL_A);
+        $portalB = Id::toBinary(self::PORTAL_B);
+        $now = DateTime::nowToStorage();
+        $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
+        $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $typeA,
@@ -78,11 +83,11 @@ class RouteOverviewTest extends TestCase
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
-        $routeDeleted = Uuid::fromHexToBytes(self::ROUTE_DELETED);
-        $routeTypeA = Uuid::fromHexToBytes(self::ROUTE_TYPE_A);
-        $routeTypeB = Uuid::fromHexToBytes(self::ROUTE_TYPE_B);
-        $routeFirst = Uuid::fromHexToBytes(self::ROUTE_FIRST);
-        $routeLast = Uuid::fromHexToBytes(self::ROUTE_LAST);
+        $routeDeleted = Id::toBinary(self::ROUTE_DELETED);
+        $routeTypeA = Id::toBinary(self::ROUTE_TYPE_A);
+        $routeTypeB = Id::toBinary(self::ROUTE_TYPE_B);
+        $routeFirst = Id::toBinary(self::ROUTE_FIRST);
+        $routeLast = Id::toBinary(self::ROUTE_LAST);
 
         $connection->insert('heptaconnect_route', [
             'id' => $routeDeleted,
@@ -128,18 +133,16 @@ class RouteOverviewTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         static::assertCount(4, $action->overview($criteria));
     }
 
     public function testPagination(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria0 = new RouteOverviewCriteria();
         $criteria0->setPageSize(1);
         $criteria0->setPage(0);
@@ -165,15 +168,14 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByDateAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_ASC,
         ]);
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_FIRST)));
 
@@ -183,15 +185,14 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByDateDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_CREATED => RouteOverviewCriteria::SORT_DESC,
         ]);
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
             static::assertTrue($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_LAST)));
 
@@ -201,9 +202,8 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByEntityTypeAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_ASC,
@@ -212,7 +212,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;
@@ -228,9 +228,8 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByEntityTypeDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new RouteOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
             RouteOverviewCriteria::FIELD_ENTITY_TYPE => RouteOverviewCriteria::SORT_DESC,
@@ -239,7 +238,7 @@ class RouteOverviewTest extends TestCase
         $indexA = null;
         $indexB = null;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult $item */
+        /** @var RouteOverviewResult $item */
         foreach ($action->overview($criteria) as $index => $item) {
             if ($item->getRouteKey()->equals(new RouteStorageKey(self::ROUTE_TYPE_A))) {
                 $indexA = $index;

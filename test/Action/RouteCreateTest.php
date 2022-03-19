@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class RouteCreateTest extends TestCase
 {
@@ -35,11 +34,12 @@ class RouteCreateTest extends TestCase
 
     public function testCreate(): void
     {
-        $source = Uuid::randomBytes();
-        $target = Uuid::randomBytes();
-        $entityType = Uuid::randomBytes();
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $source = Id::randomBinary();
+        $target = Id::randomBinary();
+        $entityType = Id::randomBinary();
+        $now = DateTime::nowToStorage();
+        $connection = $this->getConnection();
+        $facade = new StorageFacade($connection);
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
@@ -60,10 +60,10 @@ class RouteCreateTest extends TestCase
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
-        $sourceHex = Uuid::fromBytesToHex($source);
-        $targetHex = Uuid::fromBytesToHex($target);
+        $sourceHex = Id::toHex($source);
+        $targetHex = Id::toHex($target);
 
-        $action = new RouteCreate($connection, new StorageKeyGenerator(), new EntityTypeAccessor($connection), new RouteCapabilityAccessor($connection));
+        $action = $facade->getRouteCreateAction();
         \iterable_to_array($action->create(new RouteCreatePayloads([
             new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
             new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),

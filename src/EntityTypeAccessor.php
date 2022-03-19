@@ -5,23 +5,28 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class EntityTypeAccessor
 {
     public const ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
 
+    public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
+
     private array $entityTypeIds = [];
 
     private Connection $connection;
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     /**
@@ -33,7 +38,7 @@ class EntityTypeAccessor
         $entityTypes = \array_unique($entityTypes);
         $knownKeys = \array_keys($this->entityTypeIds);
         $nonMatchingKeys = \array_diff($entityTypes, $knownKeys);
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         if ($nonMatchingKeys !== []) {
             $typeIds = $this->queryIdsForTypes($nonMatchingKeys);
@@ -46,13 +51,13 @@ class EntityTypeAccessor
                     continue;
                 }
 
-                $id = Uuid::uuid5(self::ENTITY_TYPE_ID_NS, $nonMatchingKey)->getBytes();
+                $id = Id::hashedBinary(self::ENTITY_TYPE_ID_NS, $nonMatchingKey);
                 $inserts[] = [
                     'id' => $id,
                     'type' => $nonMatchingKey,
                     'created_at' => $now,
                 ];
-                $this->entityTypeIds[$nonMatchingKey] = \bin2hex($id);
+                $this->entityTypeIds[$nonMatchingKey] = Id::toHex($id);
             }
 
             if ($inserts !== []) {
@@ -76,7 +81,7 @@ class EntityTypeAccessor
 
     private function queryIdsForTypes(array $types): array
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([
@@ -84,17 +89,15 @@ class EntityTypeAccessor
                 'type.type type_type',
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
+            ->addOrderBy('type.id')
             ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
 
-        $statement = $queryBuilder->execute();
+        $result = [];
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642940743);
+        foreach ($queryBuilder->iterateRows() as $row) {
+            $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
 
-        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
-        $result = \array_column($rows, 'type_id', 'type_type');
-
-        return \array_map('bin2hex', $result);
+        return $result;
     }
 }

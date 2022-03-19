@@ -4,41 +4,40 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class JobCreateTest extends TestCase
 {
     public function testCreate(): void
     {
-        $source = Uuid::randomBytes();
-        $entityType = Uuid::randomBytes();
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $source = Id::randomBinary();
+        $entityType = Id::randomBinary();
+        $connection = $this->getConnection();
+        $facade = new StorageFacade($connection);
+        $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
@@ -53,8 +52,8 @@ class JobCreateTest extends TestCase
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
-        $sourceHex = Uuid::fromBytesToHex($source);
-        $action = new JobCreate($connection, new StorageKeyGenerator(), new JobTypeAccessor($connection), new EntityTypeAccessor($connection));
+        $sourceHex = Id::toHex($source);
+        $action = $facade->getJobCreateAction();
         $action->create(new JobCreatePayloads([
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
                 'party' => 'people',

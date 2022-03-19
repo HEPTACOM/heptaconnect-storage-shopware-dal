@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
@@ -22,25 +21,34 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class IdentityMap implements IdentityMapActionInterface
 {
+    public const MAPPING_NODE_QUERY = '0d104088-b0d4-4158-8f95-0bc8a6880cc8';
+
+    public const MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
+
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
     private EntityTypeAccessor $entityTypeAccessor;
 
     private Connection $connection;
 
+    private QueryFactory $queryFactory;
+
     public function __construct(
         StorageKeyGeneratorContract $storageKeyGenerator,
         EntityTypeAccessor $entityTypeAccessor,
-        Connection $connection
+        Connection $connection,
+        QueryFactory $queryFactory
     ) {
         $this->storageKeyGenerator = $storageKeyGenerator;
         $this->entityTypeAccessor = $entityTypeAccessor;
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function map(IdentityMapPayload $payload): IdentityMapResult
@@ -56,7 +64,7 @@ class IdentityMap implements IdentityMapActionInterface
         $neededTypes = \array_map('get_class', $datasetEntities);
         $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes);
 
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
         $readMappingNodes = [];
         $readMappingNodesIndex = [];
         $createMappingNodes = [];
@@ -82,12 +90,12 @@ class IdentityMap implements IdentityMapActionInterface
             $readMappingNodesIndex[$type][$primaryKey][] = $key;
 
             $createMappingNodes[$key] = [
-                'type_id' => \hex2bin($typeId),
-                'origin_portal_node_id' => \hex2bin($portalNodeId),
+                'type_id' => Id::toBinary($typeId),
+                'origin_portal_node_id' => Id::toBinary($portalNodeId),
                 'created_at' => $now,
                 'mapping' => [
                     'external_id' => $primaryKey,
-                    'portal_node_id' => \hex2bin($portalNodeId),
+                    'portal_node_id' => Id::toBinary($portalNodeId),
                     'created_at' => $now,
                 ],
             ];
@@ -103,7 +111,7 @@ class IdentityMap implements IdentityMapActionInterface
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     unset($createMappingNodes[$key]);
 
-                    $mappingNodeId = \bin2hex((string) $mappingNode['mapping_node_id']);
+                    $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
                     $resultMappings[$key] = new Mapping(
                         $mappingExternalId,
                         $portalNodeKey,
@@ -129,7 +137,7 @@ class IdentityMap implements IdentityMapActionInterface
                 }
 
                 $mappingNodeId = $mappingNodeKey->getUuid();
-                $createMappingNodes[$key]['id'] = \hex2bin($mappingNodeId);
+                $createMappingNodes[$key]['id'] = Id::toBinary($mappingNodeId);
                 $readMappings[$key] = $mappingNodeId;
             }
 
@@ -138,7 +146,7 @@ class IdentityMap implements IdentityMapActionInterface
                     // TODO batch
                     foreach ($createMappingNodes as $insert) {
                         $mapping = $insert['mapping'];
-                        $mapping['id'] = Uuid::uuid4()->getBytes();
+                        $mapping['id'] = Id::randomBinary();
                         $mapping['mapping_node_id'] = $insert['id'];
 
                         unset($insert['mapping']);
@@ -164,7 +172,7 @@ class IdentityMap implements IdentityMapActionInterface
             foreach ($this->getMappings($readMappings, $portalNodeId) as $mappingNode) {
                 $mappingExternalId = (string) $mappingNode['mapping_external_id'];
                 $mappingNodeType = (string) $mappingNode['mapping_node_type'];
-                $mappingNodeId = \bin2hex((string) $mappingNode['mapping_node_id']);
+                $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
 
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     $resultMappings[$key] = new Mapping(
@@ -192,7 +200,7 @@ class IdentityMap implements IdentityMapActionInterface
 
     private function getMappingNodes(array $readMappingNodes, array $typeIds, string $portalNodeId): iterable
     {
-        $builder = $this->connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::MAPPING_NODE_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
@@ -206,6 +214,7 @@ class IdentityMap implements IdentityMapActionInterface
                 'mapping',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
+            ->addOrderBy('mapping.id')
             ->select([
                 'type.type mapping_node_type',
                 'mapping.external_id mapping_external_id',
@@ -223,27 +232,24 @@ class IdentityMap implements IdentityMapActionInterface
         }
 
         foreach ($filtersByType as $typeId => $externalIds) {
-            $builder->setParameter('typeId', \hex2bin($typeId), Types::BINARY);
-            $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
-            $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('typeId', Id::toBinary($typeId), Types::BINARY);
+            $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
+            $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
 
-            $statement = $builder->execute();
-
-            if (!$statement instanceof ResultStatement) {
-                throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642951893);
-            }
-
-            yield from $statement->fetchAll(\PDO::FETCH_ASSOC);
+            yield from $builder->iterateRows();
         }
     }
 
-    private function getMappings(array $mappingNodeIds, string $portalNodeId): array
+    /**
+     * @return iterable<int, array>
+     */
+    private function getMappings(array $mappingNodeIds, string $portalNodeId): iterable
     {
         if ($mappingNodeIds === []) {
             return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::MAPPING_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
@@ -262,20 +268,15 @@ class IdentityMap implements IdentityMapActionInterface
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])
+            ->addOrderBy('mapping_node.id')
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'));
 
-        $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Types::BINARY);
-        $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642951894);
-        }
-
-        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $builder->iterateRows();
     }
 }
