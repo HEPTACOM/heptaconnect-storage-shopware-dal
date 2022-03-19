@@ -23,6 +23,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  */
 class JobDeleteTest extends TestCase
 {
