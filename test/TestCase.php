@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
 abstract class TestCase extends BaseTestCase
@@ -51,9 +51,8 @@ abstract class TestCase extends BaseTestCase
     {
         $this->kernel = new ShopwareKernel();
         $this->kernel->boot();
+        $connection = $this->getConnection();
 
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
         $connection->beginTransaction();
         $connection->executeStatement('SET SESSION innodb_lock_wait_timeout = 5');
 
@@ -64,8 +63,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function downKernel(): void
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $connection->getConfiguration()->setSQLLogger();
         $connection->rollBack();
         $this->kernel->shutdown();
@@ -158,15 +156,25 @@ abstract class TestCase extends BaseTestCase
         $trackedQueries = $this->trackedQueries;
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
+            $context = \implode(\PHP_EOL, [
+                '',
+                $trackedQuery,
+                \json_encode($params, \JSON_PRETTY_PRINT),
+                \json_encode($warnings, \JSON_PRETTY_PRINT),
+                ...$frames,
+            ]);
+
+            if (\mb_stripos($trackedQuery, 'select') !== false) {
+                static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
+                static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
+            }
+
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(
-                            static fn (string $i): string => '0x' . $i,
-                            Uuid::fromBytesToHexList($param)
-                        );
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
-                        $param = '0x' . Uuid::fromBytesToHex($param);
+                        $param = '0x' . Id::toHex($param);
                     }
                 } catch (\Throwable $throwable) {
                 }
@@ -174,18 +182,19 @@ abstract class TestCase extends BaseTestCase
 
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
-                $context = \implode(\PHP_EOL, [
-                    '',
-                    $trackedQuery,
-                    \json_encode($params, \JSON_PRETTY_PRINT),
-                    \json_encode($explanation, \JSON_PRETTY_PRINT),
-                    \json_encode($warnings, \JSON_PRETTY_PRINT),
-                    ...$frames,
-                ]);
-                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $context);
+                $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT) . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
+                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext);
             }
         }
 
         $this->trackedQueries = [];
+    }
+
+    protected function getConnection(): Connection
+    {
+        /** @var Connection $connection */
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        return $connection;
     }
 }

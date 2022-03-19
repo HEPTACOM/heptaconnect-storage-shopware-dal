@@ -10,21 +10,24 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class PortalNodeGet implements PortalNodeGetActionInterface
 {
+    public const FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $iterator;
 
-    public function __construct(Connection $connection, QueryIterator $iterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->iterator = $iterator;
     }
 
@@ -57,7 +60,7 @@ class PortalNodeGet implements PortalNodeGetActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')
@@ -80,12 +83,15 @@ class PortalNodeGet implements PortalNodeGetActionInterface
     protected function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Uuid::fromHexToBytesList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
 
-        return $this->iterator->iterate($builder, static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
-            new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
-            /* @phpstan-ignore-next-line */
-            (string) $row['portal_node_class_name']
-        ));
+        return \iterable_map(
+            $this->iterator->iterate($builder),
+            static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
+                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
+                /* @phpstan-ignore-next-line */
+                (string) $row['portal_node_class_name']
+            )
+        );
     }
 }

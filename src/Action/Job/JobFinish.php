@@ -14,9 +14,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFinishActionInterf
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class JobFinish implements JobFinishActionInterface
 {
@@ -35,9 +35,9 @@ class JobFinish implements JobFinishActionInterface
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobFinishResult {
             $jobIds = $this->getJobIds($payload);
-            $createdAt = $payload->getCreatedAt()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $createdAt = DateTime::toStorage($payload->getCreatedAt());
             $message = $payload->getMessage();
-            $transactionId = Uuid::uuid4()->getBytes();
+            $transactionId = Id::randomBinary();
 
             $affected = $this->getUpdateQueryBuilder($connection)
                 ->setParameter('jobIds', $jobIds, Connection::PARAM_STR_ARRAY)
@@ -58,7 +58,7 @@ class JobFinish implements JobFinishActionInterface
 
             foreach ($jobIds as $jobId) {
                 $connection->insert('heptaconnect_job_history', [
-                    'id' => Uuid::uuid4()->getBytes(),
+                    'id' => Id::randomBinary(),
                     'job_id' => $jobId,
                     'state_id' => JobStateEnum::finished(),
                     'message' => $message,
@@ -83,7 +83,7 @@ class JobFinish implements JobFinishActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($jobKey));
             }
 
-            $jobIds[\hex2bin($jobKey->getUuid())] = true;
+            $jobIds[Id::toBinary($jobKey->getUuid())] = true;
         }
 
         return \array_keys($jobIds);

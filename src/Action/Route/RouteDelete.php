@@ -10,20 +10,26 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionIn
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class RouteDelete implements RouteDeleteActionInterface
 {
+    public const LOOKUP_QUERY = 'b270142d-c897-4d1d-bddb-7641fbfb95a2';
+
+    public const DELETE_QUERY = '384f50ca-1e0a-464b-80fd-824fc83b87ca';
+
     private ?QueryBuilder $deleteBuilder = null;
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function delete(RouteDeleteCriteria $criteria): void
@@ -35,7 +41,7 @@ class RouteDelete implements RouteDeleteActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($routeKey));
             }
 
-            $ids[] = \hex2bin($routeKey->getUuid());
+            $ids[] = Id::toBinary($routeKey->getUuid());
         }
 
         if ($ids === []) {
@@ -53,7 +59,7 @@ class RouteDelete implements RouteDeleteActionInterface
         }
 
         $deleteBuilder = $this->getDeleteQuery();
-        $deleteBuilder->setParameter('now', (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+        $deleteBuilder->setParameter('now', DateTime::nowToStorage());
         $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
         $deleteBuilder->execute();
     }
@@ -66,7 +72,7 @@ class RouteDelete implements RouteDeleteActionInterface
             return clone $builder;
         }
 
-        $this->deleteBuilder = $builder = new QueryBuilder($this->connection);
+        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
         $builder->update('heptaconnect_route');
         $builder->set('deleted_at', ':now');
@@ -84,7 +90,7 @@ class RouteDelete implements RouteDeleteActionInterface
             return clone $builder;
         }
 
-        $this->searchBuilder = $builder = new QueryBuilder($this->connection);
+        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_route');
         $builder->select('id');

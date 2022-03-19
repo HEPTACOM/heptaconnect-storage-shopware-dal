@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActio
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
@@ -30,6 +31,11 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeList
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageClearActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageListActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionInterface;
@@ -46,6 +52,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
@@ -64,6 +71,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete;
@@ -77,6 +89,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
@@ -102,6 +115,8 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?WebHttpHandlerAccessor $webHttpHandlerAccessor = null;
 
+    private ?QueryFactory $queryFactory = null;
+
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
@@ -117,34 +132,58 @@ class StorageFacade extends AbstractSingletonStorageFacade
         return new FileReferencePersistRequestAction($this->connection, $this->getStorageKeyGenerator());
     }
 
+    protected function createIdentityErrorCreateAction(): IdentityErrorCreateActionInterface
+    {
+        return new IdentityErrorCreate(
+            $this->connection,
+            $this->getQueryFactory(),
+            $this->getStorageKeyGenerator(),
+            $this->getEntityTypeAccessor()
+        );
+    }
+
     protected function createIdentityMapAction(): IdentityMapActionInterface
     {
-        return new IdentityMap($this->getStorageKeyGenerator(), $this->getEntityTypeAccessor(), $this->connection);
+        return new IdentityMap(
+            $this->getStorageKeyGenerator(),
+            $this->getEntityTypeAccessor(),
+            $this->connection,
+            $this->getQueryFactory()
+        );
     }
 
     protected function createIdentityOverviewAction(): IdentityOverviewActionInterface
     {
-        return new IdentityOverview($this->connection);
+        return new IdentityOverview($this->getQueryFactory());
     }
 
     protected function createIdentityPersistAction(): IdentityPersistActionInterface
     {
-        return new IdentityPersist($this->connection);
+        return new IdentityPersist($this->connection, $this->getQueryFactory());
     }
 
     protected function createIdentityReflectAction(): IdentityReflectActionInterface
     {
-        return new IdentityReflect($this->connection);
+        return new IdentityReflect(
+            $this->connection,
+            $this->getQueryFactory()
+        );
     }
 
     protected function createJobCreateAction(): JobCreateActionInterface
     {
-        return new JobCreate($this->connection, $this->getStorageKeyGenerator(), $this->getJobTypeAccessor(), $this->getEntityTypeAccessor());
+        return new JobCreate(
+            $this->connection,
+            $this->getStorageKeyGenerator(),
+            $this->getJobTypeAccessor(),
+            $this->getEntityTypeAccessor(),
+            $this->getQueryFactory()
+        );
     }
 
     protected function createJobDeleteAction(): JobDeleteActionInterface
     {
-        return new JobDelete($this->connection);
+        return new JobDelete($this->connection, $this->getQueryFactory());
     }
 
     protected function createJobFailAction(): JobFailActionInterface
@@ -159,12 +198,12 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createJobGetAction(): JobGetActionInterface
     {
-        return new JobGet($this->connection, $this->getQueryIterator());
+        return new JobGet($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createJobListFinishedAction(): JobListFinishedActionInterface
     {
-        return new JobFinishedList($this->connection, $this->getQueryIterator());
+        return new JobFinishedList($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createJobScheduleAction(): JobScheduleActionInterface
@@ -179,17 +218,17 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalExtensionActivateAction(): PortalExtensionActivateActionInterface
     {
-        return new PortalExtensionActivate($this->connection);
+        return new PortalExtensionActivate($this->connection, $this->getQueryFactory());
     }
 
     protected function createPortalExtensionDeactivateAction(): PortalExtensionDeactivateActionInterface
     {
-        return new PortalExtensionDeactivate($this->connection);
+        return new PortalExtensionDeactivate($this->connection, $this->getQueryFactory());
     }
 
     protected function createPortalExtensionFindAction(): PortalExtensionFindActionInterface
     {
-        return new PortalExtensionFind($this->connection);
+        return new PortalExtensionFind($this->getQueryFactory());
     }
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
@@ -199,32 +238,57 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeDeleteAction(): PortalNodeDeleteActionInterface
     {
-        return new PortalNodeDelete($this->connection);
+        return new PortalNodeDelete($this->getQueryFactory());
     }
 
     protected function createPortalNodeGetAction(): PortalNodeGetActionInterface
     {
-        return new PortalNodeGet($this->connection, $this->getQueryIterator());
+        return new PortalNodeGet($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createPortalNodeListAction(): PortalNodeListActionInterface
     {
-        return new PortalNodeList($this->connection, $this->getQueryIterator());
+        return new PortalNodeList($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createPortalNodeOverviewAction(): PortalNodeOverviewActionInterface
     {
-        return new PortalNodeOverview($this->connection);
+        return new PortalNodeOverview($this->getQueryFactory());
     }
 
     protected function createPortalNodeConfigurationGetAction(): PortalNodeConfigurationGetActionInterface
     {
-        return new PortalNodeConfigurationGet($this->connection);
+        return new PortalNodeConfigurationGet($this->getQueryFactory());
     }
 
     protected function createPortalNodeConfigurationSetAction(): PortalNodeConfigurationSetActionInterface
     {
         return new PortalNodeConfigurationSet($this->connection);
+    }
+
+    protected function createPortalNodeStorageClearAction(): PortalNodeStorageClearActionInterface
+    {
+        return new PortalNodeStorageClear($this->getQueryFactory(), $this->connection);
+    }
+
+    protected function createPortalNodeStorageDeleteAction(): PortalNodeStorageDeleteActionInterface
+    {
+        return new PortalNodeStorageDelete($this->getQueryFactory(), $this->connection);
+    }
+
+    protected function createPortalNodeStorageGetAction(): PortalNodeStorageGetActionInterface
+    {
+        return new PortalNodeStorageGet($this->getQueryFactory());
+    }
+
+    protected function createPortalNodeStorageListAction(): PortalNodeStorageListActionInterface
+    {
+        return new PortalNodeStorageList($this->getQueryFactory());
+    }
+
+    protected function createPortalNodeStorageSetAction(): PortalNodeStorageSetActionInterface
+    {
+        return new PortalNodeStorageSet($this->getQueryFactory(), $this->connection);
     }
 
     protected function createRouteCreateAction(): RouteCreateActionInterface
@@ -239,37 +303,37 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createRouteDeleteAction(): RouteDeleteActionInterface
     {
-        return new RouteDelete($this->connection);
+        return new RouteDelete($this->getQueryFactory());
     }
 
     protected function createRouteFindAction(): RouteFindActionInterface
     {
-        return new RouteFind($this->connection);
+        return new RouteFind($this->getQueryFactory());
     }
 
     protected function createRouteGetAction(): RouteGetActionInterface
     {
-        return new RouteGet($this->connection, $this->getQueryIterator());
+        return new RouteGet($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createReceptionRouteListAction(): ReceptionRouteListActionInterface
     {
-        return new ReceptionRouteList($this->connection, $this->getQueryIterator());
+        return new ReceptionRouteList($this->getQueryFactory(), $this->getQueryIterator());
     }
 
     protected function createRouteOverviewAction(): RouteOverviewActionInterface
     {
-        return new RouteOverview($this->connection);
+        return new RouteOverview($this->getQueryFactory());
     }
 
     protected function createRouteCapabilityOverviewAction(): RouteCapabilityOverviewActionInterface
     {
-        return new RouteCapabilityOverview($this->connection);
+        return new RouteCapabilityOverview($this->getQueryFactory());
     }
 
     protected function createWebHttpHandlerConfigurationFindAction(): WebHttpHandlerConfigurationFindActionInterface
     {
-        return new WebHttpHandlerConfigurationFind($this->connection, $this->getWebHttpHandlerPathIdResolver());
+        return new WebHttpHandlerConfigurationFind($this->getQueryFactory(), $this->getWebHttpHandlerPathIdResolver());
     }
 
     protected function createWebHttpHandlerConfigurationSetAction(): WebHttpHandlerConfigurationSetActionInterface
@@ -293,17 +357,17 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private function getEntityTypeAccessor(): EntityTypeAccessor
     {
-        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->connection);
+        return $this->entityTypeAccessor ??= new EntityTypeAccessor($this->connection, $this->getQueryFactory());
     }
 
     private function getRouteCapabilityAccessor(): RouteCapabilityAccessor
     {
-        return $this->routeCapabilityAccessor ??= new RouteCapabilityAccessor($this->connection);
+        return $this->routeCapabilityAccessor ??= new RouteCapabilityAccessor($this->getQueryFactory());
     }
 
     private function getJobTypeAccessor(): JobTypeAccessor
     {
-        return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection);
+        return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection, $this->getQueryFactory());
     }
 
     private function getWebHttpHandlerPathIdResolver(): WebHttpHandlerPathIdResolver
@@ -315,6 +379,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
     {
         return $this->webHttpHandlerPathAccessor ??= new WebHttpHandlerPathAccessor(
             $this->connection,
+            $this->getQueryFactory(),
             $this->getWebHttpHandlerPathIdResolver()
         );
     }
@@ -323,7 +388,18 @@ class StorageFacade extends AbstractSingletonStorageFacade
     {
         return $this->webHttpHandlerAccessor ??= new WebHttpHandlerAccessor(
             $this->connection,
+            $this->getQueryFactory(),
             $this->getWebHttpHandlerPathIdResolver()
+        );
+    }
+
+    private function getQueryFactory(): QueryFactory
+    {
+        return $this->queryFactory ??= new QueryFactory(
+            $this->connection,
+            $this->getQueryIterator(),
+            [],
+            500
         );
     }
 }

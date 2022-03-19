@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListResult;
@@ -13,21 +12,24 @@ use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
+    public const LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
     private QueryIterator $iterator;
 
-    public function __construct(Connection $connection, QueryIterator $iterator)
+    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->iterator = $iterator;
     }
 
@@ -41,14 +43,14 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
         $builder = $this->getBuilderCached();
 
-        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        $ids = $this->iterator->iterateColumn($builder);
-        $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
-
-        yield from \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
+        return \iterable_map(
+            Id::toHexIterable($this->iterator->iterateColumn($builder)),
+            static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id))
+        );
     }
 
     protected function getBuilderCached(): QueryBuilder
@@ -65,7 +67,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -77,6 +79,18 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
             )
             ->innerJoin(
                 'route',
+                'heptaconnect_portal_node',
+                'source_portal_node',
+                $builder->expr()->eq('source_portal_node.id', 'route.source_id')
+            )
+            ->innerJoin(
+                'route',
+                'heptaconnect_portal_node',
+                'target_portal_node',
+                $builder->expr()->eq('target_portal_node.id', 'route.target_id')
+            )
+            ->innerJoin(
+                'route',
                 'heptaconnect_route_has_capability',
                 'route_has_capability',
                 $builder->expr()->eq('route_has_capability.route_id', 'route.id')
@@ -85,11 +99,17 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id')
+                $builder->expr()->andX(
+                    $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id'),
+                    $builder->expr()->isNull('capability.deleted_at')
+                )
             )
+            ->addOrderBy('route.id')
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
+                $builder->expr()->isNull('source_portal_node.deleted_at'),
+                $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('entity_type.type', ':type'),
                 $builder->expr()->eq('capability.name', ':capability')

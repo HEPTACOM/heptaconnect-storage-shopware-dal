@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
@@ -15,18 +12,22 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaExceptio
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class IdentityOverview implements IdentityOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(IdentityOverviewCriteria $criteria): iterable
@@ -45,7 +46,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
                     throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
                 }
 
-                $mappingNodeIds[] = \hex2bin($mappingNodeKey->getUuid());
+                $mappingNodeIds[] = Id::toBinary($mappingNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
@@ -70,7 +71,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
                     throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
                 }
 
-                $portalNodeIds[] = \hex2bin($portalNodeKey->getUuid());
+                $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('portal_node.id', ':portalNodeIds'));
@@ -125,21 +126,15 @@ class IdentityOverview implements IdentityOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643877528);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+        return \iterable_map(
+            $builder->iterateRows(),
             static fn (array $row): IdentityOverviewResult => new IdentityOverviewResult(
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['portal_node_id'])),
-                new MappingNodeStorageKey(Uuid::fromBytesToHex((string) $row['mapping_node_id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
+                new MappingNodeStorageKey(Id::toHex((string) $row['mapping_node_id'])),
                 (string) $row['mapping_external_id'],
                 (string) $row['entity_type_type'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at']),
+                DateTime::fromStorage((string) $row['created_at'])
             )
         );
     }
@@ -158,7 +153,7 @@ class IdentityOverview implements IdentityOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

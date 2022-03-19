@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
@@ -65,18 +65,12 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467903);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+        return \iterable_map(
+            $builder->iterateRows(),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at'])
+                DateTime::fromStorage((string) $row['created_at'])
             )
         );
     }
@@ -95,7 +89,7 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route_capability', 'capability')

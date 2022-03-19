@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Ramsey\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class WebHttpHandlerPathIdResolver
 {
@@ -12,6 +12,6 @@ class WebHttpHandlerPathIdResolver
 
     public function getIdFromPath(string $path): string
     {
-        return (string) Uuid::uuid5(self::ID_NS, $path)->getHex();
+        return Id::hashedHex(self::ID_NS, $path);
     }
 }
