@@ -121,7 +121,7 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
                 $insert = $insertPayload;
                 $insert['id'] = \hex2bin($key->getUuid());
-                $insert['previous_id'] = $previousKey ? \hex2bin($previousKey->getUuid()) : null;
+                $insert['previous_id'] = $previousKey instanceof IdentityErrorStorageKey ? \hex2bin($previousKey->getUuid()) : null;
                 $insert['group_previous_id'] = $key->equals($resultKey) ? null : \hex2bin($resultKey->getUuid());
                 $insert['type'] = \get_class($exception);
                 $insert['message'] = $exception->getMessage();
