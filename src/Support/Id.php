@@ -20,6 +20,7 @@ abstract class Id
 
     /**
      * @param string[] $binaries
+     *
      * @return string[]
      */
     public static function toHexList(array $binaries): array
@@ -29,6 +30,7 @@ abstract class Id
 
     /**
      * @param string[] $hex
+     *
      * @return string[]
      */
     public static function toBinaryList(array $hex): array
@@ -38,15 +40,17 @@ abstract class Id
 
     /**
      * @param iterable<string> $binaries
+     *
      * @return iterable<string>
      */
     public static function toHexIterable(iterable $binaries): iterable
     {
-        return \iterable_map([self::class, 'toHex'], $binaries);
+        return \iterable_map($binaries, [self::class, 'toHex']);
     }
 
     /**
      * @param iterable<string> $hex
+     *
      * @return iterable<string>
      */
     public static function toBinaryIterable(iterable $hex): iterable
