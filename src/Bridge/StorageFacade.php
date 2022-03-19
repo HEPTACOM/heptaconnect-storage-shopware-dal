@@ -120,7 +120,12 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createIdentityErrorCreateAction(): IdentityErrorCreateActionInterface
     {
-        return new IdentityErrorCreate($this->connection, $this->getQueryFactory(), $this->getStorageKeyGenerator());
+        return new IdentityErrorCreate(
+            $this->connection,
+            $this->getQueryFactory(),
+            $this->getStorageKeyGenerator(),
+            $this->getEntityTypeAccessor()
+        );
     }
 
     protected function createIdentityMapAction(): IdentityMapActionInterface

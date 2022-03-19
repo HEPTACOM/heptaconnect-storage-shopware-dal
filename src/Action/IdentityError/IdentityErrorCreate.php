@@ -16,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
@@ -32,14 +33,18 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
+    private EntityTypeAccessor $entityTypeAccessor;
+
     public function __construct(
         Connection $connection,
         QueryFactory $queryFactory,
-        StorageKeyGeneratorContract $storageKeyGenerator
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        EntityTypeAccessor $entityTypeAccessor
     ) {
         $this->connection = $connection;
         $this->queryFactory = $queryFactory;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->entityTypeAccessor = $entityTypeAccessor;
     }
 
     public function create(IdentityErrorCreatePayloads $payloads): IdentityErrorCreateResults
@@ -166,16 +171,19 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
     {
         $builder = $this->getBuilder();
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
-        $builder->andWhere($builder->expr()->eq('entity_type.type', ':entityType'));
+        $builder->andWhere($builder->expr()->eq('entity_type.id', ':entityTypeId'));
         $builder->andWhere($builder->expr()->in('mapping.external_id', ':externalIds'));
 
         $result = [];
+        /** @var string[] $allUsedEntityTypes */
+        $allUsedEntityTypes = \array_merge([], ...\array_values(\array_map('array_keys', $lookups)));
+        $entityTypeIds = \array_map('hex2bin', $this->entityTypeAccessor->getIdsForTypes($allUsedEntityTypes));
 
         foreach ($lookups as $portalNodeId => $externalIdsByEntityType) {
             $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Type::BINARY);
 
             foreach ($externalIdsByEntityType as $entityType => $externalIds) {
-                $builder->setParameter('entityType', $entityType);
+                $builder->setParameter('entityTypeId', $entityTypeIds[$entityType]);
                 $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
 
                 /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string, mapping_node_id: string} $match */
