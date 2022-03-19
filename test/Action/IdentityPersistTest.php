@@ -34,7 +34,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Ramsey\Uuid\Uuid;
 use Shopware\Core\Defaults;
 
 /**
@@ -397,9 +396,9 @@ class IdentityPersistTest extends TestCase
         }
 
         $this->getConnection()->insert('heptaconnect_mapping_node', [
-            'id' => \hex2bin($result->getUuid()),
-            'origin_portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-            'type_id' => \hex2bin($typeIds[$entityType]),
+            'id' => Id::toBinary($result->getUuid()),
+            'origin_portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+            'type_id' => Id::toBinary($typeIds[$entityType]),
             'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [
             'id' => Types::BINARY,
@@ -422,9 +421,9 @@ class IdentityPersistTest extends TestCase
         }
 
         $this->getConnection()->insert('heptaconnect_mapping', [
-            'id' => \hex2bin($key->getUuid()),
-            'mapping_node_id' => \hex2bin($mappingNodeKey->getUuid()),
-            'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+            'id' => Id::toBinary($key->getUuid()),
+            'mapping_node_id' => Id::toBinary($mappingNodeKey->getUuid()),
+            'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
             'external_id' => $externalId,
             'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
         ], [

@@ -19,6 +19,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
@@ -80,8 +81,8 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
             $insertPayloads[] = [
                 'throwable' => $payload->getThrowable(),
-                'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-                'mapping_node_id' => \hex2bin($mappingNodeId),
+                'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+                'mapping_node_id' => Id::toBinary($mappingNodeId),
             ];
         }
 
@@ -120,9 +121,9 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 ]);
 
                 $insert = $insertPayload;
-                $insert['id'] = \hex2bin($key->getUuid());
-                $insert['previous_id'] = $previousKey instanceof IdentityErrorStorageKey ? \hex2bin($previousKey->getUuid()) : null;
-                $insert['group_previous_id'] = $key->equals($resultKey) ? null : \hex2bin($resultKey->getUuid());
+                $insert['id'] = Id::toBinary($key->getUuid());
+                $insert['previous_id'] = $previousKey instanceof IdentityErrorStorageKey ? Id::toBinary($previousKey->getUuid()) : null;
+                $insert['group_previous_id'] = $key->equals($resultKey) ? null : Id::toBinary($resultKey->getUuid());
                 $insert['type'] = \get_class($exception);
                 $insert['message'] = $exception->getMessage();
                 $insert['stack_trace'] = $stackTrace;
@@ -177,10 +178,10 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
         $result = [];
         /** @var string[] $allUsedEntityTypes */
         $allUsedEntityTypes = \array_merge([], ...\array_values(\array_map('array_keys', $lookups)));
-        $entityTypeIds = \array_map('hex2bin', $this->entityTypeAccessor->getIdsForTypes($allUsedEntityTypes));
+        $entityTypeIds = Id::toBinaryList($this->entityTypeAccessor->getIdsForTypes($allUsedEntityTypes));
 
         foreach ($lookups as $portalNodeId => $externalIdsByEntityType) {
-            $builder->setParameter('portalNodeId', \hex2bin($portalNodeId), Type::BINARY);
+            $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Type::BINARY);
 
             foreach ($externalIdsByEntityType as $entityType => $externalIds) {
                 $builder->setParameter('entityTypeId', $entityTypeIds[$entityType]);
@@ -188,8 +189,8 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
                 /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string, mapping_node_id: string} $match */
                 foreach ($builder->iterateRows() as $match) {
-                    $matchPortalNodeId = \bin2hex($match['portal_node_id']);
-                    $matchMappingNodeId = \bin2hex($match['mapping_node_id']);
+                    $matchPortalNodeId = Id::toHex($match['portal_node_id']);
+                    $matchMappingNodeId = Id::toHex($match['mapping_node_id']);
                     $matchExternalId = $match['mapping_external_id'];
                     $matchEntityType = $match['entity_type_type'];
 
