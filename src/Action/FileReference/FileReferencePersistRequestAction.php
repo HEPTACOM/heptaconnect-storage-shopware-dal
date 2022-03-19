@@ -15,7 +15,8 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
 {
@@ -41,8 +42,8 @@ class FileReferencePersistRequestAction implements FileReferencePersistRequestAc
             );
         }
 
-        $portalNodeId = \hex2bin($portalNodeKey->getUuid());
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
+        $now = DateTime::nowToStorage();
 
         $storageKeys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(
             FileReferenceRequestKeyInterface::class,
@@ -64,7 +65,7 @@ class FileReferencePersistRequestAction implements FileReferencePersistRequestAc
             }
 
             $this->connection->insert('heptaconnect_file_reference_request', [
-                'id' => \hex2bin($storageKey->getUuid()),
+                'id' => Id::toBinary($storageKey->getUuid()),
                 'portal_node_id' => $portalNodeId,
                 'serialized_request' => $serializedRequest,
                 'created_at' => $now,

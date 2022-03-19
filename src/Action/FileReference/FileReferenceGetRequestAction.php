@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Type;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestGet\FileReferenceGetRequestCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestGet\FileReferenceGetRequestResult;
@@ -13,16 +12,21 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferen
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInterface
 {
-    private Connection $connection;
+    public const FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
 
     private ?QueryBuilder $queryBuilder = null;
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function getRequest(FileReferenceGetRequestCriteria $criteria): iterable
@@ -33,7 +37,7 @@ class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInte
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $portalNodeId = \hex2bin($portalNodeKey->getUuid());
+        $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
         $requestIds = [];
 
         foreach ($criteria->getFileReferenceRequestKeys() as $requestKey) {
@@ -41,34 +45,33 @@ class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInte
                 throw new UnsupportedStorageKeyException(\get_class($requestKey));
             }
 
-            $requestIds[] = \hex2bin($requestKey->getUuid());
+            $requestIds[] = Id::toBinary($requestKey->getUuid());
         }
 
         $queryBuilder = $this->getQueryBuilder()
             ->setParameter('portalNodeKey', $portalNodeId, Type::BINARY)
             ->setParameter('requestIds', $requestIds, Connection::PARAM_STR_ARRAY);
 
-        foreach ($queryBuilder->execute()->fetchAllAssociative() as $fileReferenceRequest) {
-            $requestId = \bin2hex($fileReferenceRequest['id']);
-            $serializedRequest = (string) $fileReferenceRequest['serialized_request'];
-
-            yield new FileReferenceGetRequestResult(
+        return \iterable_map(
+            $queryBuilder->iterateRows(),
+            static fn (array $row): FileReferenceGetRequestResult => new FileReferenceGetRequestResult(
                 $portalNodeKey,
-                new FileReferenceRequestStorageKey($requestId),
-                $serializedRequest
-            );
-        }
+                new FileReferenceRequestStorageKey(Id::toHex($row['id'])),
+                (string) $row['serialized_request']
+            )
+        );
     }
 
     private function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder instanceof QueryBuilder) {
-            $this->queryBuilder = $this->connection->createQueryBuilder();
+            $this->queryBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
             $expr = $this->queryBuilder->expr();
 
             $this->queryBuilder
                 ->select(['id', 'serialized_request'])
                 ->from('heptaconnect_file_reference_request', 'request')
+                ->addOrderBy('id')
                 ->andWhere($expr->eq('request.portal_node_id', ':portalNodeKey'))
                 ->andWhere($expr->in('request.id', ':requestIds'));
         }

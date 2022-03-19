@@ -124,7 +124,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createFileReferenceGetRequestAction(): FileReferenceGetRequestActionInterface
     {
-        return new FileReferenceGetRequestAction($this->connection);
+        return new FileReferenceGetRequestAction($this->getQueryFactory());
     }
 
     protected function createFileReferencePersistRequestAction(): FileReferencePersistRequestActionInterface
