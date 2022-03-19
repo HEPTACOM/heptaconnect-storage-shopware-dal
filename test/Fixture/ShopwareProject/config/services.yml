@@ -81,7 +81,3 @@ services:
             - { name: shopware.migration_source }
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator: ~
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage:
-        arguments:
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage.lock_factory'
