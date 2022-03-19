@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
@@ -37,7 +36,7 @@ class JobDeleteTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $entityType = Uuid::fromHexToBytes(self::ENTITY_TYPE);
         $jobType = Uuid::fromHexToBytes(self::JOB_TYPE);
         $portal = Uuid::fromHexToBytes(self::PORTAL);
@@ -93,7 +92,7 @@ class JobDeleteTest extends TestCase
 
     public function testDelete(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
 
         static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
         static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));

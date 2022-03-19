@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
@@ -33,7 +32,7 @@ class PortalNodeGetTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalA = Uuid::fromHexToBytes(self::PORTAL_A);
         $portalB = Uuid::fromHexToBytes(self::PORTAL_B);
         $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
@@ -64,8 +63,7 @@ class PortalNodeGetTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getPortalNodeGetAction();
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
 
@@ -74,9 +72,7 @@ class PortalNodeGetTest extends TestCase
 
     public function testGet(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getPortalNodeGetAction();
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_A)]));
 

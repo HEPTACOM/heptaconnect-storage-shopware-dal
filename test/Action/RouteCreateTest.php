@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayloads;
@@ -38,7 +37,7 @@ class RouteCreateTest extends TestCase
         $target = Uuid::randomBytes();
         $entityType = Uuid::randomBytes();
         $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
 
         $connection->insert('heptaconnect_entity_type', [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
@@ -23,7 +22,7 @@ class PortalNodeListTest extends TestCase
 {
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -43,7 +42,7 @@ class PortalNodeListTest extends TestCase
 
     public function testNormal(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalNode = Uuid::randomBytes();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,

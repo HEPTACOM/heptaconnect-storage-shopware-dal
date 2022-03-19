@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
@@ -38,7 +37,7 @@ class JobGetTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $entityType = Uuid::fromHexToBytes(self::ENTITY_TYPE);
         $jobType = Uuid::fromHexToBytes(self::JOB_TYPE);
         $portal = Uuid::fromHexToBytes(self::PORTAL);
@@ -94,9 +93,7 @@ class JobGetTest extends TestCase
 
     public function testGet(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getJobGetAction();
         $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $count = 0;
