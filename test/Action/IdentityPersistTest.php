@@ -422,7 +422,7 @@ class IdentityPersistTest extends TestCase
         MappingNodeStorageKey $mappingNodeKey,
         string $externalId
     ): void {
-        $key = $this->storageKeyGenerator->generateKey(MappingKeyInterface::class);
+        $key = (new MappingNodeKeyCollection($this->storageKeyGenerator->generateKeys(MappingKeyInterface::class, 1)))->first();
 
         if (!$key instanceof MappingStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($key));
