@@ -18,6 +18,6 @@ abstract class DateTime
 
     public static function fromStorage(string $string): \DateTimeInterface
     {
-        return \DateTimeImmutable::createFromFormat('!Y-m-d H:i:s.v', $string);
+        return \DateTimeImmutable::createFromFormat('Y-m-d H:i:s.v', $string);
     }
 }
