@@ -75,7 +75,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             $update,
             $delete
         ): void {
-            $now = new \DateTimeImmutable();
+            $now = DateTime::nowToStorage();
 
             foreach ($mappingNodesToMerge as $mergeCommand) {
                 $this->mergeMappingNodes(
@@ -84,8 +84,6 @@ class IdentityPersist implements IdentityPersistActionInterface
                     $now
                 );
             }
-
-            $now = DateTime::nowToStorage();
 
             foreach ($create as $insert) {
                 $insert['id'] = Id::toBinary($insert['id']);
@@ -453,7 +451,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         return !$hasConflict;
     }
 
-    private function mergeMappingNodes(string $from, string $into, \DateTimeInterface $now): void
+    private function mergeMappingNodes(string $from, string $into, string $now): void
     {
         $this->connection->update('heptaconnect_mapping', [
             'mapping_node_id' => Id::toBinary($into),
@@ -464,7 +462,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ]);
 
         $this->connection->update('heptaconnect_mapping_node', [
-            'deleted_at' => DateTime::nowToStorage(),
+            'deleted_at' => $now,
         ], [
             'id' => Id::toBinary($from),
         ], [
