@@ -9,7 +9,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Listing\PortalNo
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Listing\PortalNodeStorageListResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
@@ -28,10 +27,6 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
     public function list(PortalNodeStorageListCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey();
-
-        if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-            return [];
-        }
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

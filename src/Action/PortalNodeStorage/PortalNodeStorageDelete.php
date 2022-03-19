@@ -10,7 +10,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Delete\PortalNod
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Shopware\Core\Defaults;
@@ -34,10 +33,6 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
     public function delete(PortalNodeStorageDeleteCriteria $criteria): void
     {
         $portalNodeKey = $criteria->getPortalNodeKey();
-
-        if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-            return;
-        }
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
