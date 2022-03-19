@@ -60,7 +60,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->andWhere($deleteBuilder->expr()->in('`key`', ':keys'))
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
 
-        $idsPayloads = \array_chunk(\iterable_to_array($criteria->getStorageKeys()), 50);
+        $idsPayloads = \array_chunk(\iterable_to_array($criteria->getStorageKeys()), 500);
 
         try {
             $this->connection->transactional(function () use ($idsPayloads, $deleteBuilder, $deleteExpiredBuilder): void {
