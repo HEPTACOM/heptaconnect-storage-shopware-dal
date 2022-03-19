@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
@@ -34,7 +33,7 @@ class JobCreateTest extends TestCase
         $source = Id::randomBinary();
         $entityType = Id::randomBinary();
         $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
 
         $connection->insert('heptaconnect_entity_type', [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\RouteKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
@@ -39,7 +38,7 @@ class RouteGetTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $type = Id::toBinary(self::ENTITY_TYPE);
         $portalA = Id::toBinary(self::PORTAL_A);
         $portalB = Id::toBinary(self::PORTAL_B);
@@ -87,8 +86,7 @@ class RouteGetTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
 
@@ -97,9 +95,7 @@ class RouteGetTest extends TestCase
 
     public function testGet(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
 

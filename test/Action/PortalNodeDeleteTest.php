@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Delete\PortalNodeDeleteCriteria;
@@ -29,11 +28,10 @@ class PortalNodeDeleteTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
         $portal = Id::toBinary(self::PORTAL);
         $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
 
-        $connection->insert('heptaconnect_portal_node', [
+        $this->getConnection()->insert('heptaconnect_portal_node', [
             'id' => $portal,
             'class_name' => self::class,
             'configuration' => '{}',
@@ -43,7 +41,7 @@ class PortalNodeDeleteTest extends TestCase
 
     public function testDelete(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
 
         static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));

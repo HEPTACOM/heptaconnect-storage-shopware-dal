@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
@@ -25,7 +24,7 @@ class RouteFindTest extends TestCase
 {
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
@@ -63,7 +62,7 @@ class RouteFindTest extends TestCase
 
     public function testFind(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [

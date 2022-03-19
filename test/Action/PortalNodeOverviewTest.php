@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
@@ -35,7 +34,7 @@ class PortalNodeOverviewTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $portalFirstCreated = Id::toBinary(self::PORTAL_FIRST_CREATED);
         $portalLastCreated = Id::toBinary(self::PORTAL_LAST_CREATED);
         $portalDeleted = Id::toBinary(self::PORTAL_DELETED);

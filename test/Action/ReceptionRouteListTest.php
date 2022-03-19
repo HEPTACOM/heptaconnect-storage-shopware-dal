@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
@@ -26,7 +25,7 @@ class ReceptionRouteListTest extends TestCase
 {
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $receptionId = $this->getReceptionCapability();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
@@ -75,7 +74,7 @@ class ReceptionRouteListTest extends TestCase
 
     public function testCapability(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $receptionId = $this->getReceptionCapability();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
@@ -127,8 +126,6 @@ class ReceptionRouteListTest extends TestCase
 
     private function getReceptionCapability(): string
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        return (string) $connection->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION])->fetchColumn();
+        return (string) $this->getConnection()->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION])->fetchColumn();
     }
 }

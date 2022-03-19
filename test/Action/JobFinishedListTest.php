@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
@@ -39,7 +38,7 @@ class JobFinishedListTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $entityType = Id::toBinary(self::ENTITY_TYPE);
         $jobType = Id::toBinary(self::JOB_TYPE);
         $portal = Id::toBinary(self::PORTAL);
@@ -113,8 +112,7 @@ class JobFinishedListTest extends TestCase
 
     public function testList(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $action = $facade->getJobListFinishedAction();
         $count = 0;
         $finishedJobKey = new JobStorageKey(self::JOB_FINISHED);

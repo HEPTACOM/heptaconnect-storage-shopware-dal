@@ -9,7 +9,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Listing\PortalNo
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Listing\PortalNodeStorageListResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -29,10 +28,6 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
     public function list(PortalNodeStorageListCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey();
-
-        if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-            return [];
-        }
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
@@ -59,7 +54,7 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($fetchBuilder->expr()->orX(
                 $fetchBuilder->expr()->isNull('expired_at'),
-                $fetchBuilder->expr()->gte('expired_at', ':now')
+                $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));

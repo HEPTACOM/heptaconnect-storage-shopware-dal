@@ -20,32 +20,8 @@ services:
             - '@heptaconnect_portal_node_storage.repository'
             - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
 
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingExceptionRepository:
-        arguments:
-            - '@heptaconnect_mapping_error_message.repository'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository:
-        arguments:
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_mapping_node.repository'
-            - '@heptaconnect_mapping.repository'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\DatasetEntityTypeAccessor'
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository:
-        arguments:
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator'
-            - '@heptaconnect_mapping.repository'
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory'
-
     Heptacom\HeptaConnect\Storage\ShopwareDal\MigrationSource:
         tags:
             - { name: shopware.migration_source }
 
     Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator: ~
-
-    Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage:
-        arguments:
-            - '@Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage.lock_factory'

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -25,7 +24,7 @@ class PortalExtensionFindTest extends TestCase
 {
     public function testWithoutConfiguration(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
@@ -46,7 +45,7 @@ class PortalExtensionFindTest extends TestCase
 
     public function testWithDeactivatedConfiguration(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
@@ -77,7 +76,7 @@ class PortalExtensionFindTest extends TestCase
 
     public function testWithActivatedConfiguration(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
