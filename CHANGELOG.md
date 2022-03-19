@@ -121,10 +121,19 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::OVERVIEW_QUERY` as `6cb18ac6-6f5a-4d31-bed3-44849eb51f6f` to identify a query used for loading an overview page for routes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` as `329b4aa3-e576-4930-b89f-c63dca05c16e` to identify a query used for loading an overview page for route capabilities
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind::LOOKUP_QUERY` as `6c5db7b-004d-40c8-b9cc-53707aab658b` to identify a query used for looking up HTTP handler configurations
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::OVERVIEW_QUERY` as `478b14da-d0a8-44fd-bd1a-0a60ef948dd7` to identify a query used for loading an overview page for portal nodes
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete::DELETE_QUERY` as `40e42cd4-4ac3-4304-8cfc-9083d37e81cd` to identity query used for deleting portal node storage entries
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete::DELETE_EXPIRED_QUERY` as `1972fcfd-5d64-4bce-a6b5-19cb6a8ad671` to identity query used for deleting expired portal node storage entries
+- Add exception code `1646209690` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete::delete` when writing to the database fails
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::CLEAR_QUERY` as `1087e0dc-07fe-48d7-903c-9353167c3e89` to identity query used for deleting all portal node storage entries
+- Add exception code `1646209691` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::clear` when writing to the database fails
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet::FETCH_QUERY` as `679d6e76-bb9c-410d-ac22-17c64afcb7cc` to identity query used for reading portal node storage entries
+- Add exception code `1646341933` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::set` when writing to the database fails
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::UPDATE_PREPARATION_QUERY` as `75fada39-34f0-4e03-b3b5-141da358181d` to identity query used for reading portal node storage entries to prepare update statements
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageList::FETCH_QUERY` as `7e532256-22d2-492e-8e76-ab1649ddc4e0` to identity query used for reading all portal node storage entries
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::FETCH_QUERY` as `be4a9934-2ab2-4c62-8a86-4600c96bc7be` to identify a query used for loading an overview page for portal nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_QUERY` as `64211df0-e928-4fc9-87c1-09a4c03cf98a` to identify a query used for looking up existing mappings
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_NODE_QUERY` as `f6b0f467-0a73-4e1f-ad75-d669899df133` to identify a query used for looking up existing mapping nodes
-- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::OVERVIEW_QUERY` as `478b14da-d0a8-44fd-bd1a-0a60ef948dd7` to identify a query used for loading an overview page for portal nodes
-- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet::FETCH_QUERY` as `be4a9934-2ab2-4c62-8a86-4600c96bc7be` to identify a query used for loading an overview page for portal nodes
 
 ### Changed
 
@@ -180,6 +189,13 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::listByTypeAndPortalNodeAndExternalId` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::listByTypeAndPortalNodeAndExternalId`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository::create` from removed contract `\Heptacom\HeptaConnect\Storage\Base\Contract\Repository\MappingNodeRepositoryContract::create`
 - Remove deprecated `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteEntity` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Route\RouteCollection`
+- Integrate `\Heptacom\HeptaConnect\Storage\ShopwareDal\ResourceLockStorage` into `heptacom/heptaconnect-core` as `\Heptacom\HeptaConnect\Core\Parallelization\ResourceLockStorage`
+- Remove unused composer dependency `symfony/lock: >=4`
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::unset` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::deleteMultiple` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete::delete` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::clear` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear::clear` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getValue`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getType`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::has` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getMultiple` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet::get` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::set` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::set` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::list` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageList::list` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository` as base contract has been removed
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingExceptionRepository` as base contract has been removed
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository` as base contract has been removed

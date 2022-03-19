@@ -10,7 +10,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\Portal
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\ReadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
@@ -27,22 +26,11 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
 
     public function get(PortalNodeConfigurationGetCriteria $criteria): iterable
     {
-        foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
-            if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-                continue;
-            }
-
-            if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
-            }
-        }
-
         $portalNodeIds = [];
 
-        /** @var PortalNodeStorageKey $portalNodeKey */
         foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
-            if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-                continue;
+            if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }
 
             $portalNodeIds[] = \hex2bin($portalNodeKey->getUuid());

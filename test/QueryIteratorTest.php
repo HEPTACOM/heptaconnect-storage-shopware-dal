@@ -112,7 +112,7 @@ final class QueryIteratorTest extends TestCase
             $iterator->fetchSingleValue($builder);
             static::fail();
         } catch (\LogicException $exception) {
-            static::assertStringContainsStringIgnoringCase(1645901522, $exception->getCode());
+            static::assertSame(1645901522, $exception->getCode());
         }
     }
 }
