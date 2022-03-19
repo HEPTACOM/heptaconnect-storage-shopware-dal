@@ -41,6 +41,7 @@ class PortalNodeGetTest extends TestCase
         $portalDeleted = Id::toBinary(self::PORTAL_DELETED);
         $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
         $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
+        $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalA,
@@ -58,8 +59,8 @@ class PortalNodeGetTest extends TestCase
             'id' => $portalDeleted,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => DateTime::nowToStorage(),
-            'deleted_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
+            'deleted_at' => $now,
         ], ['id' => Types::BINARY]);
     }
 

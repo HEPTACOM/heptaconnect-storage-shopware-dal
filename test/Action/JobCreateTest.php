@@ -37,18 +37,19 @@ class JobCreateTest extends TestCase
         $entityType = Id::randomBinary();
         $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
+        $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => Simple::class,
-            'created_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $source,
             'configuration' => '{}',
             'class_name' => self::class,
-            'created_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
         $sourceHex = Id::toHex($source);

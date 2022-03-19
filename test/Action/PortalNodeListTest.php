@@ -27,12 +27,14 @@ class PortalNodeListTest extends TestCase
     {
         $connection = $this->getConnection();
         $portalNode = Id::randomBinary();
+        $now = DateTime::nowToStorage();
+
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => DateTime::nowToStorage(),
-            'deleted_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
+            'deleted_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);

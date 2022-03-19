@@ -31,11 +31,13 @@ class ReceptionRouteListTest extends TestCase
         $receptionId = $this->getReceptionCapability();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
+        $now = DateTime::nowToStorage();
+
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
@@ -43,7 +45,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
-            'created_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
@@ -53,15 +55,15 @@ class ReceptionRouteListTest extends TestCase
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
-            'created_at' => DateTime::nowToStorage(),
-            'deleted_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
+            'deleted_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
         $connection->insert('heptaconnect_route_has_capability', [
             'route_id' => $routeId,
             'route_capability_id' => $receptionId,
-            'created_at' => DateTime::nowToStorage(),
+            'created_at' => $now,
         ], [
             'route_id' => Types::BINARY,
             'route_capability_id' => Types::BINARY,
