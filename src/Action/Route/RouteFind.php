@@ -11,9 +11,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInte
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteFind implements RouteFindActionInterface
 {
@@ -44,8 +44,8 @@ class RouteFind implements RouteFindActionInterface
 
         $builder = $this->getBuilderCached();
 
-        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('target_key', Uuid::fromHexToBytes($targetKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('target_key', Id::toBinary($targetKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
 
         $id = $builder->fetchSingleValue();
@@ -54,7 +54,7 @@ class RouteFind implements RouteFindActionInterface
             return null;
         }
 
-        return new RouteFindResult(new RouteStorageKey(Uuid::fromBytesToHex($id)));
+        return new RouteFindResult(new RouteStorageKey(Id::toHex($id)));
     }
 
     protected function getBuilderCached(): QueryBuilder

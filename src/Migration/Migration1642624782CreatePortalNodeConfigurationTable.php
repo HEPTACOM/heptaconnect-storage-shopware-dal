@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1642624782CreatePortalNodeConfigurationTable extends MigrationStep
@@ -106,7 +107,7 @@ SQL;
                 }
 
                 $portalNodeKey = \mb_substr($configurationKey, \mb_strlen('heptacom.heptaConnect.portalNodeConfiguration.'));
-                $portalNodeId = \hex2bin($portalNodeKey);
+                $portalNodeId = Id::toBinary($portalNodeKey);
 
                 if (!\is_array($json) || !\is_string($portalNodeId)) {
                     throw new \RuntimeException('Cannot update configuration', 1642937284);

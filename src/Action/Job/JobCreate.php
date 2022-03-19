@@ -20,10 +20,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 class JobCreate implements JobCreateActionInterface
 {
@@ -111,7 +111,7 @@ class JobCreate implements JobCreateActionInterface
 
         $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds): void {
             $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
             $jobInserts = [];
             $payloadInserts = [];
 
@@ -137,7 +137,7 @@ class JobCreate implements JobCreateActionInterface
                     $jobPayloadKey = $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] ?? null;
 
                     if ($jobPayloadKey === null) {
-                        $jobPayloadKey = Uuid::uuid4()->getBytes();
+                        $jobPayloadKey = Id::randomBinary();
                         $jobPayloadChecksumIds[$jobPayloadIndex['checksum']] = $jobPayloadKey;
                         $payloadInserts[] = [
                             'id' => $jobPayloadKey,
@@ -150,11 +150,11 @@ class JobCreate implements JobCreateActionInterface
                 }
 
                 $jobInserts[] = [
-                    'id' => \hex2bin($key->getUuid()),
+                    'id' => Id::toBinary($key->getUuid()),
                     'external_id' => $payload->getMapping()->getExternalId(),
-                    'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-                    'entity_type_id' => \hex2bin($entityTypeId),
-                    'job_type_id' => \hex2bin($jobTypeId),
+                    'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+                    'entity_type_id' => Id::toBinary($entityTypeId),
+                    'job_type_id' => Id::toBinary($jobTypeId),
                     'payload_id' => $jobPayloadKey,
                     'state_id' => JobStateEnum::open(),
                     'created_at' => $now,
@@ -214,7 +214,7 @@ class JobCreate implements JobCreateActionInterface
 
         $rows = [];
 
-        foreach ($builder->fetchAssocPaginated() as $row) {
+        foreach ($builder->iterateRows() as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
 

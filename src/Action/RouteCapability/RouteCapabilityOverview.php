@@ -8,9 +8,9 @@ use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapabilityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
@@ -66,11 +66,11 @@ class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
         }
 
         return \iterable_map(
-            $builder->fetchAssocPaginated(),
+            $builder->iterateRows(),
             static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
                 (string) $row['name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at'])
+                DateTime::fromStorage((string) $row['created_at'])
             )
         );
     }

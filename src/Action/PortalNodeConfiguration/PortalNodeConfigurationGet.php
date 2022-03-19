@@ -5,53 +5,43 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\ReadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInterface
 {
-    private Connection $connection;
+    public const FETCH_QUERY = 'be4a9934-2ab2-4c62-8a86-4600c96bc7be';
 
-    public function __construct(Connection $connection)
+    private QueryFactory $queryFactory;
+
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function get(PortalNodeConfigurationGetCriteria $criteria): iterable
     {
-        foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
-            if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-                continue;
-            }
+        $portalNodeIds = [];
 
+        foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }
-        }
 
-        $portalNodeIds = [];
-
-        /** @var PortalNodeStorageKey $portalNodeKey */
-        foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
-            if ($portalNodeKey instanceof PreviewPortalNodeKey) {
-                continue;
-            }
-
-            $portalNodeIds[] = \hex2bin($portalNodeKey->getUuid());
+            $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
         }
 
         if ($portalNodeIds === []) {
             return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
         $builder->from('heptaconnect_portal_node', 'p')
             ->andWhere($builder->expr()->in('p.id', ':ids'))
@@ -60,18 +50,13 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
                 'p.id portal_node_id',
                 'p.configuration portal_configuration',
             ])
+            ->addOrderBy('p.id')
             ->setParameter('ids', $portalNodeIds, Connection::PARAM_STR_ARRAY);
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1642863471);
-        }
-
         return \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+            $builder->iterateRows(),
             static function (array $r): PortalNodeConfigurationGetResult {
-                $portalNodeId = \bin2hex((string) $r['portal_node_id']);
+                $portalNodeId = Id::toHex((string) $r['portal_node_id']);
 
                 try {
                     $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR);
@@ -83,11 +68,7 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
                     throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863473);
                 }
 
-                return new PortalNodeConfigurationGetResult(
-                    new PortalNodeStorageKey($portalNodeId),
-                    /* @phpstan-ignore-next-line */
-                    (array) $value,
-                );
+                return new PortalNodeConfigurationGetResult(new PortalNodeStorageKey($portalNodeId), $value);
             }
         );
     }

@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class PortalNodeOverviewTest extends TestCase
 {
@@ -33,13 +37,13 @@ class PortalNodeOverviewTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $portalFirstCreated = Uuid::fromHexToBytes(self::PORTAL_FIRST_CREATED);
-        $portalLastCreated = Uuid::fromHexToBytes(self::PORTAL_LAST_CREATED);
-        $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $connection = $this->getConnection();
+        $portalFirstCreated = Id::toBinary(self::PORTAL_FIRST_CREATED);
+        $portalLastCreated = Id::toBinary(self::PORTAL_LAST_CREATED);
+        $portalDeleted = Id::toBinary(self::PORTAL_DELETED);
+        $now = DateTime::nowToStorage();
+        $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
+        $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalFirstCreated,
@@ -64,18 +68,16 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         static::assertCount(2, $action->overview($criteria));
     }
 
     public function testPagination(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria0 = new PortalNodeOverviewCriteria();
         $criteria0->setPageSize(1);
         $criteria0->setPage(0);
@@ -93,9 +95,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CREATED => PortalNodeOverviewCriteria::SORT_ASC,
@@ -111,9 +112,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CREATED => PortalNodeOverviewCriteria::SORT_DESC,
@@ -129,9 +129,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameAsc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CLASS_NAME => PortalNodeOverviewCriteria::SORT_ASC,
@@ -156,9 +155,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameDesc(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
             PortalNodeOverviewCriteria::FIELD_CLASS_NAME => PortalNodeOverviewCriteria::SORT_DESC,
@@ -183,9 +181,8 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testFilterPortalNodeClass(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeOverview($connection);
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter([TestCase::class]);
 

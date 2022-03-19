@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class PortalNodeGetTest extends TestCase
@@ -34,13 +35,13 @@ class PortalNodeGetTest extends TestCase
     {
         parent::setUp();
 
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $portalA = Uuid::fromHexToBytes(self::PORTAL_A);
-        $portalB = Uuid::fromHexToBytes(self::PORTAL_B);
-        $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $connection = $this->getConnection();
+        $portalA = Id::toBinary(self::PORTAL_A);
+        $portalB = Id::toBinary(self::PORTAL_B);
+        $portalDeleted = Id::toBinary(self::PORTAL_DELETED);
+        $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
+        $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
+        $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalA,
@@ -65,8 +66,8 @@ class PortalNodeGetTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $action = new PortalNodeGet(new QueryFactory($connection, [], 500), new QueryIterator());
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeGetAction();
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
 
         static::assertCount(0, $action->get($criteria));
@@ -74,9 +75,8 @@ class PortalNodeGetTest extends TestCase
 
     public function testGet(): void
     {
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-
-        $action = new PortalNodeGet(new QueryFactory($connection, [], 500), new QueryIterator());
+        $facade = new StorageFacade($this->getConnection());
+        $action = $facade->getPortalNodeGetAction();
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_A)]));
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult $item */

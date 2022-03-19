@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(PortalNodeOverviewCriteria $criteria): iterable
@@ -73,20 +74,14 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1640405545);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+        return \iterable_map(
+            $builder->iterateRows(),
             static fn (array $row): PortalNodeOverviewResult => new PortalNodeOverviewResult(
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['portal_node_class_name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at']),
+                DateTime::fromStorage((string) $row['created_at']),
             )
         );
     }
@@ -105,7 +100,7 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

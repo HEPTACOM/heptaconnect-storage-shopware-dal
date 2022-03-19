@@ -12,10 +12,10 @@ use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
@@ -43,14 +43,14 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
         $builder = $this->getBuilderCached();
 
-        $builder->setParameter('source_key', Uuid::fromHexToBytes($sourceKey->getUuid()), ParameterType::BINARY);
+        $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        $ids = $this->iterator->iterateColumn($builder);
-        $hexIds = \iterable_map($ids, [Uuid::class, 'fromBytesToHex']);
-
-        yield from \iterable_map($hexIds, static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id)));
+        return \iterable_map(
+            Id::toHexIterable($this->iterator->iterateColumn($builder)),
+            static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id))
+        );
     }
 
     protected function getBuilderCached(): QueryBuilder

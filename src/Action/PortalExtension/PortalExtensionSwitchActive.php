@@ -10,13 +10,13 @@ use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalExtensionContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 {
@@ -55,7 +55,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
     protected function toggle(PortalNodeKeyInterface $portalNodeKey, array $payloadExtensions)
     {
         $portalNodeId = $this->getPortalNodeId($portalNodeKey);
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         $pass = $updates = [];
 
@@ -63,14 +63,14 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
             ->setParameter('extensionClassNames', $payloadExtensions, Connection::PARAM_STR_ARRAY)
-            ->fetchAssocPaginated();
+            ->iterateRows();
 
         foreach ($existingExtensionRows as $existingExtension) {
             $className = $existingExtension['class_name'];
             $existingExtensions[] = $className;
 
             if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
-                $pass[\bin2hex($existingExtension['id'])] = $className;
+                $pass[Id::toHex($existingExtension['id'])] = $className;
             } else {
                 $updates[] = [
                     'id' => $existingExtension['id'],
@@ -82,11 +82,11 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $missingExtensions = \array_diff($payloadExtensions, $existingExtensions);
 
         foreach ($missingExtensions as $missingExtension) {
-            $missingExtensionId = Uuid::uuid4();
+            $missingExtensionId = Id::randomHex();
 
             try {
                 $affected = $this->connection->insert('heptaconnect_portal_node_extension', [
-                    'id' => $missingExtensionId->getBytes(),
+                    'id' => Id::toBinary($missingExtensionId),
                     'portal_node_id' => $portalNodeId,
                     'class_name' => $missingExtension,
                     'active' => $this->getTargetActiveState(),
@@ -102,7 +102,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             }
 
             if ($affected === 1) {
-                $pass[(string) $missingExtensionId->getHex()] = $missingExtension;
+                $pass[$missingExtensionId] = $missingExtension;
             }
         }
 
@@ -116,16 +116,16 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
             if ($affected === \count($updates)) {
                 foreach ($updates as $updatePayload) {
-                    $pass[\bin2hex($updatePayload['id'])] = $updatePayload['class_name'];
+                    $pass[Id::toHex($updatePayload['id'])] = $updatePayload['class_name'];
                 }
             } else {
                 $existingExtensions = $this->getSelectByIdQueryBuilder()
                     ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
-                    ->fetchAssocPaginated();
+                    ->iterateRows();
 
                 foreach ($existingExtensions as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
-                        $pass[\bin2hex($existingExtension['id'])] = $existingExtension['class_name'];
+                        $pass[Id::toHex($existingExtension['id'])] = $existingExtension['class_name'];
                     }
                 }
             }
@@ -199,6 +199,6 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        return \hex2bin($portalNodeKey->getUuid());
+        return Id::toBinary($portalNodeKey->getUuid());
     }
 }

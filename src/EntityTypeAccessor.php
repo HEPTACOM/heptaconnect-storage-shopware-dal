@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 class EntityTypeAccessor
 {
@@ -38,7 +38,7 @@ class EntityTypeAccessor
         $entityTypes = \array_unique($entityTypes);
         $knownKeys = \array_keys($this->entityTypeIds);
         $nonMatchingKeys = \array_diff($entityTypes, $knownKeys);
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         if ($nonMatchingKeys !== []) {
             $typeIds = $this->queryIdsForTypes($nonMatchingKeys);
@@ -51,13 +51,13 @@ class EntityTypeAccessor
                     continue;
                 }
 
-                $id = Uuid::uuid5(self::ENTITY_TYPE_ID_NS, $nonMatchingKey)->getBytes();
+                $id = Id::hashedBinary(self::ENTITY_TYPE_ID_NS, $nonMatchingKey);
                 $inserts[] = [
                     'id' => $id,
                     'type' => $nonMatchingKey,
                     'created_at' => $now,
                 ];
-                $this->entityTypeIds[$nonMatchingKey] = \bin2hex($id);
+                $this->entityTypeIds[$nonMatchingKey] = Id::toHex($id);
             }
 
             if ($inserts !== []) {
@@ -94,8 +94,8 @@ class EntityTypeAccessor
 
         $result = [];
 
-        foreach ($queryBuilder->fetchAssocPaginated() as $row) {
-            $result[$row['type_type']] = \bin2hex($row['type_id']);
+        foreach ($queryBuilder->iterateRows() as $row) {
+            $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
 
         return $result;

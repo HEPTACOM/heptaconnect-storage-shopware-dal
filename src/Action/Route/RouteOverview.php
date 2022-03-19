@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\FetchMode;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class RouteOverview implements RouteOverviewActionInterface
 {
@@ -80,26 +78,20 @@ class RouteOverview implements RouteOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1637467905);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAll(FetchMode::ASSOCIATIVE),
+        return \iterable_map(
+            $builder->iterateRows(),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
-                new RouteStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                new RouteStorageKey(Id::toHex((string) $row['id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['entity_type_name'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['source_portal_node_id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['source_portal_node_class'],
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['target_portal_node_id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['target_portal_node_class'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['ct']),
+                DateTime::fromStorage((string) $row['ct']),
                 \explode(',', (string) $row['capability_name'])
             )
         );

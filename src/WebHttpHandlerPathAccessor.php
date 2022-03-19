@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
-use Shopware\Core\Defaults;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class WebHttpHandlerPathAccessor
 {
+    public const FETCH_QUERY = 'f683453e-336f-4913-8bb9-aa0e34745f97';
+
     /**
      * @var array<string, string>
      */
@@ -19,11 +21,17 @@ class WebHttpHandlerPathAccessor
 
     private Connection $connection;
 
+    private QueryFactory $queryFactory;
+
     private WebHttpHandlerPathIdResolver $pathIdResolver;
 
-    public function __construct(Connection $connection, WebHttpHandlerPathIdResolver $pathIdResolver)
-    {
+    public function __construct(
+        Connection $connection,
+        QueryFactory $queryFactory,
+        WebHttpHandlerPathIdResolver $pathIdResolver
+    ) {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
         $this->pathIdResolver = $pathIdResolver;
     }
 
@@ -45,27 +53,18 @@ class WebHttpHandlerPathAccessor
             }
 
             $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
-            $nonMatchingBytes = \array_map('hex2bin', $nonMatchingHexes);
+            $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
-            $builder = $this->connection->createQueryBuilder();
+            $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
             $builder
                 ->from('heptaconnect_web_http_handler_path', 'handler_path')
                 ->select(['handler_path.id id'])
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
                 ->setParameter('ids', \array_values($nonMatchingBytes), Connection::PARAM_STR_ARRAY);
 
-            $statement = $builder->execute();
-
-            if (!$statement instanceof Statement) {
-                throw new \LogicException('$builder->execute() should have returned a Statement', 1637467898);
-            }
-
-            /** @var array<int, string> $rows */
-            $rows = $statement->fetchAll(FetchMode::COLUMN);
-            $typeIds = \array_map('bin2hex', $rows);
             $foundIds = [];
             $inserts = [];
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
 
             foreach ($nonMatchingKeys as $nonMatchingKey) {
                 $inserts[$nonMatchingHexes[$nonMatchingKey]] = [
@@ -76,7 +75,7 @@ class WebHttpHandlerPathAccessor
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }
 
-            foreach ($typeIds as $typeId) {
+            foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
                 $path = $flippedNonMatchingHexes[$typeId];
                 $foundIds[$path] = $typeId;
 

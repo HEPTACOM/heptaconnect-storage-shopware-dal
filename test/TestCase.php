@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
 abstract class TestCase extends BaseTestCase
@@ -51,9 +51,8 @@ abstract class TestCase extends BaseTestCase
     {
         $this->kernel = new ShopwareKernel();
         $this->kernel->boot();
+        $connection = $this->getConnection();
 
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
         $connection->beginTransaction();
         $connection->executeStatement('SET SESSION innodb_lock_wait_timeout = 5');
 
@@ -64,8 +63,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function downKernel(): void
     {
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
+        $connection = $this->getConnection();
         $connection->getConfiguration()->setSQLLogger();
         $connection->rollBack();
         $this->kernel->shutdown();
@@ -168,21 +166,15 @@ abstract class TestCase extends BaseTestCase
 
             if (\mb_stripos($trackedQuery, 'select') !== false) {
                 static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
-            }
-
-            if (\mb_stripos($trackedQuery, 'limit') !== false) {
                 static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
             }
 
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(
-                            static fn (string $i): string => '0x' . $i,
-                            Uuid::fromBytesToHexList($param)
-                        );
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
-                        $param = '0x' . Uuid::fromBytesToHex($param);
+                        $param = '0x' . Id::toHex($param);
                     }
                 } catch (\Throwable $throwable) {
                 }
@@ -196,5 +188,13 @@ abstract class TestCase extends BaseTestCase
         }
 
         $this->trackedQueries = [];
+    }
+
+    protected function getConnection(): Connection
+    {
+        /** @var Connection $connection */
+        $connection = $this->kernel->getContainer()->get(Connection::class);
+
+        return $connection;
     }
 }

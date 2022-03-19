@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingExceptionKeyInterface;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
@@ -14,13 +14,13 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
@@ -29,7 +29,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
         MappingKeyInterface::class => MappingStorageKey::class,
-        MappingExceptionKeyInterface::class => MappingExceptionStorageKey::class,
+        IdentityErrorKeyInterface::class => IdentityErrorStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
     ];
 
@@ -38,7 +38,8 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         'MappingNode' => MappingNodeStorageKey::class,
         'Route' => RouteStorageKey::class,
         'Mapping' => MappingStorageKey::class,
-        'MappingException' => MappingExceptionStorageKey::class,
+        'IdentityError' => IdentityErrorStorageKey::class,
+        'MappingException' => IdentityErrorStorageKey::class,
         'Job' => JobStorageKey::class,
     ];
 
@@ -98,7 +99,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
 
     private function createKey(string $interface, ?string $uuid): StorageKeyInterface
     {
-        $uuid ??= Uuid::randomHex();
+        $uuid ??= Id::randomHex();
 
         if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
             throw new UnsupportedStorageKeyException($interface);
