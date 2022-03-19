@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Dataset\Base\DatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
@@ -55,8 +54,6 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Portal\PortalA\PortalA;
  */
 class IdentityErrorTest extends TestCase
 {
-    private ?Connection $connection = null;
-
     private ?PortalNodeKeyInterface $portalA = null;
 
     private ?IdentityMapActionInterface $identityMap = null;
@@ -67,11 +64,7 @@ class IdentityErrorTest extends TestCase
     {
         parent::setUp();
 
-        /** @var Connection $connection */
-        $connection = $this->kernel->getContainer()->get(Connection::class);
-        $this->connection = $connection;
-
-        $facade = new StorageFacade($connection);
+        $facade = new StorageFacade($this->getConnection());
         $portalNodeCreate = $facade->getPortalNodeCreateAction();
         $portalNodeGet = $facade->getPortalNodeGetAction();
         $this->identityMap = $facade->getIdentityMapAction();
@@ -93,7 +86,7 @@ class IdentityErrorTest extends TestCase
 
     protected function tearDown(): void
     {
-        $facade = new StorageFacade($this->connection);
+        $facade = new StorageFacade($this->getConnection());
         $portalNodeDelete = $facade->getPortalNodeDeleteAction();
 
         $portalNodeDelete->delete(new PortalNodeDeleteCriteria(new PortalNodeKeyCollection([
@@ -125,7 +118,7 @@ class IdentityErrorTest extends TestCase
 
         static::assertInstanceOf(MappedDatasetEntityStruct::class, $mappedEntity);
 
-        $oldCount = (int) $this->connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $oldCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
             new IdentityErrorCreatePayload(
@@ -138,7 +131,7 @@ class IdentityErrorTest extends TestCase
             ),
         ]));
 
-        $newCount = (int) $this->connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         static::assertSame($newCount, $oldCount + 2);
     }
@@ -153,7 +146,7 @@ class IdentityErrorTest extends TestCase
         $entity = new $entityClass();
         $entity->setPrimaryKey('b85d0182-4392-4c81-bb77-411be927ca39');
 
-        $oldCount = (int) $this->connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $oldCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         try {
             $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
@@ -170,7 +163,7 @@ class IdentityErrorTest extends TestCase
         } catch (CreateException $throwable) {
         }
 
-        $newCount = (int) $this->connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         static::assertSame($newCount, $oldCount);
     }
