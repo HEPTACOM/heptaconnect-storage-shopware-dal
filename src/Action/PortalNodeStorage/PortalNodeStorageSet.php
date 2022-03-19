@@ -11,9 +11,9 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalN
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
@@ -40,7 +40,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
         $keysToCheck = [];
         $instructions = [];
         $now = new \DateTimeImmutable();
-        $nowFormatted = $now->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $nowFormatted = DateTime::toStorage($now);
 
         foreach ($payload->getSets() as $set) {
             $expiresIn = $set->getExpiresIn();
@@ -52,10 +52,10 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 '`key`' => $set->getStorageKey(),
                 'value' => $set->getValue(),
                 'type' => $set->getType(),
-                'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+                'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
                 'created_at' => $nowFormatted,
                 'updated_at' => $nowFormatted,
-                'expired_at' => $expiresAt instanceof \DateTimeInterface ? $expiresAt->format(Defaults::STORAGE_DATE_TIME_FORMAT) : null,
+                'expired_at' => $expiresAt instanceof \DateTimeInterface ? DateTime::toStorage($expiresAt) : null,
             ];
         }
 
@@ -80,7 +80,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
             ->setParameter('ids', $keysToCheck)
-            ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $nowFormatted);
 
         try {
@@ -107,7 +107,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                         ]);
                     } else {
                         unset($instruction['updated_at']);
-                        $instruction['id'] = Uuid::uuid4()->getBytes();
+                        $instruction['id'] = Id::randomBinary();
 
                         $this->connection->insert('heptaconnect_portal_node_storage', $instruction, [
                             'id' => Type::BINARY,

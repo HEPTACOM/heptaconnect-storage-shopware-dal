@@ -9,17 +9,19 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  */
@@ -38,28 +40,27 @@ class JobDeleteTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
-        $entityType = Uuid::fromHexToBytes(self::ENTITY_TYPE);
-        $jobType = Uuid::fromHexToBytes(self::JOB_TYPE);
-        $portal = Uuid::fromHexToBytes(self::PORTAL);
-        $job = Uuid::fromHexToBytes(self::JOB);
-        $jobPayload = Uuid::randomBytes();
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $entityType = Id::toBinary(self::ENTITY_TYPE);
+        $jobType = Id::toBinary(self::JOB_TYPE);
+        $portal = Id::toBinary(self::PORTAL);
+        $job = Id::toBinary(self::JOB);
+        $jobPayload = Id::randomBinary();
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => Simple::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_type', [
             'id' => $jobType,
             'type' => 'act',
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portal,
             'configuration' => '{}',
             'class_name' => self::class,
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_payload', [
             'id' => $jobPayload,
@@ -67,7 +68,7 @@ class JobDeleteTest extends TestCase
                 'foo' => 'bar',
             ])),
             'format' => 'serialized+gzpress',
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'payload' => Types::BINARY,
@@ -80,7 +81,7 @@ class JobDeleteTest extends TestCase
             'job_type_id' => $jobType,
             'payload_id' => $jobPayload,
             'state_id' => JobStateEnum::open(),
-            'created_at' => $now,
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'portal_node_id' => Types::BINARY,

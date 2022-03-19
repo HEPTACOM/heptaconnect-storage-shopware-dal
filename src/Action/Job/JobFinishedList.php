@@ -9,6 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Listing\JobListFinishedResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -32,7 +33,7 @@ class JobFinishedList implements JobListFinishedActionInterface
     public function list(): iterable
     {
         return \iterable_map(
-            \iterable_map($this->iterator->iterateColumn($this->getBuilderCached()), 'bin2hex'),
+            Id::toHexIterable($this->iterator->iterateColumn($this->getBuilderCached())),
             static fn (string $id) => new JobListFinishedResult(new JobStorageKey($id))
         );
     }

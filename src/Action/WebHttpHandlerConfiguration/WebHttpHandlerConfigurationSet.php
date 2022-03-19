@@ -12,10 +12,10 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
@@ -80,7 +80,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             }
         }
 
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
         $deletes = [];
         $upserts = [];
 
@@ -92,7 +92,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
 
             if ($payload->getConfigurationValue() === null) {
                 $deletes[] = [
-                    'handler_id' => \hex2bin($handlerId),
+                    'handler_id' => Id::toBinary($handlerId),
                     'key' => $payload->getConfigurationKey(),
                 ];
 
@@ -100,8 +100,8 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
             }
 
             $upserts[] = [
-                'id' => Uuid::randomBytes(),
-                'handler_id' => \hex2bin($handlerId),
+                'id' => Id::randomBinary(),
+                'handler_id' => Id::toBinary($handlerId),
                 '`key`' => $payload->getConfigurationKey(),
                 'value' => \serialize($payload->getConfigurationValue()),
                 'type' => 'serialized',

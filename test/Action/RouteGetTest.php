@@ -9,15 +9,17 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\RouteKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -39,10 +41,10 @@ class RouteGetTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
-        $type = Uuid::fromHexToBytes(self::ENTITY_TYPE);
-        $portalA = Uuid::fromHexToBytes(self::PORTAL_A);
-        $portalB = Uuid::fromHexToBytes(self::PORTAL_B);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $type = Id::toBinary(self::ENTITY_TYPE);
+        $portalA = Id::toBinary(self::PORTAL_A);
+        $portalB = Id::toBinary(self::PORTAL_B);
+        $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $type,
@@ -63,8 +65,8 @@ class RouteGetTest extends TestCase
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
-        $routeDeleted = Uuid::fromHexToBytes(self::ROUTE_DELETED);
-        $routeActive = Uuid::fromHexToBytes(self::ROUTE_ACTIVE);
+        $routeDeleted = Id::toBinary(self::ROUTE_DELETED);
+        $routeActive = Id::toBinary(self::ROUTE_ACTIVE);
 
         $connection->insert('heptaconnect_route', [
             'id' => $routeDeleted,

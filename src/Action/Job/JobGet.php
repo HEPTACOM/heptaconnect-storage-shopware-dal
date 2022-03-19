@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -120,15 +121,15 @@ class JobGet implements JobGetActionInterface
     protected function yieldJobs(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', \array_map('hex2bin', $ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
 
         return \iterable_map(
             $this->iterator->iterate($builder),
             fn (array $row): JobGetResult => new JobGetResult(
                 (string) $row['job_type_type'],
-                new JobStorageKey(\bin2hex((string) $row['job_id'])),
+                new JobStorageKey(Id::toHex((string) $row['job_id'])),
                 new MappingComponentStruct(
-                    new PortalNodeStorageKey(\bin2hex((string) $row['portal_node_id'])),
+                    new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
                     (string) $row['job_entity_type'],
                     (string) $row['job_external_id']
                 ),

@@ -11,6 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\P
 use Heptacom\HeptaConnect\Storage\Base\Exception\ReadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInterface
@@ -33,7 +34,7 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
                 throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }
 
-            $portalNodeIds[] = \hex2bin($portalNodeKey->getUuid());
+            $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
         }
 
         if ($portalNodeIds === []) {
@@ -55,7 +56,7 @@ class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActionInte
         return \iterable_map(
             $builder->iterateRows(),
             static function (array $r): PortalNodeConfigurationGetResult {
-                $portalNodeId = \bin2hex((string) $r['portal_node_id']);
+                $portalNodeId = Id::toHex((string) $r['portal_node_id']);
 
                 try {
                     $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR);

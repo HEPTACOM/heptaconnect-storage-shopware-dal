@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 class WebHttpHandlerAccessor
 {
@@ -50,7 +50,7 @@ class WebHttpHandlerAccessor
 
         $inserts = [];
         $result = [];
-        $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $now = DateTime::nowToStorage();
 
         foreach (\array_chunk($httpHandlerPaths, 25, true) as $httpHandlerPathChunks) {
             $b = clone $builder;
@@ -65,22 +65,22 @@ class WebHttpHandlerAccessor
                     $b->expr()->eq('handler.portal_node_id', ':pn' . $match),
                     $b->expr()->eq('handler.path_id', ':p' . $match)
                 ));
-                $b->setParameter('pn' . $match, \hex2bin($portalNodeKey->getUuid()), Type::BINARY);
-                $b->setParameter('p' . $match, \hex2bin($pathId), Type::BINARY);
+                $b->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
+                $b->setParameter('p' . $match, Id::toBinary($pathId), Type::BINARY);
 
-                $insertableId = Uuid::uuid4()->getBytes();
-                $result[$keyIndex[$match]] = \bin2hex($insertableId);
+                $insertableId = Id::randomBinary();
+                $result[$keyIndex[$match]] = Id::toHex($insertableId);
                 $inserts[$match] = [
                     'id' => $insertableId,
-                    'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-                    'path_id' => \hex2bin($pathId),
+                    'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+                    'path_id' => Id::toBinary($pathId),
                     'created_at' => $now,
                 ];
             }
 
             /** @var array{id: string, match_key: string} $row */
             foreach ($b->iterateRows() as $row) {
-                $result[$keyIndex[$row['match_key']]] = \bin2hex($row['id']);
+                $result[$keyIndex[$row['match_key']]] = Id::toHex($row['id']);
 
                 unset($inserts[$row['match_key']]);
             }

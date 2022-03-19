@@ -10,10 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOver
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
@@ -77,11 +77,11 @@ class PortalNodeOverview implements PortalNodeOverviewActionInterface
         return \iterable_map(
             $builder->iterateRows(),
             static fn (array $row): PortalNodeOverviewResult => new PortalNodeOverviewResult(
-                new PortalNodeStorageKey(Uuid::fromBytesToHex((string) $row['id'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
                 /* @phpstan-ignore-next-line */
                 (string) $row['portal_node_class_name'],
                 /* @phpstan-ignore-next-line */
-                \date_create_immutable_from_format(Defaults::STORAGE_DATE_TIME_FORMAT, (string) $row['created_at']),
+                DateTime::fromStorage((string) $row['created_at']),
             )
         );
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class RouteCapabilityAccessor
@@ -46,7 +47,7 @@ class RouteCapabilityAccessor
 
             /** @var object{id: string, name: string} $row */
             foreach ($builder->iterateRows() as $row) {
-                $typeIds[$row['name']] = \bin2hex($row['id']);
+                $typeIds[$row['name']] = Id::toHex($row['id']);
             }
 
             $this->knownCapabilities = \array_merge($this->knownCapabilities, $typeIds);

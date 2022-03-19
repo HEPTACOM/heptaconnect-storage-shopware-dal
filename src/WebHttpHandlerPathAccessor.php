@@ -6,8 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class WebHttpHandlerPathAccessor
 {
@@ -52,7 +53,7 @@ class WebHttpHandlerPathAccessor
             }
 
             $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
-            $nonMatchingBytes = \array_map('hex2bin', $nonMatchingHexes);
+            $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
             $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
             $builder
@@ -63,7 +64,7 @@ class WebHttpHandlerPathAccessor
 
             $foundIds = [];
             $inserts = [];
-            $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+            $now = DateTime::nowToStorage();
 
             foreach ($nonMatchingKeys as $nonMatchingKey) {
                 $inserts[$nonMatchingHexes[$nonMatchingKey]] = [
@@ -74,7 +75,7 @@ class WebHttpHandlerPathAccessor
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }
 
-            foreach (\iterable_map($builder->iterateColumn(), 'bin2hex') as $typeId) {
+            foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
                 $path = $flippedNonMatchingHexes[$typeId];
                 $foundIds[$path] = $typeId;
 

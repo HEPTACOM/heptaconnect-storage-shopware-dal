@@ -30,31 +30,24 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\EntityType\EntityTypeEntity
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingCollection
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingEntity
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeDefinition
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Mapping\MappingNodeEntity
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -90,12 +83,12 @@ class IdentityPersistTest extends TestCase
             new PortalNodeCreatePayload(PortalContract::class),
         ]));
 
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $mappingNodeKeySource = $this->createMappingNode(Simple::class, $portalNodeKeySource);
         $this->createMapping($portalNodeKeySource, $mappingNodeKeySource, $externalIdSource);
 
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdTarget = Id::randomHex();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
         $mappingNodeKeyTarget = $this->createMappingNode(Simple::class, $portalNodeKeyTarget);
         $this->createMapping($portalNodeKeyTarget, $mappingNodeKeyTarget, $externalIdTarget);
@@ -115,8 +108,8 @@ class IdentityPersistTest extends TestCase
 
     public function testPersistingSingleEntityMapping(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -149,9 +142,9 @@ class IdentityPersistTest extends TestCase
 
     public function testPersistingSameExternalIdToTwoDifferentMappingNodes(): void
     {
-        $externalId1Source = (string) Uuid::uuid4()->getHex();
-        $externalId2Source = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalId1Source = Id::randomHex();
+        $externalId2Source = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -188,9 +181,9 @@ class IdentityPersistTest extends TestCase
 
     public function testCreatingDifferentExternalIdToTwoSameMappingNodes(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalId1Target = (string) Uuid::uuid4()->getHex();
-        $externalId2Target = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalId1Target = Id::randomHex();
+        $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -224,9 +217,9 @@ class IdentityPersistTest extends TestCase
 
     public function testCreatingAndUpdatingDifferentExternalIdToTwoSameMappingNodes(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalId1Target = (string) Uuid::uuid4()->getHex();
-        $externalId2Target = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalId1Target = Id::randomHex();
+        $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -260,11 +253,11 @@ class IdentityPersistTest extends TestCase
 
     public function testSwappingExternalIdsOfTwoMappings(): void
     {
-        $externalIdSourceA = (string) Uuid::uuid4()->getHex();
-        $externalIdTargetA = (string) Uuid::uuid4()->getHex();
+        $externalIdSourceA = Id::randomHex();
+        $externalIdTargetA = Id::randomHex();
 
-        $externalIdSourceB = (string) Uuid::uuid4()->getHex();
-        $externalIdTargetB = (string) Uuid::uuid4()->getHex();
+        $externalIdSourceB = Id::randomHex();
+        $externalIdTargetB = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -307,8 +300,8 @@ class IdentityPersistTest extends TestCase
 
     public function testDeletingMappingNode(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
-        $externalIdTarget = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
+        $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -345,7 +338,7 @@ class IdentityPersistTest extends TestCase
 
     public function testDeletingMappingNodesTwice(): void
     {
-        $externalIdSource = (string) Uuid::uuid4()->getHex();
+        $externalIdSource = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
             new PortalNodeCreatePayload(PortalContract::class),
@@ -407,10 +400,10 @@ class IdentityPersistTest extends TestCase
         }
 
         $this->getConnection()->insert('heptaconnect_mapping_node', [
-            'id' => \hex2bin($result->getUuid()),
-            'origin_portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
-            'type_id' => \hex2bin($typeIds[$entityType]),
-            'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'id' => Id::toBinary($result->getUuid()),
+            'origin_portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
+            'type_id' => Id::toBinary($typeIds[$entityType]),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'origin_portal_node_id' => Types::BINARY,
@@ -432,11 +425,11 @@ class IdentityPersistTest extends TestCase
         }
 
         $this->getConnection()->insert('heptaconnect_mapping', [
-            'id' => \hex2bin($key->getUuid()),
-            'mapping_node_id' => \hex2bin($mappingNodeKey->getUuid()),
-            'portal_node_id' => \hex2bin($portalNodeKey->getUuid()),
+            'id' => Id::toBinary($key->getUuid()),
+            'mapping_node_id' => Id::toBinary($mappingNodeKey->getUuid()),
+            'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
             'external_id' => $externalId,
-            'created_at' => (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
             'mapping_node_id' => Types::BINARY,

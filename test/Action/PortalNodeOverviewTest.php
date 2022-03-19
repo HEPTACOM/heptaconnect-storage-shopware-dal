@@ -9,14 +9,16 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOver
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -36,12 +38,12 @@ class PortalNodeOverviewTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
-        $portalFirstCreated = Uuid::fromHexToBytes(self::PORTAL_FIRST_CREATED);
-        $portalLastCreated = Uuid::fromHexToBytes(self::PORTAL_LAST_CREATED);
-        $portalDeleted = Uuid::fromHexToBytes(self::PORTAL_DELETED);
-        $now = \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $yesterday = \date_create()->sub(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
-        $tomorrow = \date_create()->add(new \DateInterval('P1D'))->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+        $portalFirstCreated = Id::toBinary(self::PORTAL_FIRST_CREATED);
+        $portalLastCreated = Id::toBinary(self::PORTAL_LAST_CREATED);
+        $portalDeleted = Id::toBinary(self::PORTAL_DELETED);
+        $now = DateTime::nowToStorage();
+        $yesterday = DateTime::toStorage(\date_create()->sub(new \DateInterval('P1D')));
+        $tomorrow = DateTime::toStorage(\date_create()->add(new \DateInterval('P1D')));
 
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalFirstCreated,

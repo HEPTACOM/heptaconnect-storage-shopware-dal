@@ -10,8 +10,9 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Listing\PortalNo
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeStorageList implements PortalNodeStorageListActionInterface
 {
@@ -32,7 +33,6 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
         }
 
-        $now = new \DateTimeImmutable();
         $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
@@ -55,13 +55,13 @@ class PortalNodeStorageList implements PortalNodeStorageListActionInterface
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
-            ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
-            ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('now', DateTime::nowToStorage());
 
         return \iterable_map(
             $fetchBuilder->iterateRows(),
             static fn (array $row): PortalNodeStorageListResult => new PortalNodeStorageListResult(
-                new PortalNodeStorageKey(\bin2hex((string) $row['storage_value'])),
+                new PortalNodeStorageKey(Id::toHex((string) $row['storage_value'])),
                 (string) $row['storage_key'],
                 (string) $row['storage_type'],
                 (string) $row['storage_value']

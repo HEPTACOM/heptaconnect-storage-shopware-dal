@@ -6,9 +6,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
 abstract class TestCase extends BaseTestCase
@@ -172,12 +172,9 @@ abstract class TestCase extends BaseTestCase
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(
-                            static fn (string $i): string => '0x' . $i,
-                            Uuid::fromBytesToHexList($param)
-                        );
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
-                        $param = '0x' . Uuid::fromBytesToHex($param);
+                        $param = '0x' . Id::toHex($param);
                     }
                 } catch (\Throwable $throwable) {
                 }

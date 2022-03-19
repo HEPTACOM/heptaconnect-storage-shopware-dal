@@ -9,14 +9,16 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCr
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
@@ -27,39 +29,41 @@ class ReceptionRouteListTest extends TestCase
     {
         $connection = $this->getConnection();
         $receptionId = $this->getReceptionCapability();
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
+        $now = DateTime::nowToStorage();
+
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
-        $routeId = Uuid::randomBytes();
+        $routeId = Id::randomBinary();
         $connection->insert('heptaconnect_route', [
             'id' => $routeId,
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
-            'deleted_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => $now,
+            'deleted_at' => $now,
         ], [
             'id' => Types::BINARY,
         ]);
         $connection->insert('heptaconnect_route_has_capability', [
             'route_id' => $routeId,
             'route_capability_id' => $receptionId,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => $now,
         ], [
             'route_id' => Types::BINARY,
             'route_capability_id' => Types::BINARY,
@@ -76,31 +80,31 @@ class ReceptionRouteListTest extends TestCase
     {
         $connection = $this->getConnection();
         $receptionId = $this->getReceptionCapability();
-        $portalNode = Uuid::randomBytes();
-        $portalNodeHex = Uuid::fromBytesToHex($portalNode);
+        $portalNode = Id::randomBinary();
+        $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
             'configuration' => '{}',
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
-        $entityType = Uuid::randomBytes();
+        $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
             'type' => self::class,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
-        $routeId = Uuid::randomBytes();
+        $routeId = Id::randomBinary();
         $connection->insert('heptaconnect_route', [
             'id' => $routeId,
             'type_id' => $entityType,
             'source_id' => $portalNode,
             'target_id' => $portalNode,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
         ]);
@@ -114,7 +118,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_route_has_capability', [
             'route_id' => $routeId,
             'route_capability_id' => $receptionId,
-            'created_at' => \date_create()->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            'created_at' => DateTime::nowToStorage(),
         ], [
             'route_id' => Types::BINARY,
             'route_capability_id' => Types::BINARY,

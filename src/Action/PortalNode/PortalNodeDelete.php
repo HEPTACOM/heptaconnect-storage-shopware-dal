@@ -10,9 +10,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDele
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Shopware\Core\Defaults;
 
 class PortalNodeDelete implements PortalNodeDeleteActionInterface
 {
@@ -40,7 +41,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }
 
-            $ids[] = \hex2bin($portalNodeKey->getUuid());
+            $ids[] = Id::toBinary($portalNodeKey->getUuid());
         }
 
         if ($ids === []) {
@@ -62,7 +63,7 @@ class PortalNodeDelete implements PortalNodeDeleteActionInterface
         }
 
         $deleteBuilder = $this->getDeleteQuery();
-        $deleteBuilder->setParameter('now', (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+        $deleteBuilder->setParameter('now', DateTime::nowToStorage());
         $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
         $deleteBuilder->execute();
     }

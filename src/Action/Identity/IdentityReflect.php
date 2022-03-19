@@ -14,10 +14,10 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PrimaryKeySharingMappingStruct;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Ramsey\Uuid\Uuid;
-use Shopware\Core\Defaults;
 
 class IdentityReflect implements IdentityReflectActionInterface
 {
@@ -116,16 +116,16 @@ class IdentityReflect implements IdentityReflectActionInterface
                 $builder->expr()->eq('portal_node.id', ':portalNode' . $sourcePortalNodeId),
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
-            $builder->setParameter('portalNode' . $sourcePortalNodeId, \hex2bin($sourcePortalNodeId), Type::BINARY);
-            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, \array_map('hex2bin', $mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Type::BINARY);
+            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
         $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
 
         /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
-            $portalNodeId = \bin2hex($mapping['portal_node_id']);
-            $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
+            $portalNodeId = Id::toHex($mapping['portal_node_id']);
+            $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
             $key = $portalNodeId . $mappingNodeId . $externalId;
 
@@ -135,10 +135,10 @@ class IdentityReflect implements IdentityReflectActionInterface
         if ($createMappings !== []) {
             try {
                 $this->connection->transactional(function () use ($createMappings): void {
-                    $now = (new \DateTimeImmutable())->format(Defaults::STORAGE_DATE_TIME_FORMAT);
+                    $now = DateTime::nowToStorage();
 
                     foreach ($createMappings as $createMapping) {
-                        $createMapping['id'] = Uuid::uuid4()->getBytes();
+                        $createMapping['id'] = Id::randomBinary();
                         $createMapping['created_at'] = $now;
 
                         $this->connection->insert('mapping', $createMapping, [
@@ -158,12 +158,12 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-        $builder->setParameter('portalNodeId', \hex2bin($targetPortalNodeId), Type::BINARY);
-        $builder->setParameter('mappingNodeIds', \array_map('hex2bin', $reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Type::BINARY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
-            $mappingNodeId = \bin2hex($mapping['mapping_node_id']);
+            $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
             $reflectionMapping = null;
 
