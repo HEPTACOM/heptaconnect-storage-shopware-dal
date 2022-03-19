@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActio
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
@@ -47,6 +48,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
@@ -114,6 +116,16 @@ class StorageFacade extends AbstractSingletonStorageFacade
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    protected function createIdentityErrorCreateAction(): IdentityErrorCreateActionInterface
+    {
+        return new IdentityErrorCreate(
+            $this->connection,
+            $this->getQueryFactory(),
+            $this->getStorageKeyGenerator(),
+            $this->getEntityTypeAccessor()
+        );
     }
 
     protected function createIdentityMapAction(): IdentityMapActionInterface

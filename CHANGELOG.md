@@ -68,6 +68,10 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1643877525` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a mapping node with an invalid mapping node key
 - Add exception code `1643877526` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the payload refers to a portal node with an invalid portal node key
 - Add exception code `1643877527` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview::overview` when the criteria has an invalid sorting option
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate` to store identity errors
+- Add exception code `1645308762` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::create` when the payload refers to a portal node with an invalid portal node key
+- Add exception code `1645308763` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::create` when the referenced mapping node by components is not known
+- Add exception code `1645308764` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::create` when writing to the database fails
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade`
 - Add query identifier parameter into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::__construct` that is added on query execution
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::fetchRow` to fetch a row keyed by column names
@@ -95,6 +99,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::BUILD_UPDATE_PAYLOAD_QUERY` as `ddad865c-0608-42cd-89f1-148a44ed8f31` to identify a query used for reading identities that have be updated
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_CONFLICTS_QUERY` as `38d26bce-b577-4def-9fe3-d055cb63495d` to identify a query used for identifying possible conflicts
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::VALIDATE_MERGE_QUERY` as `d8bb9156-edcc-4b1b-8e7e-fae2e8932434` to identify a query used for identifying possible merges
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::LOOKUP_QUERY` as `95f2537a-eda2-4123-824d-72f6c871e8a8` to identify a query used for looking up related mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::PAYLOAD_LOOKUP_QUERY` as `b2234327-93a0-4854-ac52-fba75f71da74` to identify a query used for looking up payload entries
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::DELETE_QUERY` as `f60b01fc-8f9a-4a37-a009-a00db9a64b11` to identify a query used for deleting jobs
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::LOOKUP_QUERY` as `c1c41a80-6aec-4499-a07a-26ee57b07594` to identify a query used for looking up jobs that can be deleted
@@ -154,6 +159,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Change dependency in `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor` from `\Doctrine\DBAL\Connection` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory`
 - Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor`
 - Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor`
+- Rename `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey`
 
 ### Deprecated
 
@@ -190,6 +196,11 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getValue`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getType`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::has` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::getMultiple` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet::get` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::set` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet::set` that allows for optimizations for different use-cases
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalStorage::list` in favour of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageList::list` that allows for optimizations for different use-cases
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingRepository` as base contract has been removed
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingExceptionRepository` as base contract has been removed
+- Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\MappingNodeRepository` as base contract has been removed
+- Remove unused trait `\Heptacom\HeptaConnect\Storage\ShopwareDal\Repository\EntityRepositoryChecksTrait` as all using implementations have been removed
+- Remove unused `\Heptacom\HeptaConnect\Storage\ShopwareDal\DalAccess`
 
 ### Fixed
 
