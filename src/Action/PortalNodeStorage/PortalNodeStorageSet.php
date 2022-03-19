@@ -77,7 +77,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($fetchBuilder->expr()->orX(
                 $fetchBuilder->expr()->isNull('expired_at'),
-                $fetchBuilder->expr()->gte('expired_at', ':now')
+                $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
             ->setParameter('ids', $keysToCheck)
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)

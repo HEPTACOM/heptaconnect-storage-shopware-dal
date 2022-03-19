@@ -49,7 +49,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteExpiredBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
             ->andWhere($deleteExpiredBuilder->expr()->isNotNull('expired_at'))
-            ->andWhere($deleteExpiredBuilder->expr()->lt('expired_at', ':now'))
+            ->andWhere($deleteExpiredBuilder->expr()->lte('expired_at', ':now'))
             ->setParameter('portal_node_id', \hex2bin($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $now->format(Defaults::STORAGE_DATE_TIME_FORMAT));
 
