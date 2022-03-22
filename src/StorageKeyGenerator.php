@@ -33,7 +33,7 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         MappingKeyInterface::class => MappingStorageKey::class,
         IdentityErrorKeyInterface::class => IdentityErrorStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
-        FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class
+        FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class,
     ];
 
     private const ABBREVIATIONS = [
