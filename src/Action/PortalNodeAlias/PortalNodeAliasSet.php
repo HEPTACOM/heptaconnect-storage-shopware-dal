@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Set\PortalNodeAliasSetPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Set\PortalNodeAliasSetPayloads;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Exception\EmptyAliasStringException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidAliasSetPayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UpdateException;
@@ -30,11 +31,12 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
         foreach ($payloads as $payload) {
             $portalNodeKey = $payload->getPortalNodeKey();
             $alias = $payload->getAlias();
+
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new InvalidAliasSetPayloadException($payload, 1645446078, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
             }
             if ($alias === '') {
-                throw new InvalidAliasSetPayloadException($payload, 1645446809, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidAliasSetPayloadException($payload, 1645446809, new EmptyAliasStringException());
             }
             $updates[$portalNodeKey->getUuid()] = $alias;
         }

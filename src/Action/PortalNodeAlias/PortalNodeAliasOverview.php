@@ -10,6 +10,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Overview\PortalNodeAliasOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Overview\PortalNodeAliasOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 
 class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
@@ -25,6 +27,24 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();
+
+        foreach ($criteria->getSort() as $field => $direction) {
+            $dbalDirection = $direction === PortalNodeAliasOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
+            $dbalFieldName = null;
+
+            switch ($field) {
+                case PortalNodeAliasOverviewCriteria::FIELD_ALIAS:
+                    $dbalFieldName = 'portal_node.alias';
+
+                    break;
+            }
+
+            if ($dbalFieldName === null) {
+                throw new InvalidOverviewCriteriaException($criteria, 1647941560);
+            }
+
+            $builder->addOrderBy($dbalFieldName, $dbalDirection);
+        }
 
         $pageSize = $criteria->getPageSize();
 
@@ -46,7 +66,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 
         yield from \iterable_map(
             $statement->fetchAllAssociative(),
-            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult('PortalNode:' . \bin2hex($row['id']), $row['alias']),
+            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(new PortalNodeStorageKey(\bin2hex($row['id'])), $row['alias']),
         );
     }
 
@@ -72,6 +92,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
                 'portal_node.id id',
                 'portal_node.alias alias',
             ])
-            ->where($builder->expr()->isNotNull('alias'));
+            ->where($builder->expr()->isNotNull('alias'))
+            ->andWhere($builder->expr()->isNull('deleted_at'));
     }
 }

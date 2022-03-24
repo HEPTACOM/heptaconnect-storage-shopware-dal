@@ -72,6 +72,8 @@ SQL;
                 'alias',
             ])
             ->from('heptaconnect_bridge_key_alias')
+            ->where($queryBuilderSelect->expr()->like('original', ':prefix'))
+            ->setParameter(':prefix', 'PortalNode:%')
             ->execute()
             ->fetchAll();
 
@@ -84,17 +86,16 @@ SQL;
             $original = (string) ($row['original'] ?? null);
             $alias = (string) ($row['alias'] ?? null);
 
-            [$type, $key] = \explode(':', $original, 2);
+            $key = \explode(':', $original, 2)[1];
             $portalNodeId = \hex2bin($key);
-            if ($type === 'PortalNode') {
-                try {
-                    $queryBuilderUpdate
-                        ->setParameter('id', $portalNodeId, Types::BINARY)
-                        ->setParameter('alias', $alias, Types::BINARY)
-                        ->execute();
-                } catch (\Exception $exception) {
-                    throw new \Exception('Migration of PortalNode-Alias failed.', 1643286092);
-                }
+
+            try {
+                $queryBuilderUpdate
+                    ->setParameter('id', $portalNodeId, Types::BINARY)
+                    ->setParameter('alias', $alias, Types::BINARY)
+                    ->execute();
+            } catch (\Exception $exception) {
+                throw new \Exception('Migration of PortalNode-Alias failed.', 1643286092);
             }
         }
     }

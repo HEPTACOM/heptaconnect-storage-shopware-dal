@@ -56,15 +56,12 @@ class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
             throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1645446001);
         }
 
-        $results = [];
-
         foreach ($statement->fetchAllAssociative() as $row) {
             $uuid = \bin2hex($row['portal_node_id']);
             $alias = $row['portal_node_alias'];
-            $result = new PortalNodeAliasFindResult('PortalNode:' . $uuid, $alias);
-            $results[] = $result;
+            $key = new PortalNodeStorageKey($uuid);
+            $result = new PortalNodeAliasFindResult($key, $alias);
+            yield $result;
         }
-
-        return $results;
     }
 }

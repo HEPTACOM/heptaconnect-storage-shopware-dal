@@ -9,6 +9,7 @@ use Doctrine\DBAL\Driver\ResultStatement;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Get\PortalNodeAliasGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Get\PortalNodeAliasGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasGetActionInterface;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 
 class PortalNodeAliasGet implements PortalNodeAliasGetActionInterface
 {
@@ -48,15 +49,12 @@ class PortalNodeAliasGet implements PortalNodeAliasGetActionInterface
             throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1643294417);
         }
 
-        $results = [];
-
         foreach ($statement->fetchAllAssociative() as $row) {
             $uuid = \bin2hex($row['portal_node_id']);
             $alias = $row['portal_node_alias'];
-            $result = new PortalNodeAliasGetResult('PortalNode:' . $uuid, $alias);
-            $results[] = $result;
+            $key = new PortalNodeStorageKey($uuid);
+            $result = new PortalNodeAliasGetResult($key, $alias);
+            yield $result;
         }
-
-        return $results;
     }
 }
