@@ -139,9 +139,9 @@ class IdentityPersistTest extends TestCase
         try {
             // reception 2
             $this->identityPersistAction->persist($payload);
-            self::fail();
+            static::fail();
         } catch (IdentityConflictException $exception) {
-            self::assertSame($exception->getExternalId(), '123456789');
+            static::assertSame($exception->getExternalId(), '123456789');
         }
     }
 
