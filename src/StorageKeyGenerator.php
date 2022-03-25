@@ -39,11 +39,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         'Job' => JobStorageKey::class,
     ];
 
-    public function generateKey(string $keyClassName): StorageKeyInterface
-    {
-        return $this->createKey($keyClassName, null);
-    }
-
     public function generateKeys(string $keyClassName, int $count): iterable
     {
         while ($count-- > 0) {

@@ -35,7 +35,7 @@ class StorageKeyGeneratorTest extends TestCase
         $this->expectExceptionMessage('Unsupported storage key class: ' . AbstractStorageKey::class);
 
         $generator = new StorageKeyGenerator();
-        $generator->generateKey(AbstractStorageKey::class);
+        $keys = \iterable_to_array($generator->generateKeys(AbstractStorageKey::class, 1));
     }
 
     public function testPreviewKeySerialization(): void
@@ -63,7 +63,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        $key = $generator->generateKey($interface);
+        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertInstanceOf($interface, $key);
     }
 
@@ -87,7 +87,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        $key = $generator->generateKey($interface);
+        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         static::assertStringContainsString($key->getUuid(), $serialized);
     }
@@ -99,7 +99,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        $key = $generator->generateKey($interface);
+        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         $deserialized = $generator->deserialize($serialized);
         static::assertTrue($key->equals($deserialized), 'Keys are not equal');
@@ -112,7 +112,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = new StorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        $key = $generator->generateKey($interface);
+        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertStringContainsString($key->getUuid(), \json_encode($key));
     }
 
