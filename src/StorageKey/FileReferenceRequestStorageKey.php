@@ -6,6 +6,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
 
-class FileReferenceRequestStorageKey extends AbstractStorageKey implements FileReferenceRequestKeyInterface
+final class FileReferenceRequestStorageKey extends AbstractStorageKey implements FileReferenceRequestKeyInterface
 {
 }
