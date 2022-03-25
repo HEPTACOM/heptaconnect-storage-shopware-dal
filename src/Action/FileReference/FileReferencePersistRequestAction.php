@@ -42,40 +42,42 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
             );
         }
 
-        $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
-        $now = DateTime::nowToStorage();
-
-        $storageKeys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(
-            FileReferenceRequestKeyInterface::class,
-            \count($payload->getSerializedRequests())
-        )));
-
         $result = new FileReferencePersistRequestResult($portalNodeKey);
 
-        foreach ($payload->getSerializedRequests() as $key => $serializedRequest) {
-            $storageKey = $storageKeys->current();
-            $storageKeys->next();
+        $this->connection->transactional(function (Connection $connection) use ($portalNodeKey, $payload, $result) {
+            $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
+            $now = DateTime::nowToStorage();
 
-            if (!$storageKey instanceof FileReferenceRequestStorageKey) {
-                throw new InvalidCreatePayloadException(
-                    $payload,
-                    1645822126,
-                    new UnsupportedStorageKeyException(\get_class($storageKey))
-                );
+            $storageKeys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(
+                FileReferenceRequestKeyInterface::class,
+                \count($payload->getSerializedRequests())
+            )));
+
+            foreach ($payload->getSerializedRequests() as $key => $serializedRequest) {
+                $storageKey = $storageKeys->current();
+                $storageKeys->next();
+
+                if (!$storageKey instanceof FileReferenceRequestStorageKey) {
+                    throw new InvalidCreatePayloadException(
+                        $payload,
+                        1645822126,
+                        new UnsupportedStorageKeyException(\get_class($storageKey))
+                    );
+                }
+
+                $connection->insert('heptaconnect_file_reference_request', [
+                    'id' => Id::toBinary($storageKey->getUuid()),
+                    'portal_node_id' => $portalNodeId,
+                    'serialized_request' => $serializedRequest,
+                    'created_at' => $now,
+                ], [
+                    'id' => Type::BINARY,
+                    'portal_node_id' => Type::BINARY,
+                ]);
+
+                $result->addFileReferenceRequestKey($key, $storageKey);
             }
-
-            $this->connection->insert('heptaconnect_file_reference_request', [
-                'id' => Id::toBinary($storageKey->getUuid()),
-                'portal_node_id' => $portalNodeId,
-                'serialized_request' => $serializedRequest,
-                'created_at' => $now,
-            ], [
-                'id' => Type::BINARY,
-                'portal_node_id' => Type::BINARY,
-            ]);
-
-            $result->addFileReferenceRequestKey($key, $storageKey);
-        }
+        });
 
         return $result;
     }
