@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class JobDelete implements JobDeleteActionInterface
+final class JobDelete implements JobDeleteActionInterface
 {
     public const DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
 

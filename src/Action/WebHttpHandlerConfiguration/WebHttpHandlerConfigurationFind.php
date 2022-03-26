@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
-class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
+final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
 {
     public const LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
 

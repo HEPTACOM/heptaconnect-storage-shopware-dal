@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
+final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
     public const OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 

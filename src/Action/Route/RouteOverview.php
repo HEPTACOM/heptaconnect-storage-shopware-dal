@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteOverview implements RouteOverviewActionInterface
+final class RouteOverview implements RouteOverviewActionInterface
 {
     public const OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
 

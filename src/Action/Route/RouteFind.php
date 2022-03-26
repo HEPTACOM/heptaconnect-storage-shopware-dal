@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteFind implements RouteFindActionInterface
+final class RouteFind implements RouteFindActionInterface
 {
     public const LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
 

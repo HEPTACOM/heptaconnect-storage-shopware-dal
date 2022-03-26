@@ -18,7 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class JobFinish implements JobFinishActionInterface
+final class JobFinish implements JobFinishActionInterface
 {
     public const UPDATE_QUERY = '393a0ae1-5f42-4a49-96a3-9a23c26e6bd2';
 

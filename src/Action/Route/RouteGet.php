@@ -16,7 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
-class RouteGet implements RouteGetActionInterface
+final class RouteGet implements RouteGetActionInterface
 {
     public const FETCH_QUERY = '24ab04cd-03f5-40c8-af25-715856281314';
 

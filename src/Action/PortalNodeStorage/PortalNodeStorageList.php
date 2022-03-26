@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeStorageList implements PortalNodeStorageListActionInterface
+final class PortalNodeStorageList implements PortalNodeStorageListActionInterface
 {
     public const FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
 

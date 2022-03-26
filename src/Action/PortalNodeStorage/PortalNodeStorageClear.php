@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
+final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
 {
     public const CLEAR_QUERY = '1087e0dc-07fe-48d7-903c-9353167c3e89';
 

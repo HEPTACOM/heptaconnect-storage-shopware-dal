@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
-class ReceptionRouteList implements ReceptionRouteListActionInterface
+final class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
     public const LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
 

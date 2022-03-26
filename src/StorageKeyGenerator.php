@@ -20,7 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-class StorageKeyGenerator extends StorageKeyGeneratorContract
+final class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
     private const IMPLEMENTATION_MAP = [
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,

@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteDelete implements RouteDeleteActionInterface
+final class RouteDelete implements RouteDeleteActionInterface
 {
     public const LOOKUP_QUERY = 'b270142d-c897-4d1d-bddb-7641fbfb95a2';
 

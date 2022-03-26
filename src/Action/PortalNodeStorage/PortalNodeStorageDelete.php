@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
+final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 {
     public const DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
 

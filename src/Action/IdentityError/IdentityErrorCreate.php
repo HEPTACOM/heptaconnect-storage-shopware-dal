@@ -24,7 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityErrorCreate implements IdentityErrorCreateActionInterface
+final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
     public const LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
 

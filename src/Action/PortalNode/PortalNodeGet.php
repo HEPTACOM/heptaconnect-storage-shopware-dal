@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
-class PortalNodeGet implements PortalNodeGetActionInterface
+final class PortalNodeGet implements PortalNodeGetActionInterface
 {
     public const FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
 
