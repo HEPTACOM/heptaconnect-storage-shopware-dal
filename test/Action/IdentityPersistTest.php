@@ -6,11 +6,10 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\MappingKeyCollection;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\MappingNodeKeyCollection;
+use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Exception\IdentityConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
@@ -27,7 +26,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -104,6 +102,44 @@ class IdentityPersistTest extends TestCase
 
         static::assertCount(0, $this->listByMappingNode($mappingNodeKeySource));
         static::assertCount(2, $this->listByMappingNode($mappingNodeKeyTarget));
+    }
+
+    public function testMergingMappingNodesAfterTheSourceChangedPrimaryKeyOrTargetMapsObjectTwice(): void
+    {
+        $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
+            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(PortalContract::class),
+        ]));
+
+        $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
+        $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
+
+        // emission 1
+        $mappingNodeKeyA = $this->createMappingNode(Simple::class, $portalNodeKeySource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKeyA, 'FooBar');
+
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKeyA, '123456789'),
+        ]));
+
+        // reception 1
+        $this->identityPersistAction->persist($payload);
+
+        // emission 2
+        $mappingNodeKeyB = $this->createMappingNode(Simple::class, $portalNodeKeySource);
+        $this->createMapping($portalNodeKeySource, $mappingNodeKeyB, 'BarFoo');
+
+        $payload = new IdentityPersistPayload($portalNodeKeyTarget, new IdentityPersistPayloadCollection([
+            new IdentityPersistCreatePayload($mappingNodeKeyB, '123456789'),
+        ]));
+
+        try {
+            // reception 2
+            $this->identityPersistAction->persist($payload);
+            static::fail();
+        } catch (IdentityConflictException $exception) {
+            static::assertSame($exception->getExternalId(), '123456789');
+        }
     }
 
     public function testPersistingSingleEntityMapping(): void
@@ -418,14 +454,8 @@ class IdentityPersistTest extends TestCase
         MappingNodeStorageKey $mappingNodeKey,
         string $externalId
     ): void {
-        $key = (new MappingKeyCollection($this->storageKeyGenerator->generateKeys(MappingKeyInterface::class, 1)))->first();
-
-        if (!$key instanceof MappingStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
-        }
-
         $this->getConnection()->insert('heptaconnect_mapping', [
-            'id' => Id::toBinary($key->getUuid()),
+            'id' => Id::randomBinary(),
             'mapping_node_id' => Id::toBinary($mappingNodeKey->getUuid()),
             'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
             'external_id' => $externalId,
