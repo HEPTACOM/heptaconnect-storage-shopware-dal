@@ -8,6 +8,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterf
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
@@ -39,6 +40,13 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         'Job' => JobStorageKey::class,
     ];
 
+    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
+
+    public function __construct(PortalNodeAliasAccessor $portalNodeAliasAccessor)
+    {
+        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
+    }
+
     public function generateKeys(string $keyClassName, int $count): iterable
     {
         while ($count-- > 0) {
@@ -49,6 +57,20 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
     public function serialize(StorageKeyInterface $key): string
     {
         $class = \get_class($key);
+
+        if ($key instanceof AliasAwarePortalNodeStorageKey) {
+            $key = $key->withoutAlias();
+
+            if (!$key instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException($class);
+            }
+
+            $alias = $this->portalNodeAliasAccessor->getAliasesByIds([$key->getUuid()])[$key->getUuid()] ?? null;
+
+            if (\is_string($alias)) {
+                return $alias;
+            }
+        }
 
         if (!$key instanceof AbstractStorageKey) {
             return parent::serialize($key);
@@ -63,6 +85,12 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
 
     public function deserialize(string $keyData): StorageKeyInterface
     {
+        $portalNodeKeyData = $this->portalNodeAliasAccessor->getIdsByAliases([$keyData])[$keyData] ?? null;
+
+        if (\is_string($portalNodeKeyData)) {
+            return new PortalNodeStorageKey($portalNodeKeyData);
+        }
+
         $parts = \explode(':', $keyData, 2);
 
         if (\count($parts) !== 2) {
