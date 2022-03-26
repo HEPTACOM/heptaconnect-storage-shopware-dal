@@ -61,7 +61,7 @@ class WebHttpHandlerAccessor
                 $match = $portalNodeKey->getUuid() . $pathId;
                 $keyIndex[$match] = $key;
 
-                $b->orWhere($b->expr()->andX(
+                $b->orWhere($b->expr()->and(
                     $b->expr()->eq('handler.portal_node_id', ':pn' . $match),
                     $b->expr()->eq('handler.path_id', ':p' . $match)
                 ));

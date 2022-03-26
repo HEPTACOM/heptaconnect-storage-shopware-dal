@@ -112,7 +112,7 @@ class IdentityReflect implements IdentityReflectActionInterface
         $mappingNodeExpressions = [];
 
         foreach ($filters as $sourcePortalNodeId => $mappingNodeIds) {
-            $mappingNodeExpressions[] = $builder->expr()->andX(
+            $mappingNodeExpressions[] = $builder->expr()->and(
                 $builder->expr()->eq('portal_node.id', ':portalNode' . $sourcePortalNodeId),
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
@@ -120,7 +120,7 @@ class IdentityReflect implements IdentityReflectActionInterface
             $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
-        $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
+        $builder->andWhere($builder->expr()->or(...$mappingNodeExpressions));
 
         /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {

@@ -53,7 +53,7 @@ class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
             ->andWhere($fetchBuilder->expr()->in('portal_node_storage.key', ':ids'))
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
-            ->andWhere($fetchBuilder->expr()->orX(
+            ->andWhere($fetchBuilder->expr()->or(
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))

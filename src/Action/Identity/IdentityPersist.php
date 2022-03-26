@@ -314,7 +314,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             $typeParameterKey = 'typeId_' . Id::randomHex();
             $externalIdParameterKey = 'externalId_' . Id::randomHex();
 
-            $typeConditions[] = $expr->andX(
+            $typeConditions[] = $expr->and(
                 $expr->eq('mappingNode.type_id', ':' . $typeParameterKey),
                 $expr->in('mapping.external_id', ':' . $externalIdParameterKey)
             );
@@ -345,11 +345,11 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
             ->addOrderBy('mapping.id')
-            ->where($expr->andX(
+            ->where($expr->and(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
                 $expr->eq('mapping.portal_node_id', ':portalNodeId'),
-                $expr->orX(...$typeConditions)
+                $expr->or(...$typeConditions)
             ))
             ->setParameter('portalNodeId', Id::toBinary($portalNodeId))
         ;
@@ -413,7 +413,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'type',
                 'heptaconnect_mapping_node',
                 'mappingNode',
-                $expr->andX(
+                $expr->and(
                     $expr->eq('type.id', 'mappingNode.type_id'),
                     $expr->isNull('mappingNode.deleted_at'),
                 )

@@ -42,16 +42,8 @@
                 <referencedMethod name="Doctrine\DBAL\Statement::fetch" />
                 <referencedMethod name="Doctrine\DBAL\Statement::fetchAll" />
                 <referencedMethod name="Doctrine\DBAL\Statement::fetchColumn" />
-                <referencedMethod name="Doctrine\DBAL\Query\Expression\ExpressionBuilder::andX" />
-                <referencedMethod name="Doctrine\DBAL\Query\Expression\ExpressionBuilder::orX" />
             </errorLevel>
         </DeprecatedMethod>
-        <TooManyArguments>
-            <errorLevel type="info">
-                <referencedFunction name="Doctrine\DBAL\Query\Expression\ExpressionBuilder::andX" />
-                <referencedFunction name="Doctrine\DBAL\Query\Expression\ExpressionBuilder::orX" />
-            </errorLevel>
-        </TooManyArguments>
         <RedundantCondition>
             <errorLevel type="info">
                 <!-- Type Doctrine\DBAL\Connection for $connection is always object with method executeStatement -->
