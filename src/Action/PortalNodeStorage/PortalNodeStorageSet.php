@@ -79,7 +79,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
-            ->setParameter('ids', $keysToCheck)
+            ->setParameter('ids', $keysToCheck, Connection::PARAM_STR_ARRAY)
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
             ->setParameter('now', $nowFormatted);
 
