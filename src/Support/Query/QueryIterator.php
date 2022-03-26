@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Doctrine\DBAL\Statement;
 
 class QueryIterator
 {
@@ -150,12 +150,12 @@ class QueryIterator
         $query->setMaxResults($initLimit);
     }
 
-    private function getExecuteStatement(QueryBuilder $query): Statement
+    private function getExecuteStatement(QueryBuilder $query): Result
     {
         $statement = $query->execute();
 
-        if (!$statement instanceof Statement) {
-            throw new \LogicException('query->execute() should have returned a ResultStatement', 1637467900);
+        if (!$statement instanceof Result) {
+            throw new \LogicException('query->execute() should have returned a Result', 1637467900);
         }
 
         return $statement;
