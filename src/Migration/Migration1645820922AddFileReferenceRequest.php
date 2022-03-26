@@ -25,6 +25,12 @@ create table heptaconnect_file_reference_request
 ENGINE=InnoDB
 DEFAULT CHARSET='binary'
 COLLATE='binary';
+
+create index `dt_desc.heptaconnect_file_reference_request.created_at`
+    on heptaconnect_file_reference_request (created_at);
+
+create index `dt_desc.heptaconnect_file_reference_request.updated_at`
+    on heptaconnect_file_reference_request (updated_at);
 SQL;
 
     public function getCreationTimestamp(): int
