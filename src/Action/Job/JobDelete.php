@@ -63,8 +63,8 @@ SQL;
             ->where($selectBuilder->expr()->in('id', ':ids'))
             ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
             ->setMaxResults(\count($ids))
-            ->execute()
-            ->fetchAll(\PDO::FETCH_COLUMN);
+            ->iterateColumn();
+        $payloadIds = \iterable_to_array($payloadIds);
 
         $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteJobBuilder

@@ -136,6 +136,14 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_NODE_QUERY` as `f6b0f467-0a73-4e1f-ad75-d669899df133` to identify a query used for looking up existing mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id` as central utility for generation and converting UUIDs
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime` as central utility for converting dates from and into storage layer acceptable formats
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::FIND_QUERY` as `9b00334a-cc0b-4017-a9dc-e2520a872064` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::UPDATE_QUERY` as `2d59f1a4-4baf-4cda-b762-16fb5beda452` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish::FIND_QUERY` as `84e5495d-4733-4e8a-b775-aafba23daa8c` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish::UPDATE_QUERY` as `393a0ae1-5f42-4a49-96a3-9a23c26e6bd2` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule::FIND_QUERY` as `87c10b4f-3dcd-460d-ba04-b38acbad6cbe` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule::UPDATE_QUERY` as `72372e2f-6e02-470b-89d5-b65ee88024b5` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::FIND_QUERY` as `1bbfc5fe-756c-4171-b645-ad2a6c10f4e7` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::UPDATE_QUERY` as `0803daca-3ca7-44c4-a492-42cc51e46854` to identity query used for updating job states
 
 ### Changed
 

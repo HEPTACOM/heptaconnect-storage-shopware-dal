@@ -413,7 +413,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'type',
                 'heptaconnect_mapping_node',
                 'mappingNode',
-                $expr->and(
+                (string) $expr->and(
                     $expr->eq('type.id', 'mappingNode.type_id'),
                     $expr->isNull('mappingNode.deleted_at'),
                 )
@@ -442,10 +442,10 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
             ->groupBy('mapping.portal_node_id')
             ->having($expr->gt('COUNT(mapping.id)', 1))
-            ->setParameter('mappingNodeIds', [
-                \hex2bin($fromMappingNodeId),
-                \hex2bin($intoMappingNodeId),
-            ], Connection::PARAM_STR_ARRAY)
+            ->setParameter('mappingNodeIds', Id::toBinaryList([
+                $fromMappingNodeId,
+                $intoMappingNodeId,
+            ]), Connection::PARAM_STR_ARRAY)
             ->fetchSingleValue();
 
         return !$hasConflict;

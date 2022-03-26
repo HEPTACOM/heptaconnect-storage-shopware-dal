@@ -143,7 +143,7 @@ class RouteOverview implements RouteOverviewActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->and(
+                (string) $builder->expr()->and(
                     $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id'),
                     $builder->expr()->isNull('capability.deleted_at')
                 )

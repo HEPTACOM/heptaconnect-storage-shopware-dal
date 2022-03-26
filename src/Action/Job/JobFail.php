@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailResult;
@@ -17,18 +15,27 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class JobFail implements JobFailActionInterface
 {
-    private Connection $connection;
+    public const UPDATE_QUERY = '2d59f1a4-4baf-4cda-b762-16fb5beda452';
+
+    public const FIND_QUERY = '9b00334a-cc0b-4017-a9dc-e2520a872064';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    public function __construct(Connection $connection)
+    private Connection $connection;
+
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function fail(JobFailPayload $payload): JobFailResult
@@ -39,17 +46,15 @@ class JobFail implements JobFailActionInterface
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 
-            $affected = $this->getUpdateQueryBuilder($connection)
+            $affected = $this->getUpdateQueryBuilder()
                 ->setParameter('jobIds', $jobIds, Connection::PARAM_STR_ARRAY)
                 ->setParameter('transactionId', $transactionId, Types::BINARY)
                 ->execute();
 
             if ($affected < \count($jobIds)) {
-                $affectedJobIds = $this->getSelectQueryBuilder($connection)
-                    ->setParameter('transactionId', $transactionId)
-                    ->execute()
-                    ->fetchAll(FetchMode::COLUMN) ?: [];
-
+                $affectedJobIds = \iterable_to_array(
+                    $this->getSelectQueryBuilder()->setParameter('transactionId', $transactionId)->iterateColumn()
+                );
                 $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
                 $jobIds = $affectedJobIds;
             } else {
@@ -89,13 +94,13 @@ class JobFail implements JobFailActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(Connection $connection): QueryBuilder
+    protected function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
         }
 
-        $builder = $connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::UPDATE_QUERY);
         $expr = $builder->expr();
 
         return $this->updateQueryBuilder = $builder->update('heptaconnect_job', 'job')
@@ -107,17 +112,18 @@ class JobFail implements JobFailActionInterface
             ->setParameter('oldStateId', JobStateEnum::started(), Types::BINARY);
     }
 
-    protected function getSelectQueryBuilder(Connection $connection): QueryBuilder
+    protected function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
         }
 
-        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder = $this->queryFactory->createBuilder(self::FIND_QUERY);
         $expr = $queryBuilder->expr();
 
         return $this->selectQueryBuilder = $queryBuilder->select('job.id')
             ->from('heptaconnect_job', 'job')
+            ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 

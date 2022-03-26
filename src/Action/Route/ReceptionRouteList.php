@@ -99,7 +99,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->and(
+                (string) $builder->expr()->and(
                     $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id'),
                     $builder->expr()->isNull('capability.deleted_at')
                 )

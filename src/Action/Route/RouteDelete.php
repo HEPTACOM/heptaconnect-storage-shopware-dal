@@ -50,7 +50,7 @@ class RouteDelete implements RouteDeleteActionInterface
 
         $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $foundIds = $searchBuilder->execute()->fetchAll(\PDO::FETCH_COLUMN);
+        $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
 
         foreach ($ids as $id) {
             if (!\in_array($id, $foundIds, true)) {

@@ -78,7 +78,7 @@ SQL;
             ->where($select->expr()->like('configuration_key', ':pattern'))
             ->setParameter('pattern', 'heptacom.heptaConnect.portalNodeConfiguration.%')
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
 
         $update = $connection->createQueryBuilder();
         $update->update('heptaconnect_portal_node')

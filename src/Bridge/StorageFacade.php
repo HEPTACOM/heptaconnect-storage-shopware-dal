@@ -174,12 +174,12 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createJobFailAction(): JobFailActionInterface
     {
-        return new JobFail($this->connection);
+        return new JobFail($this->connection, $this->getQueryFactory());
     }
 
     protected function createJobFinishAction(): JobFinishActionInterface
     {
-        return new JobFinish($this->connection);
+        return new JobFinish($this->connection, $this->getQueryFactory());
     }
 
     protected function createJobGetAction(): JobGetActionInterface
@@ -194,12 +194,12 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createJobScheduleAction(): JobScheduleActionInterface
     {
-        return new JobSchedule($this->connection);
+        return new JobSchedule($this->connection, $this->getQueryFactory());
     }
 
     protected function createJobStartAction(): JobStartActionInterface
     {
-        return new JobStart($this->connection);
+        return new JobStart($this->connection, $this->getQueryFactory());
     }
 
     protected function createPortalExtensionActivateAction(): PortalExtensionActivateActionInterface
