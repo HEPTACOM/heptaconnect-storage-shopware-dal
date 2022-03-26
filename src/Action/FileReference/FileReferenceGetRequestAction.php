@@ -56,7 +56,7 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
             $queryBuilder->iterateRows(),
             static fn (array $row): FileReferenceGetRequestResult => new FileReferenceGetRequestResult(
                 $portalNodeKey,
-                new FileReferenceRequestStorageKey(Id::toHex($row['id'])),
+                new FileReferenceRequestStorageKey(Id::toHex($row['request_id'])),
                 (string) $row['serialized_request']
             )
         );
@@ -69,10 +69,20 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
             $expr = $this->queryBuilder->expr();
 
             $this->queryBuilder
-                ->select(['id', 'serialized_request'])
+                ->select([
+                    'request.id request_id',
+                    'serialized_request',
+                ])
                 ->from('heptaconnect_file_reference_request', 'request')
-                ->addOrderBy('id')
+                ->innerJoin(
+                    'request',
+                    'heptaconnect_portal_node',
+                    'portal_node',
+                    $expr->eq('portal_node.id', 'request.portal_node_id')
+                )
+                ->addOrderBy('request.id')
                 ->andWhere($expr->eq('request.portal_node_id', ':portalNodeKey'))
+                ->andWhere($expr->isNull('portal_node.deleted_at'))
                 ->andWhere($expr->in('request.id', ':requestIds'));
         }
 

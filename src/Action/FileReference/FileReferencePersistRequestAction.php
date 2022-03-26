@@ -44,7 +44,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
 
         $result = new FileReferencePersistRequestResult($portalNodeKey);
 
-        $this->connection->transactional(function (Connection $connection) use ($portalNodeKey, $payload, $result) {
+        $this->connection->transactional(function (Connection $connection) use ($portalNodeKey, $payload, $result): void {
             $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
             $now = DateTime::nowToStorage();
 
