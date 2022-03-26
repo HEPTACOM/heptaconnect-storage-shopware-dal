@@ -30,14 +30,7 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        // doctrine/dbal 2 support
-        if (\method_exists($connection, 'executeStatement')) {
-            $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Type::BINARY]);
-        } else {
-            $statement = $connection->prepare(self::UP);
-            $statement->bindValue('id', Uuid::randomBytes(), Type::BINARY);
-            $statement->execute();
-        }
+        $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Type::BINARY]);
     }
 
     public function updateDestructive(Connection $connection): void
