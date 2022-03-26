@@ -42,7 +42,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
         foreach ($payloads as $payload) {
-            $portalNodeKey = $payload->getPortalNodeKey();
+            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
@@ -86,7 +86,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
 
         foreach ($payloads as $payload) {
             /** @var PortalNodeStorageKey $portalNodeKey */
-            $portalNodeKey = $payload->getPortalNodeKey();
+            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
             $pathId = $handlerPathIds[$payload->getPath()];
             $handlerId = $handlerComponentIds[$portalNodeKey->getUuid() . $payload->getPath()];
 

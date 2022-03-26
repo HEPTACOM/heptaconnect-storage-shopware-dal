@@ -29,7 +29,7 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
         $updates = [];
         /** @var PortalNodeAliasSetPayload $payload */
         foreach ($payloads as $payload) {
-            $portalNodeKey = $payload->getPortalNodeKey();
+            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
             $alias = $payload->getAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {

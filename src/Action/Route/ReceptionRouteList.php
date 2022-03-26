@@ -35,7 +35,7 @@ class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     public function list(ReceptionRouteListCriteria $criteria): iterable
     {
-        $sourceKey = $criteria->getSourcePortalNodeKey();
+        $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));

@@ -30,7 +30,7 @@ class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInte
 
         /** @var PortalNodeConfigurationSetPayload $payload */
         foreach ($payloads as $payload) {
-            $portalNodeKey = $payload->getPortalNodeKey();
+            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1642863637, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));

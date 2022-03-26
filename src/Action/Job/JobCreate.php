@@ -65,7 +65,7 @@ class JobCreate implements JobCreateActionInterface
         foreach ($payloads as $payloadId => $payload) {
             $jobTypes[] = $payload->getJobType();
             $entityTypes[] = $payload->getMapping()->getEntityType();
-            $portalNodeKey = $payload->getMapping()->getPortalNodeKey();
+            $portalNodeKey = $payload->getMapping()->getPortalNodeKey()->withoutAlias();
             $jobPayload = $payload->getJobPayload();
 
             if ($jobPayload !== null) {
@@ -120,7 +120,7 @@ class JobCreate implements JobCreateActionInterface
                 $jobTypeId = $jobTypeIds[$payload->getJobType()];
                 $entityTypeId = $entityTypeIds[$payload->getMapping()->getEntityType()];
                 /** @var PortalNodeStorageKey $portalNodeKey */
-                $portalNodeKey = $payload->getMapping()->getPortalNodeKey();
+                $portalNodeKey = $payload->getMapping()->getPortalNodeKey()->withoutAlias();
 
                 $key = $keys->current();
                 $keys->next();

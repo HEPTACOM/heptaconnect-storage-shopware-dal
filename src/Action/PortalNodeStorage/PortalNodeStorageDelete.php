@@ -33,7 +33,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 
     public function delete(PortalNodeStorageDeleteCriteria $criteria): void
     {
-        $portalNodeKey = $criteria->getPortalNodeKey();
+        $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

@@ -31,7 +31,7 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 
     public function set(PortalNodeStorageSetPayload $payload): void
     {
-        $portalNodeKey = $payload->getPortalNodeKey();
+        $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
