@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -28,7 +26,6 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
-        MappingKeyInterface::class => MappingStorageKey::class,
         IdentityErrorKeyInterface::class => IdentityErrorStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
     ];
@@ -37,16 +34,10 @@ class StorageKeyGenerator extends StorageKeyGeneratorContract
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
         'Route' => RouteStorageKey::class,
-        'Mapping' => MappingStorageKey::class,
         'IdentityError' => IdentityErrorStorageKey::class,
         'MappingException' => IdentityErrorStorageKey::class,
         'Job' => JobStorageKey::class,
     ];
-
-    public function generateKey(string $keyClassName): StorageKeyInterface
-    {
-        return $this->createKey($keyClassName, null);
-    }
 
     public function generateKeys(string $keyClassName, int $count): iterable
     {
