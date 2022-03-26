@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Clear\PortalNodeStorageClearCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageClearActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
@@ -40,7 +40,7 @@ class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
         $deleteBuilder
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
-            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         try {
             $this->connection->transactional(function () use ($deleteBuilder): void {

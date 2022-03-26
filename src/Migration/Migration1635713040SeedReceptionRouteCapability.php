@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -30,7 +30,7 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Type::BINARY]);
+        $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Types::BINARY]);
     }
 
     public function updateDestructive(Connection $connection): void

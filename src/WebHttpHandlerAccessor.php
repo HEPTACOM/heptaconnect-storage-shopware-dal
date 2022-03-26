@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -65,8 +65,8 @@ class WebHttpHandlerAccessor
                     $b->expr()->eq('handler.portal_node_id', ':pn' . $match),
                     $b->expr()->eq('handler.path_id', ':p' . $match)
                 ));
-                $b->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
-                $b->setParameter('p' . $match, Id::toBinary($pathId), Type::BINARY);
+                $b->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
+                $b->setParameter('p' . $match, Id::toBinary($pathId), Types::BINARY);
 
                 $insertableId = Id::randomBinary();
                 $result[$keyIndex[$match]] = Id::toHex($insertableId);
@@ -90,9 +90,9 @@ class WebHttpHandlerAccessor
             $this->connection->transactional(function () use ($inserts): void {
                 foreach ($inserts as $insert) {
                     $this->connection->insert('heptaconnect_web_http_handler', $insert, [
-                        'id' => Type::BINARY,
-                        'portal_node_id' => Type::BINARY,
-                        'path_id' => Type::BINARY,
+                        'id' => Types::BINARY,
+                        'portal_node_id' => Types::BINARY,
+                        'path_id' => Types::BINARY,
                     ]);
                 }
             });

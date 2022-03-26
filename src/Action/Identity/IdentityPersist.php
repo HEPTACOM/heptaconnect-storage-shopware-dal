@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Exception\IdentityConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistDeletePayload;
@@ -92,9 +92,9 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $insert['created_at'] = $now;
 
                 $this->connection->insert('heptaconnect_mapping', $insert, [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
-                    'portal_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
+                    'portal_node_id' => Types::BINARY,
                 ]);
             }
 
@@ -108,8 +108,8 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $this->connection->update('heptaconnect_mapping', $updateData, [
                     'id' => $id,
                 ], [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
                 ]);
             }
 
@@ -124,8 +124,8 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $this->connection->update('heptaconnect_mapping', $updateData, [
                     'id' => $id,
                 ], [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
                 ]);
             }
         });
@@ -458,7 +458,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ], [
             'mapping_node_id' => Id::toBinary($from),
         ], [
-            'mapping_node_id' => Type::BINARY,
+            'mapping_node_id' => Types::BINARY,
         ]);
 
         $this->connection->update('heptaconnect_mapping_node', [
@@ -466,7 +466,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ], [
             'id' => Id::toBinary($from),
         ], [
-            'id' => Type::BINARY,
+            'id' => Types::BINARY,
         ]);
     }
 

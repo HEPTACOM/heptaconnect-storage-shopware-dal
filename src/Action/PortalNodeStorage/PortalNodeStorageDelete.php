@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Delete\PortalNodeStorageDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\DeleteException;
@@ -45,7 +45,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->andWhere($deleteExpiredBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
             ->andWhere($deleteExpiredBuilder->expr()->isNotNull('expired_at'))
             ->andWhere($deleteExpiredBuilder->expr()->lte('expired_at', ':now'))
-            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', DateTime::nowToStorage());
 
         $deleteBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
@@ -53,7 +53,7 @@ class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
             ->delete('heptaconnect_portal_node_storage')
             ->andWhere($deleteBuilder->expr()->eq('portal_node_id', ':portal_node_id'))
             ->andWhere($deleteBuilder->expr()->in('`key`', ':keys'))
-            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         $idsPayloads = \array_chunk(\iterable_to_array($criteria->getStorageKeys()), 500);
 

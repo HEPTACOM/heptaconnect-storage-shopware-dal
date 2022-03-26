@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Find\WebHttpHandlerConfigurationFindResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
@@ -41,8 +41,8 @@ class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFind
 
         $builder = $this->getBuilderCached();
         $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getPath())), Type::BINARY);
-        $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY);
+        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getPath())), Types::BINARY);
+        $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
         $row = $builder->fetchSingleRow();

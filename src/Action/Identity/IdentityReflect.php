@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
@@ -116,7 +116,7 @@ class IdentityReflect implements IdentityReflectActionInterface
                 $builder->expr()->eq('portal_node.id', ':portalNode' . $sourcePortalNodeId),
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
-            $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Type::BINARY);
+            $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Types::BINARY);
             $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
@@ -142,9 +142,9 @@ class IdentityReflect implements IdentityReflectActionInterface
                         $createMapping['created_at'] = $now;
 
                         $this->connection->insert('mapping', $createMapping, [
-                            'id' => Type::BINARY,
-                            'mapping_node_id' => Type::BINARY,
-                            'portal_node_id' => Type::BINARY,
+                            'id' => Types::BINARY,
+                            'mapping_node_id' => Types::BINARY,
+                            'portal_node_id' => Types::BINARY,
                         ]);
                     }
                 });
@@ -158,7 +158,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-        $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Type::BINARY);
+        $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
