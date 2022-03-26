@@ -136,6 +136,11 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_EXISTING_MAPPING_NODE_QUERY` as `f6b0f467-0a73-4e1f-ad75-d669899df133` to identify a query used for looking up existing mapping nodes
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id` as central utility for generation and converting UUIDs
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime` as central utility for converting dates from and into storage layer acceptable formats
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferenceGetRequestActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferenceGetRequestAction`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferenceGetRequestAction::FETCH_QUERY` as `25e53ac0-de53-4039-a790-253fb5803fec` to identity query used for fetching stored requests of file references
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction`
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1645820922AddFileReferenceRequest` to create a table for stored requests of file references
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey` as storage key for stored requests of file references
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::FIND_QUERY` as `9b00334a-cc0b-4017-a9dc-e2520a872064` to identity query used for reading job ids
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::UPDATE_QUERY` as `2d59f1a4-4baf-4cda-b762-16fb5beda452` to identity query used for updating job states
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish::FIND_QUERY` as `84e5495d-4733-4e8a-b775-aafba23daa8c` to identity query used for reading job ids

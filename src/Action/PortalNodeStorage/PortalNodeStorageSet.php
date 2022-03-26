@@ -79,7 +79,7 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
-            ->setParameter('ids', $keysToCheck)
+            ->setParameter('ids', $keysToCheck, Connection::PARAM_STR_ARRAY)
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', $nowFormatted);
 
@@ -98,9 +98,9 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                     if ($keysToUpdate[$storageKey] ?? false) {
                         $condition = [
                             'portal_node_id' => $instruction['portal_node_id'],
-                            'key' => $instruction['key'],
+                            '`key`' => $instruction['`key`'],
                         ];
-                        unset($instruction['portal_node_id'], $instruction['key'], $instruction['created_at']);
+                        unset($instruction['portal_node_id'], $instruction['`key`'], $instruction['created_at']);
 
                         $this->connection->update('heptaconnect_portal_node_storage', $instruction, $condition, [
                             'portal_node_id' => Types::BINARY,

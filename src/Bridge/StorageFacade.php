@@ -6,6 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Support\AbstractSingletonStorageFacade;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferenceGetRequestActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
@@ -44,6 +46,8 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferenceGetRequestAction;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
@@ -116,6 +120,16 @@ class StorageFacade extends AbstractSingletonStorageFacade
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+    }
+
+    protected function createFileReferenceGetRequestAction(): FileReferenceGetRequestActionInterface
+    {
+        return new FileReferenceGetRequestAction($this->getQueryFactory());
+    }
+
+    protected function createFileReferencePersistRequestAction(): FileReferencePersistRequestActionInterface
+    {
+        return new FileReferencePersistRequestAction($this->connection, $this->getStorageKeyGenerator());
     }
 
     protected function createIdentityErrorCreateAction(): IdentityErrorCreateActionInterface
