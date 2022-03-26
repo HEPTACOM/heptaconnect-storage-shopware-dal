@@ -94,6 +94,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
         $builder->from('heptaconnect_route');
         $builder->select('id');
+        $builder->addOrderBy('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 
