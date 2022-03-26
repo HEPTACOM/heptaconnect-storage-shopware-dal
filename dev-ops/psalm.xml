@@ -8,48 +8,6 @@
 >
     <issueHandlers>
         <LessSpecificReturnType errorLevel="info" />
-
-        <!-- Ignore Shopware related deprecation hint that is not applicable for us -->
-        <DeprecatedMethod>
-            <errorLevel type="info">
-                <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator" />
-            </errorLevel>
-        </DeprecatedMethod>
-
-        <!-- Ignore dbal deprecated notes -->
-        <DeprecatedClass>
-            <errorLevel type="info">
-                <referencedClass name="Doctrine\DBAL\FetchMode" />
-            </errorLevel>
-        </DeprecatedClass>
-        <DeprecatedConstant>
-            <errorLevel type="info">
-                <!-- Doctrine\DBAL\Types\Type::BINARY -->
-                <file name="../src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationFind.php" />
-                <file name="../src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationSet.php" />
-                <file name="../src/Migration/Migration1635713040SeedReceptionRouteCapability.php" />
-                <file name="../src/WebHttpHandlerAccessor.php" />
-                <file name="../src/WebHttpHandlerPathAccessor.php" />
-                <!-- Doctrine\DBAL\Types\Type::INTEGER -->
-                <file name="../src/Support/Query/QueryBuilder.php" />
-            </errorLevel>
-        </DeprecatedConstant>
-        <DeprecatedMethod>
-            <errorLevel type="info">
-                <referencedMethod name="Doctrine\DBAL\Connection::exec" />
-                <referencedMethod name="Doctrine\DBAL\Connection::execute" />
-                <referencedMethod name="Doctrine\DBAL\Driver\ResultStatement::fetchAll" />
-                <referencedMethod name="Doctrine\DBAL\Statement::fetch" />
-                <referencedMethod name="Doctrine\DBAL\Statement::fetchAll" />
-                <referencedMethod name="Doctrine\DBAL\Statement::fetchColumn" />
-            </errorLevel>
-        </DeprecatedMethod>
-        <RedundantCondition>
-            <errorLevel type="info">
-                <!-- Type Doctrine\DBAL\Connection for $connection is always object with method executeStatement -->
-                <directory name="../src/Migration"/>
-            </errorLevel>
-        </RedundantCondition>
     </issueHandlers>
 
     <plugins>
