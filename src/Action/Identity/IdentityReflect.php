@@ -79,7 +79,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
             /** @var MappedDatasetEntityStruct $mappedEntity */
             foreach ($mappedEntityGroup as $key => $mappedEntity) {
-                $mappedEntity->getDatasetEntity()->unattach(PrimaryKeySharingMappingStruct::class);
+                $mappedEntity->getDatasetEntity()->detachByType(PrimaryKeySharingMappingStruct::class);
 
                 $primaryKey = $mappedEntity->getMapping()->getExternalId();
                 /** @var MappingNodeStorageKey $mappingNodeKey */
