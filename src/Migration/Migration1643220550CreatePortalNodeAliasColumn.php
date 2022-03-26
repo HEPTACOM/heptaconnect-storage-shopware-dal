@@ -36,31 +36,21 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $this->executeSql($connection, self::UP);
+        $connection->executeStatement(self::UP);
 
         try {
             $this->migrateAlias($connection);
         } catch (\Throwable $throwable) {
-            $this->executeSql($connection, self::REVERSE_UP);
+            $connection->executeStatement(self::REVERSE_UP);
 
             throw $throwable;
         }
 
-        $this->executeSql($connection, self::DESTRUCTIVE);
+        $connection->executeStatement(self::DESTRUCTIVE);
     }
 
     public function updateDestructive(Connection $connection): void
     {
-    }
-
-    private function executeSql(Connection $connection, string $sql): void
-    {
-        // doctrine/dbal 2 support
-        if (\method_exists($connection, 'executeStatement')) {
-            $connection->executeStatement($sql);
-        } else {
-            $connection->exec($sql);
-        }
     }
 
     private function migrateAlias(Connection $connection): void
@@ -75,7 +65,7 @@ SQL;
             ->where($queryBuilderSelect->expr()->like('original', ':prefix'))
             ->setParameter(':prefix', 'PortalNode:%')
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
 
         $queryBuilderUpdate = $connection->createQueryBuilder();
         $queryBuilderUpdate->update('heptaconnect_portal_node')
