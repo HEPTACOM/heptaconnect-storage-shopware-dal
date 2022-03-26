@@ -91,6 +91,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -103,8 +104,6 @@ class StorageFacade extends AbstractSingletonStorageFacade
 {
     private Connection $connection;
 
-    private ?StorageKeyGeneratorContract $storageKeyGenerator = null;
-
     private ?QueryIterator $queryIterator = null;
 
     private ?EntityTypeAccessor $entityTypeAccessor = null;
@@ -112,6 +111,8 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private ?RouteCapabilityAccessor $routeCapabilityAccessor = null;
 
     private ?JobTypeAccessor $jobTypeAccessor = null;
+
+    private ?PortalNodeAliasAccessor $portalNodeAliasAccessor = null;
 
     private ?WebHttpHandlerPathIdResolver $webHttpHandlerPathIdResolver = null;
 
@@ -359,9 +360,9 @@ class StorageFacade extends AbstractSingletonStorageFacade
         );
     }
 
-    private function getStorageKeyGenerator(): StorageKeyGeneratorContract
+    protected function createStorageKeyGenerator(): StorageKeyGeneratorContract
     {
-        return $this->storageKeyGenerator ??= new StorageKeyGenerator();
+        return new StorageKeyGenerator($this->getPortalNodeAliasAccessor());
     }
 
     private function getQueryIterator(): QueryIterator
@@ -382,6 +383,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private function getJobTypeAccessor(): JobTypeAccessor
     {
         return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection, $this->getQueryFactory());
+    }
+
+    private function getPortalNodeAliasAccessor(): PortalNodeAliasAccessor
+    {
+        return $this->portalNodeAliasAccessor ??= new PortalNodeAliasAccessor($this->getQueryFactory());
     }
 
     private function getWebHttpHandlerPathIdResolver(): WebHttpHandlerPathIdResolver

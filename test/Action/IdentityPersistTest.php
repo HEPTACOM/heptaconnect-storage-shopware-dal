@@ -21,13 +21,13 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreate
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -58,7 +58,7 @@ class IdentityPersistTest extends TestCase
 
     private IdentityOverviewActionInterface $identityOverviewAction;
 
-    private StorageKeyGenerator $storageKeyGenerator;
+    private StorageKeyGeneratorContract $storageKeyGenerator;
 
     private EntityTypeAccessor $datasetEntityTypeAccessor;
 
@@ -68,7 +68,7 @@ class IdentityPersistTest extends TestCase
 
         $facade = new StorageFacade($this->getConnection());
         $this->identityPersistAction = $facade->getIdentityPersistAction();
-        $this->storageKeyGenerator = new StorageKeyGenerator();
+        $this->storageKeyGenerator = $facade->getStorageKeyGenerator();
         $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->getConnection(), new QueryFactory($this->getConnection(), new QueryIterator(), [], 500));
         $this->portalNodeCreateAction = $facade->getPortalNodeCreateAction();
         $this->identityOverviewAction = $facade->getIdentityOverviewAction();
