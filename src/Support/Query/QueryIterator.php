@@ -28,7 +28,7 @@ class QueryIterator
     {
         return $this->iterateSafelyPaginated(
             $query,
-            fn (QueryBuilder $qb): array => \iterable_to_array($this->getExecuteStatement($qb)->iterateColumn()),
+            fn (QueryBuilder $qb): array => $this->getExecuteStatement($qb)->fetchFirstColumn(),
             $pageSize
         );
     }
