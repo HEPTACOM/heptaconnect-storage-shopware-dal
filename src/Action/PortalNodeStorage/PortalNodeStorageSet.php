@@ -98,9 +98,9 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                     if ($keysToUpdate[$storageKey] ?? false) {
                         $condition = [
                             'portal_node_id' => $instruction['portal_node_id'],
-                            'key' => $instruction['key'],
+                            '`key`' => $instruction['`key`'],
                         ];
-                        unset($instruction['portal_node_id'], $instruction['key'], $instruction['created_at']);
+                        unset($instruction['portal_node_id'], $instruction['`key`'], $instruction['created_at']);
 
                         $this->connection->update('heptaconnect_portal_node_storage', $instruction, $condition, [
                             'portal_node_id' => Type::BINARY,
