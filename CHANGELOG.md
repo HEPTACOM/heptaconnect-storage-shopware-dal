@@ -207,6 +207,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove unused `\Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator::generateKeys` as interface `\Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract::generateKey` is removed
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey` as base contract has been removed
+- Remove support for `doctrine/dbal: >=2.1 <2.11`
 
 ### Fixed
 
