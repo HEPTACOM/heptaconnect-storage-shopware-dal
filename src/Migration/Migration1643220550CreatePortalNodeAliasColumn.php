@@ -38,6 +38,10 @@ SQL;
     {
         $connection->executeStatement(self::UP);
 
+        if (!$connection->getSchemaManager()->tablesExist('heptaconnect_bridge_key_alias')) {
+            return;
+        }
+
         try {
             $this->migrateAlias($connection);
         } catch (\Throwable $throwable) {
