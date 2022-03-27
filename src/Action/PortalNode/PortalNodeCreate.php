@@ -47,9 +47,15 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
                 throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException(\get_class($key)));
             }
 
+            $alias = $payload->getAlias();
+
+            if ($alias === '') {
+                throw new InvalidCreatePayloadException($payload, 1648345724);
+            }
+
             $inserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
-                'alias' => $payload->getAlias(),
+                'alias' => $alias,
                 'class_name' => $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,
