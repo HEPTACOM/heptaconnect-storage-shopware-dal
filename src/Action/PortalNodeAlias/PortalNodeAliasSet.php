@@ -35,9 +35,11 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new InvalidAliasSetPayloadException($payload, 1645446078, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
             }
+
             if ($alias === '') {
                 throw new InvalidAliasSetPayloadException($payload, 1645446809, new EmptyAliasStringException());
             }
+
             $updates[$portalNodeKey->getUuid()] = $alias;
         }
 
