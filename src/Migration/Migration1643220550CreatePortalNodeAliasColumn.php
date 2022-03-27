@@ -83,14 +83,10 @@ SQL;
             $key = \explode(':', $original, 2)[1];
             $portalNodeId = \hex2bin($key);
 
-            try {
-                $queryBuilderUpdate
-                    ->setParameter('id', $portalNodeId, Types::BINARY)
-                    ->setParameter('alias', $alias, Types::BINARY)
-                    ->execute();
-            } catch (\Exception $exception) {
-                throw new \Exception('Migration of PortalNode-Alias failed.', 1643286092);
-            }
+            $queryBuilderUpdate
+                ->setParameter('id', $portalNodeId, Types::BINARY)
+                ->setParameter('alias', $alias, Types::BINARY)
+                ->execute();
         }
     }
 }
