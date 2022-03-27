@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Overview\PortalNodeAliasOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Overview\PortalNodeAliasOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
+    public const OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
+
     private ?QueryBuilder $builder = null;
 
-    private Connection $connection;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable
@@ -46,6 +47,8 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
+        $builder->addOrderBy('portal_node.id', 'ASC');
+
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -58,15 +61,12 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
             }
         }
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1645459168);
-        }
-
-        yield from \iterable_map(
-            $statement->fetchAllAssociative(),
-            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(new PortalNodeStorageKey(\bin2hex($row['id'])), $row['alias']),
+        return \iterable_map(
+            $builder->iterateRows(),
+            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(
+                new PortalNodeStorageKey(\bin2hex($row['id'])),
+                $row['alias']
+            ),
         );
     }
 
@@ -84,7 +84,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 
     protected function getBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder($this->connection);
+        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

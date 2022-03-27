@@ -5,63 +5,51 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\ResultStatement;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Find\PortalNodeAliasFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Find\PortalNodeAliasFindResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasFindActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
-use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
+final class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
 {
-    private Connection $connection;
+    public const FIND_QUERY = '8ffc1022-c03b-4f3f-a2f6-5807710dbb6f';
 
-    private StorageKeyGeneratorContract $storageKeyGenerator;
+    private QueryFactory $queryFactory;
 
-    public function __construct(Connection $connection, StorageKeyGeneratorContract $storageKeyGenerator)
+    public function __construct(QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->queryFactory = $queryFactory;
     }
 
     public function find(PortalNodeAliasFindCriteria $criteria): iterable
     {
-        $identifiers = [];
-        foreach ($criteria->getAlias() as $identifier) {
-            try {
-                /** @var PortalNodeStorageKey $portalNodeStorageKey */
-                $portalNodeStorageKey = $this->storageKeyGenerator->deserialize($identifier);
-                $identifiers[] = \hex2bin($portalNodeStorageKey->getUuid());
-            } catch (UnsupportedStorageKeyException $e) {
-                $identifiers[] = $identifier;
-            }
+        $aliases = \array_values($criteria->getAlias());
+
+        if ($aliases === []) {
+            return [];
         }
 
-        $builder = $this->connection->createQueryBuilder();
-
-        $builder->from('heptaconnect_portal_node', 'p')
-            ->where($builder->expr()->in('p.alias', ':identifier'))
-            ->orWhere($builder->expr()->in('p.id', ':identifier'))
-            ->andWhere($builder->expr()->isNull('p.deleted_at'))
+        $builder = $this->queryFactory->createBuilder(self::FIND_QUERY);
+        $builder
+            ->from('heptaconnect_portal_node', 'portal_node')
             ->select([
-                'p.id portal_node_id',
-                'p.alias portal_node_alias',
+                'portal_node.id id',
+                'portal_node.alias alias',
             ])
-            ->setParameter('identifier', $identifiers, Connection::PARAM_STR_ARRAY);
+            ->addOrderBy('portal_node.id')
+            ->andWhere($builder->expr()->in('portal_node.alias', ':aliases'))
+            ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
+            ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
+            ->setParameter('aliases', $aliases, Connection::PARAM_STR_ARRAY);
 
-        $statement = $builder->execute();
-
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('$builder->execute() should have returned a ResultStatement', 1645446001);
-        }
-
-        foreach ($statement->fetchAllAssociative() as $row) {
-            $uuid = \bin2hex($row['portal_node_id']);
-            $alias = $row['portal_node_alias'];
-            $key = new PortalNodeStorageKey($uuid);
-            $result = new PortalNodeAliasFindResult($key, $alias);
-            yield $result;
-        }
+        return \iterable_map(
+            $builder->iterateRows(),
+            static fn (array $row): PortalNodeAliasFindResult => new PortalNodeAliasFindResult(
+                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
+                (string) $row['alias']
+            )
+        );
     }
 }
