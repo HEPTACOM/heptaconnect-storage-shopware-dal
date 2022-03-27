@@ -51,10 +51,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
                     $dbalFieldName = 'portal_node.class_name';
 
                     break;
-                case PortalNodeOverviewCriteria::FIELD_ALIAS:
-                    $dbalFieldName = 'portal_node.alias';
-
-                    break;
             }
 
             if ($dbalFieldName === null) {
@@ -86,8 +82,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 (string) $row['portal_node_class_name'],
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at']),
-                /* @phpstan-ignore-next-line */
-                (string) $row['alias'],
             )
         );
     }
@@ -112,7 +106,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             ->from('heptaconnect_portal_node', 'portal_node')
             ->select([
                 'portal_node.id id',
-                'portal_node.alias alias',
                 'portal_node.class_name portal_node_class_name',
                 'portal_node.created_at created_at',
             ])
