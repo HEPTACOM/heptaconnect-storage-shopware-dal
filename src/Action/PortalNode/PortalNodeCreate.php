@@ -15,6 +15,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -25,10 +26,16 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
-    public function __construct(Connection $connection, StorageKeyGeneratorContract $storageKeyGenerator)
-    {
+    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
+
+    public function __construct(
+        Connection $connection,
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        PortalNodeAliasAccessor $portalNodeAliasAccessor
+    ) {
         $this->connection = $connection;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
     }
 
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
@@ -51,6 +58,12 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
 
             if ($alias === '') {
                 throw new InvalidCreatePayloadException($payload, 1648345724);
+            }
+
+            if ($alias !== null) {
+                if ($this->portalNodeAliasAccessor->getIdsByAliases([$alias]) !== []) {
+                    throw new InvalidCreatePayloadException($payload, 1648345725);
+                }
             }
 
             $inserts[] = [

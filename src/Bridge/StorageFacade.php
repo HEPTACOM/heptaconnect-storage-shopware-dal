@@ -242,7 +242,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
     {
-        return new PortalNodeCreate($this->connection, $this->getStorageKeyGenerator());
+        return new PortalNodeCreate(
+            $this->connection,
+            $this->getStorageKeyGenerator(),
+            $this->getPortalNodeAliasAccessor()
+        );
     }
 
     protected function createPortalNodeDeleteAction(): PortalNodeDeleteActionInterface
@@ -277,7 +281,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeAliasSetAction(): PortalNodeAliasSetActionInterface
     {
-        return new PortalNodeAliasSet($this->connection);
+        return new PortalNodeAliasSet($this->connection, $this->getPortalNodeAliasAccessor());
     }
 
     protected function createPortalNodeAliasOverviewAction(): PortalNodeAliasOverviewActionInterface
