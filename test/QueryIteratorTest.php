@@ -17,7 +17,6 @@ final class QueryIteratorTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
-        $connection->commit();
         $connection->executeStatement('CREATE TABLE storage_test_iterator (id INT AUTO_INCREMENT, PRIMARY KEY (id))');
         $connection->beginTransaction();
 
@@ -29,11 +28,13 @@ final class QueryIteratorTest extends TestCase
     protected function tearDown(): void
     {
         $connection = $this->getConnection();
+        $connection->rollBack();
 
         if ($connection->getSchemaManager()->tablesExist('storage_test_iterator')) {
             $connection->getSchemaManager()->dropTable('storage_test_iterator');
         }
 
+        $connection->beginTransaction();
         parent::tearDown();
     }
 
