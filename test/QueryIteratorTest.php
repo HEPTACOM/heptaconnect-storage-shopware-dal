@@ -17,7 +17,9 @@ final class QueryIteratorTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
+        $connection->commit();
         $connection->executeStatement('CREATE TABLE storage_test_iterator (id INT AUTO_INCREMENT, PRIMARY KEY (id))');
+        $connection->beginTransaction();
 
         foreach (range(1, 50) as $_) {
             $connection->insert('storage_test_iterator', []);
