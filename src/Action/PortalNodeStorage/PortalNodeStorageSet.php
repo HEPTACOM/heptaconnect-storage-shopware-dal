@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Set\PortalNodeStorageSetPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
+final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
     public const UPDATE_PREPARATION_QUERY = '75fada39-34f0-4e03-b3b5-141da358181d';
 
@@ -75,12 +75,12 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
             ->andWhere($fetchBuilder->expr()->in('portal_node_storage.key', ':ids'))
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
-            ->andWhere($fetchBuilder->expr()->orX(
+            ->andWhere($fetchBuilder->expr()->or(
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
             ->setParameter('ids', $keysToCheck, Connection::PARAM_STR_ARRAY)
-            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Type::BINARY)
+            ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', $nowFormatted);
 
         try {
@@ -103,15 +103,15 @@ class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                         unset($instruction['portal_node_id'], $instruction['`key`'], $instruction['created_at']);
 
                         $this->connection->update('heptaconnect_portal_node_storage', $instruction, $condition, [
-                            'portal_node_id' => Type::BINARY,
+                            'portal_node_id' => Types::BINARY,
                         ]);
                     } else {
                         unset($instruction['updated_at']);
                         $instruction['id'] = Id::randomBinary();
 
                         $this->connection->insert('heptaconnect_portal_node_storage', $instruction, [
-                            'id' => Type::BINARY,
-                            'portal_node_id' => Type::BINARY,
+                            'id' => Types::BINARY,
+                            'portal_node_id' => Types::BINARY,
                         ]);
                     }
                 }

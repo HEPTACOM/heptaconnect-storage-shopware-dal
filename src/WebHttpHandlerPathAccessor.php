@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -84,7 +84,7 @@ class WebHttpHandlerPathAccessor
 
             foreach ($inserts as $insert) {
                 $this->connection->insert('heptaconnect_web_http_handler_path', $insert, [
-                    'id' => Type::BINARY,
+                    'id' => Types::BINARY,
                 ]);
             }
 

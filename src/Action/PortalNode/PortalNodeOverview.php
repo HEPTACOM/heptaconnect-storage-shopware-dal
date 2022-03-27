@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeOverview implements PortalNodeOverviewActionInterface
+final class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
     public const OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
 

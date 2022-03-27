@@ -6,6 +6,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 
-class IdentityErrorStorageKey extends AbstractStorageKey implements IdentityErrorKeyInterface
+final class IdentityErrorStorageKey extends AbstractStorageKey implements IdentityErrorKeyInterface
 {
 }

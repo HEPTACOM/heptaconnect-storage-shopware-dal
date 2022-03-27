@@ -26,5 +26,8 @@
         <include>
             <directory suffix=".php">../src/</directory>
         </include>
+        <exclude>
+            <directory suffix=".php">../src/Migration/</directory>
+        </exclude>
     </coverage>
 </phpunit>

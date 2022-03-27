@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
-class JobGet implements JobGetActionInterface
+final class JobGet implements JobGetActionInterface
 {
     public const FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
 

@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteOverview implements RouteOverviewActionInterface
+final class RouteOverview implements RouteOverviewActionInterface
 {
     public const OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
 
@@ -143,7 +143,7 @@ class RouteOverview implements RouteOverviewActionInterface
                 'route_has_capability',
                 'heptaconnect_route_capability',
                 'capability',
-                $builder->expr()->andX(
+                (string) $builder->expr()->and(
                     $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id'),
                     $builder->expr()->isNull('capability.deleted_at')
                 )

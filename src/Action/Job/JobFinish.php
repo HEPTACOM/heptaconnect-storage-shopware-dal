@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Finish\JobFinishPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Finish\JobFinishResult;
@@ -17,18 +15,27 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class JobFinish implements JobFinishActionInterface
+final class JobFinish implements JobFinishActionInterface
 {
-    private Connection $connection;
+    public const UPDATE_QUERY = '393a0ae1-5f42-4a49-96a3-9a23c26e6bd2';
+
+    public const FIND_QUERY = '84e5495d-4733-4e8a-b775-aafba23daa8c';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    public function __construct(Connection $connection)
+    private Connection $connection;
+
+    private QueryFactory $queryFactory;
+
+    public function __construct(Connection $connection, QueryFactory $queryFactory)
     {
         $this->connection = $connection;
+        $this->queryFactory = $queryFactory;
     }
 
     public function finish(JobFinishPayload $payload): JobFinishResult
@@ -39,17 +46,15 @@ class JobFinish implements JobFinishActionInterface
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 
-            $affected = $this->getUpdateQueryBuilder($connection)
+            $affected = $this->getUpdateQueryBuilder()
                 ->setParameter('jobIds', $jobIds, Connection::PARAM_STR_ARRAY)
                 ->setParameter('transactionId', $transactionId, Types::BINARY)
                 ->execute();
 
             if ($affected < \count($jobIds)) {
-                $affectedJobIds = $this->getSelectQueryBuilder($connection)
-                    ->setParameter('transactionId', $transactionId)
-                    ->execute()
-                    ->fetchAll(FetchMode::COLUMN) ?: [];
-
+                $affectedJobIds = \iterable_to_array(
+                    $this->getSelectQueryBuilder()->setParameter('transactionId', $transactionId)->iterateColumn()
+                );
                 $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
                 $jobIds = $affectedJobIds;
             } else {
@@ -89,13 +94,13 @@ class JobFinish implements JobFinishActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(Connection $connection): QueryBuilder
+    protected function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
         }
 
-        $builder = $connection->createQueryBuilder();
+        $builder = $this->queryFactory->createBuilder(self::UPDATE_QUERY);
         $expr = $builder->expr();
 
         return $this->updateQueryBuilder = $builder->update('heptaconnect_job', 'job')
@@ -107,17 +112,18 @@ class JobFinish implements JobFinishActionInterface
             ->setParameter('oldStateId', JobStateEnum::started(), Types::BINARY);
     }
 
-    protected function getSelectQueryBuilder(Connection $connection): QueryBuilder
+    protected function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
         }
 
-        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder = $this->queryFactory->createBuilder(self::FIND_QUERY);
         $expr = $queryBuilder->expr();
 
         return $this->selectQueryBuilder = $queryBuilder->select('job.id')
             ->from('heptaconnect_job', 'job')
+            ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 

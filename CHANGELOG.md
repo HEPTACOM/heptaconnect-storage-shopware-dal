@@ -141,6 +141,14 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction`
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1645820922AddFileReferenceRequest` to create a table for stored requests of file references
 - Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey` as storage key for stored requests of file references
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::FIND_QUERY` as `9b00334a-cc0b-4017-a9dc-e2520a872064` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail::UPDATE_QUERY` as `2d59f1a4-4baf-4cda-b762-16fb5beda452` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish::FIND_QUERY` as `84e5495d-4733-4e8a-b775-aafba23daa8c` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish::UPDATE_QUERY` as `393a0ae1-5f42-4a49-96a3-9a23c26e6bd2` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule::FIND_QUERY` as `87c10b4f-3dcd-460d-ba04-b38acbad6cbe` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule::UPDATE_QUERY` as `72372e2f-6e02-470b-89d5-b65ee88024b5` to identity query used for updating job states
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::FIND_QUERY` as `1bbfc5fe-756c-4171-b645-ad2a6c10f4e7` to identity query used for reading job ids
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::UPDATE_QUERY` as `0803daca-3ca7-44c4-a492-42cc51e46854` to identity query used for updating job states
 
 ### Changed
 
@@ -212,6 +220,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove unused `\Heptacom\HeptaConnect\Storage\ShopwareDal\ContextFactory`
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator::generateKeys` as interface `\Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract::generateKey` is removed
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey` as base contract has been removed
+- Remove support for `doctrine/dbal: >=2.1 <2.11`
 
 ### Fixed
 

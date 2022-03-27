@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeDelete implements PortalNodeDeleteActionInterface
+final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 {
     public const DELETE_QUERY = '219156bb-0598-49df-8205-6d10e8f92a61';
 

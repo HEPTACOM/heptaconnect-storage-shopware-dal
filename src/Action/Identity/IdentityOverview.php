@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityOverview implements IdentityOverviewActionInterface
+final class IdentityOverview implements IdentityOverviewActionInterface
 {
     public const OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
 
