@@ -79,6 +79,7 @@ class PortalNodeAliasAccessor
                 ->addOrderBy('portal_node.id')
                 ->andWhere($builder->expr()->in('portal_node.alias', ':aliases'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
+                ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
                 ->setParameter('aliases', $nonMatchingAliases, Connection::PARAM_STR_ARRAY);
 
             $aliasedIds = [];
