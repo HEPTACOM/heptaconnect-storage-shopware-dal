@@ -25,7 +25,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityMap implements IdentityMapActionInterface
+final class IdentityMap implements IdentityMapActionInterface
 {
     public const MAPPING_NODE_QUERY = '0d104088-b0d4-4158-8f95-0bc8a6880cc8';
 

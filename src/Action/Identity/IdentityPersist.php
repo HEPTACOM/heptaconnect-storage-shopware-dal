@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Exception\IdentityConflictException;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Persist\IdentityPersistDeletePayload;
@@ -21,7 +21,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityPersist implements IdentityPersistActionInterface
+final class IdentityPersist implements IdentityPersistActionInterface
 {
     public const TYPE_LOOKUP_QUERY = '4adbdc58-1ec7-45c0-9a5b-0ac983460505';
 
@@ -92,9 +92,9 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $insert['created_at'] = $now;
 
                 $this->connection->insert('heptaconnect_mapping', $insert, [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
-                    'portal_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
+                    'portal_node_id' => Types::BINARY,
                 ]);
             }
 
@@ -108,8 +108,8 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $this->connection->update('heptaconnect_mapping', $updateData, [
                     'id' => $id,
                 ], [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
                 ]);
             }
 
@@ -124,8 +124,8 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $this->connection->update('heptaconnect_mapping', $updateData, [
                     'id' => $id,
                 ], [
-                    'id' => Type::BINARY,
-                    'mapping_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'mapping_node_id' => Types::BINARY,
                 ]);
             }
         });
@@ -314,7 +314,7 @@ class IdentityPersist implements IdentityPersistActionInterface
             $typeParameterKey = 'typeId_' . Id::randomHex();
             $externalIdParameterKey = 'externalId_' . Id::randomHex();
 
-            $typeConditions[] = $expr->andX(
+            $typeConditions[] = $expr->and(
                 $expr->eq('mappingNode.type_id', ':' . $typeParameterKey),
                 $expr->in('mapping.external_id', ':' . $externalIdParameterKey)
             );
@@ -345,11 +345,11 @@ class IdentityPersist implements IdentityPersistActionInterface
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
             ->addOrderBy('mapping.id')
-            ->where($expr->andX(
+            ->where($expr->and(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
                 $expr->eq('mapping.portal_node_id', ':portalNodeId'),
-                $expr->orX(...$typeConditions)
+                $expr->or(...$typeConditions)
             ))
             ->setParameter('portalNodeId', Id::toBinary($portalNodeId))
         ;
@@ -413,7 +413,7 @@ class IdentityPersist implements IdentityPersistActionInterface
                 'type',
                 'heptaconnect_mapping_node',
                 'mappingNode',
-                $expr->andX(
+                (string) $expr->and(
                     $expr->eq('type.id', 'mappingNode.type_id'),
                     $expr->isNull('mappingNode.deleted_at'),
                 )
@@ -442,10 +442,10 @@ class IdentityPersist implements IdentityPersistActionInterface
             ->where($expr->in('mapping.mapping_node_id', ':mappingNodeIds'))
             ->groupBy('mapping.portal_node_id')
             ->having($expr->gt('COUNT(mapping.id)', 1))
-            ->setParameter('mappingNodeIds', [
-                \hex2bin($fromMappingNodeId),
-                \hex2bin($intoMappingNodeId),
-            ], Connection::PARAM_STR_ARRAY)
+            ->setParameter('mappingNodeIds', Id::toBinaryList([
+                $fromMappingNodeId,
+                $intoMappingNodeId,
+            ]), Connection::PARAM_STR_ARRAY)
             ->fetchSingleValue();
 
         return !$hasConflict;
@@ -458,7 +458,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ], [
             'mapping_node_id' => Id::toBinary($from),
         ], [
-            'mapping_node_id' => Type::BINARY,
+            'mapping_node_id' => Types::BINARY,
         ]);
 
         $this->connection->update('heptaconnect_mapping_node', [
@@ -466,7 +466,7 @@ class IdentityPersist implements IdentityPersistActionInterface
         ], [
             'id' => Id::toBinary($from),
         ], [
-            'id' => Type::BINARY,
+            'id' => Types::BINARY,
         ]);
     }
 

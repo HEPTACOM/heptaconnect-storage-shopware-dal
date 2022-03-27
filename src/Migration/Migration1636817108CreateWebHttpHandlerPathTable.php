@@ -32,7 +32,7 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $this->executeSql($connection, self::UP);
+        $connection->executeStatement(self::UP);
         $this->addDateTimeIndex($connection, 'heptaconnect_web_http_handler_path', 'created_at');
     }
 
@@ -40,18 +40,8 @@ SQL;
     {
     }
 
-    private function executeSql(Connection $connection, string $sql): void
-    {
-        // doctrine/dbal 2 support
-        if (\method_exists($connection, 'executeStatement')) {
-            $connection->executeStatement($sql);
-        } else {
-            $connection->exec($sql);
-        }
-    }
-
     private function addDateTimeIndex(Connection $connection, string $table, string $column): void
     {
-        $this->executeSql($connection, \str_replace(['__TABLE__', '__COL__'], [$table, $column], self::INDEX));
+        $connection->executeStatement(\str_replace(['__TABLE__', '__COL__'], [$table, $column], self::INDEX));
     }
 }

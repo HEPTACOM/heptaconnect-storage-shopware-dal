@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayloads;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 
-class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
+final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
     private Connection $connection;
 
@@ -115,7 +115,7 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
                 // TODO batch
                 foreach ($deletes as $delete) {
                     $this->connection->delete('heptaconnect_web_http_handler_configuration', $delete, [
-                        'handler_id' => Type::BINARY,
+                        'handler_id' => Types::BINARY,
                     ]);
                 }
 
@@ -128,13 +128,13 @@ class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetAc
                     );
 
                     $updated = $this->connection->update('heptaconnect_web_http_handler_configuration', $upsert, $where, [
-                        'handler_id' => Type::BINARY,
+                        'handler_id' => Types::BINARY,
                     ]);
 
                     if ($updated === 0) {
                         unset($upsert['updated_at']);
                         $this->connection->insert('heptaconnect_web_http_handler_configuration', $upsert, [
-                            'handler_id' => Type::BINARY,
+                            'handler_id' => Types::BINARY,
                         ]);
                     }
                 }

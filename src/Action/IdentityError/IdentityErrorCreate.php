@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayloads;
@@ -24,7 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityErrorCreate implements IdentityErrorCreateActionInterface
+final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
     public const LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
 
@@ -139,11 +139,11 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 // TODO batch
                 foreach ($inserts as $insert) {
                     $this->connection->insert('heptaconnect_mapping_error_message', $insert, [
-                        'id' => Type::BINARY,
-                        'previous_id' => Type::BINARY,
-                        'group_previous_id' => Type::BINARY,
-                        'portal_node_id' => Type::BINARY,
-                        'mapping_node_id' => Type::BINARY,
+                        'id' => Types::BINARY,
+                        'previous_id' => Types::BINARY,
+                        'group_previous_id' => Types::BINARY,
+                        'portal_node_id' => Types::BINARY,
+                        'mapping_node_id' => Types::BINARY,
                     ]);
                 }
             });
@@ -181,7 +181,7 @@ class IdentityErrorCreate implements IdentityErrorCreateActionInterface
         $entityTypeIds = Id::toBinaryList($this->entityTypeAccessor->getIdsForTypes($allUsedEntityTypes));
 
         foreach ($lookups as $portalNodeId => $externalIdsByEntityType) {
-            $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Type::BINARY);
+            $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
 
             foreach ($externalIdsByEntityType as $entityType => $externalIds) {
                 $builder->setParameter('entityTypeId', $entityTypeIds[$entityType]);

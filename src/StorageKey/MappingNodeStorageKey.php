@@ -6,6 +6,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 
-class MappingNodeStorageKey extends AbstractStorageKey implements MappingNodeKeyInterface
+final class MappingNodeStorageKey extends AbstractStorageKey implements MappingNodeKeyInterface
 {
 }

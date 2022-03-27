@@ -48,12 +48,7 @@ class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends Migr
         ];
         $sql = \implode(\PHP_EOL, $sqls);
 
-        // doctrine/dbal 2 support
-        if (\method_exists($connection, 'executeStatement')) {
-            $connection->executeStatement($sql);
-        } else {
-            $connection->exec($sql);
-        }
+        $connection->executeStatement($sql);
     }
 
     public function updateDestructive(Connection $connection): void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
@@ -19,7 +19,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class IdentityReflect implements IdentityReflectActionInterface
+final class IdentityReflect implements IdentityReflectActionInterface
 {
     public const LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
 
@@ -79,7 +79,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
             /** @var MappedDatasetEntityStruct $mappedEntity */
             foreach ($mappedEntityGroup as $key => $mappedEntity) {
-                $mappedEntity->getDatasetEntity()->unattach(PrimaryKeySharingMappingStruct::class);
+                $mappedEntity->getDatasetEntity()->detachByType(PrimaryKeySharingMappingStruct::class);
 
                 $primaryKey = $mappedEntity->getMapping()->getExternalId();
                 /** @var MappingNodeStorageKey $mappingNodeKey */
@@ -112,15 +112,15 @@ class IdentityReflect implements IdentityReflectActionInterface
         $mappingNodeExpressions = [];
 
         foreach ($filters as $sourcePortalNodeId => $mappingNodeIds) {
-            $mappingNodeExpressions[] = $builder->expr()->andX(
+            $mappingNodeExpressions[] = $builder->expr()->and(
                 $builder->expr()->eq('portal_node.id', ':portalNode' . $sourcePortalNodeId),
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
-            $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Type::BINARY);
+            $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Types::BINARY);
             $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
         }
 
-        $builder->andWhere($builder->expr()->orX(...$mappingNodeExpressions));
+        $builder->andWhere($builder->expr()->or(...$mappingNodeExpressions));
 
         /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
@@ -142,9 +142,9 @@ class IdentityReflect implements IdentityReflectActionInterface
                         $createMapping['created_at'] = $now;
 
                         $this->connection->insert('mapping', $createMapping, [
-                            'id' => Type::BINARY,
-                            'mapping_node_id' => Type::BINARY,
-                            'portal_node_id' => Type::BINARY,
+                            'id' => Types::BINARY,
+                            'mapping_node_id' => Types::BINARY,
+                            'portal_node_id' => Types::BINARY,
                         ]);
                     }
                 });
@@ -158,7 +158,7 @@ class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-        $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Type::BINARY);
+        $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */

@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 
 class QueryBuilder extends BaseQueryBuilder
 {
@@ -48,7 +48,7 @@ class QueryBuilder extends BaseQueryBuilder
     {
         /** @var int|mixed $firstResult */
         if (\is_int($firstResult) && $firstResult > 0) {
-            return $this->setParameter(self::PARAM_FIRST_RESULT, $firstResult, Type::INTEGER);
+            return $this->setParameter(self::PARAM_FIRST_RESULT, $firstResult, Types::INTEGER);
         }
 
         $params = $this->getParameters();
@@ -67,7 +67,7 @@ class QueryBuilder extends BaseQueryBuilder
     public function setMaxResults($maxResults)
     {
         if (\is_int($maxResults)) {
-            return $this->setParameter(self::PARAM_MAX_RESULT, $maxResults, Type::INTEGER);
+            return $this->setParameter(self::PARAM_MAX_RESULT, $maxResults, Types::INTEGER);
         }
 
         $params = $this->getParameters();

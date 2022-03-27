@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
-use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 class QueryIterator
@@ -28,7 +28,7 @@ class QueryIterator
     {
         return $this->iterateSafelyPaginated(
             $query,
-            fn (QueryBuilder $qb): array => $this->getExecuteStatement($qb)->fetchAll(\PDO::FETCH_COLUMN),
+            fn (QueryBuilder $qb): array => $this->getExecuteStatement($qb)->fetchFirstColumn(),
             $pageSize
         );
     }
@@ -38,7 +38,7 @@ class QueryIterator
      */
     public function fetchRows(QueryBuilder $query): array
     {
-        return $this->getExecuteStatement($query)->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->getExecuteStatement($query)->fetchAllAssociative();
     }
 
     /**
@@ -46,12 +46,12 @@ class QueryIterator
      */
     public function fetchRow(QueryBuilder $query): ?array
     {
-        return $this->getExecuteStatement($query)->fetch(\PDO::FETCH_ASSOC) ?: null;
+        return $this->getExecuteStatement($query)->fetchAssociative() ?: null;
     }
 
     public function fetchColumn(QueryBuilder $query): ?string
     {
-        return $this->getExecuteStatement($query)->fetchColumn() ?: null;
+        return $this->getExecuteStatement($query)->fetchOne() ?: null;
     }
 
     public function fetchSingleValue(QueryBuilder $query): ?string
@@ -59,7 +59,13 @@ class QueryIterator
         $row = $this->fetchSingleRow($query);
 
         if (\is_array($row)) {
-            return \current($row);
+            $result = \current($row);
+
+            if ($result === false) {
+                return null;
+            }
+
+            return $result;
         }
 
         return null;
@@ -144,12 +150,12 @@ class QueryIterator
         $query->setMaxResults($initLimit);
     }
 
-    private function getExecuteStatement(QueryBuilder $query): ResultStatement
+    private function getExecuteStatement(QueryBuilder $query): Result
     {
         $statement = $query->execute();
 
-        if (!$statement instanceof ResultStatement) {
-            throw new \LogicException('query->execute() should have returned a ResultStatement', 1637467900);
+        if (!$statement instanceof Result) {
+            throw new \LogicException('query->execute() should have returned a Result', 1637467900);
         }
 
         return $statement;

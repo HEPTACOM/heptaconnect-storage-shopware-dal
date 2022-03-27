@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class RouteDelete implements RouteDeleteActionInterface
+final class RouteDelete implements RouteDeleteActionInterface
 {
     public const LOOKUP_QUERY = 'b270142d-c897-4d1d-bddb-7641fbfb95a2';
 
@@ -50,7 +50,7 @@ class RouteDelete implements RouteDeleteActionInterface
 
         $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $foundIds = $searchBuilder->execute()->fetchAll(\PDO::FETCH_COLUMN);
+        $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
 
         foreach ($ids as $id) {
             if (!\in_array($id, $foundIds, true)) {
@@ -94,6 +94,7 @@ class RouteDelete implements RouteDeleteActionInterface
 
         $builder->from('heptaconnect_route');
         $builder->select('id');
+        $builder->addOrderBy('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 

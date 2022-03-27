@@ -6,6 +6,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 
-class JobStorageKey extends AbstractStorageKey implements JobKeyInterface
+final class JobStorageKey extends AbstractStorageKey implements JobKeyInterface
 {
 }

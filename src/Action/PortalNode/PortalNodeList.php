@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
-class PortalNodeList implements PortalNodeListActionInterface
+final class PortalNodeList implements PortalNodeListActionInterface
 {
     public const LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 

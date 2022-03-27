@@ -6,6 +6,6 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 
-class RouteStorageKey extends AbstractStorageKey implements RouteKeyInterface
+final class RouteStorageKey extends AbstractStorageKey implements RouteKeyInterface
 {
 }

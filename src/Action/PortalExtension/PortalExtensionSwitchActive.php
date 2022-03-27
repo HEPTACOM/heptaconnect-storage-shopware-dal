@@ -185,7 +185,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
             $this->updateQueryBuilder
                 ->update('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->set('portal_node_extension.active', $this->getTargetActiveState())
+                ->set('portal_node_extension.active', (string) $this->getTargetActiveState())
                 ->set('portal_node_extension.updated_at', ':now')
                 ->where($expr->in('portal_node_extension.id', ':ids'));
         }
