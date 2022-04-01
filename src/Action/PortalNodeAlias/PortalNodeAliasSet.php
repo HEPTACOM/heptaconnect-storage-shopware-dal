@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UpdateException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
 {
@@ -69,7 +70,7 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
                     $this->connection->update('heptaconnect_portal_node', [
                         'alias' => $alias,
                     ], [
-                        'id' => \hex2bin($portalNodeId),
+                        'id' => Id::toBinary($portalNodeId),
                     ], [
                         'id' => Types::BINARY,
                     ]);

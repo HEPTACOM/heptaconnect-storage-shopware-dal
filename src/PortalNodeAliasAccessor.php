@@ -44,7 +44,7 @@ class PortalNodeAliasAccessor
                 ->addOrderBy('portal_node.id')
                 ->andWhere($builder->expr()->in('portal_node.id', ':ids'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
-                ->setParameter('ids', $nonMatchingIds, Connection::PARAM_STR_ARRAY);
+                ->setParameter('ids', Id::toBinaryList($nonMatchingIds), Connection::PARAM_STR_ARRAY);
 
             $aliasedIds = [];
 

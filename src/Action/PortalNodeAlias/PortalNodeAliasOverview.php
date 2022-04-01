@@ -9,6 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Overview\PortalNod
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
@@ -64,7 +65,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
         return \iterable_map(
             $builder->iterateRows(),
             static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(
-                new PortalNodeStorageKey(\bin2hex($row['id'])),
+                new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']
             ),
         );
