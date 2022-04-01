@@ -13,7 +13,7 @@ class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
     public const UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`
     ADD COLUMN `alias`
-        VARCHAR(255)
+        VARCHAR(512)
         UNIQUE
         NULL
         COLLATE 'binary'
