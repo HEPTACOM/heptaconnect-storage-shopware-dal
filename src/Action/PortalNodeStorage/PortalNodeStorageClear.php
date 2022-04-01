@@ -30,7 +30,7 @@ final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterf
 
     public function clear(PortalNodeStorageClearCriteria $criteria): void
     {
-        $portalNodeKey = $criteria->getPortalNodeKey();
+        $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

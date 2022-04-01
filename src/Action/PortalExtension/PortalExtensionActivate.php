@@ -14,7 +14,7 @@ final class PortalExtensionActivate extends PortalExtensionSwitchActive implemen
     {
         $payloadExtensions = $payload->getExtensions();
 
-        $pass = $this->toggle($payload->getPortalNodeKey(), $payloadExtensions);
+        $pass = $this->toggle($payload->getPortalNodeKey()->withoutAlias(), $payloadExtensions);
         $fail = \array_diff($payloadExtensions, $pass);
 
         return new PortalExtensionActivateResult($pass, $fail);

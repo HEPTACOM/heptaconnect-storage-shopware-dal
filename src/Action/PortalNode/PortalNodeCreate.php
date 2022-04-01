@@ -15,6 +15,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -25,10 +26,16 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
 
     private StorageKeyGeneratorContract $storageKeyGenerator;
 
-    public function __construct(Connection $connection, StorageKeyGeneratorContract $storageKeyGenerator)
-    {
+    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
+
+    public function __construct(
+        Connection $connection,
+        StorageKeyGeneratorContract $storageKeyGenerator,
+        PortalNodeAliasAccessor $portalNodeAliasAccessor
+    ) {
         $this->connection = $connection;
         $this->storageKeyGenerator = $storageKeyGenerator;
+        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
     }
 
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
@@ -47,8 +54,21 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
                 throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException(\get_class($key)));
             }
 
+            $alias = $payload->getAlias();
+
+            if ($alias === '') {
+                throw new InvalidCreatePayloadException($payload, 1648345724);
+            }
+
+            if ($alias !== null) {
+                if ($this->portalNodeAliasAccessor->getIdsByAliases([$alias]) !== []) {
+                    throw new InvalidCreatePayloadException($payload, 1648345725);
+                }
+            }
+
             $inserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
+                'alias' => $alias,
                 'class_name' => $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,

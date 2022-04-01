@@ -37,6 +37,8 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $ids = [];
 
         foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
+            $portalNodeKey = $portalNodeKey->withoutAlias();
+
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }
@@ -80,6 +82,8 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $builder->update('heptaconnect_portal_node');
         $builder->set('deleted_at', ':now');
+        $builder->set('alias', ':alias');
+        $builder->setParameter('alias', null);
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 

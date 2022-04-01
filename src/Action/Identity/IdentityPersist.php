@@ -45,7 +45,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
 
     public function persist(IdentityPersistPayload $payload): void
     {
-        $portalNodeKey = $payload->getPortalNodeKey();
+        $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

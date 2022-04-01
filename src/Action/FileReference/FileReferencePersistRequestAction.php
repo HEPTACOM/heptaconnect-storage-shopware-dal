@@ -32,7 +32,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
 
     public function persistRequest(FileReferencePersistRequestPayload $payload): FileReferencePersistRequestResult
     {
-        $portalNodeKey = $payload->getPortalNodeKey();
+        $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new InvalidCreatePayloadException(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey;
 
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey;
 
 abstract class AbstractStorageKey implements StorageKeyInterface
 {
@@ -29,6 +30,10 @@ abstract class AbstractStorageKey implements StorageKeyInterface
 
     public function equals(StorageKeyInterface $other): bool
     {
+        if ($other instanceof AliasAwarePortalNodeStorageKey) {
+            $other = $other->withoutAlias();
+        }
+
         if (!\is_a($other, static::class, false)) {
             return false;
         }

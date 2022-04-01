@@ -14,7 +14,7 @@ final class PortalExtensionDeactivate extends PortalExtensionSwitchActive implem
     {
         $payloadExtensions = $payload->getExtensions();
 
-        $pass = $this->toggle($payload->getPortalNodeKey(), $payloadExtensions);
+        $pass = $this->toggle($payload->getPortalNodeKey()->withoutAlias(), $payloadExtensions);
         $fail = \array_diff($payloadExtensions, $pass);
 
         return new PortalExtensionDeactivateResult($pass, $fail);

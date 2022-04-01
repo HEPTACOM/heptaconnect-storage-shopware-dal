@@ -29,6 +29,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDele
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageClearActionInterface;
@@ -69,6 +73,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear;
@@ -87,6 +95,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
@@ -99,8 +108,6 @@ class StorageFacade extends AbstractSingletonStorageFacade
 {
     private Connection $connection;
 
-    private ?StorageKeyGeneratorContract $storageKeyGenerator = null;
-
     private ?QueryIterator $queryIterator = null;
 
     private ?EntityTypeAccessor $entityTypeAccessor = null;
@@ -108,6 +115,8 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private ?RouteCapabilityAccessor $routeCapabilityAccessor = null;
 
     private ?JobTypeAccessor $jobTypeAccessor = null;
+
+    private ?PortalNodeAliasAccessor $portalNodeAliasAccessor = null;
 
     private ?WebHttpHandlerPathIdResolver $webHttpHandlerPathIdResolver = null;
 
@@ -233,7 +242,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
     {
-        return new PortalNodeCreate($this->connection, $this->getStorageKeyGenerator());
+        return new PortalNodeCreate(
+            $this->connection,
+            $this->getStorageKeyGenerator(),
+            $this->getPortalNodeAliasAccessor()
+        );
     }
 
     protected function createPortalNodeDeleteAction(): PortalNodeDeleteActionInterface
@@ -254,6 +267,26 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createPortalNodeOverviewAction(): PortalNodeOverviewActionInterface
     {
         return new PortalNodeOverview($this->getQueryFactory());
+    }
+
+    protected function createPortalNodeAliasGetAction(): PortalNodeAliasGetActionInterface
+    {
+        return new PortalNodeAliasGet($this->getQueryFactory());
+    }
+
+    protected function createPortalNodeAliasFindAction(): PortalNodeAliasFindActionInterface
+    {
+        return new PortalNodeAliasFind($this->getQueryFactory());
+    }
+
+    protected function createPortalNodeAliasSetAction(): PortalNodeAliasSetActionInterface
+    {
+        return new PortalNodeAliasSet($this->connection, $this->getPortalNodeAliasAccessor());
+    }
+
+    protected function createPortalNodeAliasOverviewAction(): PortalNodeAliasOverviewActionInterface
+    {
+        return new PortalNodeAliasOverview($this->getQueryFactory());
     }
 
     protected function createPortalNodeConfigurationGetAction(): PortalNodeConfigurationGetActionInterface
@@ -345,9 +378,9 @@ class StorageFacade extends AbstractSingletonStorageFacade
         );
     }
 
-    private function getStorageKeyGenerator(): StorageKeyGeneratorContract
+    protected function createStorageKeyGenerator(): StorageKeyGeneratorContract
     {
-        return $this->storageKeyGenerator ??= new StorageKeyGenerator();
+        return new StorageKeyGenerator($this->getPortalNodeAliasAccessor());
     }
 
     private function getQueryIterator(): QueryIterator
@@ -368,6 +401,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private function getJobTypeAccessor(): JobTypeAccessor
     {
         return $this->jobTypeAccessor ??= new JobTypeAccessor($this->connection, $this->getQueryFactory());
+    }
+
+    private function getPortalNodeAliasAccessor(): PortalNodeAliasAccessor
+    {
+        return $this->portalNodeAliasAccessor ??= new PortalNodeAliasAccessor($this->getQueryFactory());
     }
 
     private function getWebHttpHandlerPathIdResolver(): WebHttpHandlerPathIdResolver

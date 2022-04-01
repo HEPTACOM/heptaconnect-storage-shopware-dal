@@ -51,13 +51,13 @@ final class RouteCreate implements RouteCreateActionInterface
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
         foreach ($payloads as $payload) {
-            $sourceKey = $payload->getSourcePortalNodeKey();
+            $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException(\get_class($sourceKey)));
             }
 
-            $targetKey = $payload->getTargetPortalNodeKey();
+            $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException(\get_class($targetKey)));
@@ -108,9 +108,9 @@ final class RouteCreate implements RouteCreateActionInterface
             }
 
             /** @var PortalNodeStorageKey $sourceKey */
-            $sourceKey = $payload->getSourcePortalNodeKey();
+            $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
             /** @var PortalNodeStorageKey $targetKey */
-            $targetKey = $payload->getTargetPortalNodeKey();
+            $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             $routeInserts[] = [
                 'id' => Id::toBinary($key->getUuid()),

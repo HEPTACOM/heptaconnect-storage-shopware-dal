@@ -67,6 +67,8 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             $portalNodeIds = [];
 
             foreach ($portalNodeKeyFilter as $portalNodeKey) {
+                $portalNodeKey = $portalNodeKey->withoutAlias();
+
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                     throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
                 }

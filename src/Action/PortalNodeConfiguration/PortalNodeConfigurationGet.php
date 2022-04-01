@@ -30,6 +30,8 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
         $portalNodeIds = [];
 
         foreach ($criteria->getPortalNodeKeys() as $portalNodeKey) {
+            $portalNodeKey = $portalNodeKey->withoutAlias();
+
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
             }

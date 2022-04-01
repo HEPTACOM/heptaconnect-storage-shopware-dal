@@ -37,7 +37,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
     public function reflect(IdentityReflectPayload $payload): void
     {
-        $targetPortalNodeKey = $payload->getPortalNodeKey();
+        $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($targetPortalNodeKey));
@@ -46,7 +46,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $mappedEntities = $payload->getMappedDatasetEntities();
 
         foreach ($mappedEntities as $mappedEntity) {
-            $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
+            $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
@@ -73,7 +73,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
             }
 
             /** @var PortalNodeStorageKey $sourcePortalNodeKey */
-            $sourcePortalNodeKey = $firstMappedEntity->getMapping()->getPortalNodeKey();
+            $sourcePortalNodeKey = $firstMappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
             $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
             $mappingNodeIdsForFilter = [];
 
@@ -175,7 +175,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                     $reflectionMapping = new PrimaryKeySharingMappingStruct(
                         $mappedEntity->getMapping()->getEntityType(),
                         $mappedEntity->getMapping()->getExternalId(),
-                        $mappedEntity->getMapping()->getPortalNodeKey(),
+                        $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias(),
                         $mappedEntity->getMapping()->getMappingNodeKey()
                     );
 
@@ -197,7 +197,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                 /** @var MappedDatasetEntityStruct $mappedEntity */
                 $mappedEntity = $mappedEntities[$key];
                 /** @var PortalNodeStorageKey $sourcePortalNodeKey */
-                $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey();
+                $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
                 $cacheKey = \sprintf(
                     '%s;%s',
                     $sourcePortalNodeKey->getUuid(),
@@ -208,7 +208,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                     $reflectionMappingCache[$cacheKey] = new PrimaryKeySharingMappingStruct(
                         $mappedEntity->getMapping()->getEntityType(),
                         $mappedEntity->getMapping()->getExternalId(),
-                        $mappedEntity->getMapping()->getPortalNodeKey(),
+                        $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias(),
                         $mappedEntity->getMapping()->getMappingNodeKey(),
                     );
                 }

@@ -27,7 +27,7 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
 
     public function list(PortalNodeStorageListCriteria $criteria): iterable
     {
-        $portalNodeKey = $criteria->getPortalNodeKey();
+        $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

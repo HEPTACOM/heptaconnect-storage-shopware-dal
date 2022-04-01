@@ -54,7 +54,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
         /** @var IdentityErrorCreatePayload $payload */
         foreach ($payloads as $payload) {
-            $portalNodeKey = $payload->getMappingComponent()->getPortalNodeKey();
+            $portalNodeKey = $payload->getMappingComponent()->getPortalNodeKey()->withoutAlias();
             $entityType = $payload->getMappingComponent()->getEntityType();
             $externalId = $payload->getMappingComponent()->getExternalId();
 
@@ -70,7 +70,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 
         foreach ($payloads as $payload) {
             /** @var PortalNodeStorageKey $portalNodeKey */
-            $portalNodeKey = $payload->getMappingComponent()->getPortalNodeKey();
+            $portalNodeKey = $payload->getMappingComponent()->getPortalNodeKey()->withoutAlias();
             $entityType = $payload->getMappingComponent()->getEntityType();
             $externalId = $payload->getMappingComponent()->getExternalId();
             $mappingNodeId = $lookedUps[$portalNodeKey->getUuid()][$entityType][$externalId] ?? null;

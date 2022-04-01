@@ -53,7 +53,7 @@ final class IdentityMap implements IdentityMapActionInterface
 
     public function map(IdentityMapPayload $payload): IdentityMapResult
     {
-        $portalNodeKey = $payload->getPortalNodeKey();
+        $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));

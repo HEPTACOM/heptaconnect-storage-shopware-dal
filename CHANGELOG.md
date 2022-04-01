@@ -35,6 +35,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete`
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate`
 - Add exception code `1640048751` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` when the key generator cannot generate a valid portal node key
+- Add exception code `1648345724` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` when the portal node alias is empty
+- Add exception code `1648345725` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` when the portal node alias is already used
 - Add exception code `1640405544` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview::overview` when the criteria has an invalid sorting option
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1640360050CreatePortalExtensionConfigurationTable` to add table for portal extension activity state
 - Add base class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive` to simplify implementations of `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface` and `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface`
@@ -149,6 +151,22 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule::UPDATE_QUERY` as `72372e2f-6e02-470b-89d5-b65ee88024b5` to identity query used for updating job states
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::FIND_QUERY` as `1bbfc5fe-756c-4171-b645-ad2a6c10f4e7` to identity query used for reading job ids
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart::UPDATE_QUERY` as `0803daca-3ca7-44c4-a492-42cc51e46854` to identity query used for updating job states
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1643220550CreatePortalNodeAliasColumn` to add aliases to portal node and migrate them from `heptacom/heptaconnect-bridge-shopware-platform` if applicable
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor` to access portal node aliases in a cache manner
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor::ID_LOOKUP_QUERY` as `8f493191-2ba8-4c9f-b4ff-641fc1afdc56` to identify query used for looking up portal node ids by aliases
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor::ALIAS_LOOKUP_QUERY` as `81bd204c-97c0-4259-bf82-8b835f2f0237` to identify query used for looking up portal node aliases by ids
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasFindActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasFind`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasFind::FIND_QUERY` as `8ffc1022-c03b-4f3f-a2f6-5807710dbb6f` to identify query used for finding portal node ids by aliases
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasGetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasGet`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasGet::FETCH_QUERY` as `f3e31372-bc6b-444d-99ee-38b74f9cf9fc` to identify query used for finding portal node aliases by their ids
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview::OVERVIEW_QUERY` as `8467ced0-3575-410f-8155-e36e7e8f0e0b` to identify query used for loading an overview page for portal node aliases
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasSetActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet`
+- Add exception code `1647941560` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview::overview` when the criteria has an invalid sorting option
+- Add exception code `1645446078` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet::set` when the payload has an invalid portal node key
+- Add exception code `1645446809` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet::set` when the payload has an empty alias
+- Add exception code `1645446810` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet::set` when the payload has an already used alias
+- Add exception code `1645448849` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet::set` when writing to the database fails
 
 ### Changed
 
@@ -175,6 +193,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor`
 - Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor`
 - Rename `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingExceptionStorageKey` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey`
+- Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator` to support alias storage key serialization and deserialization
+- Use `\Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey` as alias aware implementation for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey`
 
 ### Deprecated
 

@@ -8,16 +8,18 @@ use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
-use PHPUnit\Framework\TestCase;
 
 /**
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey
@@ -27,6 +29,9 @@ use PHPUnit\Framework\TestCase;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
  */
 class StorageKeyGeneratorTest extends TestCase
 {
@@ -36,13 +41,13 @@ class StorageKeyGeneratorTest extends TestCase
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Unsupported storage key class: ' . AbstractStorageKey::class);
 
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $keys = \iterable_to_array($generator->generateKeys(AbstractStorageKey::class, 1));
     }
 
     public function testPreviewKeySerialization(): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $serialized = $generator->serialize(new PreviewPortalNodeKey(PortalContract::class));
 
         static::assertStringContainsString(\addcslashes(PortalContract::class, '\\'), $serialized);
@@ -50,7 +55,7 @@ class StorageKeyGeneratorTest extends TestCase
 
     public function testPreviewKeyDeserialization(): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Portal\\\\Base\\\\Portal\\\\Contract\\\\PortalContract"}');
 
         static::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
@@ -63,7 +68,7 @@ class StorageKeyGeneratorTest extends TestCase
      */
     public function testKeyGenerator(string $interface): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertInstanceOf($interface, $key);
@@ -74,7 +79,7 @@ class StorageKeyGeneratorTest extends TestCase
      */
     public function testKeyGeneratorList(string $interface): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /* @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         static::assertCount(100, $generator->generateKeys($interface, 100));
         static::assertCount(10, $generator->generateKeys($interface, 10));
@@ -87,7 +92,7 @@ class StorageKeyGeneratorTest extends TestCase
      */
     public function testKeySerialization(string $interface): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
@@ -99,7 +104,7 @@ class StorageKeyGeneratorTest extends TestCase
      */
     public function testKeyDeserialization(string $interface): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
@@ -112,7 +117,7 @@ class StorageKeyGeneratorTest extends TestCase
      */
     public function testKeyJsonSerialization(string $interface): void
     {
-        $generator = new StorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertStringContainsString($key->getUuid(), \json_encode($key));
@@ -126,5 +131,10 @@ class StorageKeyGeneratorTest extends TestCase
         yield [IdentityErrorKeyInterface::class];
         yield [JobKeyInterface::class];
         yield [FileReferenceRequestKeyInterface::class];
+    }
+
+    protected function createStorageFacade(): StorageFacadeInterface
+    {
+        return new StorageFacade($this->getConnection());
     }
 }
