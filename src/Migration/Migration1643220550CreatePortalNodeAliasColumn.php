@@ -86,7 +86,7 @@ SQL;
 
             $queryBuilderUpdate
                 ->setParameter('id', $portalNodeId, Types::BINARY)
-                ->setParameter('alias', $alias, Types::BINARY)
+                ->setParameter('alias', $alias)
                 ->execute();
         }
     }
