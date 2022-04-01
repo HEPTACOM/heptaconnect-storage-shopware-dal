@@ -64,6 +64,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
 
         if ($key instanceof AliasAwarePortalNodeStorageKey) {
             $key = $key->withoutAlias();
+            $class = \get_class($key);
 
             if (!$key instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException($class);
