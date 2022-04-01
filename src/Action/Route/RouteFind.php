@@ -30,13 +30,13 @@ final class RouteFind implements RouteFindActionInterface
 
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
     {
-        $sourceKey = $criteria->getSource();
+        $sourceKey = $criteria->getSource()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($sourceKey));
         }
 
-        $targetKey = $criteria->getTarget();
+        $targetKey = $criteria->getTarget()->withoutAlias();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException(\get_class($targetKey));
