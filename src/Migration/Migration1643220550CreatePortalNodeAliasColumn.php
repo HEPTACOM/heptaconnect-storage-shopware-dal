@@ -21,6 +21,7 @@ ALTER TABLE `heptaconnect_portal_node`
 SQL;
 
     public const REVERSE_UP = <<<'SQL'
+DROP INDEX `uniq.heptaconnect_portal_node.alias` ON `heptaconnect_portal_node`;
 ALTER TABLE `heptaconnect_portal_node`
     DROP COLUMN `alias`;
 SQL;
