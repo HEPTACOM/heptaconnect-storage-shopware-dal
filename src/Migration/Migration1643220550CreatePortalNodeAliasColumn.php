@@ -14,10 +14,10 @@ class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
 ALTER TABLE `heptaconnect_portal_node`
     ADD COLUMN `alias`
         VARCHAR(512)
-        UNIQUE
         NULL
         COLLATE 'binary'
-        AFTER `id`;
+        AFTER `id`,
+    ADD UNIQUE INDEX `uniq.heptaconnect_portal_node.alias` (`alias`)
 SQL;
 
     public const REVERSE_UP = <<<'SQL'
