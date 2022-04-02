@@ -15,6 +15,20 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.9.0.0] - 2022-04-02
+
+### Added
+
 - Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor`
 - Add state in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder` to make selects for update to trigger row locks
 - Add constants for job states in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum`
@@ -236,10 +250,6 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator::generateKeys` as interface `\Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract::generateKey` is removed
 - Remove implementation `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingStorageKey` as base contract has been removed
 - Remove support for `doctrine/dbal: >=2.1 <2.11`
-
-### Fixed
-
-### Security
 
 ## [0.8.5] - 2022-02-01
 
