@@ -246,6 +246,12 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Security
 
+## [0.8.5] - 2022-02-01
+
+### Fixed
+
+- Reset array keys after merging mapping nodes in `\Heptacom\HeptaConnect\Storage\ShopwareDal\MappingPersister\MappingPersister` to avoid InvalidArgumentException `Expected input to be non associative array.` to get thrown by `\Shopware\Core\Framework\DataAbstractionLayer\Write\EntityWriter`.
+
 ## [0.8.4] - 2022-01-22
 
 ### Added
