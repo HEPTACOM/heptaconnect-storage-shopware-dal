@@ -196,11 +196,6 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add dependency `\Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator` to support alias storage key serialization and deserialization
 - Use `\Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey` as alias aware implementation for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey`
 
-### Deprecated
-
-- Mark `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobEntity`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobPayloadEntity`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeCollection`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeDefinition` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\Job\JobTypeEntity` as deprecated as DAL usage is discouraged
-- Mark `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeDefinition`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeEntity` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Content\PortalNode\PortalNodeCollection` as deprecated as DAL usage is discouraged
-
 ### Removed
 
 - Remove class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Job` as base contract has been removed
