@@ -23,9 +23,13 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
-- Fix error related to foreign key checks in migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639860447UpdateExistingJobData`
-
 ### Security
+
+## [0.9.0.1] - 2022-04-19
+
+### Fixed
+
+- Fix error related to foreign key checks in migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639860447UpdateExistingJobData`
 
 ## [0.9.0.0] - 2022-04-02
 
