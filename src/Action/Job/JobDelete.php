@@ -56,25 +56,42 @@ SQL;
         }
 
         $selectBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
-        $payloadIds = $selectBuilder
+        $selectBuilder
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')
             ->select('job.payload_id')
-            ->where($selectBuilder->expr()->in('id', ':ids'))
-            ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
-            ->setMaxResults(\count($ids))
-            ->iterateColumn();
-        $payloadIds = \iterable_to_array($payloadIds);
+            ->where($selectBuilder->expr()->in('id', ':ids'));
 
         $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteJobBuilder
             ->delete('heptaconnect_job')
-            ->where($deleteJobBuilder->expr()->in('id', ':ids'))
-            ->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY)
-            ->execute();
+            ->where($deleteJobBuilder->expr()->in('id', ':ids'));
 
-        if ($payloadIds !== []) {
-            $this->connection->executeStatement(self::DELETE_AFFECTED_JOBS_PAYLOAD, ['ids' => $payloadIds], ['ids' => Connection::PARAM_STR_ARRAY]);
+        foreach (\array_chunk($ids, 1000) as $chunkedIds) {
+            $chunkedPayloadIds = $selectBuilder
+                ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
+                ->setMaxResults(\count($chunkedIds))
+                ->iterateColumn();
+
+            $payloadIds[] = \iterable_to_array($chunkedPayloadIds);
+
+            $this->connection->transactional(function () use (
+                $deleteJobBuilder,
+                $chunkedIds,
+                $payloadIds
+            ) {
+                $deleteJobBuilder
+                    ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
+                    ->execute();
+
+                if ($payloadIds !== []) {
+                    $this->connection->executeStatement(
+                        self::DELETE_AFFECTED_JOBS_PAYLOAD,
+                        ['ids' => $payloadIds],
+                        ['ids' => Connection::PARAM_STR_ARRAY]
+                    );
+                }
+            });
         }
     }
 }
