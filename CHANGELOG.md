@@ -23,6 +23,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Fix error when deleting many jobs at once by chunking job deletion to 1000 jobs at a time in `Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::delete`
+
 ### Security
 
 ## [0.9.0.1] - 2022-04-19
