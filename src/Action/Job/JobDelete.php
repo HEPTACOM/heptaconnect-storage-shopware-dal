@@ -73,7 +73,7 @@ SQL;
                 ->setMaxResults(\count($chunkedIds))
                 ->iterateColumn();
 
-            $payloadIds[] = \iterable_to_array($chunkedPayloadIds);
+            $payloadIds = \iterable_to_array($chunkedPayloadIds);
 
             $this->connection->transactional(function () use (
                 $deleteJobBuilder,
