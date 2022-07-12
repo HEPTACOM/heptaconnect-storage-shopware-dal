@@ -23,10 +23,14 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+### Security
+
+## [0.9.0.2] - 2022-07-12
+
+### Fixed
+
 - Fix error when deleting many jobs at once by chunking job deletion to 1000 jobs at a time in `Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::delete`
 - Fix issue in validation before mapping-node merging involving deleted mappings in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::validateMappingNodesCanBeMerged`
-
-### Security
 
 ## [0.9.0.1] - 2022-04-19
 
