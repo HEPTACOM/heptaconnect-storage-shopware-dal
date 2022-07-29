@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
@@ -82,14 +83,11 @@ final class RouteOverview implements RouteOverviewActionInterface
             $builder->iterateRows(),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['entity_type_name'],
+                new UnsafeClassString((string) $row['entity_type_name']),
                 new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['source_portal_node_class'],
+                new UnsafeClassString((string) $row['source_portal_node_class']),
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['target_portal_node_class'],
+                new UnsafeClassString((string) $row['target_portal_node_class']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['ct']),
                 \explode(',', (string) $row['capability_name'])

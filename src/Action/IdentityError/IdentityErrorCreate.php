@@ -62,7 +62,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 throw new InvalidCreatePayloadException($payload, 1645308762, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
             }
 
-            $lookups[$portalNodeKey->getUuid()][$entityType][] = $externalId;
+            $lookups[$portalNodeKey->getUuid()][(string) $entityType][] = $externalId;
         }
 
         $lookedUps = $this->lookupMappingNodeIds($lookups);
@@ -73,7 +73,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
             $portalNodeKey = $payload->getMappingComponent()->getPortalNodeKey()->withoutAlias();
             $entityType = $payload->getMappingComponent()->getEntityType();
             $externalId = $payload->getMappingComponent()->getExternalId();
-            $mappingNodeId = $lookedUps[$portalNodeKey->getUuid()][$entityType][$externalId] ?? null;
+            $mappingNodeId = $lookedUps[$portalNodeKey->getUuid()][(string) $entityType][$externalId] ?? null;
 
             if (!\is_string($mappingNodeId)) {
                 throw new InvalidCreatePayloadException($payload, 1645308763);

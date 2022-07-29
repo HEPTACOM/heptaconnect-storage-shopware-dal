@@ -17,6 +17,9 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Changed
 
+- Change `$payloadExtensions` parameter in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)
+- Change return type of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be a `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)
+
 ### Deprecated
 
 ### Removed

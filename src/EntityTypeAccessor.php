@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -30,8 +31,8 @@ class EntityTypeAccessor
     }
 
     /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $entityTypes
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
+     * @psalm-param array<array-key, class-string<DatasetEntityContract>> $entityTypes
+     * @psalm-return array<class-string<DatasetEntityContract>, string>
      */
     public function getIdsForTypes(array $entityTypes): array
     {

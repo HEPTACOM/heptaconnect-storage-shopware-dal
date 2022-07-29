@@ -69,7 +69,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
             $inserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
                 'alias' => $alias,
-                'class_name' => $payload->getPortalClass(),
+                'class_name' => (string) $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,
             ];

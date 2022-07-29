@@ -7,6 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
+use Heptacom\HeptaConnect\Dataset\Base\EntityType;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
@@ -116,7 +117,7 @@ final class IdentityMap implements IdentityMapActionInterface
                         $mappingExternalId,
                         $portalNodeKey,
                         new MappingNodeStorageKey($mappingNodeId),
-                        $mappingNodeType
+                        new EntityType($mappingNodeType)
                     );
                 }
             }
@@ -179,7 +180,7 @@ final class IdentityMap implements IdentityMapActionInterface
                         $mappingExternalId,
                         $portalNodeKey,
                         new MappingNodeStorageKey($mappingNodeId),
-                        $mappingNodeType
+                        new EntityType($mappingNodeType)
                     );
                 }
             }

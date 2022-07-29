@@ -47,7 +47,7 @@ final class FileReferenceRequestTest extends TestCase
 
         /** @var PortalNodeKeyInterface $portalNodeKey */
         $portalNodeKey = $portalNodeCreate->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class),
+            new PortalNodeCreatePayload(Portal::class()),
         ]))->first()->getPortalNodeKey();
 
         $bigPayload = \str_repeat('646f1c8e-D735-4590-af52<21e30242389b ', 100);

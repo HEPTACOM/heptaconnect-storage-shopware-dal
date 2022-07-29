@@ -16,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 
 /**
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
@@ -48,7 +49,7 @@ class StorageKeyGeneratorTest extends TestCase
     public function testPreviewKeySerialization(): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        $serialized = $generator->serialize(new PreviewPortalNodeKey(PortalContract::class));
+        $serialized = $generator->serialize(new PreviewPortalNodeKey(Portal::class()));
 
         static::assertStringContainsString(\addcslashes(Portal::class, '\\'), $serialized);
     }
@@ -56,11 +57,11 @@ class StorageKeyGeneratorTest extends TestCase
     public function testPreviewKeyDeserialization(): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Portal\\\\Base\\\\Portal\\\\Contract\\\\PortalContract"}');
+        $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Test\\\\Fixture\\\\Portal\\\\Portal"}');
 
         static::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
         /* @var $deserialized PreviewPortalNodeKey */
-        static::assertSame(PortalContract::class, $deserialized->getPortalType());
+        static::assertTrue(Portal::class()->equals($deserialized->getPortalType()));
     }
 
     /**

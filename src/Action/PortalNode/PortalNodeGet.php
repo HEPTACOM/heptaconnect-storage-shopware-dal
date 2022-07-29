@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
@@ -91,8 +92,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
             $this->iterator->iterate($builder),
             static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
                 new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['portal_node_class_name']
+                new UnsafeClassString((string) $row['portal_node_class_name'])
             )
         );
     }
