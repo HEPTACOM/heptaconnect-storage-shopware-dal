@@ -46,7 +46,7 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension((new class () extends PortalExtension {
+        $payload->addExtension((new class() extends PortalExtension {
         })::class());
         $result = $action->deactivate($payload);
 
@@ -94,7 +94,7 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension((new class () extends PortalExtension {
+        $payload->addExtension((new class() extends PortalExtension {
         })::class());
         $result = $action->deactivate($payload);
 
@@ -142,7 +142,7 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension((new class () extends PortalExtension {
+        $payload->addExtension((new class() extends PortalExtension {
         })::class());
         $result = $action->deactivate($payload);
 

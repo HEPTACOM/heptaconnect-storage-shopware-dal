@@ -36,7 +36,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         $classNameFilter = $criteria->getClassNameFilter();
 
         if ($classNameFilter->count() > 0) {
-            $classNames =\iterable_to_array($classNameFilter->map(
+            $classNames = \iterable_to_array($classNameFilter->map(
                 static fn (ClassStringReferenceContract $type): string => (string) $type
             ));
             $builder->andWhere($builder->expr()->in('portal_node.class_name', ':classNames'));

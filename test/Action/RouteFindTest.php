@@ -67,7 +67,8 @@ class RouteFindTest extends TestCase
         $criteria = new RouteFindCriteria(
             new PortalNodeStorageKey($portalNodeHex),
             new PortalNodeStorageKey($portalNodeHex),
-            (new class () extends DatasetEntityContract { })::class()
+            (new class() extends DatasetEntityContract {
+            })::class()
         );
         static::assertNull($action->find($criteria));
     }
