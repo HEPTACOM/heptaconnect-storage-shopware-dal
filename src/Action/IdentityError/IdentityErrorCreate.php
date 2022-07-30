@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayloads;
@@ -168,6 +169,9 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
         return $exceptions;
     }
 
+    /**
+     * @param array<string, array<class-string<DatasetEntityContract>, string>> $lookups
+     */
     private function lookupMappingNodeIds(array $lookups): array
     {
         $builder = $this->getBuilder();
