@@ -46,10 +46,11 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->deactivate($payload);
 
-        static::assertCount(1, $result->getPassedDeactivations());
+        static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
@@ -93,10 +94,11 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->deactivate($payload);
 
-        static::assertCount(1, $result->getPassedDeactivations());
+        static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
@@ -140,10 +142,11 @@ class PortalExtensionDeactivateTest extends TestCase
 
         $action = $facade->getPortalExtensionDeactivateAction();
         $payload = new PortalExtensionDeactivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->deactivate($payload);
 
-        static::assertCount(1, $result->getPassedDeactivations());
+        static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(

@@ -57,13 +57,13 @@ class JobCreateTest extends TestCase
         $sourceHex = Id::toHex($source);
         $action = $facade->getJobCreateAction();
         $action->create(new JobCreatePayloads([
-            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '1'), [
+            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class(), '1'), [
                 'party' => 'people',
             ]),
-            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '2'), [
+            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class(), '2'), [
                 'party' => 'people',
             ]),
-            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class, '3'), null),
+            new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class(), '3'), null),
         ]));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job`')->fetchColumn();

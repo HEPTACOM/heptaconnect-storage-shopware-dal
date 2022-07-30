@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
@@ -72,7 +74,7 @@ class ReceptionRouteListTest extends TestCase
 
         $facade = new StorageFacade($connection);
         $action = $facade->getReceptionRouteListAction();
-        $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
+        $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), new UnsafeClassString(DatasetEntityContract::class));
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
     }
@@ -112,7 +114,7 @@ class ReceptionRouteListTest extends TestCase
 
         $facade = new StorageFacade($connection);
         $action = $facade->getReceptionRouteListAction();
-        $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), self::class);
+        $criteria = new ReceptionRouteListCriteria(new PortalNodeStorageKey($portalNodeHex), new UnsafeClassString(self::class));
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
 

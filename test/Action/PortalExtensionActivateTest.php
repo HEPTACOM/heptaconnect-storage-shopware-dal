@@ -45,10 +45,11 @@ class PortalExtensionActivateTest extends TestCase
 
         $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->activate($payload);
 
-        static::assertCount(1, $result->getPassedActivations());
+        static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
@@ -92,10 +93,11 @@ class PortalExtensionActivateTest extends TestCase
 
         $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->activate($payload);
 
-        static::assertCount(1, $result->getPassedActivations());
+        static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(
@@ -139,10 +141,11 @@ class PortalExtensionActivateTest extends TestCase
 
         $action = $facade->getPortalExtensionActivateAction();
         $payload = new PortalExtensionActivatePayload(new PortalNodeStorageKey(Id::toHex($portalNode)));
-        $payload->addExtension(self::class);
+        $payload->addExtension((new class () extends PortalExtension {
+        })::class());
         $result = $action->activate($payload);
 
-        static::assertCount(1, $result->getPassedActivations());
+        static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
         $activeEntries = $connection->fetchColumn(

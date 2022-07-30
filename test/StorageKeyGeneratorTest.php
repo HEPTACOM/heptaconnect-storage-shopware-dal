@@ -50,7 +50,7 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $serialized = $generator->serialize(new PreviewPortalNodeKey(PortalContract::class));
 
-        static::assertStringContainsString(\addcslashes(PortalContract::class, '\\'), $serialized);
+        static::assertStringContainsString(\addcslashes(Portal::class, '\\'), $serialized);
     }
 
     public function testPreviewKeyDeserialization(): void
