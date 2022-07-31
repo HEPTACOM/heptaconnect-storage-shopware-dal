@@ -64,44 +64,29 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $createMappings = [];
         $reflectedMappingNodes = [];
 
-        // TODO do not group by as this won't work when you feed more than one source portal node CONNECT-377
-        foreach ($mappedEntities->groupByPortalNode() as $mappedEntityGroup) {
-            $firstMappedEntity = $mappedEntityGroup->first();
+        foreach ($mappedEntities as $key => $mappedEntity) {
+            /** @var PortalNodeStorageKey $sourcePortalNodeKey */
+            $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
+            $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
 
-            if (!$firstMappedEntity instanceof MappedDatasetEntityStruct) {
+            $mappedEntity->getDatasetEntity()->detachByType(PrimaryKeySharingMappingStruct::class);
+
+            $primaryKey = $mappedEntity->getMapping()->getExternalId();
+            /** @var MappingNodeStorageKey $mappingNodeKey */
+            $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
+            $mappingNodeId = $mappingNodeKey->getUuid();
+            $index[$mappingNodeId][] = $key;
+
+            if ($primaryKey === null) {
                 continue;
             }
 
-            /** @var PortalNodeStorageKey $sourcePortalNodeKey */
-            $sourcePortalNodeKey = $firstMappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
-            $sourcePortalNodeId = $sourcePortalNodeKey->getUuid();
-            $mappingNodeIdsForFilter = [];
-
-            /** @var MappedDatasetEntityStruct $mappedEntity */
-            foreach ($mappedEntityGroup as $key => $mappedEntity) {
-                $mappedEntity->getDatasetEntity()->detachByType(PrimaryKeySharingMappingStruct::class);
-
-                $primaryKey = $mappedEntity->getMapping()->getExternalId();
-                /** @var MappingNodeStorageKey $mappingNodeKey */
-                $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
-                $mappingNodeId = $mappingNodeKey->getUuid();
-                $index[$mappingNodeId][] = $key;
-
-                if ($primaryKey === null) {
-                    continue;
-                }
-
-                $mappingNodeIdsForFilter[] = $reflectedMappingNodes[] = $mappingNodeId;
-                $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] ??= [
-                    'external_id' => $primaryKey,
-                    'mapping_node_id' => $mappingNodeId,
-                    'portal_node_id' => $sourcePortalNodeId,
-                ];
-            }
-
-            if ($mappingNodeIdsForFilter !== []) {
-                $filters[$sourcePortalNodeId] = $mappingNodeIdsForFilter;
-            }
+            $filters[$sourcePortalNodeId][] = $reflectedMappingNodes[] = $mappingNodeId;
+            $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] ??= [
+                'external_id' => $primaryKey,
+                'mapping_node_id' => $mappingNodeId,
+                'portal_node_id' => $sourcePortalNodeId,
+            ];
         }
 
         if ($filters === []) {
