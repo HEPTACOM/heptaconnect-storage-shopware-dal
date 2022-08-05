@@ -62,6 +62,7 @@ final class IdentityMap implements IdentityMapActionInterface
 
         $portalNodeId = $portalNodeKey->getUuid();
         $datasetEntities = \iterable_to_array($payload->getEntityCollection());
+        /** @var class-string<DatasetEntityContract>[] $neededTypes */
         $neededTypes = \array_map('get_class', $datasetEntities);
         $typeIds = $this->entityTypeAccessor->getIdsForTypes($neededTypes);
 
@@ -199,6 +200,9 @@ final class IdentityMap implements IdentityMapActionInterface
         return $result;
     }
 
+    /**
+     * @return iterable<array{mapping_node_type: string, mapping_external_id: string, mapping_node_id: string}>
+     */
     private function getMappingNodes(array $readMappingNodes, array $typeIds, string $portalNodeId): iterable
     {
         $builder = $this->queryFactory->createBuilder(self::MAPPING_NODE_QUERY);

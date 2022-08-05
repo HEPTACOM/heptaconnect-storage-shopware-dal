@@ -18,6 +18,9 @@ class EntityTypeAccessor
 
     public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
 
+    /**
+     * @var array<string, string>
+     */
     private array $entityTypeIds = [];
 
     private Connection $connection;
@@ -31,8 +34,9 @@ class EntityTypeAccessor
     }
 
     /**
-     * @psalm-param array<array-key, class-string<DatasetEntityContract>> $entityTypes
-     * @psalm-return array<class-string<DatasetEntityContract>, string>
+     * @param array<array-key, class-string<DatasetEntityContract>> $entityTypes
+     *
+     * @return array<class-string<DatasetEntityContract>, string>
      */
     public function getIdsForTypes(array $entityTypes): array
     {
@@ -95,6 +99,7 @@ class EntityTypeAccessor
 
         $result = [];
 
+        /** @var array{type_id: string, type_type: string} $row */
         foreach ($queryBuilder->iterateRows() as $row) {
             $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
