@@ -63,7 +63,7 @@ final class RouteCreate implements RouteCreateActionInterface
                 throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException(\get_class($targetKey)));
             }
 
-            $entityTypes[] = $payload->getEntityType();
+            $entityTypes[] = (string) $payload->getEntityType();
             $capabilities[] = $payload->getCapabilities();
         }
 
@@ -86,7 +86,7 @@ final class RouteCreate implements RouteCreateActionInterface
             if (!\array_key_exists($entityType, $entityTypeIds)) {
                 /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
                 foreach ($payloads as $payload) {
-                    if ($payload->getEntityType() === $entityType) {
+                    if (((string) $payload->getEntityType()) === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1636573806);
                     }
                 }
@@ -116,7 +116,7 @@ final class RouteCreate implements RouteCreateActionInterface
                 'id' => Id::toBinary($key->getUuid()),
                 'source_id' => Id::toBinary($sourceKey->getUuid()),
                 'target_id' => Id::toBinary($targetKey->getUuid()),
-                'type_id' => Id::toBinary($entityTypeIds[$payload->getEntityType()]),
+                'type_id' => Id::toBinary($entityTypeIds[(string) $payload->getEntityType()]),
                 'created_at' => $now,
             ];
 

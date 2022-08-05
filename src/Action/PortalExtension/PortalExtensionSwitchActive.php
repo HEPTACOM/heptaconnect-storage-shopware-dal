@@ -6,7 +6,8 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalExtensionContract;
+use Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionType;
+use Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -47,13 +48,14 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     abstract protected function getTargetActiveState(): int;
 
-    /**
-     * @param array<class-string<PortalExtensionContract>> $payloadExtensions
-     *
-     * @return array<class-string<PortalExtensionContract>>
-     */
-    protected function toggle(PortalNodeKeyInterface $portalNodeKey, array $payloadExtensions)
-    {
+    protected function toggle(
+        PortalNodeKeyInterface $portalNodeKey,
+        PortalExtensionTypeCollection $payloadExtensions
+    ): PortalExtensionTypeCollection {
+        $extensionsToToggle = \iterable_to_array($payloadExtensions->map(
+            static fn (PortalExtensionType $type): string => (string) $type
+        ));
+
         $portalNodeId = $this->getPortalNodeId($portalNodeKey);
         $now = DateTime::nowToStorage();
 
@@ -62,7 +64,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $existingExtensions = [];
         $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
-            ->setParameter('extensionClassNames', $payloadExtensions, Connection::PARAM_STR_ARRAY)
+            ->setParameter('extensionClassNames', $extensionsToToggle, Connection::PARAM_STR_ARRAY)
             ->iterateRows();
 
         foreach ($existingExtensionRows as $existingExtension) {
@@ -79,7 +81,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             }
         }
 
-        $missingExtensions = \array_diff($payloadExtensions, $existingExtensions);
+        $missingExtensions = \array_diff($extensionsToToggle, $existingExtensions);
 
         foreach ($missingExtensions as $missingExtension) {
             $missingExtensionId = Id::randomHex();
@@ -131,7 +133,10 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             }
         }
 
-        return \array_values($pass);
+        return new PortalExtensionTypeCollection(\array_map(
+            static fn (string $passedExt): PortalExtensionType => new PortalExtensionType($passedExt),
+            \array_values($pass)
+        ));
     }
 
     protected function getSelectByClassNameQueryBuilder(): QueryBuilder

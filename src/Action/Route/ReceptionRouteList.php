@@ -44,7 +44,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $builder = $this->getBuilderCached();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
         return \iterable_map(

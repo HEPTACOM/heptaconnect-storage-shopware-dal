@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\EntityType;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult;
@@ -130,7 +131,7 @@ final class JobGet implements JobGetActionInterface
                 new JobStorageKey(Id::toHex((string) $row['job_id'])),
                 new MappingComponentStruct(
                     new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
-                    (string) $row['job_entity_type'],
+                    new EntityType((string) $row['job_entity_type']),
                     (string) $row['job_external_id']
                 ),
                 $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])

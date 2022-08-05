@@ -46,7 +46,7 @@ final class RouteFind implements RouteFindActionInterface
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('target_key', Id::toBinary($targetKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('type', (string) $criteria->getEntityType());
 
         $id = $builder->fetchSingleValue();
 

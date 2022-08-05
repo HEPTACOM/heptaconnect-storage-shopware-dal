@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
@@ -55,7 +56,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
 
         if ($entityTypeFilter !== []) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', $entityTypeFilter, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), Connection::PARAM_STR_ARRAY);
         }
 
         if ($externalIdFilter !== []) {
@@ -134,7 +135,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
                 new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
                 new MappingNodeStorageKey(Id::toHex((string) $row['mapping_node_id'])),
                 (string) $row['mapping_external_id'],
-                (string) $row['entity_type_type'],
+                new UnsafeClassString((string) $row['entity_type_type']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
             )
