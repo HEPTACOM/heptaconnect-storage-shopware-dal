@@ -74,7 +74,7 @@ final class RouteOverview implements RouteOverviewActionInterface
             $builder->setMaxResults($pageSize);
 
             if ($page > 0) {
-                $builder->setFirstResult($page * $pageSize);
+                $builder->setFirstResult(($page - 1) * $pageSize);
             }
         }
 
