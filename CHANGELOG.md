@@ -15,6 +15,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add support for new filter for source portal node, target portal node, entity type and capability in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview`
+
 ### Changed
 
 - Change `$payloadExtensions` parameter in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)
