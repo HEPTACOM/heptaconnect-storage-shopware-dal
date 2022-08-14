@@ -142,7 +142,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -154,7 +154,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

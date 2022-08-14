@@ -57,7 +57,7 @@ final class RouteFind implements RouteFindActionInterface
         return new RouteFindResult(new RouteStorageKey(Id::toHex($id)));
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -69,7 +69,7 @@ final class RouteFind implements RouteFindActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 

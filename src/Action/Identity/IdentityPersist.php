@@ -131,7 +131,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         });
     }
 
-    protected function getCreatePayload(IdentityPersistPayload $payload, string $portalNodeId): array
+    private function getCreatePayload(IdentityPersistPayload $payload, string $portalNodeId): array
     {
         $create = [];
 
@@ -159,7 +159,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         return \array_values($create);
     }
 
-    protected function getUpdatePayload(IdentityPersistPayload $payload, string $portalNodeId): array
+    private function getUpdatePayload(IdentityPersistPayload $payload, string $portalNodeId): array
     {
         $update = [];
         $mappingNodes = [];
@@ -229,7 +229,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         return $update;
     }
 
-    protected function getDeletePayload(IdentityPersistPayload $payload, string $portalNodeId): array
+    private function getDeletePayload(IdentityPersistPayload $payload, string $portalNodeId): array
     {
         $delete = [];
         $mappingNodeIds = [];
@@ -293,7 +293,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         return $delete;
     }
 
-    protected function validateMappingConflicts(
+    private function validateMappingConflicts(
         string $portalNodeId,
         array $create,
         array $update,

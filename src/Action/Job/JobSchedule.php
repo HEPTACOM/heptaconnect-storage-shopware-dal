@@ -79,7 +79,7 @@ final class JobSchedule implements JobScheduleActionInterface
         });
     }
 
-    protected function getJobIds(JobSchedulePayload $payload): array
+    private function getJobIds(JobSchedulePayload $payload): array
     {
         $jobIds = [];
 
@@ -94,7 +94,7 @@ final class JobSchedule implements JobScheduleActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(): QueryBuilder
+    private function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
@@ -115,7 +115,7 @@ final class JobSchedule implements JobScheduleActionInterface
             ], Connection::PARAM_STR_ARRAY);
     }
 
-    protected function getSelectQueryBuilder(): QueryBuilder
+    private function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
@@ -130,7 +130,7 @@ final class JobSchedule implements JobScheduleActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobScheduleResult
+    private function packResult(array $affectedJobIds, array $skippedJobIds): JobScheduleResult
     {
         $scheduledJobs = new JobKeyCollection();
 

@@ -68,7 +68,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         return new WebHttpHandlerConfigurationFindResult(\is_array($value) ? $value : null);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -80,7 +80,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 

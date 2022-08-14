@@ -70,7 +70,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $deleteBuilder->execute();
     }
 
-    protected function getDeleteQuery(): QueryBuilder
+    private function getDeleteQuery(): QueryBuilder
     {
         $builder = $this->deleteBuilder;
 
@@ -90,7 +90,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         return $builder;
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

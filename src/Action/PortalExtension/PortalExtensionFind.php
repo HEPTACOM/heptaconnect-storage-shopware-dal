@@ -47,7 +47,7 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         return $result;
     }
 
-    protected function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder instanceof QueryBuilder) {
             $this->queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);

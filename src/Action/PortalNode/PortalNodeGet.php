@@ -49,7 +49,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return $ids === [] ? [] : $this->iteratePortalNodes($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -61,7 +61,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -83,7 +83,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
      *
      * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult>
      */
-    protected function iteratePortalNodes(array $ids): iterable
+    private function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
