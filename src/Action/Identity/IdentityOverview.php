@@ -39,7 +39,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         $externalIdFilter = $criteria->getExternalIdFilter();
         $portalNodeKeyFilter = $criteria->getPortalNodeKeyFilter();
 
-        if ($mappingNodeKeyFilter->count() > 0) {
+        if (!$mappingNodeKeyFilter->isEmpty()) {
             $mappingNodeIds = [];
 
             foreach ($mappingNodeKeyFilter as $mappingNodeKey) {
@@ -64,7 +64,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             $builder->setParameter('externalIds', $externalIdFilter, Connection::PARAM_STR_ARRAY);
         }
 
-        if ($portalNodeKeyFilter->count() > 0) {
+        if (!$portalNodeKeyFilter->isEmpty()) {
             $portalNodeIds = [];
 
             foreach ($portalNodeKeyFilter as $portalNodeKey) {
