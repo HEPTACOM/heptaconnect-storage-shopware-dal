@@ -23,6 +23,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. The insert-query now uses the correct table-name.
+
 ### Security
 
 ## [0.9.0.2] - 2022-07-12

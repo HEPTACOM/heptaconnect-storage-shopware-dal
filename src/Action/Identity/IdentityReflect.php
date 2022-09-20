@@ -141,7 +141,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                         $createMapping['id'] = Id::randomBinary();
                         $createMapping['created_at'] = $now;
 
-                        $this->connection->insert('mapping', $createMapping, [
+                        $this->connection->insert('heptaconnect_mapping', $createMapping, [
                             'id' => Types::BINARY,
                             'mapping_node_id' => Types::BINARY,
                             'portal_node_id' => Types::BINARY,
