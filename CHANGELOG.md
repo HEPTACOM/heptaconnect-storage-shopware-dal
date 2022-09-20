@@ -15,6 +15,18 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693294CreateUiAuditTrailTable` to add UI audit trail table
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693295CreateUiAuditTrailDataTable` to add UI audit trail data table
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693296CreateUiAuditTrailErrorTable` to add UI audit trail error table
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailBeginActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailBegin` to create UI audit trails
+- Add exception code `1663694616` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailBegin::begin` when storing a UI audit trail to the database fails
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailEndActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailEnd` to mark UI audit trails as ended
+- Add exception code `1663694617` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailEnd::end` when setting the UI audit trail as finished fails on database layer
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogErrorActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError` to add errors to UI audit trails
+- Add exception code `1663694619` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError::logError` when storing exceptions to UI audit trails on the database fails
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogOutputActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput` to add output to UI audit trails
+- Add exception code `1663694618` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput::logOutput` when storing output to UI audit trails on the database fails
+
 ### Changed
 
 - Change `$payloadExtensions` parameter in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)

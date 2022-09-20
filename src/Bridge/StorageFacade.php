@@ -47,6 +47,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInte
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailBeginActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailEndActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogErrorActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogOutputActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
@@ -91,6 +95,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailBegin;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailEnd;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
@@ -362,6 +370,26 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createRouteCapabilityOverviewAction(): RouteCapabilityOverviewActionInterface
     {
         return new RouteCapabilityOverview($this->getQueryFactory());
+    }
+
+    protected function createUiAuditTrailBeginAction(): UiAuditTrailBeginActionInterface
+    {
+        return new UiAuditTrailBegin($this->getStorageKeyGenerator(), $this->connection);
+    }
+
+    protected function createUiAuditTrailLogOutputAction(): UiAuditTrailLogOutputActionInterface
+    {
+        return new UiAuditTrailLogOutput($this->connection);
+    }
+
+    protected function createUiAuditTrailLogErrorAction(): UiAuditTrailLogErrorActionInterface
+    {
+        return new UiAuditTrailLogError($this->connection);
+    }
+
+    protected function createUiAuditTrailEndAction(): UiAuditTrailEndActionInterface
+    {
+        return new UiAuditTrailEnd($this->connection);
     }
 
     protected function createWebHttpHandlerConfigurationFindAction(): WebHttpHandlerConfigurationFindActionInterface
