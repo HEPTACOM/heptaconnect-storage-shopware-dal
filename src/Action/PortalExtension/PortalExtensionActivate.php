@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
 use Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionType;
-use Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExtensionActivatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExtensionActivateResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface;
