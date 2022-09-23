@@ -15,7 +15,7 @@ CREATE TABLE `heptaconnect_ui_audit_trail_data`
     `id`                binary(16)      NOT NULL,
     `ui_audit_trail_id` binary(16)      NOT NULL,
     `payload`           blob            NOT NULL,
-    `format`            varbinary(256)  NOT NULL,
+    `payload_format`    varbinary(256)  NOT NULL,
     `created_at`        datetime(3)     NOT NULL,
     PRIMARY KEY (`id`),
     CONSTRAINT `fk.heptaconnect_ui_audit_trail_data.ui_audit_trail_id`
@@ -24,7 +24,7 @@ CREATE TABLE `heptaconnect_ui_audit_trail_data`
             ON DELETE CASCADE
             ON UPDATE CASCADE,
     INDEX `dt_desc.heptaconnect_ui_audit_trail_data.created_at` (`created_at` DESC),
-    INDEX `i.heptaconnect_ui_audit_trail_data.format` (`format`)
+    INDEX `i.heptaconnect_ui_audit_trail_data.payload_format` (`payload_format`)
 )
     ENGINE=InnoDB
     DEFAULT charset = `binary`;

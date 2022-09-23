@@ -31,7 +31,7 @@ final class UiAuditTrailLogOutput implements UiAuditTrailLogOutputActionInterfac
             throw new UnsupportedStorageKeyException(\get_class($key));
         }
 
-        $encoded = (string) \json_encode($payload, \JSON_PARTIAL_OUTPUT_ON_ERROR);
+        $encoded = (string) \json_encode($payload->getOutput(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
         $compressed = \gzcompress($encoded);
 
         try {
@@ -41,7 +41,7 @@ final class UiAuditTrailLogOutput implements UiAuditTrailLogOutputActionInterfac
                     'id' => Id::randomBinary(),
                     'ui_audit_trail_id' => Id::toBinary($key->getUuid()),
                     'payload' => $compressed,
-                    'format' => 'json+gzpress',
+                    'payload_format' => 'json+gzpress',
                     'created_at' => DateTime::nowToStorage(),
                 ],
                 [

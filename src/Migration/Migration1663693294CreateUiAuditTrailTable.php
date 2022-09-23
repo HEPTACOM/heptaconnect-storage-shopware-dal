@@ -27,7 +27,7 @@ CREATE TABLE `heptaconnect_ui_audit_trail`
     INDEX `i.heptaconnect_ui_audit_trail.ui_action_type` (`ui_action_type`),
     INDEX `i.heptaconnect_ui_audit_trail.ui_identifier` (`ui_identifier`),
     INDEX `i.heptaconnect_ui_audit_trail.user_identifier` (`user_identifier`),
-    INDEX `i.heptaconnect_ui_audit_trail.arguments_format` (`arguments_format`)
+    INDEX `i.heptaconnect_ui_audit_trail.arguments_format` (`arguments_format`),
     INDEX `dt_desc.heptaconnect_ui_audit_trail.created_at` (`created_at` DESC),
     INDEX `dt_desc.heptaconnect_ui_audit_trail.started_at` (`started_at` DESC),
     INDEX `dt_desc.heptaconnect_ui_audit_trail.finished_at` (`finished_at` DESC)
