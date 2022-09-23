@@ -41,6 +41,9 @@ final class UiAuditTrailBegin implements UiAuditTrailBeginActionInterface
         }
 
         try {
+            $encoded = (string) \json_encode($payload->getArguments(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
+            $compressed = \gzcompress($encoded);
+
             $this->connection->transactional(static fn (Connection $connection) => $connection->insert(
                 'heptaconnect_ui_audit_trail',
                 [
@@ -49,6 +52,8 @@ final class UiAuditTrailBegin implements UiAuditTrailBeginActionInterface
                     'ui_action_type' => (string) $payload->getUiActionType(),
                     'ui_identifier' => $payload->getUiIdentifier(),
                     'user_identifier' => $payload->getUserIdentifier(),
+                    'arguments' => $compressed,
+                    'arguments_format' => 'json+gzpress',
                     'started_at' => DateTime::toStorage($payload->getAt()),
                     'created_at' => DateTime::nowToStorage(),
                     'finished_at' => null,
