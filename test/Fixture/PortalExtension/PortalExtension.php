@@ -9,7 +9,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 
 class PortalExtension extends PortalExtensionContract
 {
-    public function supports(): string
+    protected function supports(): string
     {
         return Portal::class;
     }

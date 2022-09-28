@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\ClassStringReferenceContract;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
@@ -33,9 +35,12 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         $builder = $this->getBuilderCached();
         $classNameFilter = $criteria->getClassNameFilter();
 
-        if ($classNameFilter !== []) {
+        if ($classNameFilter->count() > 0) {
+            $classNames = \iterable_to_array($classNameFilter->map(
+                static fn (ClassStringReferenceContract $type): string => (string) $type
+            ));
             $builder->andWhere($builder->expr()->in('portal_node.class_name', ':classNames'));
-            $builder->setParameter('classNames', $classNameFilter, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('classNames', $classNames, Connection::PARAM_STR_ARRAY);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {
@@ -78,15 +83,14 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             $builder->iterateRows(),
             static fn (array $row): PortalNodeOverviewResult => new PortalNodeOverviewResult(
                 new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['portal_node_class_name'],
+                new UnsafeClassString((string) $row['portal_node_class_name']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at']),
             )
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -98,7 +102,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

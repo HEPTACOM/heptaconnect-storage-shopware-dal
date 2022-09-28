@@ -44,7 +44,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $builder = $this->getBuilderCached();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
         return \iterable_map(
@@ -53,7 +53,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -65,7 +65,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 

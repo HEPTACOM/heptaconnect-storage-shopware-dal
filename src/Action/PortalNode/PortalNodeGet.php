@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
@@ -48,7 +49,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return $ids === [] ? [] : $this->iteratePortalNodes($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -60,7 +61,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -82,7 +83,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
      *
      * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult>
      */
-    protected function iteratePortalNodes(array $ids): iterable
+    private function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
@@ -91,8 +92,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
             $this->iterator->iterate($builder),
             static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
                 new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['portal_node_class_name']
+                new UnsafeClassString((string) $row['portal_node_class_name'])
             )
         );
     }

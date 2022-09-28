@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
@@ -184,13 +186,13 @@ class PortalNodeOverviewTest extends TestCase
         $facade = new StorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
-        $criteria->setClassNameFilter([TestCase::class]);
+        $criteria->setClassNameFilter(new ClassStringReferenceCollection([new UnsafeClassString(TestCase::class)]));
 
         static::assertCount(1, $action->overview($criteria));
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {
-            static::assertSame(TestCase::class, $item->getPortalClass());
+            static::assertSame(TestCase::class, (string) $item->getPortalClass());
         }
     }
 }

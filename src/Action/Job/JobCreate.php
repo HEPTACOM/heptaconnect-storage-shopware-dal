@@ -64,7 +64,7 @@ final class JobCreate implements JobCreateActionInterface
         /** @var JobCreatePayload $payload */
         foreach ($payloads as $payloadId => $payload) {
             $jobTypes[] = $payload->getJobType();
-            $entityTypes[] = $payload->getMapping()->getEntityType();
+            $entityTypes[] = (string) $payload->getMapping()->getEntityType();
             $portalNodeKey = $payload->getMapping()->getPortalNodeKey()->withoutAlias();
             $jobPayload = $payload->getJobPayload();
 
@@ -99,7 +99,7 @@ final class JobCreate implements JobCreateActionInterface
             if (!\array_key_exists($entityType, $entityTypeIds)) {
                 /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload $payload */
                 foreach ($payloads as $payload) {
-                    if ($payload->getMapping()->getEntityType() === $entityType) {
+                    if (((string) $payload->getMapping()->getEntityType()) === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1639268732);
                     }
                 }
@@ -118,7 +118,7 @@ final class JobCreate implements JobCreateActionInterface
             /** @var JobCreatePayload $payload */
             foreach ($payloads as $payloadId => $payload) {
                 $jobTypeId = $jobTypeIds[$payload->getJobType()];
-                $entityTypeId = $entityTypeIds[$payload->getMapping()->getEntityType()];
+                $entityTypeId = $entityTypeIds[(string) $payload->getMapping()->getEntityType()];
                 /** @var PortalNodeStorageKey $portalNodeKey */
                 $portalNodeKey = $payload->getMapping()->getPortalNodeKey()->withoutAlias();
 

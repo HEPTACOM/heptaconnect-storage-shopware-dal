@@ -103,7 +103,7 @@ class JobGetTest extends TestCase
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult $item */
         foreach ($action->get($criteria) as $item) {
             ++$count;
-            static::assertSame(Simple::class, $item->getMappingComponent()->getEntityType());
+            static::assertTrue(Simple::class()->equals($item->getMappingComponent()->getEntityType()));
             static::assertSame('123', $item->getMappingComponent()->getExternalId());
             static::assertSame([
                 'foo' => 'bar',

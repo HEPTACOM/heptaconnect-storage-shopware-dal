@@ -37,8 +37,10 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Portal\PortalA\PortalA;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
@@ -63,12 +65,12 @@ class IdentityErrorTest extends TestCase
         $this->identityMap = $facade->getIdentityMapAction();
         $this->identityErrorCreateAction = $facade->getIdentityErrorCreateAction();
 
-        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class)]);
+        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class())]);
         $createResults = $portalNodeCreate->create($createPayloads);
         $getCriteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection($createResults->column('getPortalNodeKey')));
 
         foreach ($portalNodeGet->get($getCriteria) as $portalNode) {
-            if ($portalNode->getPortalClass() === PortalA::class) {
+            if ($portalNode->getPortalClass()->equals(PortalA::class())) {
                 $this->portalA = $portalNode->getPortalNodeKey();
             }
         }
@@ -115,7 +117,7 @@ class IdentityErrorTest extends TestCase
 
         $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
             new IdentityErrorCreatePayload(
-                new MappingComponentStruct($this->portalA, $entityClass, $entity->getPrimaryKey()),
+                new MappingComponentStruct($this->portalA, $entityClass::class(), $entity->getPrimaryKey()),
                 new \LogicException(
                     'This does not work properly',
                     123,
@@ -144,7 +146,7 @@ class IdentityErrorTest extends TestCase
         try {
             $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
                 new IdentityErrorCreatePayload(
-                    new MappingComponentStruct($this->portalA, $entityClass, $entity->getPrimaryKey()),
+                    new MappingComponentStruct($this->portalA, $entityClass::class(), $entity->getPrimaryKey()),
                     new \LogicException(
                         'This does not work properly',
                         123,

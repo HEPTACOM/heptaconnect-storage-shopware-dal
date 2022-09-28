@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
@@ -47,7 +48,7 @@ final class RouteGet implements RouteGetActionInterface
         return $ids === [] ? [] : $this->yieldRoutes($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -59,7 +60,7 @@ final class RouteGet implements RouteGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -120,7 +121,7 @@ final class RouteGet implements RouteGetActionInterface
      *
      * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult>
      */
-    protected function yieldRoutes(array $ids): iterable
+    private function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
@@ -131,8 +132,7 @@ final class RouteGet implements RouteGetActionInterface
                 new RouteStorageKey(Id::toHex((string) $row['id'])),
                 new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['entity_type_name'],
+                new UnsafeClassString((string) $row['entity_type_name']),
                 \explode(',', (string) $row['capability_name'])
             )
         );

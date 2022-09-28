@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Find\PortalExtensionFindResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface;
@@ -40,13 +41,13 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         $result = new PortalExtensionFindResult();
 
         foreach ($builder->iterateRows() as $extension) {
-            $result->add((string) $extension['class_name'], (bool) $extension['active']);
+            $result->add(new UnsafeClassString((string) $extension['class_name']), (bool) $extension['active']);
         }
 
         return $result;
     }
 
-    protected function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder instanceof QueryBuilder) {
             $this->queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
