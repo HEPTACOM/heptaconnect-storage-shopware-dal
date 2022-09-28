@@ -84,8 +84,8 @@ final class IdentityReflect implements IdentityReflectActionInterface
             $filters[$sourcePortalNodeId][] = $reflectedMappingNodes[] = $mappingNodeId;
             $createMappings[$sourcePortalNodeId . $mappingNodeId . $primaryKey] ??= [
                 'external_id' => $primaryKey,
-                'mapping_node_id' => $mappingNodeId,
-                'portal_node_id' => $sourcePortalNodeId,
+                'mapping_node_id' => Id::toBinary($mappingNodeId),
+                'portal_node_id' => Id::toBinary($sourcePortalNodeId),
             ];
         }
 
