@@ -79,7 +79,7 @@ SQL;
                 $deleteJobBuilder,
                 $chunkedIds,
                 $payloadIds
-            ) {
+            ): void {
                 $deleteJobBuilder
                     ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
                     ->execute();
