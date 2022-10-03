@@ -23,6 +23,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Pagination in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview` was one page in advance and therefore made page 1 only accessable when listing without pagination in criteria
+
 ### Security
 
 ## [0.9.0.3] - 2022-09-20
