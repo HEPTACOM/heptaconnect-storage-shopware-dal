@@ -60,6 +60,7 @@ final class UiAuditTrailBegin implements UiAuditTrailBeginActionInterface
                 ],
                 [
                     'id' => Types::BINARY,
+                    'arguments' => Types::BINARY,
                 ]
             ));
         } catch (\Throwable $throwable) {
