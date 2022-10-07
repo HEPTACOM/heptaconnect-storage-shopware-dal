@@ -38,7 +38,11 @@ class RouteCapabilityOverviewTest extends TestCase
         $criteria1 = clone $criteria0;
         $criteria1->setPage(1);
 
+        $criteria2 = clone $criteria0;
+        $criteria2->setPage(2);
+
         static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(0, $action->overview($criteria1));
+        static::assertCount(1, $action->overview($criteria1));
+        static::assertCount(0, $action->overview($criteria2));
     }
 }

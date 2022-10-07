@@ -75,7 +75,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             $builder->setMaxResults($pageSize);
 
             if ($page > 0) {
-                $builder->setFirstResult($page * $pageSize);
+                $builder->setFirstResult(($page - 1) * $pageSize);
             }
         }
 
