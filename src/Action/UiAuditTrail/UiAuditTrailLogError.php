@@ -27,6 +27,7 @@ final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
     public function logError(UiAuditTrailLogErrorPayloadCollection $payloads): void
     {
         $inserts = [];
+        $now = DateTime::nowToStorage();
 
         /** @var UiAuditTrailLogErrorPayload $payload */
         foreach ($payloads as $payload) {
@@ -44,7 +45,7 @@ final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
                 'exception_class' => $payload->getExceptionClass(),
                 'code' => $payload->getCode(),
                 'message' => $payload->getMessage(),
-                'created_at' => DateTime::nowToStorage(),
+                'created_at' => $now,
             ];
         }
 
