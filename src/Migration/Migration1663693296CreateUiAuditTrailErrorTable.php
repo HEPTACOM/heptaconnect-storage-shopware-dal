@@ -14,9 +14,9 @@ CREATE TABLE `heptaconnect_ui_audit_trail_error`
 (
     `id`                binary(16)       NOT NULL,
     `ui_audit_trail_id` binary(16)       NOT NULL,
-    `code`              varbinary(128)   NOT NULL,
+    `code`              varbinary(256)   NOT NULL,
     `exception_class`   varbinary(1024)  NOT NULL,
-    `depth`             integer(3)       NOT NULL,
+    `depth`             int              NOT NULL,
     `message`           varbinary(1024)  NOT NULL,
     `logged_at`         datetime(3)      NOT NULL,
     `created_at`        datetime(3)      NOT NULL,
