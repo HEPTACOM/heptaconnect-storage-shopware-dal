@@ -23,9 +23,13 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
-- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. Insertion payload was not binary as expected.
-
 ### Security
+
+## [0.9.0.5] - 2022-11-19
+
+### Fixed
+
+- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. Insertion payload was not binary as expected.
 
 ## [0.9.0.4] - 2022-10-03
 
