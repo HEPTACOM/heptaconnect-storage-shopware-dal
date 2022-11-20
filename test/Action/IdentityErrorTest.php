@@ -155,7 +155,7 @@ class IdentityErrorTest extends TestCase
                 ),
             ]));
             static::fail();
-        } catch (CreateException $throwable) {
+        } catch (CreateException) {
         }
 
         $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');

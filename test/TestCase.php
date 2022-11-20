@@ -167,7 +167,7 @@ abstract class TestCase extends BaseTestCase
                     } else {
                         $param = '0x' . Id::toHex($param);
                     }
-                } catch (\Throwable $throwable) {
+                } catch (\Throwable) {
                 }
             }
 

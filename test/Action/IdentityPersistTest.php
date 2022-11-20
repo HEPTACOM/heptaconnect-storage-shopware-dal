@@ -204,7 +204,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -241,7 +241,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -277,7 +277,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -403,7 +403,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
