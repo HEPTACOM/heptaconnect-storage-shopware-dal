@@ -79,7 +79,7 @@ final class JobFail implements JobFailActionInterface
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;

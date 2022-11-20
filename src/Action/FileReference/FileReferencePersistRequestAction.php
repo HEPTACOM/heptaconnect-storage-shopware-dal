@@ -32,7 +32,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
             throw new InvalidCreatePayloadException(
                 $payload,
                 1645822126,
-                new UnsupportedStorageKeyException(\get_class($portalNodeKey))
+                new UnsupportedStorageKeyException($portalNodeKey::class)
             );
         }
 
@@ -55,7 +55,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
                     throw new InvalidCreatePayloadException(
                         $payload,
                         1645822126,
-                        new UnsupportedStorageKeyException(\get_class($storageKey))
+                        new UnsupportedStorageKeyException($storageKey::class)
                     );
                 }
 

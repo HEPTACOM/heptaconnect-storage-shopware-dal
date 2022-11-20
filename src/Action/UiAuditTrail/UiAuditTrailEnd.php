@@ -25,7 +25,7 @@ final class UiAuditTrailEnd implements UiAuditTrailEndActionInterface
         $key = $payload->getUiAuditTrailKey();
 
         if (!$key instanceof UiAuditTrailStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
+            throw new UnsupportedStorageKeyException($key::class);
         }
 
         try {

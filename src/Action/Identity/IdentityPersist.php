@@ -42,7 +42,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
@@ -137,7 +137,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $createMapping->getMappingNodeKey() ?? null;
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($createMapping, 1643149115, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($createMapping, 1643149115, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodeId = $mappingNodeKey->getUuid();
@@ -166,7 +166,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $updateMapping->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($updateMapping, 1643149116, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($updateMapping, 1643149116, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodes[$mappingNodeKey->getUuid()] = $updateMapping->getExternalId();
@@ -236,7 +236,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $deleteMapping->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($deleteMapping, 1643149117, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($deleteMapping, 1643149117, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodeIds[$mappingNodeKey->getUuid()] = true;

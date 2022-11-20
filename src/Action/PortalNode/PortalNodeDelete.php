@@ -37,7 +37,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey::class);
             }
 
             $ids[] = Id::toBinary($portalNodeKey->getUuid());

@@ -25,7 +25,7 @@ final class UiAuditTrailLogOutput implements UiAuditTrailLogOutputActionInterfac
         $key = $payload->getUiAuditTrailKey();
 
         if (!$key instanceof UiAuditTrailStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
+            throw new UnsupportedStorageKeyException($key::class);
         }
 
         $encoded = (string) \json_encode($payload->getOutput(), \JSON_PARTIAL_OUTPUT_ON_ERROR);

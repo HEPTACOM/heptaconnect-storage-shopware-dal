@@ -34,7 +34,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($targetPortalNodeKey));
+            throw new UnsupportedStorageKeyException($targetPortalNodeKey::class);
         }
 
         $mappedEntities = $payload->getMappedDatasetEntities();
@@ -43,13 +43,13 @@ final class IdentityReflect implements IdentityReflectActionInterface
             $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
+                throw new UnsupportedStorageKeyException($sourcePortalNodeKey::class);
             }
 
             $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+                throw new UnsupportedStorageKeyException($mappingNodeKey::class);
             }
         }
 

@@ -33,7 +33,7 @@ final class RouteGet implements RouteGetActionInterface
 
         foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($routeKey));
+                throw new UnsupportedStorageKeyException($routeKey::class);
             }
 
             $ids[] = $routeKey->getUuid();

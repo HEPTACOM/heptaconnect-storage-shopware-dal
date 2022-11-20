@@ -29,7 +29,7 @@ final class UiAuditTrailBegin implements UiAuditTrailBeginActionInterface
         $key = \iterable_to_array($this->storageKeyGenerator->generateKeys(UiAuditTrailKeyInterface::class, 1))[0] ?? null;
 
         if (!$key instanceof UiAuditTrailStorageKey) {
-            throw new UnsupportedStorageKeyException($key === null ? StorageKeyInterface::class : \get_class($key));
+            throw new UnsupportedStorageKeyException($key === null ? StorageKeyInterface::class : $key::class);
         }
 
         try {

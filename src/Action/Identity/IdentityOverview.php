@@ -41,7 +41,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
 
             foreach ($mappingNodeKeyFilter as $mappingNodeKey) {
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                    throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException($mappingNodeKey::class));
                 }
 
                 $mappingNodeIds[] = Id::toBinary($mappingNodeKey->getUuid());
@@ -68,7 +68,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                    throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException($portalNodeKey::class));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());

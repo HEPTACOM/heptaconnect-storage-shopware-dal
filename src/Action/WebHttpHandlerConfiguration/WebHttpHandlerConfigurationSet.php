@@ -33,7 +33,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
             $handlerPaths[] = $payload->getPath();

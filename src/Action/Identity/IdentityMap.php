@@ -41,7 +41,7 @@ final class IdentityMap implements IdentityMapActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
@@ -61,7 +61,7 @@ final class IdentityMap implements IdentityMapActionInterface
         /** @var DatasetEntityContract $entity */
         foreach ($datasetEntities as $key => $entity) {
             $primaryKey = $entity->getPrimaryKey();
-            $type = \get_class($entity);
+            $type = $entity::class;
 
             if ($primaryKey === null) {
                 continue;
@@ -119,7 +119,7 @@ final class IdentityMap implements IdentityMapActionInterface
                 $mappingNodeKey = \array_shift($mappingNodeKeys);
 
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+                    throw new UnsupportedStorageKeyException($mappingNodeKey::class);
                 }
 
                 $mappingNodeId = $mappingNodeKey->getUuid();

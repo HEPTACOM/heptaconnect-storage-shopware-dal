@@ -32,7 +32,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($sourceKey));
+            throw new UnsupportedStorageKeyException($sourceKey::class);
         }
 
         $builder = $this->getBuilderCached();

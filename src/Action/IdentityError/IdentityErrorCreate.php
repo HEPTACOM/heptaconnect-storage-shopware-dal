@@ -44,7 +44,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
             $externalId = $payload->getMappingComponent()->getExternalId();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1645308762, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1645308762, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
             $lookups[$portalNodeKey->getUuid()][(string) $entityType][] = $externalId;
@@ -91,7 +91,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 $key = \array_shift($keys) ?: null;
 
                 if (!$key instanceof IdentityErrorStorageKey) {
-                    throw new UnsupportedStorageKeyException($key === null ? 'null' : \get_class($key));
+                    throw new UnsupportedStorageKeyException($key === null ? 'null' : $key::class);
                 }
 
                 $resultKey ??= $key;
@@ -109,7 +109,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 $insert['id'] = Id::toBinary($key->getUuid());
                 $insert['previous_id'] = $previousKey instanceof IdentityErrorStorageKey ? Id::toBinary($previousKey->getUuid()) : null;
                 $insert['group_previous_id'] = $key->equals($resultKey) ? null : Id::toBinary($resultKey->getUuid());
-                $insert['type'] = \get_class($exception);
+                $insert['type'] = $exception::class;
                 $insert['message'] = $exception->getMessage();
                 $insert['stack_trace'] = $stackTrace;
                 $insert['created_at'] = $now;

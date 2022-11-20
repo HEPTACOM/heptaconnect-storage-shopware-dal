@@ -31,7 +31,7 @@ final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
             $key = $payload->getUiAuditTrailKey();
 
             if (!$key instanceof UiAuditTrailStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($key));
+                throw new UnsupportedStorageKeyException($key::class);
             }
 
             $inserts[] = [

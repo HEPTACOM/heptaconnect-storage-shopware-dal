@@ -27,7 +27,7 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);

@@ -39,7 +39,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
             $keys->next();
 
             if (!$key instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException(\get_class($key)));
+                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException($key::class));
             }
 
             $alias = $payload->getAlias();

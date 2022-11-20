@@ -57,7 +57,7 @@ final class JobCreate implements JobCreateActionInterface
             }
 
             if (!($portalNodeKey instanceof PortalNodeStorageKey)) {
-                throw new InvalidCreatePayloadException($payload, 1639268730, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1639268730, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
         }
 
@@ -106,7 +106,7 @@ final class JobCreate implements JobCreateActionInterface
                 $keys->next();
 
                 if (!$key instanceof JobStorageKey) {
-                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException(\get_class($key)));
+                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException($key::class));
                 }
 
                 $jobPayloadKey = null;
