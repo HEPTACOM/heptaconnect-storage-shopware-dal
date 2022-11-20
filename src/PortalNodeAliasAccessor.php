@@ -16,11 +16,8 @@ class PortalNodeAliasAccessor
 
     private array $known = [];
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     /**

@@ -17,11 +17,8 @@ final class PortalNodeAliasGet implements PortalNodeAliasGetActionInterface
 {
     public const FETCH_QUERY = 'f3e31372-bc6b-444d-99ee-38b74f9cf9fc';
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     public function get(PortalNodeAliasGetCriteria $criteria): iterable

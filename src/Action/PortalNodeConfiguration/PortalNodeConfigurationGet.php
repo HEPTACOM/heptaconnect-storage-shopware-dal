@@ -18,11 +18,8 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
 {
     public const FETCH_QUERY = 'be4a9934-2ab2-4c62-8a86-4600c96bc7be';
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     public function get(PortalNodeConfigurationGetCriteria $criteria): iterable

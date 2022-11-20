@@ -14,20 +14,8 @@ class WebHttpHandlerAccessor
 {
     public const FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    private WebHttpHandlerPathIdResolver $pathIdResolver;
-
-    public function __construct(
-        Connection $connection,
-        QueryFactory $queryFactory,
-        WebHttpHandlerPathIdResolver $pathIdResolver
-    ) {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
-        $this->pathIdResolver = $pathIdResolver;
+    public function __construct(private Connection $connection, private QueryFactory $queryFactory, private WebHttpHandlerPathIdResolver $pathIdResolver)
+    {
     }
 
     /**

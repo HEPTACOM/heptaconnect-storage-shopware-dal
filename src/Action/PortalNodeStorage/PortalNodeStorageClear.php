@@ -18,14 +18,8 @@ final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterf
 {
     public const CLEAR_QUERY = '1087e0dc-07fe-48d7-903c-9353167c3e89';
 
-    private QueryFactory $queryFactory;
-
-    private Connection $connection;
-
-    public function __construct(QueryFactory $queryFactory, Connection $connection)
+    public function __construct(private QueryFactory $queryFactory, private Connection $connection)
     {
-        $this->queryFactory = $queryFactory;
-        $this->connection = $connection;
     }
 
     public function clear(PortalNodeStorageClearCriteria $criteria): void

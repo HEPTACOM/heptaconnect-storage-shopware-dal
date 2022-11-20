@@ -31,28 +31,8 @@ final class JobCreate implements JobCreateActionInterface
 
     private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
-    private Connection $connection;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private JobTypeAccessor $jobTypes;
-
-    private EntityTypeAccessor $entityTypes;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(
-        Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        JobTypeAccessor $jobTypes,
-        EntityTypeAccessor $entityTypes,
-        QueryFactory $queryFactory
-    ) {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->jobTypes = $jobTypes;
-        $this->entityTypes = $entityTypes;
-        $this->queryFactory = $queryFactory;
+    public function __construct(private Connection $connection, private StorageKeyGeneratorContract $storageKeyGenerator, private JobTypeAccessor $jobTypes, private EntityTypeAccessor $entityTypes, private QueryFactory $queryFactory)
+    {
     }
 
     public function create(JobCreatePayloads $payloads): JobCreateResults

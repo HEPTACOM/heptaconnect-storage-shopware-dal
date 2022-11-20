@@ -21,14 +21,8 @@ final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInte
 
     public const DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
 
-    private QueryFactory $queryFactory;
-
-    private Connection $connection;
-
-    public function __construct(QueryFactory $queryFactory, Connection $connection)
+    public function __construct(private QueryFactory $queryFactory, private Connection $connection)
     {
-        $this->queryFactory = $queryFactory;
-        $this->connection = $connection;
     }
 
     public function delete(PortalNodeStorageDeleteCriteria $criteria): void

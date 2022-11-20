@@ -16,11 +16,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailLogOutput implements UiAuditTrailLogOutputActionInterface
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
+    public function __construct(private Connection $connection)
     {
-        $this->connection = $connection;
     }
 
     public function logOutput(UiAuditTrailLogOutputPayload $payload): void

@@ -25,14 +25,8 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
     public const LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
+    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
     }
 
     public function reflect(IdentityReflectPayload $payload): void

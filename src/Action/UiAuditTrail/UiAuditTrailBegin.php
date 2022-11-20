@@ -20,16 +20,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailBegin implements UiAuditTrailBeginActionInterface
 {
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private Connection $connection;
-
-    public function __construct(
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        Connection $connection
-    ) {
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->connection = $connection;
+    public function __construct(private StorageKeyGeneratorContract $storageKeyGenerator, private Connection $connection)
+    {
     }
 
     public function begin(UiAuditTrailBeginPayload $payload): UiAuditTrailBeginResult

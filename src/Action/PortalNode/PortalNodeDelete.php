@@ -25,11 +25,8 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     public function delete(PortalNodeDeleteCriteria $criteria): void

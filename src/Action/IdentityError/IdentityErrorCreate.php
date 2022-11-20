@@ -29,24 +29,8 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
     public const LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private EntityTypeAccessor $entityTypeAccessor;
-
-    public function __construct(
-        Connection $connection,
-        QueryFactory $queryFactory,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        EntityTypeAccessor $entityTypeAccessor
-    ) {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->entityTypeAccessor = $entityTypeAccessor;
+    public function __construct(private Connection $connection, private QueryFactory $queryFactory, private StorageKeyGeneratorContract $storageKeyGenerator, private EntityTypeAccessor $entityTypeAccessor)
+    {
     }
 
     public function create(IdentityErrorCreatePayloads $payloads): IdentityErrorCreateResults

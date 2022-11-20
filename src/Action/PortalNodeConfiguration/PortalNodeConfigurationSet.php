@@ -17,11 +17,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInterface
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
+    public function __construct(private Connection $connection)
     {
-        $this->connection = $connection;
     }
 
     public function set(PortalNodeConfigurationSetPayloads $payloads): void

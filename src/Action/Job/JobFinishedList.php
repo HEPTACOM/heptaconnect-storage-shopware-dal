@@ -20,14 +20,8 @@ final class JobFinishedList implements JobListFinishedActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
+    public function __construct(private QueryFactory $queryFactory, private QueryIterator $iterator)
     {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
     }
 
     public function list(): iterable

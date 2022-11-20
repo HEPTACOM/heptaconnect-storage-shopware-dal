@@ -28,14 +28,8 @@ final class JobFail implements JobFailActionInterface
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
+    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
     }
 
     public function fail(JobFailPayload $payload): JobFailResult

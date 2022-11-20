@@ -48,11 +48,8 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         'UiAuditTrail' => UiAuditTrailStorageKey::class,
     ];
 
-    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
-
-    public function __construct(PortalNodeAliasAccessor $portalNodeAliasAccessor)
+    public function __construct(private PortalNodeAliasAccessor $portalNodeAliasAccessor)
     {
-        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
     }
 
     public function generateKeys(string $keyClassName, int $count): iterable

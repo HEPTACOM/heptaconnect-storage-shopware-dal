@@ -22,20 +22,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
-    private Connection $connection;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
-
-    public function __construct(
-        Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        PortalNodeAliasAccessor $portalNodeAliasAccessor
-    ) {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
+    public function __construct(private Connection $connection, private StorageKeyGeneratorContract $storageKeyGenerator, private PortalNodeAliasAccessor $portalNodeAliasAccessor)
+    {
     }
 
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults

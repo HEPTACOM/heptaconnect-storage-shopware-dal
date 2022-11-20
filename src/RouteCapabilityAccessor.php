@@ -14,11 +14,8 @@ class RouteCapabilityAccessor
 
     private array $knownCapabilities = [];
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     /**

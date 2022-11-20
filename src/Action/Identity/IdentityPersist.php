@@ -33,14 +33,8 @@ final class IdentityPersist implements IdentityPersistActionInterface
 
     public const VALIDATE_MERGE_QUERY = 'd8bb9156-edcc-4b1b-8e7e-fae2e8932434';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
+    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
     {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
     }
 
     public function persist(IdentityPersistPayload $payload): void

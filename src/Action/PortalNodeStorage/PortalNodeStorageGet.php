@@ -19,11 +19,8 @@ final class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
 {
     public const FETCH_QUERY = '679d6e76-bb9c-410d-ac22-17c64afcb7cc';
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(private QueryFactory $queryFactory)
     {
-        $this->queryFactory = $queryFactory;
     }
 
     public function get(PortalNodeStorageGetCriteria $criteria): iterable
