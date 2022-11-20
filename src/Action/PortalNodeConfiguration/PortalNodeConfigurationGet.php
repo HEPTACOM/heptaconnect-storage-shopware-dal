@@ -58,7 +58,7 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
                 $portalNodeId = Id::toHex((string) $r['portal_node_id']);
 
                 try {
-                    $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR);
+                    $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR, JSON_THROW_ON_ERROR);
                 } catch (\JsonException $exception) {
                     throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863472, $exception);
                 }

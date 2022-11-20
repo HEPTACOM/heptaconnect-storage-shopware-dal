@@ -103,7 +103,7 @@ final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
                 $exceptionAsJson = \json_encode($exception->getTrace(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
                 $stackTrace = \is_string($exceptionAsJson) ? $exceptionAsJson : (string) \json_encode([
                     'json_last_error_msg' => \json_last_error_msg(),
-                ]);
+                ], JSON_THROW_ON_ERROR);
 
                 $insert = $insertPayload;
                 $insert['id'] = Id::toBinary($key->getUuid());
