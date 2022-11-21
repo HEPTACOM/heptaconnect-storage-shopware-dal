@@ -19,8 +19,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 
 final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
-    public function __construct(private Connection $connection, private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor, private WebHttpHandlerAccessor $webHttpHandlerAccessor)
-    {
+    public function __construct(
+        private Connection $connection,
+        private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor,
+        private WebHttpHandlerAccessor $webHttpHandlerAccessor
+    ) {
     }
 
     public function set(WebHttpHandlerConfigurationSetPayloads $payloads): void

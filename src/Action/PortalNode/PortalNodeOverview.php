@@ -23,8 +23,9 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(PortalNodeOverviewCriteria $criteria): iterable

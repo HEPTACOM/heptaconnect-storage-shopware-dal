@@ -24,8 +24,9 @@ final class IdentityOverview implements IdentityOverviewActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(IdentityOverviewCriteria $criteria): iterable

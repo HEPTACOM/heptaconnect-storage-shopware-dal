@@ -21,8 +21,9 @@ final class RouteFind implements RouteFindActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function find(RouteFindCriteria $criteria): ?RouteFindResult

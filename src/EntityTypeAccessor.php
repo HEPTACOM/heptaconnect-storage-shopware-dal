@@ -23,8 +23,10 @@ class EntityTypeAccessor
      */
     private array $entityTypeIds = [];
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**

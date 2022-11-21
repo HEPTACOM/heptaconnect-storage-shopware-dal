@@ -33,8 +33,10 @@ AND
     job_payload.id IN (:ids)
 SQL;
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(JobDeleteCriteria $criteria): void

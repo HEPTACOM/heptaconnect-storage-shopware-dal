@@ -18,8 +18,9 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable

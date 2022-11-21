@@ -28,8 +28,10 @@ final class JobStart implements JobStartActionInterface
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function start(JobStartPayload $payload): JobStartResult

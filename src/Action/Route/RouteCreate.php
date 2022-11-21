@@ -24,8 +24,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class RouteCreate implements RouteCreateActionInterface
 {
-    public function __construct(private Connection $connection, private StorageKeyGeneratorContract $storageKeyGenerator, private EntityTypeAccessor $entityTypes, private RouteCapabilityAccessor $routeCapabilities)
-    {
+    public function __construct(
+        private Connection $connection,
+        private StorageKeyGeneratorContract $storageKeyGenerator,
+        private EntityTypeAccessor $entityTypes,
+        private RouteCapabilityAccessor $routeCapabilities
+    ) {
     }
 
     public function create(RouteCreatePayloads $payloads): RouteCreateResults

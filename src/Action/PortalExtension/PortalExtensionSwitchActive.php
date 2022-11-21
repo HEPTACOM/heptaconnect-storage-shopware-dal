@@ -35,8 +35,10 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
         $this->setLogger(new NullLogger());
     }
 

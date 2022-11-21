@@ -19,8 +19,10 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
     public const UPDATE_PREPARATION_QUERY = '75fada39-34f0-4e03-b3b5-141da358181d';
 
-    public function __construct(private QueryFactory $queryFactory, private Connection $connection)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private Connection $connection
+    ) {
     }
 
     public function set(PortalNodeStorageSetPayload $payload): void

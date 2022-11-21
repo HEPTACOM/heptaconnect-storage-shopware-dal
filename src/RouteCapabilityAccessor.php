@@ -14,12 +14,14 @@ class RouteCapabilityAccessor
 
     private array $knownCapabilities = [];
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**
      * @psalm-param array<array-key, string> $capabilities
+     *
      * @psalm-return array<string, string>
      */
     public function getIdsForNames(array $capabilities): array

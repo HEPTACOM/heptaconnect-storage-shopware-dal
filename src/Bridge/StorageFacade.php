@@ -132,8 +132,9 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?QueryFactory $queryFactory = null;
 
-    public function __construct(private Connection $connection)
-    {
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     protected function createFileReferenceGetRequestAction(): FileReferenceGetRequestActionInterface

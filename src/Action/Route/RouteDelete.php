@@ -25,8 +25,9 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     private ?QueryBuilder $searchBuilder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(RouteDeleteCriteria $criteria): void

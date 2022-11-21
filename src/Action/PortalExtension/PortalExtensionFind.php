@@ -21,8 +21,9 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
 
     private ?QueryBuilder $queryBuilder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function find(PortalNodeKeyInterface $portalNodeKey): PortalExtensionFindResult

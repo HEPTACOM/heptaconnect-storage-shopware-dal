@@ -20,8 +20,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
 {
-    public function __construct(private Connection $connection, private StorageKeyGeneratorContract $storageKeyGenerator)
-    {
+    public function __construct(
+        private Connection $connection,
+        private StorageKeyGeneratorContract $storageKeyGenerator
+    ) {
     }
 
     public function persistRequest(FileReferencePersistRequestPayload $payload): FileReferencePersistRequestResult

@@ -32,8 +32,12 @@ final class IdentityMap implements IdentityMapActionInterface
 
     public const MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
 
-    public function __construct(private StorageKeyGeneratorContract $storageKeyGenerator, private EntityTypeAccessor $entityTypeAccessor, private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private StorageKeyGeneratorContract $storageKeyGenerator,
+        private EntityTypeAccessor $entityTypeAccessor,
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function map(IdentityMapPayload $payload): IdentityMapResult

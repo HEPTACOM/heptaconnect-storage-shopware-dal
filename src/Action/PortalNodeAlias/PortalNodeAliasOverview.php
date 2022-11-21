@@ -19,8 +19,9 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable

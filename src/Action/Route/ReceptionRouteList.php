@@ -23,8 +23,10 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory, private QueryIterator $iterator)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function list(ReceptionRouteListCriteria $criteria): iterable

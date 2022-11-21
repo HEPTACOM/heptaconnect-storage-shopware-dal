@@ -22,8 +22,9 @@ final class RouteOverview implements RouteOverviewActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(RouteOverviewCriteria $criteria): iterable

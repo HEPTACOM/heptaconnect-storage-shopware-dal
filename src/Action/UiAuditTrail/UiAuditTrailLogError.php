@@ -17,8 +17,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
 {
-    public function __construct(private Connection $connection)
-    {
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     public function logError(UiAuditTrailLogErrorPayloadCollection $payloads): void

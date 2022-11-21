@@ -83,8 +83,12 @@ abstract class TestCase extends BaseTestCase
              */
             private $track;
 
-            public function __construct($track, private Connection $connection, private string $projectDir, private string $parentClass)
-            {
+            public function __construct(
+                $track,
+                private Connection $connection,
+                private string $projectDir,
+                private string $parentClass
+            ) {
                 $this->track = $track;
             }
 

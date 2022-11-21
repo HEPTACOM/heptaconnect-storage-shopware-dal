@@ -19,8 +19,10 @@ class JobTypeAccessor
      */
     private array $known = [];
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**

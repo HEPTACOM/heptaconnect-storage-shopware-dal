@@ -16,12 +16,14 @@ class PortalNodeAliasAccessor
 
     private array $known = [];
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**
      * @psalm-param array<array-key, string> $ids
+     *
      * @psalm-return array<string, string>
      */
     public function getAliasesByIds(array $ids): array
@@ -58,6 +60,7 @@ class PortalNodeAliasAccessor
 
     /**
      * @psalm-param array<array-key, string> $aliases
+     *
      * @psalm-return array<string, string>
      */
     public function getIdsByAliases(array $aliases): array

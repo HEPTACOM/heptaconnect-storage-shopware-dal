@@ -28,8 +28,10 @@ final class JobFinish implements JobFinishActionInterface
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    public function __construct(private Connection $connection, private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function finish(JobFinishPayload $payload): JobFinishResult

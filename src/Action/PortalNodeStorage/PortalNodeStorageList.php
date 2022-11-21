@@ -18,8 +18,9 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
 {
     public const FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
 
-    public function __construct(private QueryFactory $queryFactory)
-    {
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function list(PortalNodeStorageListCriteria $criteria): iterable

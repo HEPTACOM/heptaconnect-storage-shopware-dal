@@ -94,6 +94,7 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
+     *
      * @dataProvider provideEntityClasses
      */
     public function testCreateNestedErrorMessage(string $entityClass): void
@@ -133,6 +134,7 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
+     *
      * @dataProvider provideEntityClasses
      */
     public function testFailCreateErrorWhenMappingNodeDoesNotExist(string $entityClass): void

@@ -16,8 +16,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailEnd implements UiAuditTrailEndActionInterface
 {
-    public function __construct(private Connection $connection)
-    {
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     public function end(UiAuditTrailEndPayload $payload): void
