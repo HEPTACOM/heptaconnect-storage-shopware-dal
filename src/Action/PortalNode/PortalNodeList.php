@@ -36,7 +36,7 @@ final class PortalNodeList implements PortalNodeListActionInterface
         );
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

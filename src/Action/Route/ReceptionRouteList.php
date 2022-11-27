@@ -53,7 +53,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -65,7 +65,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 

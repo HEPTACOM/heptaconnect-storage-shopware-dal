@@ -59,7 +59,7 @@ final class JobGet implements JobGetActionInterface
         return $ids === [] ? [] : $this->yieldJobs($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -71,7 +71,7 @@ final class JobGet implements JobGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -119,7 +119,7 @@ final class JobGet implements JobGetActionInterface
      *
      * @return iterable<JobGetResult>
      */
-    protected function yieldJobs(array $ids): iterable
+    private function yieldJobs(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);

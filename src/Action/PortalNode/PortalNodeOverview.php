@@ -75,7 +75,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             $builder->setMaxResults($pageSize);
 
             if ($page > 0) {
-                $builder->setFirstResult($page * $pageSize);
+                $builder->setFirstResult(($page - 1) * $pageSize);
             }
         }
 
@@ -90,7 +90,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -102,7 +102,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

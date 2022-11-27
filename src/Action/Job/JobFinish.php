@@ -79,7 +79,7 @@ final class JobFinish implements JobFinishActionInterface
         });
     }
 
-    protected function getJobIds(JobFinishPayload $payload): array
+    private function getJobIds(JobFinishPayload $payload): array
     {
         $jobIds = [];
 
@@ -94,7 +94,7 @@ final class JobFinish implements JobFinishActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(): QueryBuilder
+    private function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
@@ -112,7 +112,7 @@ final class JobFinish implements JobFinishActionInterface
             ->setParameter('oldStateId', JobStateEnum::started(), Types::BINARY);
     }
 
-    protected function getSelectQueryBuilder(): QueryBuilder
+    private function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
@@ -127,7 +127,7 @@ final class JobFinish implements JobFinishActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobFinishResult
+    private function packResult(array $affectedJobIds, array $skippedJobIds): JobFinishResult
     {
         $finishedJobs = new JobKeyCollection();
 

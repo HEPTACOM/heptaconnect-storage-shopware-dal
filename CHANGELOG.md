@@ -15,6 +15,17 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693294CreateUiAuditTrailTable` to add UI audit trail table
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693295CreateUiAuditTrailDataTable` to add UI audit trail data table
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1663693296CreateUiAuditTrailErrorTable` to add UI audit trail error table
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailBeginActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailBegin` to create UI audit trails
+- Add exception code `1663694616` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailBegin::begin` when storing a UI audit trail to the database fails
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailEndActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailEnd` to mark UI audit trails as ended
+- Add exception code `1663694617` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailEnd::end` when setting the UI audit trail as finished fails on database layer
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogErrorActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError` to add errors to UI audit trails
+- Add exception code `1663694619` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError::logError` when storing exceptions to UI audit trails on the database fails
+- Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogOutputActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput` to add output to UI audit trails
+- Add exception code `1663694618` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput::logOutput` when storing output to UI audit trails on the database fails
 - Add support for new filter for source portal node, target portal node, entity type and capability in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview`
 
 ### Changed
@@ -28,7 +39,34 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. Insertion payload was not binary as expected.
+
 ### Security
+
+## [0.9.0.4] - 2022-10-03
+
+### Fixed
+
+- Pagination in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview` was one page in advance and therefore made page 1 only accessable when listing without pagination in criteria
+
+## [0.9.0.3] - 2022-09-20
+
+### Fixed
+
+- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. The insert-query now uses the correct table-name.
+
+## [0.9.0.2] - 2022-07-12
+
+### Fixed
+
+- Fix error when deleting many jobs at once by chunking job deletion to 1000 jobs at a time in `Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete::delete`
+- Fix issue in validation before mapping-node merging involving deleted mappings in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist::validateMappingNodesCanBeMerged`
+
+## [0.9.0.1] - 2022-04-19
+
+### Fixed
+
+- Fix error related to foreign key checks in migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1639860447UpdateExistingJobData`
 
 ## [0.9.0.0] - 2022-04-02
 

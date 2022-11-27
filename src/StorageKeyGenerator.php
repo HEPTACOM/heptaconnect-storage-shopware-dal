@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
+use Heptacom\HeptaConnect\Storage\Base\Contract\UiAuditTrailKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
@@ -21,6 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\UiAuditTrailStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class StorageKeyGenerator extends StorageKeyGeneratorContract
@@ -32,6 +34,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         IdentityErrorKeyInterface::class => IdentityErrorStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
         FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class,
+        UiAuditTrailKeyInterface::class => UiAuditTrailStorageKey::class,
     ];
 
     private const ABBREVIATIONS = [
@@ -42,6 +45,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         'MappingException' => IdentityErrorStorageKey::class,
         'Job' => JobStorageKey::class,
         'FileReferenceRequest' => FileReferenceRequestStorageKey::class,
+        'UiAuditTrail' => UiAuditTrailStorageKey::class,
     ];
 
     private PortalNodeAliasAccessor $portalNodeAliasAccessor;

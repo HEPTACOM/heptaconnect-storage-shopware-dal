@@ -48,7 +48,7 @@ final class RouteGet implements RouteGetActionInterface
         return $ids === [] ? [] : $this->yieldRoutes($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -60,7 +60,7 @@ final class RouteGet implements RouteGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -121,7 +121,7 @@ final class RouteGet implements RouteGetActionInterface
      *
      * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult>
      */
-    protected function yieldRoutes(array $ids): iterable
+    private function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);

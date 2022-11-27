@@ -64,7 +64,7 @@ final class RouteDelete implements RouteDeleteActionInterface
         $deleteBuilder->execute();
     }
 
-    protected function getDeleteQuery(): QueryBuilder
+    private function getDeleteQuery(): QueryBuilder
     {
         $builder = $this->deleteBuilder;
 
@@ -82,7 +82,7 @@ final class RouteDelete implements RouteDeleteActionInterface
         return $builder;
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

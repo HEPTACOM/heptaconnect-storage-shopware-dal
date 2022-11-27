@@ -79,7 +79,7 @@ final class JobStart implements JobStartActionInterface
         });
     }
 
-    protected function getJobIds(JobStartPayload $payload): array
+    private function getJobIds(JobStartPayload $payload): array
     {
         $jobIds = [];
 
@@ -94,7 +94,7 @@ final class JobStart implements JobStartActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(): QueryBuilder
+    private function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
@@ -111,7 +111,7 @@ final class JobStart implements JobStartActionInterface
             ->setParameter('stateId', JobStateEnum::started(), Types::BINARY);
     }
 
-    protected function getSelectQueryBuilder(): QueryBuilder
+    private function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
@@ -126,7 +126,7 @@ final class JobStart implements JobStartActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
+    private function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
     {
         $startedJobs = new JobKeyCollection();
 
