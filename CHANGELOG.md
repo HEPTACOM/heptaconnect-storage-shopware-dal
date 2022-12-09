@@ -26,6 +26,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1663694619` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogError::logError` when storing exceptions to UI audit trails on the database fails
 - Add implementation for `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\UiAuditTrail\UiAuditTrailLogOutputActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput` to add output to UI audit trails
 - Add exception code `1663694618` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\UiAuditTrail\UiAuditTrailLogOutput::logOutput` when storing output to UI audit trails on the database fails
+- Add support for new filter for source portal node, target portal node, entity type and capability in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview`
 
 ### Changed
 
