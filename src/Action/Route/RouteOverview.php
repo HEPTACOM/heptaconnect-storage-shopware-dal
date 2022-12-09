@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
 use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
@@ -40,7 +41,7 @@ final class RouteOverview implements RouteOverviewActionInterface
 
         if ($capabilityFilter !== null) {
             $builder->andWhere($builder->expr()->in('capability.name', ':caps'));
-            $builder->setParameter('caps', $capabilityFilter, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('caps', $capabilityFilter->asArray(), Connection::PARAM_STR_ARRAY);
         }
 
         $portalNodeKeys = $criteria->getSourcePortalNodeKeyFilter();
@@ -147,7 +148,7 @@ final class RouteOverview implements RouteOverviewActionInterface
                 new UnsafeClassString((string) $row['target_portal_node_class']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['ct']),
-                \explode(',', (string) $row['capability_name'])
+                new StringCollection(\explode(',', (string) $row['capability_name']))
             )
         );
     }
