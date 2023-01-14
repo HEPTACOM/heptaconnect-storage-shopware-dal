@@ -18,6 +18,10 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\IdentityDirectionKeyInterface` as storage key for directional identities
 - Add support for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator`
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1673717600AddIdentityDirectionTable` to add storage for directional identities
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionDeleteInterface`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface::getIdentityDirectionDeleteAction` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createIdentityDirectionDeleteActionInterface` to return `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete::LOOKUP_QUERY` as `26f18fa9-9246-45cf-b7f7-2fc80f61151d` to identify a query used for deleting directional identities
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete::DELETE_QUERY` as `ca54ecac-3b6b-4f54-882e-fea1f19336ba` to identify a query used for looking up directional identities that can be deleted
 
 ### Changed
 
