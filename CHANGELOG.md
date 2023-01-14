@@ -29,6 +29,12 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface::getIdentityDirectionDeleteAction` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createIdentityDirectionDeleteActionInterface` to return `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete`
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete::LOOKUP_QUERY` as `26f18fa9-9246-45cf-b7f7-2fc80f61151d` to identify a query used for deleting directional identities
 - Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete::DELETE_QUERY` as `ca54ecac-3b6b-4f54-882e-fea1f19336ba` to identify a query used for looking up directional identities that can be deleted
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview::OVERVIEW_QUERY` as `832dbfc9-4939-4301-ade4-aa73d961454f` to identify a query used for loading an overview page for directional identities
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview` to list directional identities
+- Add exception code `1673729808` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview::overview` when the payload refers to a identity direction with an invalid identity direction key
+- Add exception code `1673729809` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview::overview` when the payload refers to a source portal node with an invalid portal node key
+- Add exception code `1673729810` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview::overview` when the payload refers to a target portal node with an invalid portal node key
+- Add exception code `1673729811` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview::overview` when the criteria has an invalid sorting option
 
 ### Changed
 

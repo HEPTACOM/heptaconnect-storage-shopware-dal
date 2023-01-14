@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistA
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
@@ -60,6 +61,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
@@ -152,6 +154,11 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createIdentityDirectionDeleteActionInterface(): IdentityDirectionDeleteActionInterface
     {
         return new IdentityDirectionDelete($this->getQueryFactory());
+    }
+
+    protected function createIdentityDirectionOverviewActionInterface(): IdentityDirectionOverviewActionInterface
+    {
+        return new IdentityDirectionOverview($this->getQueryFactory());
     }
 
     protected function createFileReferencePersistRequestAction(): FileReferencePersistRequestActionInterface
