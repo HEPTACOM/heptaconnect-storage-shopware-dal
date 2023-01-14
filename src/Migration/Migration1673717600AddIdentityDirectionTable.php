@@ -12,24 +12,24 @@ class Migration1673717600AddIdentityDirectionTable extends MigrationStep
     public const UP = <<<'SQL'
 CREATE TABLE `heptaconnect_identity_direction`
 (
-    `id`                 BINARY(16)      NOT NULL,
-    `type_id`            BINARY(16)      NOT NULL,
-    `source_portal_node` BINARY(16)      NOT NULL,
-    `target_portal_node` BINARY(16)      NOT NULL,
-    `source_external_id` VARBINARY(1024) NOT NULL,
-    `target_external_id` VARBINARY(1024) NULL,
-    `created_at`         DATETIME(3)     NOT NULL,
-    `updated_at`         DATETIME(3)     NULL DEFAULT NULL,
+    `id`                    BINARY(16)      NOT NULL,
+    `type_id`               BINARY(16)      NOT NULL,
+    `source_portal_node_id` BINARY(16)      NOT NULL,
+    `target_portal_node_id` BINARY(16)      NOT NULL,
+    `source_external_id`    VARBINARY(1024) NOT NULL,
+    `target_external_id`    VARBINARY(1024) NULL,
+    `created_at`            DATETIME(3)     NOT NULL,
+    `updated_at`            DATETIME(3)     NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `u.heptaconnect_identity_direction.unique_source` (`source_portal_node`, `type_id`, `source_external_id`),
+    UNIQUE INDEX `u.heptaconnect_identity_direction.unique_source` (`source_portal_node_id`, `type_id`, `source_external_id`),
     INDEX `dt_desc.heptaconnect_identity_direction.created_at` (`created_at` DESC),
     INDEX `dt_desc.heptaconnect_identity_direction.updated_at` (`updated_at` DESC),
-    CONSTRAINT `fk.heptaconnect_identity_direction.source_portal_node`
-        FOREIGN KEY (`source_portal_node`) REFERENCES `heptaconnect_portal_node` (`id`)
+    CONSTRAINT `fk.heptaconnect_identity_direction.source_portal_node_id`
+        FOREIGN KEY (`source_portal_node_id`) REFERENCES `heptaconnect_portal_node` (`id`)
             ON UPDATE CASCADE
             ON DELETE CASCADE,
-    CONSTRAINT `fk.heptaconnect_identity_direction.target_portal_node`
-        FOREIGN KEY (`target_portal_node`) REFERENCES `heptaconnect_portal_node` (`id`)
+    CONSTRAINT `fk.heptaconnect_identity_direction.target_portal_node_id`
+        FOREIGN KEY (`target_portal_node_id`) REFERENCES `heptaconnect_portal_node` (`id`)
             ON UPDATE CASCADE
             ON DELETE CASCADE,
     CONSTRAINT `fk.heptaconnect_identity_direction.type_id`
