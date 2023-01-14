@@ -12,6 +12,7 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActio
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
@@ -57,6 +58,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
@@ -136,6 +138,15 @@ class StorageFacade extends AbstractSingletonStorageFacade
     protected function createFileReferenceGetRequestAction(): FileReferenceGetRequestActionInterface
     {
         return new FileReferenceGetRequestAction($this->getQueryFactory());
+    }
+
+    protected function createIdentityDirectionCreateActionInterface(): IdentityDirectionCreateActionInterface
+    {
+        return new IdentityDirectionCreate(
+            $this->connection,
+            $this->getStorageKeyGenerator(),
+            $this->getEntityTypeAccessor()
+        );
     }
 
     protected function createIdentityDirectionDeleteActionInterface(): IdentityDirectionDeleteActionInterface
