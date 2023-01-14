@@ -15,6 +15,9 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\IdentityDirectionKeyInterface` as storage key for directional identities
+- Add support for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator`
+
 ### Changed
 
 ### Deprecated
