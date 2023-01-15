@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Storage\Base\Action\IdentityDirection\Create\IdentityDirectionCreatePayload;
-use Heptacom\HeptaConnect\Storage\Base\Action\IdentityDirection\Create\IdentityDirectionCreatePayloadCollection;
-use Heptacom\HeptaConnect\Storage\Base\Action\IdentityDirection\Create\IdentityDirectionCreateResult;
-use Heptacom\HeptaConnect\Storage\Base\Action\IdentityDirection\Create\IdentityDirectionCreateResultCollection;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityDirectionKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Create\IdentityRedirectCreatePayload;
+use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Create\IdentityRedirectCreatePayloadCollection;
+use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Create\IdentityRedirectCreateResult;
+use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Create\IdentityRedirectCreateResultCollection;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class IdentityDirectionCreate implements IdentityDirectionCreateActionInterface
+final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
 {
     private Connection $connection;
 
@@ -40,11 +40,11 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
         $this->entityTypes = $entityTypes;
     }
 
-    public function create(IdentityDirectionCreatePayloadCollection $payloads): IdentityDirectionCreateResultCollection
+    public function create(IdentityRedirectCreatePayloadCollection $payloads): IdentityRedirectCreateResultCollection
     {
         $entityTypes = [];
 
-        /** @var IdentityDirectionCreatePayload $payload */
+        /** @var IdentityRedirectCreatePayload $payload */
         foreach ($payloads as $payload) {
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
@@ -65,7 +65,7 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
-                /** @var IdentityDirectionCreatePayload $payload */
+                /** @var IdentityRedirectCreatePayload $payload */
                 foreach ($payloads as $payload) {
                     if ($payload->getEntityType() === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1673722280);
@@ -74,16 +74,16 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
             }
         }
 
-        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(IdentityDirectionKeyInterface::class, $payloads->count())));
+        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(IdentityRedirectKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
-        $identityDirectionInserts = [];
+        $identityRedirectInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
             $key = $keys->current();
             $keys->next();
 
-            if (!$key instanceof IdentityDirectionStorageKey) {
+            if (!$key instanceof IdentityRedirectStorageKey) {
                 throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException(\get_class($key)));
             }
 
@@ -92,7 +92,7 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
             /** @var PortalNodeStorageKey $targetKey */
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
-            $identityDirectionInserts[] = [
+            $identityRedirectInserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
                 'source_portal_node_id' => Id::toBinary($sourceKey->getUuid()),
                 'source_external_id' => $payload->getSourceExternalId(),
@@ -102,14 +102,14 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
                 'created_at' => $now,
             ];
 
-            $result[] = new IdentityDirectionCreateResult($key);
+            $result[] = new IdentityRedirectCreateResult($key);
         }
 
         try {
-            $this->connection->transactional(function () use ($identityDirectionInserts): void {
+            $this->connection->transactional(function () use ($identityRedirectInserts): void {
                 // TODO batch
-                foreach ($identityDirectionInserts as $identityDirectionInsert) {
-                    $this->connection->insert('heptaconnect_identity_direction', $identityDirectionInsert, [
+                foreach ($identityRedirectInserts as $identityRedirectInsert) {
+                    $this->connection->insert('heptaconnect_identity_redirect', $identityRedirectInsert, [
                         'id' => Types::BINARY,
                         'portal_node_source_id' => Types::BINARY,
                         'portal_node_target_id' => Types::BINARY,
@@ -121,6 +121,6 @@ final class IdentityDirectionCreate implements IdentityDirectionCreateActionInte
             throw new CreateException(1673722282, $throwable);
         }
 
-        return new IdentityDirectionCreateResultCollection($result);
+        return new IdentityRedirectCreateResultCollection($result);
     }
 }

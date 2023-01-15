@@ -12,10 +12,10 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActio
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionDeleteActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
@@ -59,10 +59,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionCreate;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionDelete;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection\IdentityDirectionOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
@@ -142,23 +142,23 @@ class StorageFacade extends AbstractSingletonStorageFacade
         return new FileReferenceGetRequestAction($this->getQueryFactory());
     }
 
-    protected function createIdentityDirectionCreateActionInterface(): IdentityDirectionCreateActionInterface
+    protected function createIdentityRedirectCreateActionInterface(): IdentityRedirectCreateActionInterface
     {
-        return new IdentityDirectionCreate(
+        return new IdentityRedirectCreate(
             $this->connection,
             $this->getStorageKeyGenerator(),
             $this->getEntityTypeAccessor()
         );
     }
 
-    protected function createIdentityDirectionDeleteActionInterface(): IdentityDirectionDeleteActionInterface
+    protected function createIdentityRedirectDeleteActionInterface(): IdentityRedirectDeleteActionInterface
     {
-        return new IdentityDirectionDelete($this->getQueryFactory());
+        return new IdentityRedirectDelete($this->getQueryFactory());
     }
 
-    protected function createIdentityDirectionOverviewActionInterface(): IdentityDirectionOverviewActionInterface
+    protected function createIdentityRedirectOverviewActionInterface(): IdentityRedirectOverviewActionInterface
     {
-        return new IdentityDirectionOverview($this->getQueryFactory());
+        return new IdentityRedirectOverview($this->getQueryFactory());
     }
 
     protected function createFileReferencePersistRequestAction(): FileReferencePersistRequestActionInterface

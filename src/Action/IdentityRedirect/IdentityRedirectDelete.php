@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityDirection;
+namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Storage\Base\Action\IdentityDirection\Delete\IdentityDirectionDeleteCriteria;
-use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityDirection\IdentityDirectionDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Delete\IdentityRedirectDeleteCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class IdentityDirectionDelete implements IdentityDirectionDeleteActionInterface
+final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterface
 {
     public const LOOKUP_QUERY = '26f18fa9-9246-45cf-b7f7-2fc80f61151d';
 
@@ -31,16 +31,16 @@ final class IdentityDirectionDelete implements IdentityDirectionDeleteActionInte
         $this->queryFactory = $queryFactory;
     }
 
-    public function delete(IdentityDirectionDeleteCriteria $criteria): void
+    public function delete(IdentityRedirectDeleteCriteria $criteria): void
     {
         $ids = [];
 
-        foreach ($criteria->getIdentityDirectionKeys() as $identityDirectionKey) {
-            if (!$identityDirectionKey instanceof IdentityDirectionStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($identityDirectionKey));
+        foreach ($criteria->getIdentityRedirectKeys() as $identityRedirectKey) {
+            if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($identityRedirectKey));
             }
 
-            $ids[] = Id::toBinary($identityDirectionKey->getUuid());
+            $ids[] = Id::toBinary($identityRedirectKey->getUuid());
         }
 
         if ($ids === []) {
@@ -72,7 +72,7 @@ final class IdentityDirectionDelete implements IdentityDirectionDeleteActionInte
 
         $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
-        $builder->delete('heptaconnect_identity_direction');
+        $builder->delete('heptaconnect_identity_redirect');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
 
         return $builder;
@@ -88,7 +88,7 @@ final class IdentityDirectionDelete implements IdentityDirectionDeleteActionInte
 
         $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
-        $builder->from('heptaconnect_identity_direction');
+        $builder->from('heptaconnect_identity_redirect');
         $builder->select('id');
         $builder->addOrderBy('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));

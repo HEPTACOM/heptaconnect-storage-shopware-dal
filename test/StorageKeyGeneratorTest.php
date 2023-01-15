@@ -10,7 +10,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterfac
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityDirectionKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -24,7 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityDirectionStorageKey
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
@@ -130,7 +130,7 @@ class StorageKeyGeneratorTest extends TestCase
         yield [PortalNodeKeyInterface::class];
         yield [MappingNodeKeyInterface::class];
         yield [RouteKeyInterface::class];
-        yield [IdentityDirectionKeyInterface::class];
+        yield [IdentityRedirectKeyInterface::class];
         yield [IdentityErrorKeyInterface::class];
         yield [JobKeyInterface::class];
         yield [FileReferenceRequestKeyInterface::class];
