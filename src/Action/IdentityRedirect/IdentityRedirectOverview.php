@@ -111,7 +111,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $dbalFieldName = null;
 
             switch ($field) {
-                case IdentityRedirectOverviewCriteria::FIELD_CREATED :
+                case IdentityRedirectOverviewCriteria::FIELD_CREATED:
                     $dbalFieldName = 'identity_redirect.created_at';
 
                     break;
