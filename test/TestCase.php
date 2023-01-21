@@ -185,6 +185,14 @@ abstract class TestCase extends BaseTestCase
                     }
                 } catch (\Throwable $throwable) {
                 }
+
+                if (\is_array($param)) {
+                    static::assertSame(
+                        \array_values($param),
+                        \array_values(\array_unique($param)),
+                        'There is a duplicate value in an a parameter' . $context
+                    );
+                }
             }
 
             foreach ($explanations as $explanation) {

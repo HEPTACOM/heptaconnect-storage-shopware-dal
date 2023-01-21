@@ -60,6 +60,7 @@ SQL;
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')
             ->select('job.payload_id')
+            ->distinct()
             ->where($selectBuilder->expr()->in('id', ':ids'));
 
         $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
