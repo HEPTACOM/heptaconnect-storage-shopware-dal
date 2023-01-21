@@ -17,6 +17,8 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $setupQueryTracking = true;
 
+    private bool $performsDatabaseQueries = true;
+
     protected ?ShopwareKernel $kernel = null;
 
     protected ?array $trackedQueries = null;
@@ -29,6 +31,7 @@ abstract class TestCase extends BaseTestCase
             $this->upKernel();
 
             if ($this->setupQueryTracking) {
+                $this->performsDatabaseQueries = true;
                 $this->upQueryTracking();
             }
         }
@@ -155,6 +158,10 @@ abstract class TestCase extends BaseTestCase
     {
         $trackedQueries = $this->trackedQueries;
 
+        if ($this->performsDatabaseQueries) {
+            static::assertNotEmpty($trackedQueries);
+        }
+
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
             $context = \implode(\PHP_EOL, [
                 '',
@@ -196,5 +203,10 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
         return $connection;
+    }
+
+    protected function expectNotToPerformDatabaseQueries(): void
+    {
+        $this->performsDatabaseQueries = false;
     }
 }

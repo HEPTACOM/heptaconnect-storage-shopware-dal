@@ -38,6 +38,7 @@ class IdentityMappingTest extends IdentityMappingTestContract
 {
     public function testNoDatabaseLookupsOnEmptyPayload(): void
     {
+        $this->expectNotToPerformDatabaseQueries();
         $reflector = $this->createStorageFacade()->getIdentityReflectAction();
         $reflector->reflect(new IdentityReflectPayload(new PortalNodeStorageKey(Id::randomHex()), new MappedDatasetEntityCollection()));
 
