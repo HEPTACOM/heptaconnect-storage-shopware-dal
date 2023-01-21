@@ -80,7 +80,7 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
 
-        $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, static::class) implements SQLLogger {
+        $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             /**
              * @var callable
              */
@@ -90,14 +90,14 @@ abstract class TestCase extends BaseTestCase
 
             private string $projectDir;
 
-            private string $parentClass;
+            private BaseTestCase $test;
 
-            public function __construct($track, Connection $connection, string $projectDir, string $parentClass)
+            public function __construct($track, Connection $connection, string $projectDir, BaseTestCase $test)
             {
                 $this->track = $track;
                 $this->connection = $connection;
                 $this->projectDir = $projectDir;
-                $this->parentClass = $parentClass;
+                $this->test = $test;
             }
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
@@ -110,17 +110,46 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
-                $rawFrames = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS);
-                $startFrame = \array_search($this->parentClass, \array_column($rawFrames, 'class'), true);
+                $rawFrames = \debug_backtrace();
+                $startFrame = false;
+
+                foreach ($rawFrames as $frameIndex => $rawFrame) {
+                    $frameObject = $rawFrame['object'] ?? null;
+
+                    if (!\is_object($frameObject)) {
+                        continue;
+                    }
+
+                    if ($frameObject !== $this->test) {
+                        continue;
+                    }
+
+                    $frameClass = $rawFrame['class'] ?? null;
+
+                    if (!\is_string($frameClass)) {
+                        continue;
+                    }
+
+                    if (!\str_starts_with($frameClass, 'PHPUnit\\Framework\\')) {
+                        continue;
+                    }
+
+                    $startFrame = $frameIndex;
+                    break;
+                }
 
                 if ($startFrame === false) {
                     return;
                 }
 
-                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, -$startFrame)));
-                $srcFrames = \array_filter($frames, static fn (string $f): bool => \stripos($f, ' (src/') !== false);
+                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
 
-                if ($srcFrames === []) {
+                // skip traces that only contain code from test cases and vendor folders
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, ' (src/')) === []) {
+                    return;
+                }
+
+                if ($frames === []) {
                     return;
                 }
 
