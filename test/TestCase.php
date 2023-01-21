@@ -197,8 +197,14 @@ abstract class TestCase extends BaseTestCase
 
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
+                $extra = \strtolower($explanation['Extra'] ?? '');
                 $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT) . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
-                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext);
+
+                if ($extra === 'no matching row in const table') {
+                    continue;
+                }
+
+                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext . \PHP_EOL . $context);
             }
         }
 
