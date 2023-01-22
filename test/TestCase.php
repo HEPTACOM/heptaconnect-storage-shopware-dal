@@ -192,11 +192,22 @@ abstract class TestCase extends BaseTestCase
         }
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
+            foreach ($params as &$param) {
+                try {
+                    if (\is_array($param)) {
+                        $param = \array_map(static fn(string $i): string => '0x' . Id::toHex($i), $param);
+                    } else {
+                        $param = '0x' . Id::toHex($param);
+                    }
+                } catch (\Throwable $throwable) {
+                }
+            }
+
             $context = \implode(\PHP_EOL, [
                 '',
                 $trackedQuery,
-                \json_encode($params, \JSON_PRETTY_PRINT),
-                \json_encode($warnings, \JSON_PRETTY_PRINT),
+                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
                 ...$frames,
             ]);
 
@@ -205,16 +216,7 @@ abstract class TestCase extends BaseTestCase
                 static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
             }
 
-            foreach ($params as &$param) {
-                try {
-                    if (\is_array($param)) {
-                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
-                    } else {
-                        $param = '0x' . Id::toHex($param);
-                    }
-                } catch (\Throwable $throwable) {
-                }
-
+            foreach ($params as $param) {
                 if (\is_array($param)) {
                     static::assertSame(
                         \array_values($param),
