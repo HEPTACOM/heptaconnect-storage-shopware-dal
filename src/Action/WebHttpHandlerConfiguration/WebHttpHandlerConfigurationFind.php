@@ -21,14 +21,10 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private WebHttpHandlerPathIdResolver $pathIdResolver;
-
-    public function __construct(QueryFactory $queryFactory, WebHttpHandlerPathIdResolver $pathIdResolver)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->pathIdResolver = $pathIdResolver;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private WebHttpHandlerPathIdResolver $pathIdResolver
+    ) {
     }
 
     public function find(WebHttpHandlerConfigurationFindCriteria $criteria): WebHttpHandlerConfigurationFindResult
@@ -36,7 +32,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $builder = $this->getBuilderCached();

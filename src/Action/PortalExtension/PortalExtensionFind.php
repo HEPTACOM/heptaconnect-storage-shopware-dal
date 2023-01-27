@@ -21,11 +21,9 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
 
     private ?QueryBuilder $queryBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function find(PortalNodeKeyInterface $portalNodeKey): PortalExtensionFindResult
@@ -33,7 +31,7 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         $portalNodeKey = $portalNodeKey->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();

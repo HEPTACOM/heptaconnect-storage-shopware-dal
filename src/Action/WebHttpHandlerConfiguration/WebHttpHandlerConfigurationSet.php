@@ -19,20 +19,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 
 final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
-    private Connection $connection;
-
-    private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor;
-
-    private WebHttpHandlerAccessor $webHttpHandlerAccessor;
-
     public function __construct(
-        Connection $connection,
-        WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor,
-        WebHttpHandlerAccessor $webHttpHandlerAccessor
+        private Connection $connection,
+        private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor,
+        private WebHttpHandlerAccessor $webHttpHandlerAccessor
     ) {
-        $this->connection = $connection;
-        $this->webHttpHandlerPathAccessor = $webHttpHandlerPathAccessor;
-        $this->webHttpHandlerAccessor = $webHttpHandlerAccessor;
     }
 
     public function set(WebHttpHandlerConfigurationSetPayloads $payloads): void
@@ -45,7 +36,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
             $handlerPaths[] = $payload->getPath();

@@ -66,7 +66,7 @@ final class QueryIteratorTest extends TestCase
         $queryCounts = [];
 
         foreach ($iterator->iterateColumn($builder, 3) as $_) {
-            $queryCounts[] = \count($this->trackedQueries);
+            $queryCounts[] = \count($this->trackedQueries ?? []);
         }
 
         // compare query count from each iteration. As fetch size is 3, the query count will only increase every 3 steps

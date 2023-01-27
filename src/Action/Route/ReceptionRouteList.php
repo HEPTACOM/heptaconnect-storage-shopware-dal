@@ -23,14 +23,10 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function list(ReceptionRouteListCriteria $criteria): iterable
@@ -38,7 +34,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($sourceKey));
+            throw new UnsupportedStorageKeyException($sourceKey::class);
         }
 
         $builder = $this->getBuilderCached();

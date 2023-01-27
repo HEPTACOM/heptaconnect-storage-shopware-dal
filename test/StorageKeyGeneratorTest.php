@@ -121,7 +121,7 @@ class StorageKeyGeneratorTest extends TestCase
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
-        static::assertStringContainsString($key->getUuid(), \json_encode($key));
+        static::assertStringContainsString($key->getUuid(), \json_encode($key, \JSON_THROW_ON_ERROR));
     }
 
     public function provideKeyInterfaces(): iterable

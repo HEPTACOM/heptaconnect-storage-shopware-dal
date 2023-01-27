@@ -34,14 +34,10 @@ final class JobGet implements JobGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function get(JobGetCriteria $criteria): iterable
@@ -50,7 +46,7 @@ final class JobGet implements JobGetActionInterface
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $ids[] = $jobKey->getUuid();

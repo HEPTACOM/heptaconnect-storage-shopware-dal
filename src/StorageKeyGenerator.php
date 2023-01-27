@@ -48,11 +48,9 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         'UiAuditTrail' => UiAuditTrailStorageKey::class,
     ];
 
-    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
-
-    public function __construct(PortalNodeAliasAccessor $portalNodeAliasAccessor)
-    {
-        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
+    public function __construct(
+        private PortalNodeAliasAccessor $portalNodeAliasAccessor
+    ) {
     }
 
     public function generateKeys(string $keyClassName, int $count): iterable
@@ -64,11 +62,11 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
 
     public function serialize(StorageKeyInterface $key): string
     {
-        $class = \get_class($key);
+        $class = $key::class;
 
         if ($key instanceof AliasAwarePortalNodeStorageKey) {
             $key = $key->withoutAlias();
-            $class = \get_class($key);
+            $class = $key::class;
 
             if (!$key instanceof PortalNodeStorageKey) {
                 throw new UnsupportedStorageKeyException($class);

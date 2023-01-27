@@ -17,11 +17,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     public function logError(UiAuditTrailLogErrorPayloadCollection $payloads): void
@@ -34,7 +32,7 @@ final class UiAuditTrailLogError implements UiAuditTrailLogErrorActionInterface
             $key = $payload->getUiAuditTrailKey();
 
             if (!$key instanceof UiAuditTrailStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($key));
+                throw new UnsupportedStorageKeyException($key::class);
             }
 
             $inserts[] = [

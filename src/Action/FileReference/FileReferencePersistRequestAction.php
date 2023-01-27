@@ -20,14 +20,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
 {
-    private Connection $connection;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    public function __construct(Connection $connection, StorageKeyGeneratorContract $storageKeyGenerator)
-    {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
+    public function __construct(
+        private Connection $connection,
+        private StorageKeyGeneratorContract $storageKeyGenerator
+    ) {
     }
 
     public function persistRequest(FileReferencePersistRequestPayload $payload): FileReferencePersistRequestResult
@@ -38,7 +34,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
             throw new InvalidCreatePayloadException(
                 $payload,
                 1645822126,
-                new UnsupportedStorageKeyException(\get_class($portalNodeKey))
+                new UnsupportedStorageKeyException($portalNodeKey::class)
             );
         }
 
@@ -61,7 +57,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
                     throw new InvalidCreatePayloadException(
                         $payload,
                         1645822126,
-                        new UnsupportedStorageKeyException(\get_class($storageKey))
+                        new UnsupportedStorageKeyException($storageKey::class)
                     );
                 }
 

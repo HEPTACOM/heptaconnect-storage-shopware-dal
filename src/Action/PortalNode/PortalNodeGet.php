@@ -22,14 +22,10 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function get(PortalNodeGetCriteria $criteria): iterable
@@ -40,7 +36,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey::class);
             }
 
             $ids[] = $portalNodeKey->getUuid();

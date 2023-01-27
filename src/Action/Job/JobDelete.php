@@ -33,14 +33,10 @@ AND
     job_payload.id IN (:ids)
 SQL;
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(JobDeleteCriteria $criteria): void
@@ -49,7 +45,7 @@ SQL;
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $ids[] = Id::toBinary($jobKey->getUuid());

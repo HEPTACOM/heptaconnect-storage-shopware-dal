@@ -89,14 +89,11 @@ class QueryIterator
             $query->setFirstResult($oldOffset);
         }
 
-        switch (\count($rows)) {
-            case 0:
-                return null;
-            case 1:
-                return \current($rows);
-            default:
-                throw new \LogicException('Too many rows in result for a single value selection', 1645901522);
-        }
+        return match (\count($rows)) {
+            0 => null,
+            1 => \current($rows),
+            default => throw new \LogicException('Too many rows in result for a single value selection', 1645901522),
+        };
     }
 
     /**

@@ -16,11 +16,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class UiAuditTrailEnd implements UiAuditTrailEndActionInterface
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     public function end(UiAuditTrailEndPayload $payload): void
@@ -28,7 +26,7 @@ final class UiAuditTrailEnd implements UiAuditTrailEndActionInterface
         $key = $payload->getUiAuditTrailKey();
 
         if (!$key instanceof UiAuditTrailStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($key));
+            throw new UnsupportedStorageKeyException($key::class);
         }
 
         try {

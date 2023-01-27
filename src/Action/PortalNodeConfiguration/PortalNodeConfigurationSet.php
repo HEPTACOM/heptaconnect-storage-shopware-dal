@@ -17,11 +17,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInterface
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     public function set(PortalNodeConfigurationSetPayloads $payloads): void
@@ -33,7 +31,7 @@ final class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActi
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1642863637, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1642863637, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
             $jsonValue = '{}';

@@ -23,14 +23,10 @@ final class RouteGet implements RouteGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function get(RouteGetCriteria $criteria): iterable
@@ -39,7 +35,7 @@ final class RouteGet implements RouteGetActionInterface
 
         foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($routeKey));
+                throw new UnsupportedStorageKeyException($routeKey::class);
             }
 
             $ids[] = $routeKey->getUuid();

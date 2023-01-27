@@ -35,14 +35,10 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
         $this->setLogger(new NullLogger());
     }
 
@@ -203,7 +199,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $portalNodeKey = $portalNodeKey->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         return Id::toBinary($portalNodeKey->getUuid());

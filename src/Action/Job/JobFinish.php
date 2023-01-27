@@ -28,14 +28,10 @@ final class JobFinish implements JobFinishActionInterface
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function finish(JobFinishPayload $payload): JobFinishResult
@@ -85,7 +81,7 @@ final class JobFinish implements JobFinishActionInterface
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;

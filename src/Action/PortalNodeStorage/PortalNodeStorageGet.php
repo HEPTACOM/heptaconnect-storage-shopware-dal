@@ -19,11 +19,9 @@ final class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
 {
     public const FETCH_QUERY = '679d6e76-bb9c-410d-ac22-17c64afcb7cc';
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function get(PortalNodeStorageGetCriteria $criteria): iterable
@@ -31,7 +29,7 @@ final class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);

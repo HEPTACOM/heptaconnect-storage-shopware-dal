@@ -33,14 +33,10 @@ final class IdentityPersist implements IdentityPersistActionInterface
 
     public const VALIDATE_MERGE_QUERY = 'd8bb9156-edcc-4b1b-8e7e-fae2e8932434';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function persist(IdentityPersistPayload $payload): void
@@ -48,7 +44,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
@@ -143,7 +139,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $createMapping->getMappingNodeKey() ?? null;
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($createMapping, 1643149115, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($createMapping, 1643149115, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodeId = $mappingNodeKey->getUuid();
@@ -172,7 +168,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $updateMapping->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($updateMapping, 1643149116, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($updateMapping, 1643149116, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodes[$mappingNodeKey->getUuid()] = $updateMapping->getExternalId();
@@ -242,7 +238,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
             $mappingNodeKey = $deleteMapping->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new InvalidCreatePayloadException($deleteMapping, 1643149117, new UnsupportedStorageKeyException(\get_class($mappingNodeKey)));
+                throw new InvalidCreatePayloadException($deleteMapping, 1643149117, new UnsupportedStorageKeyException($mappingNodeKey::class));
             }
 
             $mappingNodeIds[$mappingNodeKey->getUuid()] = true;

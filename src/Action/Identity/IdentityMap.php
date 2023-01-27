@@ -32,24 +32,12 @@ final class IdentityMap implements IdentityMapActionInterface
 
     public const MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
 
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private EntityTypeAccessor $entityTypeAccessor;
-
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
     public function __construct(
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        EntityTypeAccessor $entityTypeAccessor,
-        Connection $connection,
-        QueryFactory $queryFactory
+        private StorageKeyGeneratorContract $storageKeyGenerator,
+        private EntityTypeAccessor $entityTypeAccessor,
+        private Connection $connection,
+        private QueryFactory $queryFactory
     ) {
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->entityTypeAccessor = $entityTypeAccessor;
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
     }
 
     public function map(IdentityMapPayload $payload): IdentityMapResult
@@ -57,7 +45,7 @@ final class IdentityMap implements IdentityMapActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
@@ -77,7 +65,7 @@ final class IdentityMap implements IdentityMapActionInterface
         /** @var DatasetEntityContract $entity */
         foreach ($datasetEntities as $key => $entity) {
             $primaryKey = $entity->getPrimaryKey();
-            $type = \get_class($entity);
+            $type = $entity::class;
 
             if ($primaryKey === null) {
                 continue;
@@ -135,7 +123,7 @@ final class IdentityMap implements IdentityMapActionInterface
                 $mappingNodeKey = \array_shift($mappingNodeKeys);
 
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+                    throw new UnsupportedStorageKeyException($mappingNodeKey::class);
                 }
 
                 $mappingNodeId = $mappingNodeKey->getUuid();

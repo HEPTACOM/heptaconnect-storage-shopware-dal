@@ -22,11 +22,9 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
 
     private ?QueryBuilder $queryBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function getRequest(FileReferenceGetRequestCriteria $criteria): iterable
@@ -34,7 +32,7 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
@@ -42,7 +40,7 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
 
         foreach ($criteria->getFileReferenceRequestKeys() as $requestKey) {
             if (!$requestKey instanceof FileReferenceRequestStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($requestKey));
+                throw new UnsupportedStorageKeyException($requestKey::class);
             }
 
             $requestIds[] = Id::toBinary($requestKey->getUuid());

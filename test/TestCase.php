@@ -83,18 +83,13 @@ abstract class TestCase extends BaseTestCase
              */
             private $track;
 
-            private Connection $connection;
-
-            private string $projectDir;
-
-            private string $parentClass;
-
-            public function __construct($track, Connection $connection, string $projectDir, string $parentClass)
-            {
+            public function __construct(
+                $track,
+                private Connection $connection,
+                private string $projectDir,
+                private string $parentClass
+            ) {
                 $this->track = $track;
-                $this->connection = $connection;
-                $this->projectDir = $projectDir;
-                $this->parentClass = $parentClass;
             }
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
@@ -176,7 +171,7 @@ abstract class TestCase extends BaseTestCase
                     } else {
                         $param = '0x' . Id::toHex($param);
                     }
-                } catch (\Throwable $throwable) {
+                } catch (\Throwable) {
                 }
             }
 

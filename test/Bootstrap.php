@@ -30,7 +30,7 @@ do {
 
         try {
             $connection->getSchemaManager()->dropTable($table);
-        } catch (\Throwable $throwable) {
+        } catch (\Throwable) {
         }
     }
 } while ($tables !== []);
