@@ -37,6 +37,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
  */
 class StorageKeyGeneratorTest extends TestCase
 {
+    protected bool $setupQueryTracking = false;
+
     public function testUnsupportedClassException(): void
     {
         $this->expectException(UnsupportedStorageKeyException::class);

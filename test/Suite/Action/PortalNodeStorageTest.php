@@ -31,6 +31,12 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Action\PortalNodeStorageTestContract
  */
 class PortalNodeStorageTest extends PortalNodeStorageTestContract
 {
+    public function testUsageOfPreviewPortalFails(): void
+    {
+        $this->expectNotToPerformDatabaseQueries();
+        parent::testUsageOfPreviewPortalFails();
+    }
+
     protected function createStorageFacade(): StorageFacadeInterface
     {
         $kernel = $this->kernel;

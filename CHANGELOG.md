@@ -38,6 +38,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Changed
 
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1674420000AddJobTransactionIdIndex` to add index to `transaction_id` to table `heptaconnect_job` for improved job state changes
+
 ### Deprecated
 
 ### Removed
