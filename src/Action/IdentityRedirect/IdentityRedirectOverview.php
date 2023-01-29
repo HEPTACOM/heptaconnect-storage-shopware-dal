@@ -217,7 +217,9 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 'entity_type.type entity_type_type',
                 'identity_redirect.created_at created_at',
             ])
-            ->andWhere($builder->expr()->isNull('portal_node.deleted_at'));
+            ->andWhere($builder->expr()->isNull('source_portal_node.deleted_at'))
+            ->andWhere($builder->expr()->isNull('target_portal_node.deleted_at'))
+        ;
 
         return $builder;
     }
