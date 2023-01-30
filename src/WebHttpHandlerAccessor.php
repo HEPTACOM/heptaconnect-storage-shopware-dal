@@ -46,7 +46,9 @@ class WebHttpHandlerAccessor
             ->select([
                 'handler.id id',
                 'CONCAT(LOWER(HEX(handler.portal_node_id)), LOWER(HEX(handler.path_id))) `match_key`',
-            ]);
+            ])
+            ->addOrderBy('handler.id')
+            ->addOrderBy('match_key');
 
         $inserts = [];
         $result = [];
