@@ -93,7 +93,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
             if ($payload->getConfigurationValue() === null) {
                 $deletes[] = [
                     'handler_id' => Id::toBinary($handlerId),
-                    'key' => $payload->getConfigurationKey(),
+                    '`key`' => $payload->getConfigurationKey(),
                 ];
 
                 continue;
