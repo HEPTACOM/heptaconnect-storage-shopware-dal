@@ -17,17 +17,23 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Changed
 
-- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1674420000AddJobTransactionIdIndex` to add index to `transaction_id` to table `heptaconnect_job` for improved job state changes
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- Prevent duplication of entries in the portal-storage when updating keys that are already expired.
-
 ### Security
+
+## [0.9.0.6] - 2023-02-14
+
+### Changed
+
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1674420000AddJobTransactionIdIndex` to add index to `transaction_id` to table `heptaconnect_job` for improved job state changes
+
+### Fixed
+
+- Prevent duplication of entries in the portal-storage when updating keys that are already expired.
 
 ## [0.9.0.5] - 2022-11-19
 
