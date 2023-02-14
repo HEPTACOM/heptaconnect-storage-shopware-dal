@@ -25,6 +25,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Prevent duplication of entries in the portal-storage when updating keys that are already expired.
+
 ### Security
 
 ## [0.9.0.5] - 2022-11-19
