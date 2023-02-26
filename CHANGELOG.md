@@ -17,6 +17,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Changed
 
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1677428200AddKeyIndexToPortalNodeStorageTable` to add index to `key` to table `heptaconnect_portal_node_storage` for improved portal node storage reads
+
 ### Deprecated
 
 ### Removed
