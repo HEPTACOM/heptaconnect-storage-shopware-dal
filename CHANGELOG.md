@@ -38,15 +38,28 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Changed
 
-- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1674420000AddJobTransactionIdIndex` to add index to `transaction_id` to table `heptaconnect_job` for improved job state changes
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
+- Ensure query `900bdcb4-3a2a-4092-9eed-f5902e97b02f` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor` uses an ordering to ensure iteration on big data sets is ordered correctly and passes runtime tests
+- Ensure query `f683453e-336f-4913-8bb9-aa0e34745f97` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor` uses an ordering to ensure iteration on big data sets is ordered correctly and passes runtime tests
+- Ensure query `f6c5db7b-004d-40c8-b9cc-53707aab658b` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind` uses an ordering to ensure iteration on big data sets is ordered correctly and passes runtime tests
+- Fix incorrect SQL statement when deleting entries in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet`
+
 ### Security
+
+## [0.9.0.6] - 2023-02-14
+
+### Changed
+
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1674420000AddJobTransactionIdIndex` to add index to `transaction_id` to table `heptaconnect_job` for improved job state changes
+
+### Fixed
+
+- Prevent duplication of entries in the portal-storage when updating keys that are already expired.
 
 ## [0.9.0.5] - 2022-11-19
 

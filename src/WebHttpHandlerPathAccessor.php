@@ -59,6 +59,7 @@ class WebHttpHandlerPathAccessor
             $builder
                 ->from('heptaconnect_web_http_handler_path', 'handler_path')
                 ->select(['handler_path.id id'])
+                ->addOrderBy('handler_path.id')
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
                 ->setParameter('ids', \array_values($nonMatchingBytes), Connection::PARAM_STR_ARRAY);
 
