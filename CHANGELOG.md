@@ -15,6 +15,20 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.9.1.0] - 2023-03-04
+
+### Added
+
 - Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface` as storage key for identity redirects
 - Add support for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator`
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1673717600AddIdentityRedirectTable` to add storage for identity redirects
@@ -40,10 +54,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1677428200AddKeyIndexToPortalNodeStorageTable` to add index to `key` to table `heptaconnect_portal_node_storage` for improved portal node storage reads
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1677950300AddExternalIdIndexToJobTable` to add index to `external_id` to table `heptaconnect_job` for better database usage outside of business logic
-
-### Deprecated
-
-### Removed
+- Raise composer dependency constraint for `heptacom/heptaconnect-dataset-base`, `heptacom/heptaconnect-portal-base` and `heptacom/heptaconnect-storage-base` from `^0.9.3` to `^0.9.4`
 
 ### Fixed
 
@@ -51,8 +62,6 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Ensure query `f683453e-336f-4913-8bb9-aa0e34745f97` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor` uses an ordering to ensure iteration on big data sets is ordered correctly and passes runtime tests
 - Ensure query `f6c5db7b-004d-40c8-b9cc-53707aab658b` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind` uses an ordering to ensure iteration on big data sets is ordered correctly and passes runtime tests
 - Fix incorrect SQL statement when deleting entries in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet`
-
-### Security
 
 ## [0.9.0.6] - 2023-02-14
 
