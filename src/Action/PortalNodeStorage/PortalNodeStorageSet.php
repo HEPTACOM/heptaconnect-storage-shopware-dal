@@ -59,6 +59,7 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
             ->select([
+                'portal_node_storage.id storage_id',
                 'portal_node_storage.key storage_key',
             ])
             ->innerJoin(
@@ -81,21 +82,22 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 
         try {
             $this->connection->transactional(function () use ($instructions, $keysToCheck, $fetchBuilder): void {
-                $keysToUpdate = \array_fill_keys($keysToCheck, false);
+                $keysToUpdate = \array_fill_keys($keysToCheck, ['update' => false]);
 
                 $fetchBuilder->setIsForUpdate(true);
 
-                foreach ($fetchBuilder->iterateColumn() as $storageKey) {
-                    $keysToUpdate[$storageKey] = true;
+                foreach ($fetchBuilder->iterateRows() as $storageRow) {
+                    $storageId = $storageRow['storage_id'];
+                    $storageKey = $storageRow['storage_key'];
+
+                    $keysToUpdate[$storageKey]['id'] = $storageId;
+                    $keysToUpdate[$storageKey]['update'] = true;
                 }
 
                 // TODO batch
                 foreach ($instructions as $storageKey => $instruction) {
-                    if ($keysToUpdate[$storageKey] ?? false) {
-                        $condition = [
-                            'portal_node_id' => $instruction['portal_node_id'],
-                            '`key`' => $instruction['`key`'],
-                        ];
+                    if ($keysToUpdate[$storageKey]['update'] ?? false) {
+                        $condition = ['id' => $keysToUpdate[$storageKey]['id']];
                         unset($instruction['portal_node_id'], $instruction['`key`'], $instruction['created_at']);
 
                         $this->connection->update('heptaconnect_portal_node_storage', $instruction, $condition, [

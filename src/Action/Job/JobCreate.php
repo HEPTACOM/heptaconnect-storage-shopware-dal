@@ -184,6 +184,7 @@ final class JobCreate implements JobCreateActionInterface
     private function getPayloadIds(array $checksums): array
     {
         $builder = $this->queryFactory->createBuilder(self::PAYLOAD_LOOKUP_QUERY);
+        $checksums = \array_unique($checksums);
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')

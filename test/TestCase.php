@@ -17,6 +17,8 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $setupQueryTracking = true;
 
+    private bool $performsDatabaseQueries = true;
+
     protected ?ShopwareKernel $kernel = null;
 
     protected ?array $trackedQueries = null;
@@ -29,6 +31,7 @@ abstract class TestCase extends BaseTestCase
             $this->upKernel();
 
             if ($this->setupQueryTracking) {
+                $this->performsDatabaseQueries = true;
                 $this->upQueryTracking();
             }
         }
@@ -77,19 +80,13 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
         $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
 
-        $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, static::class) implements SQLLogger {
-            /**
-             * @var callable
-             */
-            private $track;
-
+        $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             public function __construct(
-                $track,
+                private callable $track,
                 private Connection $connection,
                 private string $projectDir,
-                private string $parentClass
+                private BaseTestCase $test
             ) {
-                $this->track = $track;
             }
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
@@ -102,17 +99,46 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
-                $rawFrames = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS);
-                $startFrame = \array_search($this->parentClass, \array_column($rawFrames, 'class'), true);
+                $rawFrames = \debug_backtrace();
+                $startFrame = false;
+
+                foreach ($rawFrames as $frameIndex => $rawFrame) {
+                    $frameObject = $rawFrame['object'] ?? null;
+
+                    if (!\is_object($frameObject)) {
+                        continue;
+                    }
+
+                    if ($frameObject !== $this->test) {
+                        continue;
+                    }
+
+                    $frameClass = $rawFrame['class'] ?? null;
+
+                    if (!\is_string($frameClass)) {
+                        continue;
+                    }
+
+                    if (!\str_starts_with($frameClass, 'PHPUnit\\Framework\\')) {
+                        continue;
+                    }
+
+                    $startFrame = $frameIndex;
+                    break;
+                }
 
                 if ($startFrame === false) {
                     return;
                 }
 
-                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, -$startFrame)));
-                $srcFrames = \array_filter($frames, static fn (string $f): bool => \stripos($f, ' (src/') !== false);
+                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
 
-                if ($srcFrames === []) {
+                // skip traces that only contain code from test cases and vendor folders
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, ' (src/')) === []) {
+                    return;
+                }
+
+                if ($frames === []) {
                     return;
                 }
 
@@ -150,12 +176,27 @@ abstract class TestCase extends BaseTestCase
     {
         $trackedQueries = $this->trackedQueries;
 
+        if ($this->performsDatabaseQueries) {
+            static::assertNotEmpty($trackedQueries);
+        }
+
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
+            foreach ($params as &$param) {
+                try {
+                    if (\is_array($param)) {
+                        $param = \array_map(static fn(string $i): string => '0x' . Id::toHex($i), $param);
+                    } else {
+                        $param = '0x' . Id::toHex($param);
+                    }
+                } catch (\Throwable $throwable) {
+                }
+            }
+
             $context = \implode(\PHP_EOL, [
                 '',
                 $trackedQuery,
-                \json_encode($params, \JSON_PRETTY_PRINT),
-                \json_encode($warnings, \JSON_PRETTY_PRINT),
+                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
                 ...$frames,
             ]);
 
@@ -164,21 +205,26 @@ abstract class TestCase extends BaseTestCase
                 static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
             }
 
-            foreach ($params as &$param) {
-                try {
-                    if (\is_array($param)) {
-                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
-                    } else {
-                        $param = '0x' . Id::toHex($param);
-                    }
-                } catch (\Throwable) {
+            foreach ($params as $param) {
+                if (\is_array($param)) {
+                    static::assertSame(
+                        \array_values($param),
+                        \array_values(\array_unique($param)),
+                        'There is a duplicate value in an a parameter' . $context
+                    );
                 }
             }
 
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
+                $extra = \strtolower($explanation['Extra'] ?? '');
                 $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT) . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
-                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext);
+
+                if ($extra === 'no matching row in const table') {
+                    continue;
+                }
+
+                static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext . \PHP_EOL . $context);
             }
         }
 
@@ -191,5 +237,10 @@ abstract class TestCase extends BaseTestCase
         $connection = $this->kernel->getContainer()->get(Connection::class);
 
         return $connection;
+    }
+
+    protected function expectNotToPerformDatabaseQueries(): void
+    {
+        $this->performsDatabaseQueries = false;
     }
 }

@@ -16,6 +16,8 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Action\IdentityMappingTestContract;
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate
+ * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete
  * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
@@ -38,6 +40,7 @@ class IdentityMappingTest extends IdentityMappingTestContract
 {
     public function testNoDatabaseLookupsOnEmptyPayload(): void
     {
+        $this->expectNotToPerformDatabaseQueries();
         $reflector = $this->createStorageFacade()->getIdentityReflectAction();
         $reflector->reflect(new IdentityReflectPayload(new PortalNodeStorageKey(Id::randomHex()), new MappedDatasetEntityCollection()));
 

@@ -396,6 +396,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
 
     private function fetchTypes(array $mappingNodeIds): array
     {
+        $mappingNodeIds = \array_unique($mappingNodeIds);
         $queryBuilder = $this->queryFactory->createBuilder(self::TYPE_LOOKUP_QUERY);
         $expr = $queryBuilder->expr();
 

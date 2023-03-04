@@ -93,6 +93,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
                 $builder->expr()->eq('handler.path_id', ':pathId'),
                 $builder->expr()->eq('handler.portal_node_id', ':portalNodeKey')
             )
+            ->addOrderBy('config.id')
             ->select([
                 'config.type type',
                 'config.value value',
