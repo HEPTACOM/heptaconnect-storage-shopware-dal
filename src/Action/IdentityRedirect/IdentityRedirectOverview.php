@@ -11,7 +11,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverview
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectOverviewActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\IdentityRedirectKeyCollection;
@@ -49,7 +48,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $identityRedirectIds = [];
 
             foreach ($identityRedirectKeyFilter as $identityRedirectKey) {
-                if (!$identityRedirectKey instanceof IdentityRedirectKeyInterface) {
+                if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
                     throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException(\get_class($identityRedirectKey)));
                 }
 
