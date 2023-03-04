@@ -10,6 +10,7 @@ use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\StorageKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
@@ -17,6 +18,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
@@ -29,6 +31,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
+        IdentityRedirectKeyInterface::class => IdentityRedirectStorageKey::class,
         IdentityErrorKeyInterface::class => IdentityErrorStorageKey::class,
         JobKeyInterface::class => JobStorageKey::class,
         FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class,
@@ -38,6 +41,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
         'Route' => RouteStorageKey::class,
+        'IdentityRedirect' => IdentityRedirectStorageKey::class,
         'IdentityError' => IdentityErrorStorageKey::class,
         'MappingException' => IdentityErrorStorageKey::class,
         'Job' => JobStorageKey::class,

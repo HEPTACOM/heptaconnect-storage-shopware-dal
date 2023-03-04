@@ -15,6 +15,27 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface` as storage key for identity redirects
+- Add support for `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator`
+- Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1673717600AddIdentityRedirectTable` to add storage for identity redirects
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectCreateInterface`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface::getIdentityRedirectCreateAction` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createIdentityRedirectCreateActionInterface` to return `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate`
+- Add exception code `1673722278` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` when the payload refers to a source portal node with an invalid portal node
+- Add exception code `1673722279` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` when the payload refers to a target portal node with an invalid portal node
+- Add exception code `1673722280` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` when the payload refers to an unknown entity type
+- Add exception code `1673722281` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` when the key generator cannot generate a valid identity redirect key
+- Add exception code `1673722282` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` when writing to the database fails
+- Add class `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete` implementing `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteInterface`
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface::getIdentityRedirectDeleteAction` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createIdentityRedirectDeleteActionInterface` to return `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete`
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete::LOOKUP_QUERY` as `26f18fa9-9246-45cf-b7f7-2fc80f61151d` to identify a query used for deleting identity redirects
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete::DELETE_QUERY` as `ca54ecac-3b6b-4f54-882e-fea1f19336ba` to identify a query used for looking up identity redirects that can be deleted
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview::OVERVIEW_QUERY` as `832dbfc9-4939-4301-ade4-aa73d961454f` to identify a query used for loading an overview page for identity redirects
+- Implement `\Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectOverviewActionInterface` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview` to list identity redirects
+- Add exception code `1673729808` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview::overview` when the payload refers to a identity redirect with an invalid identity redirect key
+- Add exception code `1673729809` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview::overview` when the payload refers to a source portal node with an invalid portal node key
+- Add exception code `1673729810` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview::overview` when the payload refers to a target portal node with an invalid portal node key
+- Add exception code `1673729811` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview::overview` when the criteria has an invalid sorting option
+
 ### Changed
 
 - Add migration `\Heptacom\HeptaConnect\Storage\ShopwareDal\Migration\Migration1677428200AddKeyIndexToPortalNodeStorageTable` to add index to `key` to table `heptaconnect_portal_node_storage` for improved portal node storage reads
