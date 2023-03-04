@@ -20,7 +20,7 @@ SQL;
 
     public function update(Connection $connection): void
     {
-        $this->addIndex($connection, 'heptaconnect_portal_node_storage', 'key', 767);
+        $this->addIndex($connection, 'heptaconnect_portal_node_storage', 'key', 3072);
     }
 
     public function updateDestructive(Connection $connection): void
