@@ -24,11 +24,9 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(IdentityRedirectDeleteCriteria $criteria): void

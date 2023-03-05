@@ -24,20 +24,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
 {
-    private Connection $connection;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private EntityTypeAccessor $entityTypes;
-
     public function __construct(
-        Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        EntityTypeAccessor $entityTypes
+        private Connection $connection,
+        private StorageKeyGeneratorContract $storageKeyGenerator,
+        private EntityTypeAccessor $entityTypes
     ) {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->entityTypes = $entityTypes;
     }
 
     public function create(IdentityRedirectCreatePayloadCollection $payloads): IdentityRedirectCreateResultCollection
