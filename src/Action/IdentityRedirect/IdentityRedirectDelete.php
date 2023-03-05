@@ -60,7 +60,7 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         $deleteBuilder->execute();
     }
 
-    protected function getDeleteQuery(): QueryBuilder
+    private function getDeleteQuery(): QueryBuilder
     {
         $builder = $this->deleteBuilder;
 
@@ -74,7 +74,7 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         return clone $builder;
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 
