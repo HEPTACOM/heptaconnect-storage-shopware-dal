@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
@@ -57,9 +59,9 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->setParameter('identityRedirectIds', $identityRedirectIds, Connection::PARAM_STR_ARRAY);
         }
 
-        if ($entityTypeFilter instanceof StringCollection) {
+        if ($entityTypeFilter instanceof ClassStringReferenceCollection) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', $entityTypeFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), Connection::PARAM_STR_ARRAY);
         }
 
         if ($sourceExternalIdFilter instanceof StringCollection) {
@@ -143,7 +145,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 (string) $row['identity_redirect_source_external_id'],
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
                 (string) $row['identity_redirect_target_external_id'],
-                (string) $row['entity_type_type'],
+                new UnsafeClassString((string) $row['entity_type_type']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
             )

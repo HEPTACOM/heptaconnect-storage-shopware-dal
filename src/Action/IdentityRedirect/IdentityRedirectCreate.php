@@ -49,7 +49,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
                 throw new InvalidCreatePayloadException($payload, 1673722279, new UnsupportedStorageKeyException(\get_class($targetKey)));
             }
 
-            $entityTypes[] = $payload->getEntityType();
+            $entityTypes[] = (string) $payload->getEntityType();
         }
 
         $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes);
@@ -58,7 +58,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
             if (!\array_key_exists($entityType, $entityTypeIds)) {
                 /** @var IdentityRedirectCreatePayload $payload */
                 foreach ($payloads as $payload) {
-                    if ($payload->getEntityType() === $entityType) {
+                    if (((string) $payload->getEntityType()) === $entityType) {
                         throw new InvalidCreatePayloadException($payload, 1673722280);
                     }
                 }
@@ -89,7 +89,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
                 'source_external_id' => $payload->getSourceExternalId(),
                 'target_portal_node_id' => Id::toBinary($targetKey->getUuid()),
                 'target_external_id' => $payload->getTargetExternalId(),
-                'type_id' => Id::toBinary($entityTypeIds[$payload->getEntityType()]),
+                'type_id' => Id::toBinary($entityTypeIds[(string) $payload->getEntityType()]),
                 'created_at' => $now,
             ];
 
