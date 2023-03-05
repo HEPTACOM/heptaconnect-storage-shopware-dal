@@ -108,38 +108,15 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === IdentityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
-            $dbalFieldName = null;
-
-            switch ($field) {
-                case IdentityRedirectOverviewCriteria::FIELD_CREATED:
-                    $dbalFieldName = 'identity_redirect.created_at';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dbalFieldName = 'entity_type.type';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_SOURCE_EXTERNAL_ID:
-                    $dbalFieldName = 'identity_redirect.source_external_id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_TARGET_EXTERNAL_ID:
-                    $dbalFieldName = 'identity_redirect.target_external_id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_SOURCE_PORTAL_NODE:
-                    $dbalFieldName = 'source_portal_node.id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_TARGET_PORTAL_NODE:
-                    $dbalFieldName = 'target_portal_node.id';
-
-                    break;
-            }
-
-            if ($dbalFieldName === null) {
-                throw new InvalidOverviewCriteriaException($criteria, 1673729811);
-            }
+            $dbalFieldName = match ($field) {
+                IdentityRedirectOverviewCriteria::FIELD_CREATED => 'identity_redirect.created_at',
+                IdentityRedirectOverviewCriteria::FIELD_ENTITY_TYPE => 'entity_type.type',
+                IdentityRedirectOverviewCriteria::FIELD_SOURCE_EXTERNAL_ID => 'identity_redirect.source_external_id',
+                IdentityRedirectOverviewCriteria::FIELD_TARGET_EXTERNAL_ID => 'identity_redirect.target_external_id',
+                IdentityRedirectOverviewCriteria::FIELD_SOURCE_PORTAL_NODE => 'source_portal_node.id',
+                IdentityRedirectOverviewCriteria::FIELD_TARGET_PORTAL_NODE => 'target_portal_node.id',
+                default => throw new InvalidOverviewCriteriaException($criteria, 1673729811),
+            };
 
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
