@@ -15,6 +15,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect::LOOKUP_IDENTITY_REDIRECTS_QUERY` as `315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c` to identify a query used for looking up identity redirects, that evaluate identities before mapping nodes are evaluated
+
 ### Changed
 
 ### Deprecated
@@ -22,6 +24,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 ### Removed
 
 ### Fixed
+
+- Add lookup for identity redirects to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect` 
 
 ### Security
 
