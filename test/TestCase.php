@@ -82,7 +82,7 @@ abstract class TestCase extends BaseTestCase
 
         $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             public function __construct(
-                private callable $track,
+                private \Closure $track,
                 private Connection $connection,
                 private string $projectDir,
                 private BaseTestCase $test
