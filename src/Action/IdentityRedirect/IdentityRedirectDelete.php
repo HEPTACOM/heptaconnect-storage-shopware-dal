@@ -66,33 +66,29 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
     {
         $builder = $this->deleteBuilder;
 
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
+        if (!$builder instanceof QueryBuilder) {
+            $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+
+            $builder->delete('heptaconnect_identity_redirect');
+            $builder->andWhere($builder->expr()->in('id', ':ids'));
         }
 
-        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
-
-        $builder->delete('heptaconnect_identity_redirect');
-        $builder->andWhere($builder->expr()->in('id', ':ids'));
-
-        return $builder;
+        return clone $builder;
     }
 
     protected function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
+        if (!$builder instanceof QueryBuilder) {
+            $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+
+            $builder->from('heptaconnect_identity_redirect');
+            $builder->select('id');
+            $builder->addOrderBy('id');
+            $builder->andWhere($builder->expr()->in('id', ':ids'));
         }
 
-        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
-
-        $builder->from('heptaconnect_identity_redirect');
-        $builder->select('id');
-        $builder->addOrderBy('id');
-        $builder->andWhere($builder->expr()->in('id', ':ids'));
-
-        return $builder;
+        return clone $builder;
     }
 }

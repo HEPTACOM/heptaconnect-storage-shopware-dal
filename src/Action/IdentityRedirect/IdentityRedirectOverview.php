@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectOverviewActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
+use Heptacom\HeptaConnect\Storage\Base\IdentityRedirectKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -42,11 +44,11 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
         $targetPortalNodeKeyFilter = $criteria->getTargetPortalNodeKeyFilter();
         $targetExternalIdFilter = $criteria->getTargetExternalIdFilter();
 
-        if ($identityRedirectKeyFilter->count() > 0) {
+        if ($identityRedirectKeyFilter instanceof IdentityRedirectKeyCollection) {
             $identityRedirectIds = [];
 
             foreach ($identityRedirectKeyFilter as $identityRedirectKey) {
-                if (!$identityRedirectKey instanceof IdentityRedirectKeyInterface) {
+                if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
                     throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException(\get_class($identityRedirectKey)));
                 }
 
@@ -57,22 +59,22 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->setParameter('identityRedirectIds', $identityRedirectIds, Connection::PARAM_STR_ARRAY);
         }
 
-        if ($entityTypeFilter !== null) {
+        if ($entityTypeFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
             $builder->setParameter('entityTypes', $entityTypeFilter->asArray(), Connection::PARAM_STR_ARRAY);
         }
 
-        if ($sourceExternalIdFilter !== null) {
+        if ($sourceExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.source_external_id', ':sourceExternalIds'));
             $builder->setParameter('sourceExternalIds', $sourceExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
         }
 
-        if ($targetExternalIdFilter !== null) {
+        if ($targetExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.target_external_id', ':targetExternalIds'));
             $builder->setParameter('targetExternalIds', $targetExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
         }
 
-        if ($sourcePortalNodeKeyFilter !== null) {
+        if ($sourcePortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
             $portalNodeIds = [];
 
             foreach ($sourcePortalNodeKeyFilter as $portalNodeKey) {
@@ -89,7 +91,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->setParameter('sourcePortalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
         }
 
-        if ($targetPortalNodeKeyFilter !== null) {
+        if ($targetPortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
             $portalNodeIds = [];
 
             foreach ($targetPortalNodeKeyFilter as $portalNodeKey) {
@@ -217,7 +219,9 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 'entity_type.type entity_type_type',
                 'identity_redirect.created_at created_at',
             ])
-            ->andWhere($builder->expr()->isNull('portal_node.deleted_at'));
+            ->andWhere($builder->expr()->isNull('source_portal_node.deleted_at'))
+            ->andWhere($builder->expr()->isNull('target_portal_node.deleted_at'))
+        ;
 
         return $builder;
     }
