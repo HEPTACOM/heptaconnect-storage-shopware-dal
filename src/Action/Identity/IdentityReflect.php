@@ -29,7 +29,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
     public const LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
 
-    public const LOOKUP_DIRECTIONAL_MAPPING_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
+    public const LOOKUP_IDENTITY_REDIRECTS_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
 
     private Connection $connection;
 
@@ -415,7 +415,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
     private function getSearchDirectionalMappingsQueryBuilder(): QueryBuilder
     {
-        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_DIRECTIONAL_MAPPING_QUERY);
+        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_IDENTITY_REDIRECTS_QUERY);
         $expr = $queryBuilder->expr();
 
         $queryBuilder->from('heptaconnect_identity_redirect', 'mapping');
