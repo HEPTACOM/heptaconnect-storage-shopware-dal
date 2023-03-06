@@ -418,7 +418,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_DIRECTIONAL_MAPPING_QUERY);
         $expr = $queryBuilder->expr();
 
-        $queryBuilder->from('heptaconnect_identity_direction', 'mapping');
+        $queryBuilder->from('heptaconnect_identity_redirect', 'mapping');
 
         $queryBuilder->select([
             'mapping.source_portal_node_id',
