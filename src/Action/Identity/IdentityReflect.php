@@ -292,7 +292,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
         /** @var MappingInterface[] $reflectionMappings */
         $reflectionMappings = [];
 
-        foreach ($queryBuilder->execute()->fetchAllAssociative() as $mapping) {
+        foreach ($queryBuilder->iterateRows() as $mapping) {
             $sourcePortalNodeId = Id::toHex($mapping['source_portal_node_id']);
             $entityType = (string) $mapping['type'];
             $sourceExternalId = (string) $mapping['source_external_id'];
@@ -437,6 +437,8 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $queryBuilder->where(
             $expr->eq('mapping.target_portal_node_id', ':targetPortalNode')
         );
+
+        $queryBuilder->addOrderBy('mapping.id', 'ASC');
 
         return $queryBuilder;
     }
