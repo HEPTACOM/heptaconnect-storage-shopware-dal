@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
+use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Reflect\IdentityReflectPayload;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
@@ -18,12 +21,15 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Ramsey\Uuid\Uuid;
 
 final class IdentityReflect implements IdentityReflectActionInterface
 {
     public const LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
 
     public const LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
+
+    public const LOOKUP_IDENTITY_REDIRECTS_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
 
     public function __construct(
         private Connection $connection,
@@ -32,6 +38,12 @@ final class IdentityReflect implements IdentityReflectActionInterface
     }
 
     public function reflect(IdentityReflectPayload $payload): void
+    {
+        $payload = $this->reflectUnidirectional($payload);
+        $this->reflectBidirectional($payload);
+    }
+
+    private function reflectBidirectional(IdentityReflectPayload $payload): void
     {
         $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
@@ -200,6 +212,138 @@ final class IdentityReflect implements IdentityReflectActionInterface
         }
     }
 
+    private function reflectUnidirectional(IdentityReflectPayload $payload): IdentityReflectPayload
+    {
+        $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
+
+        if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
+            throw new UnsupportedStorageKeyException(\get_class($targetPortalNodeKey));
+        }
+
+        $identities = [];
+
+        /** @var MappedDatasetEntityStruct $mappedDatasetEntity */
+        foreach ($payload->getMappedDatasetEntities() as $mappedDatasetEntity) {
+            $sourcePortalNodeKey = $mappedDatasetEntity->getMapping()->getPortalNodeKey()->withoutAlias();
+
+            if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
+                throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
+            }
+
+            $entityType = $mappedDatasetEntity->getMapping()->getEntityType();
+            $sourceExternalId = $mappedDatasetEntity->getMapping()->getExternalId();
+
+            $identities[$sourcePortalNodeKey->getUuid()][$entityType][$sourceExternalId][] = $mappedDatasetEntity;
+        }
+
+        if ($identities === []) {
+            return $payload;
+        }
+
+        $queryBuilder = $this->getSearchDirectionalMappingsQueryBuilder();
+        $expr = $queryBuilder->expr();
+
+        $queryBuilder->setParameter(
+            'targetPortalNode',
+            Id::toBinary($targetPortalNodeKey->getUuid()),
+            ParameterType::BINARY
+        );
+
+        $conditions = [];
+
+        foreach ($identities as $sourcePortalNodeKey => $identitiesByType) {
+            foreach ($identitiesByType as $entityType => $externalIds) {
+                $aliasSourcePortalNode = 'param_' . Uuid::uuid4()->getHex();
+                $aliasEntityType = 'param_' . Uuid::uuid4()->getHex();
+                $aliasSourceExternalIds = 'param_' . Uuid::uuid4()->getHex();
+
+                $conditions[] = $expr->and(
+                    $expr->eq('mapping.source_portal_node_id', ':' . $aliasSourcePortalNode),
+                    $expr->eq('type.type', ':' . $aliasEntityType),
+                    $expr->in('mapping.source_external_id', ':' . $aliasSourceExternalIds)
+                );
+
+                $queryBuilder->setParameter(
+                    $aliasSourcePortalNode,
+                    Id::toBinary($sourcePortalNodeKey),
+                    ParameterType::BINARY
+                );
+
+                $queryBuilder->setParameter(
+                    $aliasEntityType,
+                    $entityType,
+                    ParameterType::STRING
+                );
+
+                $queryBuilder->setParameter(
+                    $aliasSourceExternalIds,
+                    \array_map('strval', \array_keys($externalIds)),
+                    Connection::PARAM_STR_ARRAY
+                );
+            }
+        }
+
+        $queryBuilder->andWhere($expr->or(...$conditions));
+
+        /** @var MappingInterface[] $reflectionMappings */
+        $reflectionMappings = [];
+
+        foreach ($queryBuilder->iterateRows() as $mapping) {
+            $sourcePortalNodeId = Id::toHex($mapping['source_portal_node_id']);
+            $entityType = (string) $mapping['type'];
+            $sourceExternalId = (string) $mapping['source_external_id'];
+            $targetExternalId = (string) $mapping['target_external_id'];
+
+            /** @var MappedDatasetEntityStruct $mappedEntity */
+            foreach ($identities[$sourcePortalNodeId][$entityType][$sourceExternalId] ?? [] as $mappedEntity) {
+                $cacheKey = \sprintf(
+                    '%s;%s;%s',
+                    $sourcePortalNodeId,
+                    $entityType,
+                    $sourceExternalId
+                );
+
+                if (!($reflectionMappings[$cacheKey] ?? null) instanceof PrimaryKeySharingMappingStruct) {
+                    $reflectionMappings[$cacheKey] = new PrimaryKeySharingMappingStruct(
+                        $mappedEntity->getMapping()->getEntityType(),
+                        $mappedEntity->getMapping()->getExternalId(),
+                        $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias(),
+                        $mappedEntity->getMapping()->getMappingNodeKey(),
+                    );
+
+                    $reflectionMappings[$cacheKey]->setForeignKey($targetExternalId);
+                }
+
+                $mappedEntity->getDatasetEntity()->setPrimaryKey($targetExternalId);
+                $reflectionMappings[$cacheKey]->addOwner($mappedEntity->getDatasetEntity());
+            }
+        }
+
+        $remainingMappedDatasetEntities = $payload->getMappedDatasetEntities()->filter(function (
+            MappedDatasetEntityStruct $mappedDatasetEntity
+        ) use (
+            $reflectionMappings
+        ) {
+            $mappingNodeKey = $mappedDatasetEntity->getMapping()->getMappingNodeKey();
+
+            foreach ($reflectionMappings as $reflectionMapping) {
+                if ($reflectionMapping->getMappingNodeKey()->equals($mappingNodeKey)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        $remainingPayload = clone $payload;
+
+        $remainingPayload->setMappedDatasetEntities(
+            new MappedDatasetEntityCollection($remainingMappedDatasetEntities)
+        );
+
+        return $remainingPayload;
+    }
+
     private function getSearchExistingMappingsQueryBuilder(): QueryBuilder
     {
         $result = $this->queryFactory->createBuilder(self::LOOKUP_EXISTING_MAPPING_QUERY);
@@ -263,5 +407,35 @@ final class IdentityReflect implements IdentityReflectActionInterface
             ->andWhere($result->expr()->isNull('mapping.deleted_at'));
 
         return $result;
+    }
+
+    private function getSearchDirectionalMappingsQueryBuilder(): QueryBuilder
+    {
+        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_IDENTITY_REDIRECTS_QUERY);
+        $expr = $queryBuilder->expr();
+
+        $queryBuilder->from('heptaconnect_identity_redirect', 'mapping');
+
+        $queryBuilder->select([
+            'mapping.source_portal_node_id',
+            'type.type',
+            'mapping.source_external_id',
+            'mapping.target_external_id',
+        ]);
+
+        $queryBuilder->innerJoin(
+            'mapping',
+            'heptaconnect_entity_type',
+            'type',
+            $expr->eq('mapping.type_id', 'type.id')
+        );
+
+        $queryBuilder->where(
+            $expr->eq('mapping.target_portal_node_id', ':targetPortalNode')
+        );
+
+        $queryBuilder->addOrderBy('mapping.id', 'ASC');
+
+        return $queryBuilder;
     }
 }
