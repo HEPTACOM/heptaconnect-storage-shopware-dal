@@ -230,7 +230,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
             }
 
-            $entityType = $mappedDatasetEntity->getMapping()->getEntityType();
+            $entityType = (string) $mappedDatasetEntity->getMapping()->getEntityType();
             $sourceExternalId = $mappedDatasetEntity->getMapping()->getExternalId();
 
             $identities[$sourcePortalNodeKey->getUuid()][$entityType][$sourceExternalId][] = $mappedDatasetEntity;
