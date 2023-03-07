@@ -29,7 +29,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
 
     public function find(WebHttpHandlerConfigurationFindCriteria $criteria): WebHttpHandlerConfigurationFindResult
     {
-        $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
+        $portalNodeKey = $criteria->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
             throw new UnsupportedStorageKeyException($portalNodeKey::class);
@@ -37,7 +37,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
 
         $builder = $this->getBuilderCached();
         $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getPath())), Types::BINARY);
+        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
         $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
