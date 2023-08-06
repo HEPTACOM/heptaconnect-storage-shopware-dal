@@ -45,6 +45,7 @@ abstract class AbstractStorageKey implements StorageKeyInterface
     /**
      * @return mixed|string
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->uuid;
