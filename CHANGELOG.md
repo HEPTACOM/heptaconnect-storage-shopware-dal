@@ -23,6 +23,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Fix error in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview` that made its results have an empty identity-redirect-key property
+
 ### Security
 
 ## [0.9.1.1] - 2023-03-07
