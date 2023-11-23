@@ -163,7 +163,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
         return \iterable_map(
             $builder->iterateRows(),
             static fn (array $row): IdentityRedirectOverviewResult => new IdentityRedirectOverviewResult(
-                new IdentityRedirectStorageKey(Id::toHex((string) $row['identity_redirect'])),
+                new IdentityRedirectStorageKey(Id::toHex((string) $row['identity_redirect_id'])),
                 new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
                 (string) $row['identity_redirect_source_external_id'],
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
