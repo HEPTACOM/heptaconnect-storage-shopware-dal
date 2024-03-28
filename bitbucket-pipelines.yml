@@ -95,18 +95,6 @@ definitions:
                     - make .build
                     - mv vendor .build/vendor-low-80
                     - echo 'mkdir -p vendor; rm -rf vendor; mv .build/vendor-low-80 vendor' > setup-vendor.sh
-        -   step: &test-unit
-                <<: *default-step
-                name: Unit test
-                script:
-                    - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
-                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_test;'
-                    - bash setup-vendor.sh
-                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_test' COMPOSER_EXTRA_ARGS=-vvv make -e test
-        -   step: &test-unit-80
-                <<: *test-unit
-                <<: *php80-image
-                name: Unit tests (8.0)
         -   step: &test-coverage
                 <<: *default-step
                 name: Test coverage
@@ -115,6 +103,10 @@ definitions:
                     - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_covr;'
                     - bash setup-vendor.sh
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' XDEBUG_MODE=coverage COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+        -   step: &test-coverage-80
+                <<: *test-coverage
+                <<: *php80-image
+                name: Unit coverage (8.0)
         -   step: &test-code-style-php
                 <<: *default-step
                 name: ECS (Code style)
@@ -177,7 +169,6 @@ pipelines:
             -   step: *github-mirror-branch
             -   step: *composer-high-install
             -   parallel:
-                    -   step: *test-unit
                     -   step: *test-coverage
                     -   step: *test-code-style-composer-normalize
                     -   step: *test-code-style-composer-unused
@@ -185,16 +176,15 @@ pipelines:
                     -   step: *test-code-style-php
             -   step: *composer-low-install
             -   parallel:
-                    -   step: *test-unit
                     -   step: *test-coverage
                     -   step: *test-code-style-composer-normalize
                     -   step: *test-code-style-composer-unused
                     -   step: *test-code-style-json
                     -   step: *test-code-style-php
             -   step: *composer-high-install-80
-            -   step: *test-unit-80
+            -   step: *test-coverage-80
             -   step: *composer-low-install-80
-            -   step: *test-unit-80
+            -   step: *test-coverage-80
             -   step: *composer-high-install
             -   parallel:
                     -   step: *test-code-style-phpmd
@@ -221,7 +211,6 @@ pipelines:
     default:
         -   step: *composer-high-install
         -   parallel:
-                -   step: *test-unit
                 -   step: *test-coverage
                 -   step: *test-code-style-composer-normalize
                 -   step: *test-code-style-composer-unused
@@ -229,16 +218,15 @@ pipelines:
                 -   step: *test-code-style-php
         -   step: *composer-low-install
         -   parallel:
-                -   step: *test-unit
                 -   step: *test-coverage
                 -   step: *test-code-style-composer-normalize
                 -   step: *test-code-style-composer-unused
                 -   step: *test-code-style-json
                 -   step: *test-code-style-php
         -   step: *composer-high-install-80
-        -   step: *test-unit-80
+        -   step: *test-coverage-80
         -   step: *composer-low-install-80
-        -   step: *test-unit-80
+        -   step: *test-coverage-80
         -   step: *composer-high-install
         -   parallel:
                 -   step: *test-code-style-phpmd
