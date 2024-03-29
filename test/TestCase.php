@@ -23,6 +23,8 @@ abstract class TestCase extends BaseTestCase
 
     private bool $performsDatabaseQueries = true;
 
+    private bool $trackQueries = true;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,6 +50,8 @@ abstract class TestCase extends BaseTestCase
                 $this->downQueryTracking();
             }
         }
+
+        $this->startTrackingQueries();
     }
 
     protected function upKernel(): void
@@ -78,7 +82,11 @@ abstract class TestCase extends BaseTestCase
         $projectDir = \dirname(__DIR__) . '/';
         $this->trackedQueries = [];
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
+        $pushQuery = function (): void {
+            if ($this->trackQueries) {
+                $this->trackedQueries[] = \func_get_args();
+            }
+        };
 
         $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             /**
@@ -237,7 +245,7 @@ abstract class TestCase extends BaseTestCase
                 }
 
                 // primary keys are unique, so a search in an index or in the index would both work by "using where"
-                if ($type === 'all' && $extra === 'using where' && $explanation['possible_keys'] === 'PRIMARY') {
+                if ($type === 'all' && \strpos($extra, 'using where') !== false && $explanation['possible_keys'] === 'PRIMARY') {
                     continue;
                 }
 
@@ -259,5 +267,15 @@ abstract class TestCase extends BaseTestCase
     protected function expectNotToPerformDatabaseQueries(): void
     {
         $this->performsDatabaseQueries = false;
+    }
+
+    protected function stopTrackingQueries(): void
+    {
+        $this->trackQueries = false;
+    }
+
+    protected function startTrackingQueries(): void
+    {
+        $this->trackQueries = true;
     }
 }

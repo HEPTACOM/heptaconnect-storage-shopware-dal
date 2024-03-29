@@ -37,6 +37,13 @@ class PortalNodeStorageTest extends PortalNodeStorageTestContract
         parent::testUsageOfPreviewPortalFails();
     }
 
+    public function testLifecycle(): void
+    {
+        $this->expectNotToPerformDatabaseQueries();
+        $this->stopTrackingQueries();
+        parent::testLifecycle();
+    }
+
     protected function createStorageFacade(): StorageFacadeInterface
     {
         $kernel = $this->kernel;
