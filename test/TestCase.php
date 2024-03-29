@@ -17,11 +17,11 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $setupQueryTracking = true;
 
-    private bool $performsDatabaseQueries = true;
-
     protected ?ShopwareKernel $kernel = null;
 
     protected ?array $trackedQueries = null;
+
+    private bool $performsDatabaseQueries = true;
 
     protected function setUp(): void
     {
@@ -135,6 +135,7 @@ abstract class TestCase extends BaseTestCase
                     }
 
                     $startFrame = $frameIndex;
+
                     break;
                 }
 
@@ -195,7 +196,7 @@ abstract class TestCase extends BaseTestCase
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(static fn(string $i): string => '0x' . Id::toHex($i), $param);
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
                         $param = '0x' . Id::toHex($param);
                     }
