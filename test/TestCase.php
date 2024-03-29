@@ -236,6 +236,11 @@ abstract class TestCase extends BaseTestCase
                     continue;
                 }
 
+                // primary keys are unique, so a search in an index or in the index would both work by "using where"
+                if ($type === 'all' && $extra === 'using where' && $explanation['possible_keys'] === 'PRIMARY') {
+                    continue;
+                }
+
                 static::assertNotContains($type, ['all', 'fulltext'], 'Not indexed query found in ' . $explanationContext . \PHP_EOL . $context);
             }
         }
