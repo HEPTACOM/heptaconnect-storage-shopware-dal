@@ -159,11 +159,18 @@ class RouteOverviewTest extends TestCase
         $criteria4 = clone $criteria0;
         $criteria4->setPage(4);
 
+        $criteria5 = clone $criteria0;
+        $criteria5->setPage(5);
+
+        // page 0 equals to page 1
         static::assertCount(1, \iterable_to_array($action->overview($criteria0)));
+
+        // pagination is based on 1 so page 5 is empty as there are just 4 entries
         static::assertCount(1, \iterable_to_array($action->overview($criteria1)));
         static::assertCount(1, \iterable_to_array($action->overview($criteria2)));
         static::assertCount(1, \iterable_to_array($action->overview($criteria3)));
-        static::assertCount(0, \iterable_to_array($action->overview($criteria4)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria4)));
+        static::assertCount(0, \iterable_to_array($action->overview($criteria5)));
     }
 
     public function testSortByDateAsc(): void
