@@ -212,11 +212,23 @@ abstract class TestCase extends BaseTestCase
                 }
             }
 
+            try {
+                $contextWarnings = \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $jsonException) {
+                $contextWarnings = 'failed to encode warnings (' . $jsonException->getMessage() . ')';
+            }
+
+            try {
+                $contextParams = \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $jsonException) {
+                $contextParams = 'failed to encode parameters (' . $jsonException->getMessage() . ')';
+            }
+
             $context = \implode(\PHP_EOL, [
                 '',
                 $trackedQuery,
-                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+                $contextParams,
+                $contextWarnings,
                 ...$frames,
             ]);
 
