@@ -159,11 +159,11 @@ class RouteOverviewTest extends TestCase
         $criteria4 = clone $criteria0;
         $criteria4->setPage(4);
 
-        static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(1, $action->overview($criteria1));
-        static::assertCount(1, $action->overview($criteria2));
-        static::assertCount(1, $action->overview($criteria3));
-        static::assertCount(0, $action->overview($criteria4));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria0)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria1)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria2)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria3)));
+        static::assertCount(0, \iterable_to_array($action->overview($criteria4)));
     }
 
     public function testSortByDateAsc(): void
