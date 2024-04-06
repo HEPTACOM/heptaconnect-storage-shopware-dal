@@ -38,7 +38,7 @@
     },
     "require-dev": {
         "ext-json": "*",
-        "heptacom/heptaconnect-framework": "dev-master",
+        "heptacom/heptaconnect-framework": "0.10.x-dev",
         "infection/infection": ">=0.21",
         "phpunit/phpunit": ">=9.3 <10",
         "shopware/storefront": ">=6.3"
