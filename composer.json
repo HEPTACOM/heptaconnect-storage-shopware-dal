@@ -29,12 +29,12 @@
         "ext-json": "*",
         "ext-zlib": "*",
         "bentools/iterable-functions": "^1.4",
-        "doctrine/dbal": ">=2.11",
+        "doctrine/dbal": "^3.7",
         "heptacom/heptaconnect-dataset-base": "^0.9.4",
         "heptacom/heptaconnect-portal-base": "^0.9.4",
         "heptacom/heptaconnect-storage-base": "^0.9.4",
-        "ramsey/uuid": "^3.5 || ^4",
-        "shopware/core": ">=6.3"
+        "ramsey/uuid": "^4.5",
+        "shopware/core": "^6.5.8.0"
     },
     "require-dev": {
         "ext-json": "*",
