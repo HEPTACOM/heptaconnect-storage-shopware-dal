@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Find\RouteFindResult;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
@@ -62,7 +64,12 @@ class RouteFindTest extends TestCase
 
         $facade = new StorageFacade($connection);
         $action = $facade->getRouteFindAction();
-        $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
+        $criteria = new RouteFindCriteria(
+            new PortalNodeStorageKey($portalNodeHex),
+            new PortalNodeStorageKey($portalNodeHex),
+            (new class() extends DatasetEntityContract {
+            })::class()
+        );
         static::assertNull($action->find($criteria));
     }
 
@@ -99,7 +106,11 @@ class RouteFindTest extends TestCase
 
         $facade = new StorageFacade($connection);
         $action = $facade->getRouteFindAction();
-        $criteria = new RouteFindCriteria(new PortalNodeStorageKey($portalNodeHex), new PortalNodeStorageKey($portalNodeHex), self::class);
+        $criteria = new RouteFindCriteria(
+            new PortalNodeStorageKey($portalNodeHex),
+            new PortalNodeStorageKey($portalNodeHex),
+            new UnsafeClassString(self::class)
+        );
         static::assertInstanceOf(RouteFindResult::class, $action->find($criteria));
     }
 }

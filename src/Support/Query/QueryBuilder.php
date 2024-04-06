@@ -16,22 +16,13 @@ class QueryBuilder extends BaseQueryBuilder
 
     private bool $isForUpdate = false;
 
-    private QueryIterator $queryIterator;
-
-    private string $identifier;
-
-    private int $paginationPageSize;
-
     public function __construct(
         Connection $connection,
-        QueryIterator $queryIterator,
-        string $identifier,
-        int $paginationPageSize
+        private QueryIterator $queryIterator,
+        private string $identifier,
+        private int $paginationPageSize
     ) {
         parent::__construct($connection);
-        $this->queryIterator = $queryIterator;
-        $this->paginationPageSize = $paginationPageSize;
-        $this->identifier = $identifier;
     }
 
     public function getIsForUpdate(): bool

@@ -9,11 +9,9 @@ use Heptacom\HeptaConnect\Storage\Base\AliasAwarePortalNodeStorageKey;
 
 abstract class AbstractStorageKey implements StorageKeyInterface
 {
-    private string $uuid;
-
-    public function __construct(string $uuid)
-    {
-        $this->uuid = $uuid;
+    public function __construct(
+        private string $uuid
+    ) {
     }
 
     public function getUuid(): string

@@ -15,13 +15,22 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Added
 
+- Add support for new filter for source portal node, target portal node, entity type and capability in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview::overview`
+
 ### Changed
+
+- Change `$payloadExtensions` parameter in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)
+- Change return type of `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive::toggle` to be a `\Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionTypeCollection` instead of an array of string for better [type safe class strings](https://heptaconnect.io/reference/adr/2022-06-12-type-safe-class-strings/)
 
 ### Deprecated
 
 ### Removed
 
+- Remove support for `php: 7.4` as it will not receive any updates anymore, it is unlikely to be used. By raising the minimum PHP version we also make use of features introduced by PHP 8.0, which mainly have no effect on public API
+
 ### Fixed
+
+- Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. Insertion payload was not binary as expected.
 
 ### Security
 

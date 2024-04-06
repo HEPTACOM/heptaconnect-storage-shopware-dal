@@ -25,11 +25,9 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(PortalNodeDeleteCriteria $criteria): void
@@ -40,7 +38,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey::class);
             }
 
             $ids[] = Id::toBinary($portalNodeKey->getUuid());
@@ -70,7 +68,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $deleteBuilder->execute();
     }
 
-    protected function getDeleteQuery(): QueryBuilder
+    private function getDeleteQuery(): QueryBuilder
     {
         $builder = $this->deleteBuilder;
 
@@ -90,7 +88,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         return $builder;
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

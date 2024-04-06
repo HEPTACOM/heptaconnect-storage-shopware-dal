@@ -18,14 +18,10 @@ final class PortalNodeList implements PortalNodeListActionInterface
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $queryIterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $queryIterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->queryIterator = $queryIterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $queryIterator
+    ) {
     }
 
     public function list(): iterable
@@ -36,7 +32,7 @@ final class PortalNodeList implements PortalNodeListActionInterface
         );
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

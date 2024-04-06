@@ -19,14 +19,10 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
     public const UPDATE_PREPARATION_QUERY = '75fada39-34f0-4e03-b3b5-141da358181d';
 
-    private QueryFactory $queryFactory;
-
-    private Connection $connection;
-
-    public function __construct(QueryFactory $queryFactory, Connection $connection)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->connection = $connection;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private Connection $connection
+    ) {
     }
 
     public function set(PortalNodeStorageSetPayload $payload): void
@@ -34,7 +30,7 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $keysToCheck = [];

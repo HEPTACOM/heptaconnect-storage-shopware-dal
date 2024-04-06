@@ -65,12 +65,12 @@ class IdentityErrorTest extends TestCase
         $this->identityMap = $facade->getIdentityMapAction();
         $this->identityErrorCreateAction = $facade->getIdentityErrorCreateAction();
 
-        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class)]);
+        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class())]);
         $createResults = $portalNodeCreate->create($createPayloads);
         $getCriteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection($createResults->column('getPortalNodeKey')));
 
         foreach ($portalNodeGet->get($getCriteria) as $portalNode) {
-            if ($portalNode->getPortalClass() === PortalA::class) {
+            if ($portalNode->getPortalClass()->equals(PortalA::class())) {
                 $this->portalA = $portalNode->getPortalNodeKey();
             }
         }
@@ -94,6 +94,7 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
+     *
      * @dataProvider provideEntityClasses
      */
     public function testCreateNestedErrorMessage(string $entityClass): void
@@ -117,7 +118,7 @@ class IdentityErrorTest extends TestCase
 
         $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
             new IdentityErrorCreatePayload(
-                new MappingComponentStruct($this->portalA, $entityClass, $entity->getPrimaryKey()),
+                new MappingComponentStruct($this->portalA, $entityClass::class(), $entity->getPrimaryKey()),
                 new \LogicException(
                     'This does not work properly',
                     123,
@@ -133,6 +134,7 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
+     *
      * @dataProvider provideEntityClasses
      */
     public function testFailCreateErrorWhenMappingNodeDoesNotExist(string $entityClass): void
@@ -146,7 +148,7 @@ class IdentityErrorTest extends TestCase
         try {
             $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
                 new IdentityErrorCreatePayload(
-                    new MappingComponentStruct($this->portalA, $entityClass, $entity->getPrimaryKey()),
+                    new MappingComponentStruct($this->portalA, $entityClass::class(), $entity->getPrimaryKey()),
                     new \LogicException(
                         'This does not work properly',
                         123,
@@ -155,7 +157,7 @@ class IdentityErrorTest extends TestCase
                 ),
             ]));
             static::fail();
-        } catch (CreateException $throwable) {
+        } catch (CreateException) {
         }
 
         $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');

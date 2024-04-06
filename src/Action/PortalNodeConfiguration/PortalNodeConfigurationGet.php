@@ -18,11 +18,9 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
 {
     public const FETCH_QUERY = 'be4a9934-2ab2-4c62-8a86-4600c96bc7be';
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function get(PortalNodeConfigurationGetCriteria $criteria): iterable
@@ -33,7 +31,7 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey::class);
             }
 
             $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
@@ -61,7 +59,7 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
                 $portalNodeId = Id::toHex((string) $r['portal_node_id']);
 
                 try {
-                    $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR);
+                    $value = \json_decode((string) $r['portal_configuration'], true, \JSON_THROW_ON_ERROR, \JSON_THROW_ON_ERROR);
                 } catch (\JsonException $exception) {
                     throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863472, $exception);
                 }

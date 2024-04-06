@@ -19,14 +19,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
 {
-    private Connection $connection;
-
-    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
-
-    public function __construct(Connection $connection, PortalNodeAliasAccessor $portalNodeAliasAccessor)
-    {
-        $this->connection = $connection;
-        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
+    public function __construct(
+        private Connection $connection,
+        private PortalNodeAliasAccessor $portalNodeAliasAccessor
+    ) {
     }
 
     public function set(PortalNodeAliasSetPayloads $payloads): void
@@ -38,7 +34,7 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
             $alias = $payload->getAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
             if ($alias === '') {

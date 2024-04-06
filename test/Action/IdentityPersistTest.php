@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Portal\Base\Portal\Contract\PortalContract;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\MappingNodeKeyCollection;
@@ -33,6 +32,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 
 /**
@@ -78,8 +78,8 @@ class IdentityPersistTest extends TestCase
     public function testMergingMappingNodes(): void
     {
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
 
         $externalIdSource = Id::randomHex();
@@ -108,8 +108,8 @@ class IdentityPersistTest extends TestCase
     public function testMergingMappingNodesAfterTheSourceChangedPrimaryKeyOrTargetMapsObjectTwice(): void
     {
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
 
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
@@ -149,8 +149,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -174,7 +174,7 @@ class IdentityPersistTest extends TestCase
         static::assertTrue($targetIdentity->getMappingNodeKey()->equals($mappingNodeKey));
         static::assertTrue($targetIdentity->getPortalNodeKey()->equals($portalNodeKeyTarget));
         static::assertSame($externalIdTarget, $targetIdentity->getExternalId());
-        static::assertSame(Simple::class, $targetIdentity->getEntityType());
+        static::assertTrue(Simple::class()->equals($targetIdentity->getEntityType()));
     }
 
     public function testPersistingSameExternalIdToTwoDifferentMappingNodes(): void
@@ -184,8 +184,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -204,7 +204,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -223,8 +223,8 @@ class IdentityPersistTest extends TestCase
         $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -241,7 +241,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -259,8 +259,8 @@ class IdentityPersistTest extends TestCase
         $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -277,7 +277,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -297,8 +297,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTargetB = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -327,12 +327,12 @@ class IdentityPersistTest extends TestCase
         static::assertTrue($targetMappingA->getMappingNodeKey()->equals($mappingNodeKeyA));
         static::assertTrue($targetMappingA->getPortalNodeKey()->equals($portalNodeKeyTarget));
         static::assertSame($externalIdTargetB, $targetMappingA->getExternalId());
-        static::assertSame(Simple::class, $targetMappingA->getEntityType());
+        static::assertTrue(Simple::class()->equals($targetMappingA->getEntityType()));
 
         static::assertTrue($targetMappingB->getMappingNodeKey()->equals($mappingNodeKeyB));
         static::assertTrue($targetMappingB->getPortalNodeKey()->equals($portalNodeKeyTarget));
         static::assertSame($externalIdTargetA, $targetMappingB->getExternalId());
-        static::assertSame(Simple::class, $targetMappingB->getEntityType());
+        static::assertTrue(Simple::class()->equals($targetMappingB->getEntityType()));
     }
 
     public function testDeletingMappingNode(): void
@@ -341,8 +341,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -378,7 +378,7 @@ class IdentityPersistTest extends TestCase
         $externalIdSource = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(PortalContract::class),
+            new PortalNodeCreatePayload(Portal::class()),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
 
@@ -403,7 +403,7 @@ class IdentityPersistTest extends TestCase
 
         try {
             $this->identityPersistAction->persist($payload);
-        } catch (\Throwable $t) {
+        } catch (\Throwable) {
             $failed = true;
         }
 
@@ -426,14 +426,14 @@ class IdentityPersistTest extends TestCase
     private function createMappingNode(string $entityType, PortalNodeKeyInterface $portalNodeKey): MappingNodeStorageKey
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $result = (new MappingNodeKeyCollection($this->storageKeyGenerator->generateKeys(MappingNodeKeyInterface::class, 1)))->first();
         $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType]);
 
         if (!$result instanceof MappingNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($result));
+            throw new UnsupportedStorageKeyException($result::class);
         }
 
         $this->getConnection()->insert('heptaconnect_mapping_node', [

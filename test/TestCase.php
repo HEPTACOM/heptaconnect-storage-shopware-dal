@@ -17,11 +17,11 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $setupQueryTracking = true;
 
-    private bool $performsDatabaseQueries = true;
-
     protected ?ShopwareKernel $kernel = null;
 
     protected ?array $trackedQueries = null;
+
+    private bool $performsDatabaseQueries = true;
 
     protected function setUp(): void
     {
@@ -81,23 +81,12 @@ abstract class TestCase extends BaseTestCase
         $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
 
         $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
-            /**
-             * @var callable
-             */
-            private $track;
-
-            private Connection $connection;
-
-            private string $projectDir;
-
-            private BaseTestCase $test;
-
-            public function __construct($track, Connection $connection, string $projectDir, BaseTestCase $test)
-            {
-                $this->track = $track;
-                $this->connection = $connection;
-                $this->projectDir = $projectDir;
-                $this->test = $test;
+            public function __construct(
+                private \Closure $track,
+                private Connection $connection,
+                private string $projectDir,
+                private BaseTestCase $test
+            ) {
             }
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
@@ -135,6 +124,7 @@ abstract class TestCase extends BaseTestCase
                     }
 
                     $startFrame = $frameIndex;
+
                     break;
                 }
 
@@ -195,7 +185,7 @@ abstract class TestCase extends BaseTestCase
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(static fn(string $i): string => '0x' . Id::toHex($i), $param);
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
                         $param = '0x' . Id::toHex($param);
                     }

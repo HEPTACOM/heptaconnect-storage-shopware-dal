@@ -14,21 +14,21 @@ class JobTypeAccessor
 {
     public const LOOKUP_QUERY = '28ef8980-146b-416c-8338-f1e394ac8c5f';
 
+    /**
+     * @var array<string, string>
+     */
     private array $known = [];
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**
-     * @psalm-param array<array-key, string> $types
-     * @psalm-return array<string, string>
+     * @param array<array-key, string> $types
+     *
+     * @return array<string, string>
      */
     public function getIdsForTypes(array $types): array
     {

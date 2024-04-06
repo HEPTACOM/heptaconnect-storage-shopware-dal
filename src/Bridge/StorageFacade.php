@@ -112,8 +112,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
 class StorageFacade extends AbstractSingletonStorageFacade
 {
-    private Connection $connection;
-
     private ?QueryIterator $queryIterator = null;
 
     private ?EntityTypeAccessor $entityTypeAccessor = null;
@@ -132,9 +130,9 @@ class StorageFacade extends AbstractSingletonStorageFacade
 
     private ?QueryFactory $queryFactory = null;
 
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private Connection $connection
+    ) {
     }
 
     protected function createFileReferenceGetRequestAction(): FileReferenceGetRequestActionInterface

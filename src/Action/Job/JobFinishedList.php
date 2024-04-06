@@ -20,14 +20,10 @@ final class JobFinishedList implements JobListFinishedActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function list(): iterable
@@ -38,7 +34,7 @@ final class JobFinishedList implements JobListFinishedActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -50,7 +46,7 @@ final class JobFinishedList implements JobListFinishedActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 

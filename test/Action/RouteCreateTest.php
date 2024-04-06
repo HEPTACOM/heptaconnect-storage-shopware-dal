@@ -67,8 +67,8 @@ class RouteCreateTest extends TestCase
 
         $action = $facade->getRouteCreateAction();
         \iterable_to_array($action->create(new RouteCreatePayloads([
-            new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class, [RouteCapability::RECEPTION]),
-            new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class),
+            new RouteCreatePayload(new PortalNodeStorageKey($sourceHex), new PortalNodeStorageKey($targetHex), Simple::class(), [RouteCapability::RECEPTION]),
+            new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class()),
         ])));
 
         $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route')->fetchColumn();

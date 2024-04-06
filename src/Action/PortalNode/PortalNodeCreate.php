@@ -22,20 +22,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
-    private Connection $connection;
-
-    private StorageKeyGeneratorContract $storageKeyGenerator;
-
-    private PortalNodeAliasAccessor $portalNodeAliasAccessor;
-
     public function __construct(
-        Connection $connection,
-        StorageKeyGeneratorContract $storageKeyGenerator,
-        PortalNodeAliasAccessor $portalNodeAliasAccessor
+        private Connection $connection,
+        private StorageKeyGeneratorContract $storageKeyGenerator,
+        private PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
-        $this->connection = $connection;
-        $this->storageKeyGenerator = $storageKeyGenerator;
-        $this->portalNodeAliasAccessor = $portalNodeAliasAccessor;
     }
 
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
@@ -51,7 +42,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
             $keys->next();
 
             if (!$key instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException(\get_class($key)));
+                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException($key::class));
             }
 
             $alias = $payload->getAlias();
@@ -69,7 +60,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
             $inserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
                 'alias' => $alias,
-                'class_name' => $payload->getPortalClass(),
+                'class_name' => (string) $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,
             ];

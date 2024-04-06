@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
@@ -21,14 +22,10 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function get(PortalNodeGetCriteria $criteria): iterable
@@ -39,7 +36,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey::class);
             }
 
             $ids[] = $portalNodeKey->getUuid();
@@ -48,7 +45,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return $ids === [] ? [] : $this->iteratePortalNodes($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -60,7 +57,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -82,7 +79,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
      *
      * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult>
      */
-    protected function iteratePortalNodes(array $ids): iterable
+    private function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
@@ -91,8 +88,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
             $this->iterator->iterate($builder),
             static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
                 new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['portal_node_class_name']
+                new UnsafeClassString((string) $row['portal_node_class_name'])
             )
         );
     }

@@ -28,14 +28,10 @@ final class JobSchedule implements JobScheduleActionInterface
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function schedule(JobSchedulePayload $payload): JobScheduleResult
@@ -79,13 +75,13 @@ final class JobSchedule implements JobScheduleActionInterface
         });
     }
 
-    protected function getJobIds(JobSchedulePayload $payload): array
+    private function getJobIds(JobSchedulePayload $payload): array
     {
         $jobIds = [];
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;
@@ -94,7 +90,7 @@ final class JobSchedule implements JobScheduleActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(): QueryBuilder
+    private function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
@@ -115,7 +111,7 @@ final class JobSchedule implements JobScheduleActionInterface
             ], Connection::PARAM_STR_ARRAY);
     }
 
-    protected function getSelectQueryBuilder(): QueryBuilder
+    private function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
@@ -130,7 +126,7 @@ final class JobSchedule implements JobScheduleActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobScheduleResult
+    private function packResult(array $affectedJobIds, array $skippedJobIds): JobScheduleResult
     {
         $scheduledJobs = new JobKeyCollection();
 

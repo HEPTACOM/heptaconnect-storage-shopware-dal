@@ -21,11 +21,9 @@ final class RouteFind implements RouteFindActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
@@ -33,20 +31,20 @@ final class RouteFind implements RouteFindActionInterface
         $sourceKey = $criteria->getSource()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($sourceKey));
+            throw new UnsupportedStorageKeyException($sourceKey::class);
         }
 
         $targetKey = $criteria->getTarget()->withoutAlias();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($targetKey));
+            throw new UnsupportedStorageKeyException($targetKey::class);
         }
 
         $builder = $this->getBuilderCached();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('target_key', Id::toBinary($targetKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('type', (string) $criteria->getEntityType());
 
         $id = $builder->fetchSingleValue();
 
@@ -57,7 +55,7 @@ final class RouteFind implements RouteFindActionInterface
         return new RouteFindResult(new RouteStorageKey(Id::toHex($id)));
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -69,7 +67,7 @@ final class RouteFind implements RouteFindActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 

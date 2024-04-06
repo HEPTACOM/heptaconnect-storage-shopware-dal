@@ -19,24 +19,16 @@ class WebHttpHandlerPathAccessor
      */
     private array $known = [];
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    private WebHttpHandlerPathIdResolver $pathIdResolver;
-
     public function __construct(
-        Connection $connection,
-        QueryFactory $queryFactory,
-        WebHttpHandlerPathIdResolver $pathIdResolver
+        private Connection $connection,
+        private QueryFactory $queryFactory,
+        private WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
-        $this->pathIdResolver = $pathIdResolver;
     }
 
     /**
      * @psalm-param array<array-key, string> $httpHandlerPaths
+     *
      * @psalm-return array<string, string>
      */
     public function getIdsForPaths(array $httpHandlerPaths): array

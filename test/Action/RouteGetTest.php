@@ -103,7 +103,7 @@ class RouteGetTest extends TestCase
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult $item */
         foreach ($action->get($criteria) as $item) {
-            static::assertSame(Simple::class, $item->getEntityType());
+            static::assertTrue(Simple::class()->equals($item->getEntityType()));
         }
     }
 }

@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
+use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
+use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Overview\RouteOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
+use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -21,16 +27,67 @@ final class RouteOverview implements RouteOverviewActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();
+        $capabilityFilter = $criteria->getCapabilityFilter();
+
+        if ($capabilityFilter !== null) {
+            $builder->andWhere($builder->expr()->in('capability.name', ':caps'));
+            $builder->setParameter('caps', $capabilityFilter->asArray(), Connection::PARAM_STR_ARRAY);
+        }
+
+        $portalNodeKeys = $criteria->getSourcePortalNodeKeyFilter();
+
+        if ($portalNodeKeys instanceof PortalNodeKeyCollection) {
+            $portalNodeIds = [];
+
+            foreach ($portalNodeKeys as $portalNodeKey) {
+                if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+                    throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                }
+
+                $portalNodeIds[] = $portalNodeKey->getUuid();
+            }
+
+            $builder->andWhere($builder->expr()->in('source_portal_node.id', ':sourcePortals'));
+            $builder->setParameter('sourcePortals', Id::toBinaryList($portalNodeIds), Connection::PARAM_STR_ARRAY);
+        }
+
+        $portalNodeKeys = $criteria->getTargetPortalNodeKeyFilter();
+
+        if ($portalNodeKeys instanceof PortalNodeKeyCollection) {
+            $portalNodeIds = [];
+
+            foreach ($portalNodeKeys as $portalNodeKey) {
+                if (!$portalNodeKey instanceof PortalNodeStorageKey) {
+                    throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+                }
+
+                $portalNodeIds[] = $portalNodeKey->getUuid();
+            }
+
+            $builder->andWhere($builder->expr()->in('target_portal_node.id', ':targetPortals'));
+            $builder->setParameter('targetPortals', Id::toBinaryList($portalNodeIds), Connection::PARAM_STR_ARRAY);
+        }
+
+        $entityTypes = $criteria->getEntityTypeFilter();
+
+        if ($entityTypes instanceof ClassStringReferenceCollection) {
+            $entities = [];
+
+            foreach ($entityTypes as $entityType) {
+                $entities[] = (string) $entityType;
+            }
+
+            $builder->andWhere($builder->expr()->in('entity_type.type', ':entities'));
+            $builder->setParameter('entities', $entities, Connection::PARAM_STR_ARRAY);
+        }
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === RouteOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -82,22 +139,19 @@ final class RouteOverview implements RouteOverviewActionInterface
             $builder->iterateRows(),
             static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
                 new RouteStorageKey(Id::toHex((string) $row['id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['entity_type_name'],
+                new UnsafeClassString((string) $row['entity_type_name']),
                 new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['source_portal_node_class'],
+                new UnsafeClassString((string) $row['source_portal_node_class']),
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                /* @phpstan-ignore-next-line */
-                (string) $row['target_portal_node_class'],
+                new UnsafeClassString((string) $row['target_portal_node_class']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['ct']),
-                \explode(',', (string) $row['capability_name'])
+                new StringCollection(\explode(',', (string) $row['capability_name']))
             )
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -109,7 +163,7 @@ final class RouteOverview implements RouteOverviewActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

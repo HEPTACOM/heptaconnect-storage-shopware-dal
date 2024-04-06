@@ -31,14 +31,10 @@ final class IdentityReflect implements IdentityReflectActionInterface
 
     public const LOOKUP_IDENTITY_REDIRECTS_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function reflect(IdentityReflectPayload $payload): void
@@ -52,7 +48,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
         $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($targetPortalNodeKey));
+            throw new UnsupportedStorageKeyException($targetPortalNodeKey::class);
         }
 
         $mappedEntities = $payload->getMappedDatasetEntities();
@@ -61,13 +57,13 @@ final class IdentityReflect implements IdentityReflectActionInterface
             $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
+                throw new UnsupportedStorageKeyException($sourcePortalNodeKey::class);
             }
 
             $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($mappingNodeKey));
+                throw new UnsupportedStorageKeyException($mappingNodeKey::class);
             }
         }
 
@@ -234,7 +230,7 @@ final class IdentityReflect implements IdentityReflectActionInterface
                 throw new UnsupportedStorageKeyException(\get_class($sourcePortalNodeKey));
             }
 
-            $entityType = $mappedDatasetEntity->getMapping()->getEntityType();
+            $entityType = (string) $mappedDatasetEntity->getMapping()->getEntityType();
             $sourceExternalId = $mappedDatasetEntity->getMapping()->getExternalId();
 
             $identities[$sourcePortalNodeKey->getUuid()][$entityType][$sourceExternalId][] = $mappedDatasetEntity;

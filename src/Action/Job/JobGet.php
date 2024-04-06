@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\EntityType;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult;
@@ -33,14 +34,10 @@ final class JobGet implements JobGetActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function get(JobGetCriteria $criteria): iterable
@@ -49,7 +46,7 @@ final class JobGet implements JobGetActionInterface
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $ids[] = $jobKey->getUuid();
@@ -58,7 +55,7 @@ final class JobGet implements JobGetActionInterface
         return $ids === [] ? [] : $this->yieldJobs($ids);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -70,7 +67,7 @@ final class JobGet implements JobGetActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
 
@@ -118,7 +115,7 @@ final class JobGet implements JobGetActionInterface
      *
      * @return iterable<JobGetResult>
      */
-    protected function yieldJobs(array $ids): iterable
+    private function yieldJobs(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
@@ -130,7 +127,7 @@ final class JobGet implements JobGetActionInterface
                 new JobStorageKey(Id::toHex((string) $row['job_id'])),
                 new MappingComponentStruct(
                     new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
-                    (string) $row['job_entity_type'],
+                    new EntityType((string) $row['job_entity_type']),
                     (string) $row['job_external_id']
                 ),
                 $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])

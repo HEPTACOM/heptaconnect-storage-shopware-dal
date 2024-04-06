@@ -24,18 +24,14 @@ final class JobStart implements JobStartActionInterface
 
     public const FIND_QUERY = '1bbfc5fe-756c-4171-b645-ad2a6c10f4e7';
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
     private ?QueryBuilder $updateQueryBuilder = null;
 
     private ?QueryBuilder $selectQueryBuilder = null;
 
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function start(JobStartPayload $payload): JobStartResult
@@ -79,13 +75,13 @@ final class JobStart implements JobStartActionInterface
         });
     }
 
-    protected function getJobIds(JobStartPayload $payload): array
+    private function getJobIds(JobStartPayload $payload): array
     {
         $jobIds = [];
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey::class);
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;
@@ -94,7 +90,7 @@ final class JobStart implements JobStartActionInterface
         return \array_keys($jobIds);
     }
 
-    protected function getUpdateQueryBuilder(): QueryBuilder
+    private function getUpdateQueryBuilder(): QueryBuilder
     {
         if ($this->updateQueryBuilder instanceof QueryBuilder) {
             return $this->updateQueryBuilder;
@@ -111,7 +107,7 @@ final class JobStart implements JobStartActionInterface
             ->setParameter('stateId', JobStateEnum::started(), Types::BINARY);
     }
 
-    protected function getSelectQueryBuilder(): QueryBuilder
+    private function getSelectQueryBuilder(): QueryBuilder
     {
         if ($this->selectQueryBuilder instanceof QueryBuilder) {
             return $this->selectQueryBuilder;
@@ -126,7 +122,7 @@ final class JobStart implements JobStartActionInterface
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 
-    protected function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
+    private function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
     {
         $startedJobs = new JobKeyCollection();
 

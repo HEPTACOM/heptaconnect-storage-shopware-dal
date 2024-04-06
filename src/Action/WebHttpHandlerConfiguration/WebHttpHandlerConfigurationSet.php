@@ -19,20 +19,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 
 final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
-    private Connection $connection;
-
-    private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor;
-
-    private WebHttpHandlerAccessor $webHttpHandlerAccessor;
-
     public function __construct(
-        Connection $connection,
-        WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor,
-        WebHttpHandlerAccessor $webHttpHandlerAccessor
+        private Connection $connection,
+        private WebHttpHandlerPathAccessor $webHttpHandlerPathAccessor,
+        private WebHttpHandlerAccessor $webHttpHandlerAccessor
     ) {
-        $this->connection = $connection;
-        $this->webHttpHandlerPathAccessor = $webHttpHandlerPathAccessor;
-        $this->webHttpHandlerAccessor = $webHttpHandlerAccessor;
     }
 
     public function set(WebHttpHandlerConfigurationSetPayloads $payloads): void
@@ -42,14 +33,15 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
         foreach ($payloads as $payload) {
-            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
+            $portalNodeKey = $payload->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException(\get_class($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException($portalNodeKey::class));
             }
 
-            $handlerPaths[] = $payload->getPath();
-            $handlerComponents[$portalNodeKey->getUuid() . $payload->getPath()] = [$portalNodeKey, $payload->getPath()];
+            $path = $payload->getStackIdentifier()->getPath();
+            $handlerPaths[] = $path;
+            $handlerComponents[$portalNodeKey->getUuid() . $path] = [$portalNodeKey, $path];
         }
 
         $handlerPathIds = $this->webHttpHandlerPathAccessor->getIdsForPaths($handlerPaths);
@@ -58,7 +50,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
             if (!isset($handlerPathIds[$handlerPath])) {
                 /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
                 foreach ($payloads as $payload) {
-                    if ($payload->getPath() === $handlerPath) {
+                    if ($payload->getStackIdentifier()->getPath() === $handlerPath) {
                         throw new InvalidCreatePayloadException($payload, 1636827822);
                     }
                 }
@@ -73,7 +65,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
 
                 /** @var \Heptacom\HeptaConnect\Storage\Base\Action\WebHttpHandlerConfiguration\Set\WebHttpHandlerConfigurationSetPayload $payload */
                 foreach ($payloads as $payload) {
-                    if ($payload->getPath() === $path && $payload->getPortalNodeKey()->equals($portalNodeKey)) {
+                    if ($payload->getStackIdentifier()->getPath() === $path && $payload->getStackIdentifier()->getPortalNodeKey()->equals($portalNodeKey)) {
                         throw new InvalidCreatePayloadException($payload, 1636827823);
                     }
                 }
@@ -86,9 +78,9 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
 
         foreach ($payloads as $payload) {
             /** @var PortalNodeStorageKey $portalNodeKey */
-            $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
-            $pathId = $handlerPathIds[$payload->getPath()];
-            $handlerId = $handlerComponentIds[$portalNodeKey->getUuid() . $payload->getPath()];
+            $portalNodeKey = $payload->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
+            $pathId = $handlerPathIds[$payload->getStackIdentifier()->getPath()];
+            $handlerId = $handlerComponentIds[$portalNodeKey->getUuid() . $payload->getStackIdentifier()->getPath()];
 
             if ($payload->getConfigurationValue() === null) {
                 $deletes[] = [

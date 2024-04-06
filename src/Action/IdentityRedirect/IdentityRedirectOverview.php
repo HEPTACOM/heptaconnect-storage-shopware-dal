@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
+use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
@@ -27,11 +29,9 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function overview(IdentityRedirectOverviewCriteria $criteria): iterable
@@ -59,9 +59,9 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->setParameter('identityRedirectIds', $identityRedirectIds, Connection::PARAM_STR_ARRAY);
         }
 
-        if ($entityTypeFilter instanceof StringCollection) {
+        if ($entityTypeFilter instanceof ClassStringReferenceCollection) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', $entityTypeFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), Connection::PARAM_STR_ARRAY);
         }
 
         if ($sourceExternalIdFilter instanceof StringCollection) {
@@ -110,38 +110,15 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === IdentityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
-            $dbalFieldName = null;
-
-            switch ($field) {
-                case IdentityRedirectOverviewCriteria::FIELD_CREATED:
-                    $dbalFieldName = 'identity_redirect.created_at';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dbalFieldName = 'entity_type.type';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_SOURCE_EXTERNAL_ID:
-                    $dbalFieldName = 'identity_redirect.source_external_id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_TARGET_EXTERNAL_ID:
-                    $dbalFieldName = 'identity_redirect.target_external_id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_SOURCE_PORTAL_NODE:
-                    $dbalFieldName = 'source_portal_node.id';
-
-                    break;
-                case IdentityRedirectOverviewCriteria::FIELD_TARGET_PORTAL_NODE:
-                    $dbalFieldName = 'target_portal_node.id';
-
-                    break;
-            }
-
-            if ($dbalFieldName === null) {
-                throw new InvalidOverviewCriteriaException($criteria, 1673729811);
-            }
+            $dbalFieldName = match ($field) {
+                IdentityRedirectOverviewCriteria::FIELD_CREATED => 'identity_redirect.created_at',
+                IdentityRedirectOverviewCriteria::FIELD_ENTITY_TYPE => 'entity_type.type',
+                IdentityRedirectOverviewCriteria::FIELD_SOURCE_EXTERNAL_ID => 'identity_redirect.source_external_id',
+                IdentityRedirectOverviewCriteria::FIELD_TARGET_EXTERNAL_ID => 'identity_redirect.target_external_id',
+                IdentityRedirectOverviewCriteria::FIELD_SOURCE_PORTAL_NODE => 'source_portal_node.id',
+                IdentityRedirectOverviewCriteria::FIELD_TARGET_PORTAL_NODE => 'target_portal_node.id',
+                default => throw new InvalidOverviewCriteriaException($criteria, 1673729811),
+            };
 
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
@@ -168,14 +145,14 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 (string) $row['identity_redirect_source_external_id'],
                 new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
                 (string) $row['identity_redirect_target_external_id'],
-                (string) $row['entity_type_type'],
+                new UnsafeClassString((string) $row['entity_type_type']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
             )
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -187,7 +164,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

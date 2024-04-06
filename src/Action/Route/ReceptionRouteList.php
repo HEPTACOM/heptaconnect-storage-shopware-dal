@@ -23,14 +23,10 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private QueryIterator $iterator;
-
-    public function __construct(QueryFactory $queryFactory, QueryIterator $iterator)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->iterator = $iterator;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private QueryIterator $iterator
+    ) {
     }
 
     public function list(ReceptionRouteListCriteria $criteria): iterable
@@ -38,13 +34,13 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($sourceKey));
+            throw new UnsupportedStorageKeyException($sourceKey::class);
         }
 
         $builder = $this->getBuilderCached();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
-        $builder->setParameter('type', $criteria->getEntityType());
+        $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
         return \iterable_map(
@@ -53,7 +49,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -65,7 +61,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
 

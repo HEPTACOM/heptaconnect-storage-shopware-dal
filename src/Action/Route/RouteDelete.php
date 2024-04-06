@@ -25,11 +25,9 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     private ?QueryBuilder $searchBuilder = null;
 
-    private QueryFactory $queryFactory;
-
-    public function __construct(QueryFactory $queryFactory)
-    {
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private QueryFactory $queryFactory
+    ) {
     }
 
     public function delete(RouteDeleteCriteria $criteria): void
@@ -38,7 +36,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
         foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_class($routeKey));
+                throw new UnsupportedStorageKeyException($routeKey::class);
             }
 
             $ids[] = Id::toBinary($routeKey->getUuid());
@@ -64,7 +62,7 @@ final class RouteDelete implements RouteDeleteActionInterface
         $deleteBuilder->execute();
     }
 
-    protected function getDeleteQuery(): QueryBuilder
+    private function getDeleteQuery(): QueryBuilder
     {
         $builder = $this->deleteBuilder;
 
@@ -82,7 +80,7 @@ final class RouteDelete implements RouteDeleteActionInterface
         return $builder;
     }
 
-    protected function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): QueryBuilder
     {
         $builder = $this->searchBuilder;
 

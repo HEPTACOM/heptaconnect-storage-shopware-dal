@@ -6,6 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
+use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -17,21 +18,21 @@ class EntityTypeAccessor
 
     public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
 
+    /**
+     * @var array<string, string>
+     */
     private array $entityTypeIds = [];
 
-    private Connection $connection;
-
-    private QueryFactory $queryFactory;
-
-    public function __construct(Connection $connection, QueryFactory $queryFactory)
-    {
-        $this->connection = $connection;
-        $this->queryFactory = $queryFactory;
+    public function __construct(
+        private Connection $connection,
+        private QueryFactory $queryFactory
+    ) {
     }
 
     /**
-     * @psalm-param array<array-key, class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>> $entityTypes
-     * @psalm-return array<class-string<\Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract>, string>
+     * @param array<array-key, class-string<DatasetEntityContract>> $entityTypes
+     *
+     * @return array<class-string<DatasetEntityContract>, string>
      */
     public function getIdsForTypes(array $entityTypes): array
     {
@@ -94,6 +95,7 @@ class EntityTypeAccessor
 
         $result = [];
 
+        /** @var array{type_id: string, type_type: string} $row */
         foreach ($queryBuilder->iterateRows() as $row) {
             $result[$row['type_type']] = Id::toHex($row['type_id']);
         }

@@ -21,27 +21,23 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
 
     private ?QueryBuilder $builder = null;
 
-    private QueryFactory $queryFactory;
-
-    private WebHttpHandlerPathIdResolver $pathIdResolver;
-
-    public function __construct(QueryFactory $queryFactory, WebHttpHandlerPathIdResolver $pathIdResolver)
-    {
-        $this->queryFactory = $queryFactory;
-        $this->pathIdResolver = $pathIdResolver;
+    public function __construct(
+        private QueryFactory $queryFactory,
+        private WebHttpHandlerPathIdResolver $pathIdResolver
+    ) {
     }
 
     public function find(WebHttpHandlerConfigurationFindCriteria $criteria): WebHttpHandlerConfigurationFindResult
     {
-        $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
+        $portalNodeKey = $criteria->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_class($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey::class);
         }
 
         $builder = $this->getBuilderCached();
         $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getPath())), Types::BINARY);
+        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
         $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
@@ -68,7 +64,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         return new WebHttpHandlerConfigurationFindResult(\is_array($value) ? $value : null);
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -80,7 +76,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
 
