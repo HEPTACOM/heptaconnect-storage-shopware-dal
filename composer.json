@@ -17,6 +17,7 @@
             "name": "HEPTACOM GmbH"
         }
     ],
+    "homepage": "https://heptaconnect.io",
     "support": {
         "issues": "https://github.com/HEPTACOM/heptaconnect-storage-shopware-dal/issues",
         "source": "https://github.com/HEPTACOM/heptaconnect-storage-shopware-dal",
@@ -72,6 +73,5 @@
         "unused": [
             "bentools/iterable-functions"
         ]
-    },
-    "homepage": "https://heptaconnect.io"
+    }
 }
