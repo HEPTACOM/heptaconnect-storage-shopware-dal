@@ -38,6 +38,13 @@ use Heptacom\HeptaConnect\TestSuite\Storage\Action\IdentityMappingTestContract;
  */
 class IdentityMappingTest extends IdentityMappingTestContract
 {
+    protected function setUp(): void
+    {
+        $this->stopTrackingQueries();
+        parent::setUp();
+        $this->startTrackingQueries();
+    }
+
     public function testNoDatabaseLookupsOnEmptyPayload(): void
     {
         $this->expectNotToPerformDatabaseQueries();

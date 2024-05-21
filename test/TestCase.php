@@ -17,11 +17,13 @@ abstract class TestCase extends BaseTestCase
 
     protected bool $setupQueryTracking = true;
 
-    private bool $performsDatabaseQueries = true;
-
     protected ?ShopwareKernel $kernel = null;
 
     protected ?array $trackedQueries = null;
+
+    private bool $performsDatabaseQueries = true;
+
+    private bool $trackQueries = true;
 
     protected function setUp(): void
     {
@@ -48,6 +50,8 @@ abstract class TestCase extends BaseTestCase
                 $this->downQueryTracking();
             }
         }
+
+        $this->startTrackingQueries();
     }
 
     protected function upKernel(): void
@@ -78,7 +82,11 @@ abstract class TestCase extends BaseTestCase
         $projectDir = \dirname(__DIR__) . '/';
         $this->trackedQueries = [];
         $connection = $this->kernel->getContainer()->get(Connection::class);
-        $pushQuery = fn () => $this->trackedQueries[] = \func_get_args();
+        $pushQuery = function (): void {
+            if ($this->trackQueries) {
+                $this->trackedQueries[] = \func_get_args();
+            }
+        };
 
         $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             /**
@@ -135,6 +143,7 @@ abstract class TestCase extends BaseTestCase
                     }
 
                     $startFrame = $frameIndex;
+
                     break;
                 }
 
@@ -195,7 +204,7 @@ abstract class TestCase extends BaseTestCase
             foreach ($params as &$param) {
                 try {
                     if (\is_array($param)) {
-                        $param = \array_map(static fn(string $i): string => '0x' . Id::toHex($i), $param);
+                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
                     } else {
                         $param = '0x' . Id::toHex($param);
                     }
@@ -203,11 +212,23 @@ abstract class TestCase extends BaseTestCase
                 }
             }
 
+            try {
+                $contextWarnings = \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $jsonException) {
+                $contextWarnings = 'failed to encode warnings (' . $jsonException->getMessage() . ')';
+            }
+
+            try {
+                $contextParams = \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $jsonException) {
+                $contextParams = 'failed to encode parameters (' . $jsonException->getMessage() . ')';
+            }
+
             $context = \implode(\PHP_EOL, [
                 '',
                 $trackedQuery,
-                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+                $contextParams,
+                $contextWarnings,
                 ...$frames,
             ]);
 
@@ -229,9 +250,14 @@ abstract class TestCase extends BaseTestCase
             foreach ($explanations as $explanation) {
                 $type = \strtolower($explanation['type'] ?? '');
                 $extra = \strtolower($explanation['Extra'] ?? '');
-                $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT) . \PHP_EOL . \json_encode($explanation, \JSON_PRETTY_PRINT);
+                $explanationContext = \json_encode($explanation, \JSON_PRETTY_PRINT);
 
                 if ($extra === 'no matching row in const table') {
+                    continue;
+                }
+
+                // primary keys are unique, so a search in an index or in the index would both work by "using where"
+                if ($type === 'all' && \strpos($extra, 'using where') !== false && $explanation['possible_keys'] === 'PRIMARY') {
                     continue;
                 }
 
@@ -253,5 +279,15 @@ abstract class TestCase extends BaseTestCase
     protected function expectNotToPerformDatabaseQueries(): void
     {
         $this->performsDatabaseQueries = false;
+    }
+
+    protected function stopTrackingQueries(): void
+    {
+        $this->trackQueries = false;
+    }
+
+    protected function startTrackingQueries(): void
+    {
+        $this->trackQueries = true;
     }
 }
