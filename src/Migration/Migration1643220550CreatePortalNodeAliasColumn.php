@@ -68,7 +68,7 @@ SQL;
             ])
             ->from('heptaconnect_bridge_key_alias')
             ->where($queryBuilderSelect->expr()->like('original', ':prefix'))
-            ->setParameter(':prefix', 'PortalNode:%')
+            ->setParameter('prefix', 'PortalNode:%')
             ->execute()
             ->fetchAllAssociative();
 
