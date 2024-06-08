@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
-use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 class QueryIterator
@@ -28,7 +27,7 @@ class QueryIterator
     {
         return $this->iterateSafelyPaginated(
             $query,
-            fn (QueryBuilder $qb): array => $this->getExecuteStatement($qb)->fetchFirstColumn(),
+            fn (QueryBuilder $qb): array => $qb->executeQuery()->fetchFirstColumn(),
             $pageSize
         );
     }
@@ -38,7 +37,7 @@ class QueryIterator
      */
     public function fetchRows(QueryBuilder $query): array
     {
-        return $this->getExecuteStatement($query)->fetchAllAssociative();
+        return $query->executeQuery()->fetchAllAssociative();
     }
 
     /**
@@ -46,12 +45,12 @@ class QueryIterator
      */
     public function fetchRow(QueryBuilder $query): ?array
     {
-        return $this->getExecuteStatement($query)->fetchAssociative() ?: null;
+        return $query->executeQuery()->fetchAssociative() ?: null;
     }
 
     public function fetchColumn(QueryBuilder $query): ?string
     {
-        return $this->getExecuteStatement($query)->fetchOne() ?: null;
+        return $query->executeQuery()->fetchOne() ?: null;
     }
 
     public function fetchSingleValue(QueryBuilder $query): ?string
@@ -145,17 +144,6 @@ class QueryIterator
 
         $query->setFirstResult($initOffset);
         $query->setMaxResults($initLimit);
-    }
-
-    private function getExecuteStatement(QueryBuilder $query): Result
-    {
-        $statement = $query->execute();
-
-        if (!$statement instanceof Result) {
-            throw new \LogicException('query->execute() should have returned a Result', 1637467900);
-        }
-
-        return $statement;
     }
 
     /**
