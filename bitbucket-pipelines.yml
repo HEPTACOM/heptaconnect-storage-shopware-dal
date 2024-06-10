@@ -74,7 +74,7 @@ definitions:
                 script:
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
-                    - COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+                    - XDEBUG_MODE=coverage COMPOSER_EXTRA_ARGS=-vvv make -e coverage
         -   step: &test-coverage-low-install-84
                 <<: *php84-image
                 name: Install and Unit test (8.4 + Low dependencies)
@@ -82,7 +82,7 @@ definitions:
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - composer update --prefer-lowest --prefer-stable
-                    - COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+                    - XDEBUG_MODE=coverage COMPOSER_EXTRA_ARGS=-vvv make -e coverage
         -   step: &test-coverage
                 <<: *default-step
                 name: Test coverage
