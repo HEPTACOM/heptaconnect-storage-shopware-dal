@@ -20,33 +20,50 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetCriter
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Dataset\EntityA;
 use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Dataset\EntityB;
 use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Dataset\EntityC;
 use Heptacom\HeptaConnect\TestSuite\Storage\Fixture\Portal\PortalA\PortalA;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(DateTime::class)]
+#[CoversClass(EntityTypeAccessor::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(IdentityErrorCreate::class)]
+#[CoversClass(IdentityMap::class)]
+#[CoversClass(IdentityOverview::class)]
+#[CoversClass(IdentityPersist::class)]
+#[CoversClass(PortalNodeAliasAccessor::class)]
+#[CoversClass(PortalNodeCreate::class)]
+#[CoversClass(PortalNodeDelete::class)]
+#[CoversClass(PortalNodeGet::class)]
+#[CoversClass(PortalNodeStorageKey::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(StorageFacade::class)]
+#[CoversClass(StorageKeyGenerator::class)]
 class IdentityErrorTest extends TestCase
 {
     private ?PortalNodeKeyInterface $portalA = null;
@@ -94,9 +111,8 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
-     *
-     * @dataProvider provideEntityClasses
      */
+    #[DataProvider('provideEntityClasses')]
     public function testCreateNestedErrorMessage(string $entityClass): void
     {
         /** @var DatasetEntityContract $entity */
@@ -134,9 +150,8 @@ class IdentityErrorTest extends TestCase
 
     /**
      * @param class-string<DatasetEntityContract> $entityClass
-     *
-     * @dataProvider provideEntityClasses
      */
+    #[DataProvider('provideEntityClasses')]
     public function testFailCreateErrorWhenMappingNodeDoesNotExist(string $entityClass): void
     {
         /** @var DatasetEntityContract $entity */
@@ -165,7 +180,7 @@ class IdentityErrorTest extends TestCase
         static::assertSame($newCount, $oldCount);
     }
 
-    public function provideEntityClasses(): iterable
+    public static function provideEntityClasses(): iterable
     {
         yield [EntityA::class];
         yield [EntityB::class];

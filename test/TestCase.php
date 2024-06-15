@@ -25,8 +25,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         if ($this->setupKernel) {
             $this->upKernel();
 
@@ -39,8 +37,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         if ($this->setupKernel) {
             $this->downKernel();
 
