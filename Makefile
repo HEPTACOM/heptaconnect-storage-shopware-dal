@@ -7,7 +7,10 @@ CURL := "$(shell which curl)"
 JQ := "$(shell which jq)"
 XSLTPROC := "$(shell which xsltproc)"
 JSON_FILES := $(shell find . -name '*.json' -not -path './vendor/*' -not -path './.build/*' -not -path './dev-ops/bin/*/vendor/*')
-PHPSTAN_FILE := dev-ops/bin/phpstan/vendor/bin/phpstan
+
+PHPSTAN_COMPOSER_DIR := dev-ops/bin/phpstan
+PHPSTAN_FILE := $(PHPSTAN_COMPOSER_DIR)/vendor/bin/phpstan
+
 COMPOSER_NORMALIZE_PHAR := https://github.com/ergebnis/composer-normalize/releases/download/2.22.0/composer-normalize.phar
 COMPOSER_NORMALIZE_FILE := dev-ops/bin/composer-normalize
 COMPOSER_REQUIRE_CHECKER_PHAR := https://github.com/maglnet/ComposerRequireChecker/releases/download/3.8.0/composer-require-checker.phar
@@ -40,7 +43,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -d dev-ops/bin/easy-coding-standard/vendor ]] || rm -rf dev-ops/bin/easy-coding-standard/vendor
 	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
 	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
-	[[ ! -d dev-ops/bin/phpstan/vendor ]] || rm -rf dev-ops/bin/phpstan/vendor
+	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
 	[[ ! -d dev-ops/bin/php-churn/vendor ]] || rm -rf dev-ops/bin/php-churn/vendor
 
 .PHONY: it
@@ -115,7 +118,7 @@ infection: vendor .build ## Run infection tests
 	$(PHP) vendor/bin/infection --min-covered-msi=80 --min-msi=80 --configuration=dev-ops/infection.json --coverage=../.build/.phpunit-coverage --show-mutations --no-interaction
 
 $(PHPSTAN_FILE): ## Install phpstan executable
-	$(COMPOSER) install -d dev-ops/bin/phpstan
+	$(COMPOSER) install -d "$(PHPSTAN_COMPOSER_DIR)"
 
 $(COMPOSER_NORMALIZE_FILE): ## Install composer-normalize executable
 	$(CURL) -L $(COMPOSER_NORMALIZE_PHAR) -o $(COMPOSER_NORMALIZE_FILE)
