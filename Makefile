@@ -23,7 +23,9 @@ PHPCPD_FILE := dev-ops/bin/phpcpd
 COMPOSER_UNUSED_COMPOSER_DIR := dev-ops/bin/composer-unused
 COMPOSER_UNUSED_FILE := $(COMPOSER_UNUSED_COMPOSER_DIR)/vendor/bin/composer-unused
 
-EASY_CODING_STANDARD_FILE := dev-ops/bin/easy-coding-standard/vendor/bin/ecs
+EASY_CODING_STANDARD_COMPOSER_DIR := dev-ops/bin/easy-coding-standard
+EASY_CODING_STANDARD_FILE := $(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor/bin/ecs
+
 PHPCHURN_FILE := dev-ops/bin/php-churn/vendor/bin/churn
 
 .DEFAULT_GOAL := help
@@ -43,7 +45,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f dev-ops/bin/composer-normalize ]] || rm -f dev-ops/bin/composer-normalize
 	[[ ! -f dev-ops/bin/composer-require-checker ]] || rm -f dev-ops/bin/composer-require-checker
 	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
-	[[ ! -d dev-ops/bin/easy-coding-standard/vendor ]] || rm -rf dev-ops/bin/easy-coding-standard/vendor
+	[[ ! -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor" ]] || rm -rf "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor"
 	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
 	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
 	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
@@ -111,7 +113,7 @@ cs-fix-composer-normalize: $(COMPOSER_NORMALIZE_FILE) ## Run composer-normalize 
 
 .PHONY: cs-fix-php
 cs-fix-php: .build $(EASY_CODING_STANDARD_FILE) ## Run easy-coding-standard for automatic code style fixes
-	$(PHP) $(EASY_CODING_STANDARD_FILE) check --config=dev-ops/ecs.php --fix
+	$(PHP) "$(EASY_CODING_STANDARD_FILE)" check --config=dev-ops/ecs.php --fix
 
 .PHONY: infection
 infection: vendor .build ## Run infection tests
@@ -139,7 +141,7 @@ $(COMPOSER_UNUSED_FILE): ## Install composer-unused executable
 	$(COMPOSER) install -d "$(COMPOSER_UNUSED_COMPOSER_DIR)"
 
 $(EASY_CODING_STANDARD_FILE): ## Install easy-coding-standard executable
-	$(COMPOSER) install -d dev-ops/bin/easy-coding-standard
+	$(COMPOSER) install -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)"
 
 $(PHPCHURN_FILE): ## Install php-churn executable
 	$(COMPOSER) install -d dev-ops/bin/php-churn
