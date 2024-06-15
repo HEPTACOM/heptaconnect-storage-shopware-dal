@@ -27,9 +27,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobCreate implements JobCreateActionInterface
 {
-    public const PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
+    public const string PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
 
-    private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
+    private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     public function __construct(
         private Connection $connection,

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1635713041CreateRouteToRouteCapabilityTable extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_route_has_capability` (
     `route_id` BINARY(16) NOT NULL,
     `route_capability_id` BINARY(16) NOT NULL,
@@ -30,7 +30,7 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 SQL;
 
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 

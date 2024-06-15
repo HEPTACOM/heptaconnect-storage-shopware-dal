@@ -27,7 +27,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
-    public const LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
+    public const string LOOKUP_QUERY = '95f2537a-eda2-4123-824d-72f6c871e8a8';
 
     public function __construct(
         private Connection $connection,

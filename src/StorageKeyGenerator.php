@@ -27,7 +27,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
-    private const IMPLEMENTATION_MAP = [
+    private const array IMPLEMENTATION_MAP = [
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
@@ -37,7 +37,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class,
     ];
 
-    private const ABBREVIATIONS = [
+    private const array ABBREVIATIONS = [
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
         'Route' => RouteStorageKey::class,

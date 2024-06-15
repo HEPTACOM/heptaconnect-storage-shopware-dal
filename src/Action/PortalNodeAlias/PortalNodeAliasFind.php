@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
 {
-    public const FIND_QUERY = '8ffc1022-c03b-4f3f-a2f6-5807710dbb6f';
+    public const string FIND_QUERY = '8ffc1022-c03b-4f3f-a2f6-5807710dbb6f';
 
     public function __construct(
         private QueryFactory $queryFactory

@@ -25,11 +25,11 @@ use Ramsey\Uuid\Uuid;
 
 final class IdentityReflect implements IdentityReflectActionInterface
 {
-    public const LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
+    public const string LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
 
-    public const LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
+    public const string LOOKUP_EXISTING_MAPPING_NODE_QUERY = 'f6b0f467-0a73-4e1f-ad75-d669899df133';
 
-    public const LOOKUP_IDENTITY_REDIRECTS_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
+    public const string LOOKUP_IDENTITY_REDIRECTS_QUERY = '315e9e8f-b1b7-4e39-a42b-4dbdf3d8b14c';
 
     public function __construct(
         private Connection $connection,

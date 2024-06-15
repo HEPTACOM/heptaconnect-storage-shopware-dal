@@ -20,9 +20,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobFail implements JobFailActionInterface
 {
-    public const UPDATE_QUERY = '2d59f1a4-4baf-4cda-b762-16fb5beda452';
+    public const string UPDATE_QUERY = '2d59f1a4-4baf-4cda-b762-16fb5beda452';
 
-    public const FIND_QUERY = '9b00334a-cc0b-4017-a9dc-e2520a872064';
+    public const string FIND_QUERY = '9b00334a-cc0b-4017-a9dc-e2520a872064';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 

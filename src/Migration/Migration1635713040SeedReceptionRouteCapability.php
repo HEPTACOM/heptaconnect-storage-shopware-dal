@@ -11,7 +11,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 class Migration1635713040SeedReceptionRouteCapability extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 INSERT INTO `heptaconnect_route_capability` (
     `id`,
     `name`,

@@ -33,13 +33,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(StorageFacade::class)]
 class JobGetTest extends TestCase
 {
-    private const ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
+    private const string ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
 
-    private const JOB_TYPE = '448dc638a1304864b0c66935dafe1b6e';
+    private const string JOB_TYPE = '448dc638a1304864b0c66935dafe1b6e';
 
-    private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
+    private const string JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
 
     #[\Override]
     protected function setUp(): void

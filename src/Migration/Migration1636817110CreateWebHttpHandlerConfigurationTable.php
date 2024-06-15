@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1636817110CreateWebHttpHandlerConfigurationTable extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_web_http_handler_configuration` (
     `id` BINARY(16) NOT NULL,
     `handler_id` BINARY(16) NOT NULL,
@@ -31,7 +31,7 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 SQL;
 
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 

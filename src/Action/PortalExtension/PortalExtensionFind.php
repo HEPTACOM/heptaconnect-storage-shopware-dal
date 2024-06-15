@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class PortalExtensionFind implements PortalExtensionFindActionInterface
 {
-    public const LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
+    public const string LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
 
     private ?QueryBuilder $queryBuilder = null;
 

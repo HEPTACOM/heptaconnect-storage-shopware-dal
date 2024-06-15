@@ -30,23 +30,23 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(StorageFacade::class)]
 class RouteOverviewTest extends TestCase
 {
-    private const ENTITY_TYPE_A = 'c6aad9f6355b4bf78f548a73caa502aa';
+    private const string ENTITY_TYPE_A = 'c6aad9f6355b4bf78f548a73caa502aa';
 
-    private const ENTITY_TYPE_B = '63b419caa57d4a08bd724604622473b7';
+    private const string ENTITY_TYPE_B = '63b419caa57d4a08bd724604622473b7';
 
-    private const PORTAL_A = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL_A = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const PORTAL_B = 'b43cbc506680462c8a50513fa02032a6';
+    private const string PORTAL_B = 'b43cbc506680462c8a50513fa02032a6';
 
-    private const ROUTE_DELETED = '6b4bf85d1ea541ea85b5fed5ac34d2f4';
+    private const string ROUTE_DELETED = '6b4bf85d1ea541ea85b5fed5ac34d2f4';
 
-    private const ROUTE_TYPE_A = '9f94ce0b915d4fe08223fb0be889daa3';
+    private const string ROUTE_TYPE_A = '9f94ce0b915d4fe08223fb0be889daa3';
 
-    private const ROUTE_TYPE_B = 'c87fc36b80274ac09bf643847392d7e5';
+    private const string ROUTE_TYPE_B = 'c87fc36b80274ac09bf643847392d7e5';
 
-    private const ROUTE_FIRST = '1582c830042d49a3b3e48a489bc28cab';
+    private const string ROUTE_FIRST = '1582c830042d49a3b3e48a489bc28cab';
 
-    private const ROUTE_LAST = '632348c2f449436e99d3c8e491ef942d';
+    private const string ROUTE_LAST = '632348c2f449436e99d3c8e491ef942d';
 
     protected bool $setupQueryTracking = false;
 

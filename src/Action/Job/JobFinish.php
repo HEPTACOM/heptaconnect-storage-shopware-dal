@@ -20,9 +20,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobFinish implements JobFinishActionInterface
 {
-    public const UPDATE_QUERY = '393a0ae1-5f42-4a49-96a3-9a23c26e6bd2';
+    public const string UPDATE_QUERY = '393a0ae1-5f42-4a49-96a3-9a23c26e6bd2';
 
-    public const FIND_QUERY = '84e5495d-4733-4e8a-b775-aafba23daa8c';
+    public const string FIND_QUERY = '84e5495d-4733-4e8a-b775-aafba23daa8c';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 

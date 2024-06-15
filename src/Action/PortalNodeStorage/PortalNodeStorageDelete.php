@@ -17,9 +17,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 {
-    public const DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
+    public const string DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
 
-    public const DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
+    public const string DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
 
     public function __construct(
         private QueryFactory $queryFactory,

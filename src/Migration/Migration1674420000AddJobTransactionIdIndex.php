@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1674420000AddJobTransactionIdIndex extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 ALTER TABLE `heptaconnect_job` ADD INDEX `i.heptaconnect_job.transaction_id` (`transaction_id`);
 SQL;
 

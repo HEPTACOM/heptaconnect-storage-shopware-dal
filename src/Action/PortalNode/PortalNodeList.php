@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 final class PortalNodeList implements PortalNodeListActionInterface
 {
-    public const LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
+    public const string LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 
     private ?QueryBuilder $searchBuilder = null;
 

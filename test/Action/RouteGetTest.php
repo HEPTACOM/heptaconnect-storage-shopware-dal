@@ -31,15 +31,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(StorageFacade::class)]
 class RouteGetTest extends TestCase
 {
-    private const ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
+    private const string ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
 
-    private const PORTAL_A = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL_A = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const PORTAL_B = 'b43cbc506680462c8a50513fa02032a6';
+    private const string PORTAL_B = 'b43cbc506680462c8a50513fa02032a6';
 
-    private const ROUTE_DELETED = '6b4bf85d1ea541ea85b5fed5ac34d2f4';
+    private const string ROUTE_DELETED = '6b4bf85d1ea541ea85b5fed5ac34d2f4';
 
-    private const ROUTE_ACTIVE = '9f94ce0b915d4fe08223fb0be889daa3';
+    private const string ROUTE_ACTIVE = '9f94ce0b915d4fe08223fb0be889daa3';
 
     #[\Override]
     protected function setUp(): void
@@ -107,7 +107,7 @@ class RouteGetTest extends TestCase
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult $item */
+        /** @var RouteGetResult $item */
         foreach ($action->get($criteria) as $item) {
             static::assertTrue(Simple::class()->equals($item->getEntityType()));
         }

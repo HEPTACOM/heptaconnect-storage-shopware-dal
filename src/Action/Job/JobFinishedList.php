@@ -16,7 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 final class JobFinishedList implements JobListFinishedActionInterface
 {
-    public const LIST_QUERY = '008ced6c-7517-46f8-a8a0-8f3c31b50467';
+    public const string LIST_QUERY = '008ced6c-7517-46f8-a8a0-8f3c31b50467';
 
     private ?QueryBuilder $builder = null;
 

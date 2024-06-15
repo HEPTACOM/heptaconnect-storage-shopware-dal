@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1677950300AddExternalIdIndexToJobTable extends MigrationStep
 {
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `i.__TABLE__.__COL__` ON `__TABLE__` (`__COL__`);
 SQL;
 

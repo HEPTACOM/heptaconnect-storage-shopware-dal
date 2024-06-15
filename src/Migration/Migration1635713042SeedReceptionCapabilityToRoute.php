@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1635713042SeedReceptionCapabilityToRoute extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 INSERT INTO `heptaconnect_route_has_capability` (
     `route_id`,
     `route_capability_id`,

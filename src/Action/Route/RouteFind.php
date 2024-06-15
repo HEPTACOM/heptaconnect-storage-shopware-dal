@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class RouteFind implements RouteFindActionInterface
 {
-    public const LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
+    public const string LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
 
     private ?QueryBuilder $builder = null;
 

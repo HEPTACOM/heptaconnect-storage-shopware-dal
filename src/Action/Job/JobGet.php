@@ -20,17 +20,17 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 
 final class JobGet implements JobGetActionInterface
 {
-    public const FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
+    public const string FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
 
     /**
      * @deprecated TODO remove serialized format
      */
-    private const FORMAT_SERIALIZED = 'serialized';
+    private const string FORMAT_SERIALIZED = 'serialized';
 
     /**
      * @deprecated TODO remove serialized format
      */
-    private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
+    private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     private ?QueryBuilder $builder = null;
 

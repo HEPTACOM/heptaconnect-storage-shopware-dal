@@ -20,9 +20,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobSchedule implements JobScheduleActionInterface
 {
-    public const UPDATE_QUERY = '72372e2f-6e02-470b-89d5-b65ee88024b5';
+    public const string UPDATE_QUERY = '72372e2f-6e02-470b-89d5-b65ee88024b5';
 
-    public const FIND_QUERY = '87c10b4f-3dcd-460d-ba04-b38acbad6cbe';
+    public const string FIND_QUERY = '87c10b4f-3dcd-460d-ba04-b38acbad6cbe';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 

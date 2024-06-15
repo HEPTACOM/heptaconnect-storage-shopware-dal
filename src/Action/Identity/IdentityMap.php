@@ -28,9 +28,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class IdentityMap implements IdentityMapActionInterface
 {
-    public const MAPPING_NODE_QUERY = '0d104088-b0d4-4158-8f95-0bc8a6880cc8';
+    public const string MAPPING_NODE_QUERY = '0d104088-b0d4-4158-8f95-0bc8a6880cc8';
 
-    public const MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
+    public const string MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
 
     public function __construct(
         private StorageKeyGeneratorContract $storageKeyGenerator,

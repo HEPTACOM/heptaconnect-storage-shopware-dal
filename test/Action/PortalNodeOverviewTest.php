@@ -31,11 +31,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(StorageFacade::class)]
 class PortalNodeOverviewTest extends TestCase
 {
-    private const PORTAL_FIRST_CREATED = 'b43cbc506680462c8a50513fa02032a6';
+    private const string PORTAL_FIRST_CREATED = 'b43cbc506680462c8a50513fa02032a6';
 
-    private const PORTAL_LAST_CREATED = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL_LAST_CREATED = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
+    private const string PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
 
     protected bool $setupQueryTracking = false;
 

@@ -25,7 +25,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
+    public const string OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
 
     private ?QueryBuilder $builder = null;
 

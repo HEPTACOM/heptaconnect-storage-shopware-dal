@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1635512814OnDeleteCascadeFromMappingNodeToMapping extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 alter table heptaconnect_mapping drop foreign key `fk.heptaconnect_mapping.mapping_node_id`;
 
 alter table heptaconnect_mapping

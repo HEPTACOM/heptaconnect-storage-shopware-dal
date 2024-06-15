@@ -18,7 +18,7 @@ use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
 final class PortalNodeGet implements PortalNodeGetActionInterface
 {
-    public const FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
+    public const string FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
 
     private ?QueryBuilder $builder = null;
 

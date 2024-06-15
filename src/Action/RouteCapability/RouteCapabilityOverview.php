@@ -14,7 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
+    public const string OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 
     private ?QueryBuilder $builder = null;
 

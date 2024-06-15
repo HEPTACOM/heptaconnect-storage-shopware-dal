@@ -19,7 +19,7 @@ use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
 final class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
+    public const string OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
 
     private ?QueryBuilder $builder = null;
 

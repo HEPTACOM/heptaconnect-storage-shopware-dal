@@ -18,7 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInterface
 {
-    public const FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
+    public const string FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
 
     private ?QueryBuilder $queryBuilder = null;
 

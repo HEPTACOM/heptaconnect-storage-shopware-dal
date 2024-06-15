@@ -20,9 +20,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobStart implements JobStartActionInterface
 {
-    public const UPDATE_QUERY = '0803daca-3ca7-44c4-a492-42cc51e46854';
+    public const string UPDATE_QUERY = '0803daca-3ca7-44c4-a492-42cc51e46854';
 
-    public const FIND_QUERY = '1bbfc5fe-756c-4171-b645-ad2a6c10f4e7';
+    public const string FIND_QUERY = '1bbfc5fe-756c-4171-b645-ad2a6c10f4e7';
 
     private ?QueryBuilder $updateQueryBuilder = null;
 

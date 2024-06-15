@@ -16,7 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class PortalNodeStorageList implements PortalNodeStorageListActionInterface
 {
-    public const FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
+    public const string FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
 
     public function __construct(
         private QueryFactory $queryFactory

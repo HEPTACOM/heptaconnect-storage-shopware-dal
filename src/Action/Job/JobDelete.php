@@ -14,11 +14,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class JobDelete implements JobDeleteActionInterface
 {
-    public const DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
+    public const string DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
 
-    public const LOOKUP_QUERY = 'c1c41a80-6aec-4499-a07a-26ee57b07594';
+    public const string LOOKUP_QUERY = 'c1c41a80-6aec-4499-a07a-26ee57b07594';
 
-    private const DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
+    private const string DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
 DELETE
     job_payload
 FROM

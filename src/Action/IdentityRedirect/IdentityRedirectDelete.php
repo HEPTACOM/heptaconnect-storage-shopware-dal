@@ -16,9 +16,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterface
 {
-    public const LOOKUP_QUERY = '26f18fa9-9246-45cf-b7f7-2fc80f61151d';
+    public const string LOOKUP_QUERY = '26f18fa9-9246-45cf-b7f7-2fc80f61151d';
 
-    public const DELETE_QUERY = 'ca54ecac-3b6b-4f54-882e-fea1f19336ba';
+    public const string DELETE_QUERY = 'ca54ecac-3b6b-4f54-882e-fea1f19336ba';
 
     private ?QueryBuilder $deleteBuilder = null;
 
