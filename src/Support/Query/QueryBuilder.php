@@ -18,9 +18,9 @@ class QueryBuilder extends BaseQueryBuilder
 
     public function __construct(
         Connection $connection,
-        private QueryIterator $queryIterator,
-        private string $identifier,
-        private int $paginationPageSize
+        private readonly QueryIterator $queryIterator,
+        private readonly string $identifier,
+        private readonly int $paginationPageSize
     ) {
         parent::__construct($connection);
     }

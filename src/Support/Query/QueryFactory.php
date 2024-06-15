@@ -12,10 +12,10 @@ class QueryFactory
      * @param array<string, int> $fallbackPageSizes
      */
     public function __construct(
-        private Connection $connection,
-        private QueryIterator $queryIterator,
+        private readonly Connection $connection,
+        private readonly QueryIterator $queryIterator,
         private array $fallbackPageSizes,
-        private int $fallbackPageSize
+        private readonly int $fallbackPageSize
     ) {
     }
 

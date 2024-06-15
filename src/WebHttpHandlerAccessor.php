@@ -15,9 +15,9 @@ class WebHttpHandlerAccessor
     public const FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
 
     public function __construct(
-        private Connection $connection,
-        private QueryFactory $queryFactory,
-        private WebHttpHandlerPathIdResolver $pathIdResolver
+        private readonly Connection $connection,
+        private readonly QueryFactory $queryFactory,
+        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 

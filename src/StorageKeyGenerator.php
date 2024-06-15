@@ -49,7 +49,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
     ];
 
     public function __construct(
-        private PortalNodeAliasAccessor $portalNodeAliasAccessor
+        private readonly PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
     }
 

@@ -20,9 +20,9 @@ class WebHttpHandlerPathAccessor
     private array $known = [];
 
     public function __construct(
-        private Connection $connection,
-        private QueryFactory $queryFactory,
-        private WebHttpHandlerPathIdResolver $pathIdResolver
+        private readonly Connection $connection,
+        private readonly QueryFactory $queryFactory,
+        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 

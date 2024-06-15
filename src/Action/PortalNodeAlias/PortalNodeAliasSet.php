@@ -20,8 +20,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
 {
     public function __construct(
-        private Connection $connection,
-        private PortalNodeAliasAccessor $portalNodeAliasAccessor
+        private readonly Connection $connection,
+        private readonly PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
     }
 

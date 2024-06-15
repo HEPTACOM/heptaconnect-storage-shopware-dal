@@ -131,7 +131,7 @@ class StorageFacade extends AbstractSingletonStorageFacade
     private ?QueryFactory $queryFactory = null;
 
     public function __construct(
-        private Connection $connection
+        private readonly Connection $connection
     ) {
     }
 

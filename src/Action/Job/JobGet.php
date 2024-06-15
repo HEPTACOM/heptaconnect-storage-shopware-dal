@@ -35,8 +35,8 @@ final class JobGet implements JobGetActionInterface
     private ?QueryBuilder $builder = null;
 
     public function __construct(
-        private QueryFactory $queryFactory,
-        private QueryIterator $iterator
+        private readonly QueryFactory $queryFactory,
+        private readonly QueryIterator $iterator
     ) {
     }
 

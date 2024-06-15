@@ -30,7 +30,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
     private ?QueryBuilder $builder = null;
 
     public function __construct(
-        private QueryFactory $queryFactory
+        private readonly QueryFactory $queryFactory
     ) {
     }
 

@@ -19,8 +19,8 @@ final class PortalNodeList implements PortalNodeListActionInterface
     private ?QueryBuilder $searchBuilder = null;
 
     public function __construct(
-        private QueryFactory $queryFactory,
-        private QueryIterator $queryIterator
+        private readonly QueryFactory $queryFactory,
+        private readonly QueryIterator $queryIterator
     ) {
     }
 

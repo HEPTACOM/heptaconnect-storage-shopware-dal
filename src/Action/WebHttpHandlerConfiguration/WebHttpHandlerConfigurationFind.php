@@ -22,8 +22,8 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
     private ?QueryBuilder $builder = null;
 
     public function __construct(
-        private QueryFactory $queryFactory,
-        private WebHttpHandlerPathIdResolver $pathIdResolver
+        private readonly QueryFactory $queryFactory,
+        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 
