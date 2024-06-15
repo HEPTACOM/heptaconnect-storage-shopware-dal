@@ -34,6 +34,9 @@ EASY_CODING_STANDARD_FILE := $(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor/bin/ecs
 PHPCHURN_COMPOSER_DIR := dev-ops/bin/php-churn
 PHPCHURN_FILE := $(PHPCHURN_COMPOSER_DIR)/vendor/bin/churn
 
+RECTOR_COMPOSER_DIR := dev-ops/bin/rector
+RECTOR_FILE := $(RECTOR_COMPOSER_DIR)/vendor/bin/rector
+
 .DEFAULT_GOAL := help
 .PHONY: help
 help: ## List useful make targets
@@ -56,6 +59,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f "$(PHPCPD_FILE)" ]] || rm -f "$(PHPCPD_FILE)"
 	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(PHPCHURN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPCHURN_COMPOSER_DIR)/vendor"
+	[[ ! -d "$(RECTOR_COMPOSER_DIR)/vendor" ]] || rm -rf "$(RECTOR_COMPOSER_DIR)/vendor"
 
 .PHONY: it
 it: cs-fix cs coverage ## Fix code style and run unit tests
@@ -106,6 +110,10 @@ cs-json: $(JSON_FILES) ## Run jq on every json file to ensure they are parsable 
 cs-phpchurn: .build $(PHPCHURN_FILE) ## Run php-churn for prediction of refactoring cases
 	$(PHP) "$(PHPCHURN_FILE)" run --configuration dev-ops/churn.yml --format text
 
+.PHONY: cs-fix-rector
+cs-fix-rector: $(RECTOR_FILE) ## Run rector to upgrade PHP code to recent features
+	$(PHP) "$(RECTOR_FILE)" --config=dev-ops/rector.php
+
 .PHONY: $(JSON_FILES)
 $(JSON_FILES):
 	$(JQ) . "$@"
@@ -122,11 +130,16 @@ cs-fix-php: .build $(EASY_CODING_STANDARD_FILE) ## Run easy-coding-standard for 
 	$(PHP) "$(EASY_CODING_STANDARD_FILE)" check --config=dev-ops/ecs.php --fix
 
 .PHONY: infection
-infection: vendor .build ## Run infection tests
+infection: clean vendor .build ## Run infection tests
 	# Can be simplified when infection/infection#1283 is resolved
 	[[ -d .build/phpunit-logs ]] || mkdir -p .build/.phpunit-coverage
 	$(PHPUNIT) --coverage-xml=.build/.phpunit-coverage/index.xml --log-junit=.build/.phpunit-coverage/infection.junit.xml
 	$(INFECTION) --only-covered --only-covering-test-cases --threads=max --configuration=dev-ops/infection.json --coverage=../.build/.phpunit-coverage --show-mutations --no-interaction
+
+.PHONY: run-phpunit
+run-phpunit: vendor .build
+	$(PHPUNIT) --log-junit=.build/.phpunit-coverage/phpunit.junit.xml
+	make -C test-suite-portal-test-portal test
 
 $(PHPSTAN_FILE): ## Install phpstan executable
 	$(COMPOSER) install -d "$(PHPSTAN_COMPOSER_DIR)"
@@ -151,6 +164,9 @@ $(EASY_CODING_STANDARD_FILE): ## Install easy-coding-standard executable
 
 $(PHPCHURN_FILE): ## Install php-churn executable
 	$(COMPOSER) install -d "$(PHPCHURN_COMPOSER_DIR)"
+
+$(RECTOR_FILE): ## Install rector executable
+	$(COMPOSER) install -d "$(RECTOR_COMPOSER_DIR)"
 
 .PHONY: composer-update
 composer-update:
