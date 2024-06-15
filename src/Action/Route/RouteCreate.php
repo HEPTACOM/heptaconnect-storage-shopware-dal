@@ -22,7 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class RouteCreate implements RouteCreateActionInterface
+final readonly class RouteCreate implements RouteCreateActionInterface
 {
     public function __construct(
         private Connection $connection,

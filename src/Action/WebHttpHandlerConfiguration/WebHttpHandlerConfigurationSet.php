@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 
-final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
+final readonly class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfigurationSetActionInterface
 {
     public function __construct(
         private Connection $connection,

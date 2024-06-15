@@ -22,7 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
+final readonly class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
 {
     public function __construct(
         private Connection $connection,

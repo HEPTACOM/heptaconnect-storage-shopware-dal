@@ -18,7 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
+final readonly class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
 {
     public function __construct(
         private Connection $connection,

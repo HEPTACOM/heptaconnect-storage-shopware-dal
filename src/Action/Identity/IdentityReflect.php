@@ -23,7 +23,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Ramsey\Uuid\Uuid;
 
-final class IdentityReflect implements IdentityReflectActionInterface
+final readonly class IdentityReflect implements IdentityReflectActionInterface
 {
     public const string LOOKUP_EXISTING_MAPPING_QUERY = '64211df0-e928-4fc9-87c1-09a4c03cf98a';
 

@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInterface
+final readonly class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActionInterface
 {
     public function __construct(
         private Connection $connection

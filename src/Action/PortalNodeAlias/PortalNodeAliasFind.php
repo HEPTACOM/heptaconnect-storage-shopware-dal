@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
+final readonly class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
 {
     public const string FIND_QUERY = '8ffc1022-c03b-4f3f-a2f6-5807710dbb6f';
 

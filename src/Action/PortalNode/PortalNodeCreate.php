@@ -20,7 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class PortalNodeCreate implements PortalNodeCreateActionInterface
+final readonly class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
