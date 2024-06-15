@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1622309810FixForeignKeyConstraints extends MigrationStep
+final class Migration1622309810FixForeignKeyConstraints extends MigrationStep
 {
     public const UP = <<<'SQL'
 DROP TABLE `heptaconnect_cronjob_run`;

@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1596457486AddCronjobTable extends MigrationStep
+final class Migration1596457486AddCronjobTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 CREATE TABLE `heptaconnect_cronjob` (

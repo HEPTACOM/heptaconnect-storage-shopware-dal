@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1596939935CreatePortalNodeKeyValueStorageTable extends MigrationStep
+final class Migration1596939935CreatePortalNodeKeyValueStorageTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 CREATE TABLE IF NOT EXISTS `heptaconnect_portal_node_storage` (

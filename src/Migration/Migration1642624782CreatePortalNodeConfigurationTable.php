@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1642624782CreatePortalNodeConfigurationTable extends MigrationStep
+final class Migration1642624782CreatePortalNodeConfigurationTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`

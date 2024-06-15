@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1635512814OnDeleteCascadeFromMappingNodeToMapping extends MigrationStep
+final class Migration1635512814OnDeleteCascadeFromMappingNodeToMapping extends MigrationStep
 {
     private const string UP = <<<'SQL'
 alter table heptaconnect_mapping drop foreign key `fk.heptaconnect_mapping.mapping_node_id`;

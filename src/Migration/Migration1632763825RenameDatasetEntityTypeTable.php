@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1632763825RenameDatasetEntityTypeTable extends MigrationStep
+final class Migration1632763825RenameDatasetEntityTypeTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 ALTER TABLE heptaconnect_dataset_entity_type RENAME TO heptaconnect_entity_type;

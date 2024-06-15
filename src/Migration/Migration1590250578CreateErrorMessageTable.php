@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1590250578CreateErrorMessageTable extends MigrationStep
+final class Migration1590250578CreateErrorMessageTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 CREATE TABLE `heptaconnect_mapping_error_message` (

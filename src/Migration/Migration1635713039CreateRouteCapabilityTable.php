@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1635713039CreateRouteCapabilityTable extends MigrationStep
+final class Migration1635713039CreateRouteCapabilityTable extends MigrationStep
 {
     private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_route_capability` (

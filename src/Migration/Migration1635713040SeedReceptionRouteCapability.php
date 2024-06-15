@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 
-class Migration1635713040SeedReceptionRouteCapability extends MigrationStep
+final class Migration1635713040SeedReceptionRouteCapability extends MigrationStep
 {
     private const string UP = <<<'SQL'
 INSERT INTO `heptaconnect_route_capability` (

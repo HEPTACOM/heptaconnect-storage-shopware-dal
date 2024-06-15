@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
+final class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
 {
     public const UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`

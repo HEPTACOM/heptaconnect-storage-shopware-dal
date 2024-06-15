@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1636704625RemoveWebhookTable extends MigrationStep
+final class Migration1636704625RemoveWebhookTable extends MigrationStep
 {
     #[\Override]
     public function getCreationTimestamp(): int

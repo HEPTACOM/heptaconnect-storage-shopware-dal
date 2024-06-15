@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1636817110CreateWebHttpHandlerConfigurationTable extends MigrationStep
+final class Migration1636817110CreateWebHttpHandlerConfigurationTable extends MigrationStep
 {
     private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_web_http_handler_configuration` (

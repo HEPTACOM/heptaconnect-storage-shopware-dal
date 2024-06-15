@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1673717600AddIdentityRedirectTable extends MigrationStep
+final class Migration1673717600AddIdentityRedirectTable extends MigrationStep
 {
     public const UP = <<<'SQL'
 CREATE TABLE `heptaconnect_identity_redirect`

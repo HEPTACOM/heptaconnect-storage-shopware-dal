@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1622316410ReplaceMappingWithPortalNodeAndMappingNode extends MigrationStep
+final class Migration1622316410ReplaceMappingWithPortalNodeAndMappingNode extends MigrationStep
 {
     public const UP = <<<'SQL'
 alter table heptaconnect_mapping_error_message drop foreign key `fk.heptaconnect_mapping_error_message.mapping_id`;

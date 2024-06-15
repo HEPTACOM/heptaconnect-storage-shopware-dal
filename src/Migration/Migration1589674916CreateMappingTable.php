@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1589674916CreateMappingTable extends MigrationStep
+final class Migration1589674916CreateMappingTable extends MigrationStep
 {
     #[\Override]
     public function getCreationTimestamp(): int

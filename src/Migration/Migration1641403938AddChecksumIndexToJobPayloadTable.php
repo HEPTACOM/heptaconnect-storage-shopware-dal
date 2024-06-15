@@ -7,7 +7,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1641403938AddChecksumIndexToJobPayloadTable extends MigrationStep
+final class Migration1641403938AddChecksumIndexToJobPayloadTable extends MigrationStep
 {
     private const string INDEX = <<<'SQL'
 CREATE INDEX `i.__TABLE__.__COL__` ON `__TABLE__` (`__COL__`);
