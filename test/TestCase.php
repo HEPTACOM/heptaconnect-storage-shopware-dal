@@ -87,11 +87,11 @@ abstract class TestCase extends BaseTestCase
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
             {
-                if (\stripos($sql, 'EXPLAIN') === 0 || \stripos($sql, 'SHOW WARNINGS') === 0) {
+                if (\stripos((string) $sql, 'EXPLAIN') === 0 || \stripos((string) $sql, 'SHOW WARNINGS') === 0) {
                     return;
                 }
 
-                if (\stripos($sql, 'INSERT INTO') === 0 && \stripos($sql, 'VALUES') !== false) {
+                if (\stripos((string) $sql, 'INSERT INTO') === 0 && \stripos((string) $sql, 'VALUES') !== false) {
                     return;
                 }
 
@@ -197,7 +197,7 @@ abstract class TestCase extends BaseTestCase
                 ...$frames,
             ]);
 
-            if (\mb_stripos($trackedQuery, 'select') !== false) {
+            if (\mb_stripos((string) $trackedQuery, 'select') !== false) {
                 static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
                 static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
             }
