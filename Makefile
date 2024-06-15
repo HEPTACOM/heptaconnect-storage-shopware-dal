@@ -11,8 +11,9 @@ JSON_FILES := $(shell find . -name '*.json' -not -path './vendor/*' -not -path '
 PHPSTAN_COMPOSER_DIR := dev-ops/bin/phpstan
 PHPSTAN_FILE := $(PHPSTAN_COMPOSER_DIR)/vendor/bin/phpstan
 
-COMPOSER_NORMALIZE_PHAR := https://github.com/ergebnis/composer-normalize/releases/download/2.22.0/composer-normalize.phar
+COMPOSER_NORMALIZE_PHAR := https://github.com/ergebnis/composer-normalize/releases/download/2.42.0/composer-normalize.phar
 COMPOSER_NORMALIZE_FILE := dev-ops/bin/composer-normalize
+COMPOSER_NORMALIZE_EXTRA_ARGS := --indent-size=4 --indent-style=space --no-check-lock --no-update-lock
 
 COMPOSER_REQUIRE_CHECKER_PHAR := https://github.com/maglnet/ComposerRequireChecker/releases/download/4.11.0/composer-require-checker.phar
 COMPOSER_REQUIRE_CHECKER_FILE := dev-ops/bin/composer-require-checker
@@ -45,7 +46,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f composer.lock ]] || rm composer.lock
 	[[ ! -d vendor ]] || rm -rf vendor
 	[[ ! -d .build ]] || rm -rf .build
-	[[ ! -f dev-ops/bin/composer-normalize ]] || rm -f dev-ops/bin/composer-normalize
+	[[ ! -f "$(COMPOSER_NORMALIZE_FILE)" ]] || rm -f "$(COMPOSER_NORMALIZE_FILE)"
 	[[ ! -f "$(COMPOSER_REQUIRE_CHECKER_FILE)" ]] || rm -f "$(COMPOSER_REQUIRE_CHECKER_FILE)"
 	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor" ]] || rm -rf "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor"
@@ -94,7 +95,7 @@ cs-soft-require: vendor .build $(COMPOSER_REQUIRE_CHECKER_FILE) ## Run composer-
 
 .PHONY: cs-composer-normalize
 cs-composer-normalize: $(COMPOSER_NORMALIZE_FILE) ## Run composer-normalize for composer.json style analysis
-	$(PHP) $(COMPOSER_NORMALIZE_FILE) --diff --dry-run --no-check-lock --no-update-lock composer.json
+	$(PHP) "$(COMPOSER_NORMALIZE_FILE)" $(COMPOSER_NORMALIZE_EXTRA_ARGS) --diff --dry-run composer.json
 
 .PHONY: cs-json
 cs-json: $(JSON_FILES) ## Run jq on every json file to ensure they are parsable and therefore valid
@@ -112,7 +113,7 @@ cs-fix: cs-fix-composer-normalize cs-fix-php
 
 .PHONY: cs-fix-composer-normalize
 cs-fix-composer-normalize: $(COMPOSER_NORMALIZE_FILE) ## Run composer-normalize for automatic composer.json style fixes
-	$(PHP) $(COMPOSER_NORMALIZE_FILE) --diff composer.json
+	$(PHP) "$(COMPOSER_NORMALIZE_FILE)" $(COMPOSER_NORMALIZE_EXTRA_ARGS) --diff composer.json
 
 .PHONY: cs-fix-php
 cs-fix-php: .build $(EASY_CODING_STANDARD_FILE) ## Run easy-coding-standard for automatic code style fixes
@@ -129,7 +130,7 @@ $(PHPSTAN_FILE): ## Install phpstan executable
 	$(COMPOSER) install -d "$(PHPSTAN_COMPOSER_DIR)"
 
 $(COMPOSER_NORMALIZE_FILE): ## Install composer-normalize executable
-	$(CURL) -L $(COMPOSER_NORMALIZE_PHAR) -o $(COMPOSER_NORMALIZE_FILE)
+	$(CURL) -L "$(COMPOSER_NORMALIZE_PHAR)" -o "$(COMPOSER_NORMALIZE_FILE)"
 
 $(COMPOSER_REQUIRE_CHECKER_FILE): ## Install composer-require-checker executable
 	$(CURL) -L "$(COMPOSER_REQUIRE_CHECKER_PHAR)" -o "$(COMPOSER_REQUIRE_CHECKER_FILE)"
