@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1602667098ConvertPortalNodeStorageValueToBlob extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 alter table heptaconnect_portal_node_storage modify value blob not null;
 SQL;
 

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1595776348AddWebhookTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_webhook` (
     `id` BINARY(16) NOT NULL,
     `url` VARCHAR(255) NOT NULL,

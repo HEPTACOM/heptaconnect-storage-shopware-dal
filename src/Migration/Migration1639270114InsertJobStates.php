@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1639270114InsertJobStates extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 insert into heptaconnect_job_state (id, name, created_at)
 values (0x3aee495720734539b98f0605c33e59d2, 'open', NOW());
 

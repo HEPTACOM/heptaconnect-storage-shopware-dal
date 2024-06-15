@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1596457486AddCronjobTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_cronjob` (
     `id` BINARY(16) NOT NULL,
     `cron_expression` VARCHAR(255) NOT NULL,

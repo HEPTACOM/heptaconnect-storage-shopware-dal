@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1639246133CreateStateHistoryForJobs extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_job_state` (
   `id` BINARY(16) NOT NULL,
   `name` VARBINARY(128) NOT NULL,

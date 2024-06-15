@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1629643769AddJobStartAndFinishFields extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 ALTER TABLE heptaconnect_job ADD started_at DATETIME(3) NULL, ADD finished_at DATETIME(3) NULL;
 SQL;
 

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1645820922AddFileReferenceRequest extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 create table heptaconnect_file_reference_request
 (
     id                 binary(16)  not null primary key,

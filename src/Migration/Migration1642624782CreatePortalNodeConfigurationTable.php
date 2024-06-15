@@ -11,7 +11,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1642624782CreatePortalNodeConfigurationTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`
     ADD COLUMN `configuration`
         LONGTEXT
@@ -31,12 +31,12 @@ ALTER TABLE `heptaconnect_portal_node`
         COLLATE 'binary';
 SQL;
 
-    public const REVERSE_UP = <<<'SQL'
+    public const string REVERSE_UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`
     DROP COLUMN `configuration`;
 SQL;
 
-    public const DESTRUCTIVE = <<<'SQL'
+    public const string DESTRUCTIVE = <<<'SQL'
 DELETE FROM
     `system_config`
 WHERE

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1639860447UpdateExistingJobData extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 insert into heptaconnect_job_history
 select
     unhex(md5(concat(job.id, 0xca5ef83ffd114913a81477efafa14272))) as id,

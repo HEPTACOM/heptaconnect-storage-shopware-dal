@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1590250578CreateErrorMessageTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_mapping_error_message` (
     `id` BINARY(16) NOT NULL,
     `mapping_id` BINARY(16) NOT NULL,

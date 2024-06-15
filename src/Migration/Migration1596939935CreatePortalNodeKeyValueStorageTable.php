@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1596939935CreatePortalNodeKeyValueStorageTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE IF NOT EXISTS `heptaconnect_portal_node_storage` (
     `id` BINARY(16) NOT NULL,
     `portal_node_id` BINARY(16) NOT NULL,

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1615364544AddTtlToPortalStorage extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 alter table heptaconnect_portal_node_storage add expired_at datetime(3) null;
 SQL;
 

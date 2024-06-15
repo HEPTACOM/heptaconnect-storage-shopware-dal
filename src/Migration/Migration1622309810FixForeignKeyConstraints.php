@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1622309810FixForeignKeyConstraints extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 DROP TABLE `heptaconnect_cronjob_run`;
 
 DROP TABLE `heptaconnect_cronjob`;

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1604363856CreateJobPayloadStorageTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE IF NOT EXISTS `heptaconnect_job_payload` (
     `id` BINARY(16) NOT NULL,
     `payload` LONGBLOB NOT NULL,

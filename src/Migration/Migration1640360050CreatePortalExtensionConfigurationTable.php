@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1640360050CreatePortalExtensionConfigurationTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 create table heptaconnect_portal_node_extension
 (
     id             binary(16)                   not null,

@@ -9,7 +9,7 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 final class Migration1604781501CreateIndexes extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 alter table heptaconnect_mapping add index `i.heptaconnect_mapping.external_id` (`external_id`);
 alter table enqueue add index `i.enqueue.delivery_id` (`delivery_id`);
 SQL;
