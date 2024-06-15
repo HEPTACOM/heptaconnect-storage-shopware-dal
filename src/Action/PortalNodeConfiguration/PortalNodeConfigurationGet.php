@@ -23,6 +23,7 @@ final class PortalNodeConfigurationGet implements PortalNodeConfigurationGetActi
     ) {
     }
 
+    #[\Override]
     public function get(PortalNodeConfigurationGetCriteria $criteria): iterable
     {
         $portalNodeIds = [];

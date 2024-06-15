@@ -32,6 +32,7 @@ class PortalNodeDeleteTest extends TestCase
 {
     private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

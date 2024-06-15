@@ -65,6 +65,7 @@ class IdentityMappingTest extends IdentityMappingTestContract
         static::assertSame([], $this->trackedQueries);
     }
 
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());

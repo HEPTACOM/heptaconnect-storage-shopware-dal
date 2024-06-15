@@ -72,6 +72,7 @@ class IdentityErrorTest extends TestCase
 
     private ?IdentityErrorCreateActionInterface $identityErrorCreateAction = null;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -96,6 +97,7 @@ class IdentityErrorTest extends TestCase
         static::assertNotNull($this->portalA);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         $facade = new StorageFacade($this->getConnection());

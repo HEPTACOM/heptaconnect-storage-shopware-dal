@@ -35,6 +35,7 @@ class QueryBuilder extends BaseQueryBuilder
         $this->isForUpdate = $isForUpdate;
     }
 
+    #[\Override]
     public function setFirstResult($firstResult)
     {
         /** @var int|mixed $firstResult */
@@ -50,11 +51,13 @@ class QueryBuilder extends BaseQueryBuilder
         return $this->setParameters($params, $types);
     }
 
+    #[\Override]
     public function getFirstResult()
     {
         return $this->getParameter(self::PARAM_FIRST_RESULT) ?? 0;
     }
 
+    #[\Override]
     public function setMaxResults($maxResults)
     {
         if (\is_int($maxResults)) {
@@ -69,11 +72,13 @@ class QueryBuilder extends BaseQueryBuilder
         return $this->setParameters($params, $types);
     }
 
+    #[\Override]
     public function getMaxResults()
     {
         return $this->getParameter(self::PARAM_MAX_RESULT);
     }
 
+    #[\Override]
     public function getSQL()
     {
         $result = parent::getSQL();

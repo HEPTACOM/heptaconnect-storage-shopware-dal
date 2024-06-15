@@ -26,6 +26,7 @@ final class RouteFind implements RouteFindActionInterface
     ) {
     }
 
+    #[\Override]
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
     {
         $sourceKey = $criteria->getSource()->withoutAlias();

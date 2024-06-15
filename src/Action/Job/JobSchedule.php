@@ -34,6 +34,7 @@ final class JobSchedule implements JobScheduleActionInterface
     ) {
     }
 
+    #[\Override]
     public function schedule(JobSchedulePayload $payload): JobScheduleResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobScheduleResult {

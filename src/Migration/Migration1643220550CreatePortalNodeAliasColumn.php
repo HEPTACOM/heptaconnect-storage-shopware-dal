@@ -30,11 +30,13 @@ SQL;
 DROP TABLE heptaconnect_bridge_key_alias
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1643220550;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
@@ -54,6 +56,7 @@ SQL;
         $connection->executeStatement(self::DESTRUCTIVE);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

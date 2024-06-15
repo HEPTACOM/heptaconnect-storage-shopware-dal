@@ -13,16 +13,19 @@ class Migration1677428200AddKeyIndexToPortalNodeStorageTable extends MigrationSt
 CREATE INDEX `i.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` (__SIZE__));
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1677428200;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addIndex($connection, 'heptaconnect_portal_node_storage', 'key', 3072);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

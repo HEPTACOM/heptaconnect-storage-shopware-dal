@@ -30,6 +30,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
     ) {
     }
 
+    #[\Override]
     public function delete(PortalNodeDeleteCriteria $criteria): void
     {
         $ids = [];

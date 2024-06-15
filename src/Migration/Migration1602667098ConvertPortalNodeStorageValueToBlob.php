@@ -13,16 +13,19 @@ class Migration1602667098ConvertPortalNodeStorageValueToBlob extends MigrationSt
 alter table heptaconnect_portal_node_storage modify value blob not null;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1602667098;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

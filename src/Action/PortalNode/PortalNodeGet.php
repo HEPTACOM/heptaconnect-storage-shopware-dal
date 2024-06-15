@@ -28,6 +28,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
     ) {
     }
 
+    #[\Override]
     public function get(PortalNodeGetCriteria $criteria): iterable
     {
         $ids = [];

@@ -34,6 +34,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
     ) {
     }
 
+    #[\Override]
     public function overview(IdentityRedirectOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();

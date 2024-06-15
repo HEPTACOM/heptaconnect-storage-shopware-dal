@@ -9,11 +9,13 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends MigrationStep
 {
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1629148895;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $sqls = [
@@ -51,6 +53,7 @@ class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends Migr
         $connection->executeStatement($sql);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

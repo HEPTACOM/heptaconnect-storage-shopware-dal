@@ -47,12 +47,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(TestCase::class)]
 class PortalNodeStorageTest extends PortalNodeStorageTestContract
 {
+    #[\Override]
     public function testUsageOfPreviewPortalFails(): void
     {
         $this->expectNotToPerformDatabaseQueries();
         parent::testUsageOfPreviewPortalFails();
     }
 
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         $kernel = $this->kernel;

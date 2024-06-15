@@ -24,6 +24,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
     ) {
     }
 
+    #[\Override]
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();

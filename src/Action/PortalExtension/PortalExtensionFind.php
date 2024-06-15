@@ -26,6 +26,7 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
     ) {
     }
 
+    #[\Override]
     public function find(PortalNodeKeyInterface $portalNodeKey): PortalExtensionFindResult
     {
         $portalNodeKey = $portalNodeKey->withoutAlias();

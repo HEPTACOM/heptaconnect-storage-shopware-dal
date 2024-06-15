@@ -43,11 +43,13 @@ WHERE
     `configuration_key` LIKE 'heptacom.heptaConnect.portalNodeConfiguration.%'
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1642624782;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
@@ -63,6 +65,7 @@ SQL;
         $connection->executeStatement(self::DESTRUCTIVE);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

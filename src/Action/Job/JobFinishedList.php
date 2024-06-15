@@ -26,6 +26,7 @@ final class JobFinishedList implements JobListFinishedActionInterface
     ) {
     }
 
+    #[\Override]
     public function list(): iterable
     {
         return \iterable_map(

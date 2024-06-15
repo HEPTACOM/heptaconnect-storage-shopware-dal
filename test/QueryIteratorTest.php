@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryIterator::class)]
 final class QueryIteratorTest extends TestCase
 {
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,6 +26,7 @@ final class QueryIteratorTest extends TestCase
         }
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         $connection = $this->getConnection();

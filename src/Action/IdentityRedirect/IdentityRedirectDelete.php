@@ -29,6 +29,7 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
     ) {
     }
 
+    #[\Override]
     public function delete(IdentityRedirectDeleteCriteria $criteria): void
     {
         $ids = [];

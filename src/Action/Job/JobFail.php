@@ -34,6 +34,7 @@ final class JobFail implements JobFailActionInterface
     ) {
     }
 
+    #[\Override]
     public function fail(JobFailPayload $payload): JobFailResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobFailResult {

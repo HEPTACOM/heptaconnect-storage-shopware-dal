@@ -23,16 +23,19 @@ insert into heptaconnect_job_state (id, name, created_at)
 values (0x6575ad837c71416f887d0e516a1bd813, 'finished', NOW());
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1639270114;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

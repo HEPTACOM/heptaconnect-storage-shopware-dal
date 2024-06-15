@@ -23,6 +23,7 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
     ) {
     }
 
+    #[\Override]
     public function list(PortalNodeStorageListCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();

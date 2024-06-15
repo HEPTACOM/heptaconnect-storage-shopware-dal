@@ -24,6 +24,7 @@ final class PortalNodeStorageGet implements PortalNodeStorageGetActionInterface
     ) {
     }
 
+    #[\Override]
     public function get(PortalNodeStorageGetCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();

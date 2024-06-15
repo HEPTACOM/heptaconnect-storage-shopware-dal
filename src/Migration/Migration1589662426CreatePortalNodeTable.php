@@ -9,11 +9,13 @@ use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1589662426CreatePortalNodeTable extends MigrationStep
 {
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1589662426;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $sql = <<<SQL
@@ -33,6 +35,7 @@ SQL;
         $connection->executeStatement($sql);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

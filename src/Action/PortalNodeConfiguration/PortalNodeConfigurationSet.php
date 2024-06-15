@@ -22,6 +22,7 @@ final class PortalNodeConfigurationSet implements PortalNodeConfigurationSetActi
     ) {
     }
 
+    #[\Override]
     public function set(PortalNodeConfigurationSetPayloads $payloads): void
     {
         $updates = [];

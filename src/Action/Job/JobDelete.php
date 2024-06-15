@@ -39,6 +39,7 @@ SQL;
     ) {
     }
 
+    #[\Override]
     public function delete(JobDeleteCriteria $criteria): void
     {
         $ids = [];

@@ -25,16 +25,19 @@ create table heptaconnect_portal_node_extension
 ) charset = `binary`;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1640360050;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

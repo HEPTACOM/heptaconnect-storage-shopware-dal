@@ -22,6 +22,7 @@ final class PortalNodeAliasGet implements PortalNodeAliasGetActionInterface
     ) {
     }
 
+    #[\Override]
     public function get(PortalNodeAliasGetCriteria $criteria): iterable
     {
         $portalNodeIds = [];

@@ -54,16 +54,19 @@ alter table heptaconnect_job
 set FOREIGN_KEY_CHECKS = 1;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1639860447;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

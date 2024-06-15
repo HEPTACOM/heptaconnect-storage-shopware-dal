@@ -40,6 +40,7 @@ final class JobGet implements JobGetActionInterface
     ) {
     }
 
+    #[\Override]
     public function get(JobGetCriteria $criteria): iterable
     {
         $ids = [];

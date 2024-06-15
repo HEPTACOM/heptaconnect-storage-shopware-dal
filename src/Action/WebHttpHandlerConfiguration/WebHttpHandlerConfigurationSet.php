@@ -26,6 +26,7 @@ final class WebHttpHandlerConfigurationSet implements WebHttpHandlerConfiguratio
     ) {
     }
 
+    #[\Override]
     public function set(WebHttpHandlerConfigurationSetPayloads $payloads): void
     {
         $handlerPaths = [];

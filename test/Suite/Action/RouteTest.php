@@ -52,6 +52,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(TestCase::class)]
 class RouteTest extends RouteTestContract
 {
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());

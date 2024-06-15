@@ -29,6 +29,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
     ) {
     }
 
+    #[\Override]
     public function overview(IdentityOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();

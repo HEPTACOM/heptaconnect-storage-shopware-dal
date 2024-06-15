@@ -41,6 +41,7 @@ class JobFinishedListTest extends TestCase
 
     private const JOB_FINISHED = '66d4a9d9f8724af1bcfec62fa3c54cdd';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

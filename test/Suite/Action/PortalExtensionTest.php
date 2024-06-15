@@ -48,6 +48,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(TestCase::class)]
 class PortalExtensionTest extends PortalExtensionTestContract
 {
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());

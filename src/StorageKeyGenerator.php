@@ -53,6 +53,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
     ) {
     }
 
+    #[\Override]
     public function generateKeys(string $keyClassName, int $count): iterable
     {
         while ($count-- > 0) {
@@ -60,6 +61,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
     }
 
+    #[\Override]
     public function serialize(StorageKeyInterface $key): string
     {
         $class = $key::class;
@@ -90,6 +92,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         return \sprintf('%s:%s', $abbreviation, $key->getUuid());
     }
 
+    #[\Override]
     public function deserialize(string $keyData): StorageKeyInterface
     {
         $portalNodeKeyData = $this->portalNodeAliasAccessor->getIdsByAliases([$keyData])[$keyData] ?? null;

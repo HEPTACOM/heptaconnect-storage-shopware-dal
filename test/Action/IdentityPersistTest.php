@@ -68,6 +68,7 @@ class IdentityPersistTest extends TestCase
 
     private EntityTypeAccessor $datasetEntityTypeAccessor;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

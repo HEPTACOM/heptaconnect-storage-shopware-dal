@@ -26,6 +26,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
     ) {
     }
 
+    #[\Override]
     public function persistRequest(FileReferencePersistRequestPayload $payload): FileReferencePersistRequestResult
     {
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();

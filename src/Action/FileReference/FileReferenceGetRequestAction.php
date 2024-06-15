@@ -27,6 +27,7 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
     ) {
     }
 
+    #[\Override]
     public function getRequest(FileReferenceGetRequestCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();

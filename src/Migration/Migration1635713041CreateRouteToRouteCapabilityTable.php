@@ -34,17 +34,20 @@ SQL;
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635713041;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
         $this->addDateTimeIndex($connection, 'heptaconnect_route_has_capability', 'created_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

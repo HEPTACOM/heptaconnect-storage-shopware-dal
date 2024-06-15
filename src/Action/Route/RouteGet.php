@@ -29,6 +29,7 @@ final class RouteGet implements RouteGetActionInterface
     ) {
     }
 
+    #[\Override]
     public function get(RouteGetCriteria $criteria): iterable
     {
         $ids = [];

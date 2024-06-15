@@ -46,6 +46,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(WebHttpHandlerPathIdResolver::class)]
 class WebHttpHandlerConfigurationTest extends WebHttpHandlerConfigurationTestContract
 {
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());

@@ -32,6 +32,7 @@ final class RouteOverview implements RouteOverviewActionInterface
     ) {
     }
 
+    #[\Override]
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();

@@ -46,16 +46,19 @@ ALTER TABLE heptaconnect_job
         FOREIGN KEY (state_id) REFERENCES heptaconnect_job_state (id);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1639246133;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

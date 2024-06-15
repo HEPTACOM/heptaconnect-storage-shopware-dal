@@ -50,6 +50,7 @@ class RouteOverviewTest extends TestCase
 
     protected bool $setupQueryTracking = false;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

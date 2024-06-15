@@ -40,6 +40,7 @@ class JobDeleteTest extends TestCase
 
     private const JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

@@ -21,6 +21,7 @@ final class PortalNodeAliasFind implements PortalNodeAliasFindActionInterface
     ) {
     }
 
+    #[\Override]
     public function find(PortalNodeAliasFindCriteria $criteria): iterable
     {
         $aliases = \array_values($criteria->getAlias());

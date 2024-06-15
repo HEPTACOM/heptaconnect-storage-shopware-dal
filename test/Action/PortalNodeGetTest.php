@@ -38,6 +38,7 @@ class PortalNodeGetTest extends TestCase
 
     private const PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

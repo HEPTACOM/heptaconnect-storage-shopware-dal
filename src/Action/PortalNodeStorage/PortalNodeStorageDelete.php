@@ -27,6 +27,7 @@ final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInte
     ) {
     }
 
+    #[\Override]
     public function delete(PortalNodeStorageDeleteCriteria $criteria): void
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();

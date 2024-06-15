@@ -41,6 +41,7 @@ class RouteGetTest extends TestCase
 
     private const ROUTE_ACTIVE = '9f94ce0b915d4fe08223fb0be889daa3';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

@@ -13,11 +13,13 @@ class Migration1635019153RouteIndexHappenedAtColumns extends MigrationStep
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635019153;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addDateTimeIndex($connection, 'heptaconnect_route', 'created_at');
@@ -25,6 +27,7 @@ SQL;
         $this->addDateTimeIndex($connection, 'heptaconnect_route', 'deleted_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

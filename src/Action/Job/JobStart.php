@@ -34,6 +34,7 @@ final class JobStart implements JobStartActionInterface
     ) {
     }
 
+    #[\Override]
     public function start(JobStartPayload $payload): JobStartResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobStartResult {

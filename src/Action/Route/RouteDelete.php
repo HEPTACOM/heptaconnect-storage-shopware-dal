@@ -30,6 +30,7 @@ final class RouteDelete implements RouteDeleteActionInterface
     ) {
     }
 
+    #[\Override]
     public function delete(RouteDeleteCriteria $criteria): void
     {
         $ids = [];

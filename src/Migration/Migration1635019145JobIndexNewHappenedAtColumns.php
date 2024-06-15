@@ -13,17 +13,20 @@ class Migration1635019145JobIndexNewHappenedAtColumns extends MigrationStep
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635019145;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addDateTimeIndex($connection, 'heptaconnect_job', 'started_at');
         $this->addDateTimeIndex($connection, 'heptaconnect_job', 'finished_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

@@ -31,6 +31,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
     ) {
     }
 
+    #[\Override]
     public function create(IdentityRedirectCreatePayloadCollection $payloads): IdentityRedirectCreateResultCollection
     {
         $entityTypes = [];

@@ -13,11 +13,13 @@ class Migration1635019152PortalNodeStorageIndexHappenedAtColumns extends Migrati
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635019152;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addDateTimeIndex($connection, 'heptaconnect_portal_node_storage', 'created_at');
@@ -25,6 +27,7 @@ SQL;
         $this->addDateTimeIndex($connection, 'heptaconnect_portal_node_storage', 'expired_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

@@ -14,16 +14,19 @@ alter table heptaconnect_mapping add index `i.heptaconnect_mapping.external_id` 
 alter table enqueue add index `i.enqueue.delivery_id` (`delivery_id`);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1604781501;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

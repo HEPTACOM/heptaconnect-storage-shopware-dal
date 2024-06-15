@@ -40,6 +40,7 @@ final class IdentityMap implements IdentityMapActionInterface
     ) {
     }
 
+    #[\Override]
     public function map(IdentityMapPayload $payload): IdentityMapResult
     {
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();

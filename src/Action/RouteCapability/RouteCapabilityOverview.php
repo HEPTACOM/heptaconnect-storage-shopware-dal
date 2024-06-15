@@ -23,6 +23,7 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
     ) {
     }
 
+    #[\Override]
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilderCached();

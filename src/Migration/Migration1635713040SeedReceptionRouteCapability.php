@@ -23,16 +23,19 @@ INSERT INTO `heptaconnect_route_capability` (
 );
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635713040;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Types::BINARY]);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

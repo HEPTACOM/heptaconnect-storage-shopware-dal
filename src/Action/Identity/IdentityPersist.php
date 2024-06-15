@@ -39,6 +39,7 @@ final class IdentityPersist implements IdentityPersistActionInterface
     ) {
     }
 
+    #[\Override]
     public function persist(IdentityPersistPayload $payload): void
     {
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();

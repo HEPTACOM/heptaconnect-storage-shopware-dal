@@ -34,6 +34,7 @@ final class JobFinish implements JobFinishActionInterface
     ) {
     }
 
+    #[\Override]
     public function finish(JobFinishPayload $payload): JobFinishResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobFinishResult {

@@ -24,6 +24,7 @@ final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterf
     ) {
     }
 
+    #[\Override]
     public function clear(PortalNodeStorageClearCriteria $criteria): void
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();

@@ -13,17 +13,20 @@ class Migration1635019149MappingErrorMessageIndexHappenedAtColumns extends Migra
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635019149;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addDateTimeIndex($connection, 'heptaconnect_mapping_error_message', 'created_at');
         $this->addDateTimeIndex($connection, 'heptaconnect_mapping_error_message', 'updated_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

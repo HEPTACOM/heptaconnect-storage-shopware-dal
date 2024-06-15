@@ -27,6 +27,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
     ) {
     }
 
+    #[\Override]
     public function find(WebHttpHandlerConfigurationFindCriteria $criteria): WebHttpHandlerConfigurationFindResult
     {
         $portalNodeKey = $criteria->getStackIdentifier()->getPortalNodeKey()->withoutAlias();

@@ -29,6 +29,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
     ) {
     }
 
+    #[\Override]
     public function list(ReceptionRouteListCriteria $criteria): iterable
     {
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();

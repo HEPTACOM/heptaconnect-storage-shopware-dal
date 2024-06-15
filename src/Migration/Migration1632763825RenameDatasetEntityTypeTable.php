@@ -13,16 +13,19 @@ class Migration1632763825RenameDatasetEntityTypeTable extends MigrationStep
 ALTER TABLE heptaconnect_dataset_entity_type RENAME TO heptaconnect_entity_type;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1632763825;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }
