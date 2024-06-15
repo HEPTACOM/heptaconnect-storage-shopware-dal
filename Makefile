@@ -26,7 +26,8 @@ COMPOSER_UNUSED_FILE := $(COMPOSER_UNUSED_COMPOSER_DIR)/vendor/bin/composer-unus
 EASY_CODING_STANDARD_COMPOSER_DIR := dev-ops/bin/easy-coding-standard
 EASY_CODING_STANDARD_FILE := $(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor/bin/ecs
 
-PHPCHURN_FILE := dev-ops/bin/php-churn/vendor/bin/churn
+PHPCHURN_COMPOSER_DIR := dev-ops/bin/php-churn
+PHPCHURN_FILE := $(PHPCHURN_COMPOSER_DIR)/vendor/bin/churn
 
 .DEFAULT_GOAL := help
 .PHONY: help
@@ -49,7 +50,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
 	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
 	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
-	[[ ! -d dev-ops/bin/php-churn/vendor ]] || rm -rf dev-ops/bin/php-churn/vendor
+	[[ ! -d "$(PHPCHURN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPCHURN_COMPOSER_DIR)/vendor"
 
 .PHONY: it
 it: cs-fix cs coverage ## Fix code style and run unit tests
@@ -98,7 +99,7 @@ cs-json: $(JSON_FILES) ## Run jq on every json file to ensure they are parsable 
 
 .PHONY: cs-phpchurn
 cs-phpchurn: .build $(PHPCHURN_FILE) ## Run php-churn for prediction of refactoring cases
-	$(PHP) $(PHPCHURN_FILE) run --configuration dev-ops/churn.yml --format text
+	$(PHP) "$(PHPCHURN_FILE)" run --configuration dev-ops/churn.yml --format text
 
 .PHONY: $(JSON_FILES)
 $(JSON_FILES):
@@ -144,7 +145,7 @@ $(EASY_CODING_STANDARD_FILE): ## Install easy-coding-standard executable
 	$(COMPOSER) install -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)"
 
 $(PHPCHURN_FILE): ## Install php-churn executable
-	$(COMPOSER) install -d dev-ops/bin/php-churn
+	$(COMPOSER) install -d "$(PHPCHURN_COMPOSER_DIR)"
 
 .PHONY: composer-update
 composer-update:
