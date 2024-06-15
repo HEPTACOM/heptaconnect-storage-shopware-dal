@@ -13,7 +13,8 @@ PHPSTAN_FILE := $(PHPSTAN_COMPOSER_DIR)/vendor/bin/phpstan
 
 COMPOSER_NORMALIZE_PHAR := https://github.com/ergebnis/composer-normalize/releases/download/2.22.0/composer-normalize.phar
 COMPOSER_NORMALIZE_FILE := dev-ops/bin/composer-normalize
-COMPOSER_REQUIRE_CHECKER_PHAR := https://github.com/maglnet/ComposerRequireChecker/releases/download/3.8.0/composer-require-checker.phar
+
+COMPOSER_REQUIRE_CHECKER_PHAR := https://github.com/maglnet/ComposerRequireChecker/releases/download/4.11.0/composer-require-checker.phar
 COMPOSER_REQUIRE_CHECKER_FILE := dev-ops/bin/composer-require-checker
 PHPMD_PHAR := https://github.com/phpmd/phpmd/releases/download/2.11.1/phpmd.phar
 PHPMD_FILE := dev-ops/bin/phpmd
@@ -44,7 +45,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -d vendor ]] || rm -rf vendor
 	[[ ! -d .build ]] || rm -rf .build
 	[[ ! -f dev-ops/bin/composer-normalize ]] || rm -f dev-ops/bin/composer-normalize
-	[[ ! -f dev-ops/bin/composer-require-checker ]] || rm -f dev-ops/bin/composer-require-checker
+	[[ ! -f "$(COMPOSER_REQUIRE_CHECKER_FILE)" ]] || rm -f "$(COMPOSER_REQUIRE_CHECKER_FILE)"
 	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor" ]] || rm -rf "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor"
 	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
@@ -88,7 +89,7 @@ cs-composer-unused: vendor $(COMPOSER_UNUSED_FILE) ## Run composer-unused to det
 
 .PHONY: cs-soft-require
 cs-soft-require: vendor .build $(COMPOSER_REQUIRE_CHECKER_FILE) ## Run composer-require-checker to detect library usage without requirement entry in composer.json
-	$(PHP) $(COMPOSER_REQUIRE_CHECKER_FILE) check --config-file=$(shell pwd)/dev-ops/composer-soft-requirements.json composer.json
+	$(PHP) "$(COMPOSER_REQUIRE_CHECKER_FILE)" check --config-file=$(shell pwd)/dev-ops/composer-soft-requirements.json composer.json
 
 .PHONY: cs-composer-normalize
 cs-composer-normalize: $(COMPOSER_NORMALIZE_FILE) ## Run composer-normalize for composer.json style analysis
@@ -130,7 +131,7 @@ $(COMPOSER_NORMALIZE_FILE): ## Install composer-normalize executable
 	$(CURL) -L $(COMPOSER_NORMALIZE_PHAR) -o $(COMPOSER_NORMALIZE_FILE)
 
 $(COMPOSER_REQUIRE_CHECKER_FILE): ## Install composer-require-checker executable
-	$(CURL) -L $(COMPOSER_REQUIRE_CHECKER_PHAR) -o $(COMPOSER_REQUIRE_CHECKER_FILE)
+	$(CURL) -L "$(COMPOSER_REQUIRE_CHECKER_PHAR)" -o "$(COMPOSER_REQUIRE_CHECKER_FILE)"
 
 $(PHPMD_FILE): ## Install phpmd executable
 	$(CURL) -L $(PHPMD_PHAR) -o $(PHPMD_FILE)
