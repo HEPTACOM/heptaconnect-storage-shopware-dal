@@ -19,7 +19,10 @@ PHPMD_PHAR := https://github.com/phpmd/phpmd/releases/download/2.11.1/phpmd.phar
 PHPMD_FILE := dev-ops/bin/phpmd
 PHPCPD_PHAR := https://phar.phpunit.de/phpcpd.phar
 PHPCPD_FILE := dev-ops/bin/phpcpd
-COMPOSER_UNUSED_FILE := dev-ops/bin/composer-unused/vendor/bin/composer-unused
+
+COMPOSER_UNUSED_COMPOSER_DIR := dev-ops/bin/composer-unused
+COMPOSER_UNUSED_FILE := $(COMPOSER_UNUSED_COMPOSER_DIR)/vendor/bin/composer-unused
+
 EASY_CODING_STANDARD_FILE := dev-ops/bin/easy-coding-standard/vendor/bin/ecs
 PHPCHURN_FILE := dev-ops/bin/php-churn/vendor/bin/churn
 
@@ -39,7 +42,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -d .build ]] || rm -rf .build
 	[[ ! -f dev-ops/bin/composer-normalize ]] || rm -f dev-ops/bin/composer-normalize
 	[[ ! -f dev-ops/bin/composer-require-checker ]] || rm -f dev-ops/bin/composer-require-checker
-	[[ ! -d dev-ops/bin/composer-unused/vendor ]] || rm -rf dev-ops/bin/composer-unused/vendor
+	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
 	[[ ! -d dev-ops/bin/easy-coding-standard/vendor ]] || rm -rf dev-ops/bin/easy-coding-standard/vendor
 	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
 	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
@@ -78,7 +81,7 @@ cs-phpcpd: .build $(PHPCPD_FILE) ## Run php copy paste detector for static code 
 
 .PHONY: cs-composer-unused
 cs-composer-unused: vendor $(COMPOSER_UNUSED_FILE) ## Run composer-unused to detect once-required packages that are not used anymore
-	$(PHP) $(COMPOSER_UNUSED_FILE) --configuration=dev-ops/composer-unused.php --no-progress
+	$(PHP) "$(COMPOSER_UNUSED_FILE)" --configuration=dev-ops/composer-unused.php --no-progress
 
 .PHONY: cs-soft-require
 cs-soft-require: vendor .build $(COMPOSER_REQUIRE_CHECKER_FILE) ## Run composer-require-checker to detect library usage without requirement entry in composer.json
@@ -133,7 +136,7 @@ $(PHPCPD_FILE): ## Install phpcpd executable
 	$(CURL) -L $(PHPCPD_PHAR) -o $(PHPCPD_FILE)
 
 $(COMPOSER_UNUSED_FILE): ## Install composer-unused executable
-	$(COMPOSER) install -d dev-ops/bin/composer-unused
+	$(COMPOSER) install -d "$(COMPOSER_UNUSED_COMPOSER_DIR)"
 
 $(EASY_CODING_STANDARD_FILE): ## Install easy-coding-standard executable
 	$(COMPOSER) install -d dev-ops/bin/easy-coding-standard
