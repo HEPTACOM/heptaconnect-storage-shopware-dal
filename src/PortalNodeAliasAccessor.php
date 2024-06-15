@@ -10,9 +10,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeAliasAccessor
 {
-    public const ID_LOOKUP_QUERY = '8f493191-2ba8-4c9f-b4ff-641fc1afdc56';
+    public const string ID_LOOKUP_QUERY = '8f493191-2ba8-4c9f-b4ff-641fc1afdc56';
 
-    public const ALIAS_LOOKUP_QUERY = '81bd204c-97c0-4259-bf82-8b835f2f0237';
+    public const string ALIAS_LOOKUP_QUERY = '81bd204c-97c0-4259-bf82-8b835f2f0237';
 
     private array $known = [];
 

@@ -14,9 +14,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class EntityTypeAccessor
 {
-    public const ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
+    public const string ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
 
-    public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
+    public const string LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
 
     /**
      * @var array<string, string>

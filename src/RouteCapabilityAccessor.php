@@ -10,7 +10,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class RouteCapabilityAccessor
 {
-    public const FETCH_QUERY = '93fd2b30-ca58-4d60-b29e-d14115b5ea2b';
+    public const string FETCH_QUERY = '93fd2b30-ca58-4d60-b29e-d14115b5ea2b';
 
     private array $knownCapabilities = [];
 

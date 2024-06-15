@@ -23,11 +23,11 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    public const CLASS_NAME_LOOKUP_QUERY = 'a6bbbe3b-bf42-455d-824e-8c1aac4453b6';
+    public const string CLASS_NAME_LOOKUP_QUERY = 'a6bbbe3b-bf42-455d-824e-8c1aac4453b6';
 
-    public const ID_LOOKUP_QUERY = '2fc478d7-4f03-4a3d-a335-d6daf4244c27';
+    public const string ID_LOOKUP_QUERY = '2fc478d7-4f03-4a3d-a335-d6daf4244c27';
 
-    public const SWITCH_QUERY = '5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a';
+    public const string SWITCH_QUERY = '5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a';
 
     private ?QueryBuilder $selectByClassNameQueryBuilder = null;
 

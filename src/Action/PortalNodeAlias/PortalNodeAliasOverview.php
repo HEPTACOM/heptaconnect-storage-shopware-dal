@@ -15,7 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
+    public const string OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
 
     private ?QueryBuilder $builder = null;
 

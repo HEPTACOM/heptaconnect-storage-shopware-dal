@@ -10,9 +10,9 @@ use Doctrine\DBAL\Types\Types;
 
 class QueryBuilder extends BaseQueryBuilder
 {
-    public const PARAM_FIRST_RESULT = 'frf0703687f4ca4b70a4cc85bf9e7377c7';
+    public const string PARAM_FIRST_RESULT = 'frf0703687f4ca4b70a4cc85bf9e7377c7';
 
-    public const PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
+    public const string PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
     private bool $isForUpdate = false;
 

@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class JobTypeAccessor
 {
-    public const LOOKUP_QUERY = '28ef8980-146b-416c-8338-f1e394ac8c5f';
+    public const string LOOKUP_QUERY = '28ef8980-146b-416c-8338-f1e394ac8c5f';
 
     /**
      * @var array<string, string>

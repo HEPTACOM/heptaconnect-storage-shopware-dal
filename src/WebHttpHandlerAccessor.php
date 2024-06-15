@@ -12,7 +12,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class WebHttpHandlerAccessor
 {
-    public const FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
+    public const string FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
 
     public function __construct(
         private readonly Connection $connection,
