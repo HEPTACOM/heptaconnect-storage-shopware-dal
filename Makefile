@@ -20,6 +20,7 @@ COMPOSER_REQUIRE_CHECKER_FILE := dev-ops/bin/composer-require-checker
 
 PHPMD_PHAR := https://github.com/phpmd/phpmd/releases/download/2.15.0/phpmd.phar
 PHPMD_FILE := dev-ops/bin/phpmd
+
 PHPCPD_PHAR := https://phar.phpunit.de/phpcpd.phar
 PHPCPD_FILE := dev-ops/bin/phpcpd
 
@@ -51,7 +52,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor" ]] || rm -rf "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor"
 	[[ ! -f "$(PHPMD_FILE)" ]] || rm -f "$(PHPMD_FILE)"
-	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
+	[[ ! -f "$(PHPCPD_FILE)" ]] || rm -f "$(PHPCPD_FILE)"
 	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(PHPCHURN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPCHURN_COMPOSER_DIR)/vendor"
 
@@ -82,8 +83,8 @@ cs-phpmd: .build $(PHPMD_FILE) ## Run php mess detector for static code analysis
 
 .PHONY: cs-phpcpd
 cs-phpcpd: .build $(PHPCPD_FILE) ## Run php copy paste detector for static code analysis
-	[[ -z "${CI}" ]] || $(PHP) $(PHPCPD_FILE) --fuzzy src --log-pmd .build/phpcpd.xml
-	[[ -n "${CI}" ]] || $(PHP) $(PHPCPD_FILE) --fuzzy src
+	[[ -z "${CI}" ]] || $(PHP) "$(PHPCPD_FILE)" --fuzzy src --log-pmd .build/phpcpd.xml
+	[[ -n "${CI}" ]] || $(PHP) "$(PHPCPD_FILE)" --fuzzy src
 
 .PHONY: cs-composer-unused
 cs-composer-unused: vendor $(COMPOSER_UNUSED_FILE) ## Run composer-unused to detect once-required packages that are not used anymore
@@ -139,7 +140,7 @@ $(PHPMD_FILE): ## Install phpmd executable
 	$(CURL) -L "$(PHPMD_PHAR)" -o "$(PHPMD_FILE)"
 
 $(PHPCPD_FILE): ## Install phpcpd executable
-	$(CURL) -L $(PHPCPD_PHAR) -o $(PHPCPD_FILE)
+	$(CURL) -L "$(PHPCPD_PHAR)" -o "$(PHPCPD_FILE)"
 
 $(COMPOSER_UNUSED_FILE): ## Install composer-unused executable
 	$(COMPOSER) install -d "$(COMPOSER_UNUSED_COMPOSER_DIR)"
