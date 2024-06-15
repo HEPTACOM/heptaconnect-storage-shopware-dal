@@ -38,7 +38,7 @@ class WebHttpHandlerPathAccessor
         $nonMatchingKeys = \array_diff($httpHandlerPaths, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $nonMatchingHexes = \array_combine($nonMatchingKeys, \array_map([$this->pathIdResolver, 'getIdFromPath'], $nonMatchingKeys));
+            $nonMatchingHexes = \array_combine($nonMatchingKeys, \array_map($this->pathIdResolver->getIdFromPath(...), $nonMatchingKeys));
 
             if (!\is_array($nonMatchingHexes)) {
                 throw new \LogicException('array_combine should not have returned false', 1637467897);

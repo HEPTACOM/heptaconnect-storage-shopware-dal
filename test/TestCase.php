@@ -128,7 +128,7 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
-                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
+                $frames = \array_map($this->formatFrame(...), \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
 
                 // skip traces that only contain code from test cases and vendor folders
                 if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, ' (src/')) === []) {

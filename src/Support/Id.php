@@ -25,7 +25,7 @@ abstract class Id
      */
     public static function toHexList(array $binaries): array
     {
-        return \array_map([self::class, 'toHex'], $binaries);
+        return \array_map(self::toHex(...), $binaries);
     }
 
     /**
@@ -35,7 +35,7 @@ abstract class Id
      */
     public static function toBinaryList(array $hex): array
     {
-        return \array_map([self::class, 'toBinary'], $hex);
+        return \array_map(self::toBinary(...), $hex);
     }
 
     /**
@@ -45,7 +45,7 @@ abstract class Id
      */
     public static function toHexIterable(iterable $binaries): iterable
     {
-        return \iterable_map($binaries, [self::class, 'toHex']);
+        return \iterable_map($binaries, self::toHex(...));
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Id
      */
     public static function toBinaryIterable(iterable $hex): iterable
     {
-        return \iterable_map([self::class, 'toBinary'], $hex);
+        return \iterable_map(self::toBinary(...), $hex);
     }
 
     public static function randomHex(): string

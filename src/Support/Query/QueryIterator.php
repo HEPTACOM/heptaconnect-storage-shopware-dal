@@ -15,7 +15,7 @@ class QueryIterator
     {
         return $this->iterateSafelyPaginated(
             $query,
-            \Closure::fromCallable([$this, 'fetchRows']),
+            \Closure::fromCallable($this->fetchRows(...)),
             $pageSize,
         );
     }
