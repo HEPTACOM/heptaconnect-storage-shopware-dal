@@ -16,7 +16,8 @@ COMPOSER_NORMALIZE_FILE := dev-ops/bin/composer-normalize
 
 COMPOSER_REQUIRE_CHECKER_PHAR := https://github.com/maglnet/ComposerRequireChecker/releases/download/4.11.0/composer-require-checker.phar
 COMPOSER_REQUIRE_CHECKER_FILE := dev-ops/bin/composer-require-checker
-PHPMD_PHAR := https://github.com/phpmd/phpmd/releases/download/2.11.1/phpmd.phar
+
+PHPMD_PHAR := https://github.com/phpmd/phpmd/releases/download/2.15.0/phpmd.phar
 PHPMD_FILE := dev-ops/bin/phpmd
 PHPCPD_PHAR := https://phar.phpunit.de/phpcpd.phar
 PHPCPD_FILE := dev-ops/bin/phpcpd
@@ -48,7 +49,7 @@ clean: ## Cleans up all ignored files and directories
 	[[ ! -f "$(COMPOSER_REQUIRE_CHECKER_FILE)" ]] || rm -f "$(COMPOSER_REQUIRE_CHECKER_FILE)"
 	[[ ! -d "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor" ]] || rm -rf "$(COMPOSER_UNUSED_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor" ]] || rm -rf "$(EASY_CODING_STANDARD_COMPOSER_DIR)/vendor"
-	[[ ! -f dev-ops/bin/phpmd ]] || rm -f dev-ops/bin/phpmd
+	[[ ! -f "$(PHPMD_FILE)" ]] || rm -f "$(PHPMD_FILE)"
 	[[ ! -f dev-ops/bin/phpcpd ]] || rm -f dev-ops/bin/phpcpd
 	[[ ! -d "$(PHPSTAN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPSTAN_COMPOSER_DIR)/vendor"
 	[[ ! -d "$(PHPCHURN_COMPOSER_DIR)/vendor" ]] || rm -rf "$(PHPCHURN_COMPOSER_DIR)/vendor"
@@ -134,7 +135,7 @@ $(COMPOSER_REQUIRE_CHECKER_FILE): ## Install composer-require-checker executable
 	$(CURL) -L "$(COMPOSER_REQUIRE_CHECKER_PHAR)" -o "$(COMPOSER_REQUIRE_CHECKER_FILE)"
 
 $(PHPMD_FILE): ## Install phpmd executable
-	$(CURL) -L $(PHPMD_PHAR) -o $(PHPMD_FILE)
+	$(CURL) -L "$(PHPMD_PHAR)" -o "$(PHPMD_FILE)"
 
 $(PHPCPD_FILE): ## Install phpcpd executable
 	$(CURL) -L $(PHPCPD_PHAR) -o $(PHPCPD_FILE)
