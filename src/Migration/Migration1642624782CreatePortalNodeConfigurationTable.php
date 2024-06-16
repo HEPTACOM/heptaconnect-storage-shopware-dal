@@ -100,7 +100,7 @@ SQL;
                 }
 
                 $portalNodeKey = \mb_substr($configurationKey, \mb_strlen('heptacom.heptaConnect.portalNodeConfiguration.'));
-                $portalNodeId = Id::toBinary($portalNodeKey);
+                $portalNodeId = \hex2bin($portalNodeKey);
 
                 if (!\is_array($json) || !\is_string($portalNodeId)) {
                     throw new \RuntimeException('Cannot update configuration', 1642937284);
