@@ -34,6 +34,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 ### Fixed
 
 - Fix error when creating mappings via `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect`. Insertion payload was not binary as expected.
+- Remove querying all portal node aliases when only setting aliases to null in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet::set`
 
 ### Security
 

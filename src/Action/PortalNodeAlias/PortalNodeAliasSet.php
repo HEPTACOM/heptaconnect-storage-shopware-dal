@@ -29,6 +29,8 @@ final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInter
     public function set(PortalNodeAliasSetPayloads $payloads): void
     {
         $updates = [];
+        $aliasToSet = [];
+
         /** @var PortalNodeAliasSetPayload $payload */
         foreach ($payloads as $payload) {
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
@@ -43,19 +45,25 @@ final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInter
             }
 
             $updates[$portalNodeKey->getUuid()] = $alias;
+
+            if ($alias !== null) {
+                $aliasToSet[] = $alias;
+            }
         }
 
         if ($updates === []) {
             return;
         }
 
-        $matches = $this->portalNodeAliasAccessor->getIdsByAliases(\array_values(\array_filter($updates, 'strlen')));
+        if ($aliasToSet !== []) {
+            $matches = $this->portalNodeAliasAccessor->getIdsByAliases($aliasToSet);
 
-        if ($matches !== []) {
-            foreach ($matches as $match) {
-                foreach ($payloads as $payload) {
-                    if ($payload->getAlias() === $match) {
-                        throw new InvalidCreatePayloadException($payload, 1645446810);
+            if ($matches !== []) {
+                foreach ($matches as $match) {
+                    foreach ($payloads as $payload) {
+                        if ($payload->getAlias() === $match) {
+                            throw new InvalidCreatePayloadException($payload, 1645446810);
+                        }
                     }
                 }
             }
