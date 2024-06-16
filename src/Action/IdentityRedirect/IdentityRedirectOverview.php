@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
 use Doctrine\DBAL\ArrayParameterType;
-use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
-use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
@@ -22,6 +19,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
+use Heptacom\HeptaConnect\Utility\Collection\Scalar\StringCollection;
 
 final class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
 {
