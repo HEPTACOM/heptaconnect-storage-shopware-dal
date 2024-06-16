@@ -17,11 +17,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
+final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
 {
     public function __construct(
-        private readonly Connection $connection,
-        private readonly PortalNodeAliasAccessor $portalNodeAliasAccessor
+        private Connection $connection,
+        private PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
     }
 

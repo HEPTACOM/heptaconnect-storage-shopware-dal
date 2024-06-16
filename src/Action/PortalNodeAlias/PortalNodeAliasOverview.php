@@ -13,7 +13,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
+final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
 
@@ -70,7 +70,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
         );
     }
 
-    protected function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): QueryBuilder
     {
         if (!$this->builder instanceof QueryBuilder) {
             $this->builder = $this->getBuilder();
@@ -82,7 +82,7 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
         return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): QueryBuilder
     {
         $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
 

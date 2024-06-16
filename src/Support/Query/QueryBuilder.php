@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
 use Doctrine\DBAL\Types\Types;
 
-class QueryBuilder extends BaseQueryBuilder
+final class QueryBuilder extends BaseQueryBuilder
 {
     public const string PARAM_FIRST_RESULT = 'frf0703687f4ca4b70a4cc85bf9e7377c7';
 

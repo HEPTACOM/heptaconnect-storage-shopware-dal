@@ -6,7 +6,7 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
 use Shopware\Core\Framework\Migration\MigrationSource as ShopwareMigrationSource;
 
-class MigrationSource extends ShopwareMigrationSource
+final class MigrationSource extends ShopwareMigrationSource
 {
     public function __construct()
     {

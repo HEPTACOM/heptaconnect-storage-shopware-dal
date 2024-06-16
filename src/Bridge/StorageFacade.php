@@ -110,7 +110,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
-class StorageFacade extends AbstractSingletonStorageFacade
+final class StorageFacade extends AbstractSingletonStorageFacade
 {
     private ?QueryIterator $queryIterator = null;
 
