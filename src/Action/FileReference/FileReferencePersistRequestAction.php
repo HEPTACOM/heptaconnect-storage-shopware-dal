@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface;
@@ -68,8 +68,8 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
                     'serialized_request' => $serializedRequest,
                     'created_at' => $now,
                 ], [
-                    'id' => Type::BINARY,
-                    'portal_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'portal_node_id' => Types::BINARY,
                 ]);
 
                 $result->addFileReferenceRequestKey($key, $storageKey);

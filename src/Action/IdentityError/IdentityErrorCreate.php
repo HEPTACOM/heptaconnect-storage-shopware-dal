@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
@@ -178,7 +179,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
 
             foreach ($externalIdsByEntityType as $entityType => $externalIds) {
                 $builder->setParameter('entityTypeId', $entityTypeIds[$entityType]);
-                $builder->setParameter('externalIds', $externalIds, Connection::PARAM_STR_ARRAY);
+                $builder->setParameter('externalIds', $externalIds, ArrayParameterType::STRING);
 
                 /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string, mapping_node_id: string} $match */
                 foreach ($builder->iterateRows() as $match) {

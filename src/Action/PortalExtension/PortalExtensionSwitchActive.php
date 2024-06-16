@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Portal\Base\Portal\PortalExtensionType;
@@ -60,7 +61,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $existingExtensions = [];
         $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
-            ->setParameter('extensionClassNames', $extensionsToToggle, Connection::PARAM_STR_ARRAY)
+            ->setParameter('extensionClassNames', $extensionsToToggle, ArrayParameterType::STRING)
             ->iterateRows();
 
         foreach ($existingExtensionRows as $existingExtension) {
@@ -108,9 +109,9 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             $updateIds = \array_column($updates, 'id');
 
             $affected = $this->getUpdateQueryBuilder()
-                ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
+                ->setParameter('ids', $updateIds, ArrayParameterType::STRING)
                 ->setParameter('now', $now)
-                ->execute();
+                ->executeStatement();
 
             if ($affected === \count($updates)) {
                 foreach ($updates as $updatePayload) {
@@ -118,7 +119,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                 }
             } else {
                 $existingExtensions = $this->getSelectByIdQueryBuilder()
-                    ->setParameter('ids', $updateIds, Connection::PARAM_STR_ARRAY)
+                    ->setParameter('ids', $updateIds, ArrayParameterType::STRING)
                     ->iterateRows();
 
                 foreach ($existingExtensions as $existingExtension) {

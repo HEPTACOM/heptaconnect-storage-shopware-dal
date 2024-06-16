@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
@@ -67,7 +68,7 @@ SQL;
 
         foreach (\array_chunk($ids, 1000) as $chunkedIds) {
             $chunkedPayloadIds = $selectBuilder
-                ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
+                ->setParameter('ids', $chunkedIds, ArrayParameterType::STRING)
                 ->setMaxResults(\count($chunkedIds))
                 ->iterateColumn();
 
@@ -79,14 +80,14 @@ SQL;
                 $payloadIds
             ): void {
                 $deleteJobBuilder
-                    ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
-                    ->execute();
+                    ->setParameter('ids', $chunkedIds, ArrayParameterType::STRING)
+                    ->executeStatement();
 
                 if ($payloadIds !== []) {
                     $this->connection->executeStatement(
                         self::DELETE_AFFECTED_JOBS_PAYLOAD,
                         ['ids' => $payloadIds],
-                        ['ids' => Connection::PARAM_STR_ARRAY]
+                        ['ids' => ArrayParameterType::STRING]
                     );
                 }
             });

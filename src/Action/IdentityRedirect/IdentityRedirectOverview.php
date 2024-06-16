@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
 use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
@@ -57,22 +57,22 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             }
 
             $builder->andWhere($builder->expr()->in('identity_redirect.id', ':identityRedirectIds'));
-            $builder->setParameter('identityRedirectIds', $identityRedirectIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('identityRedirectIds', $identityRedirectIds, ArrayParameterType::STRING);
         }
 
         if ($entityTypeFilter instanceof ClassStringReferenceCollection) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), ArrayParameterType::STRING);
         }
 
         if ($sourceExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.source_external_id', ':sourceExternalIds'));
-            $builder->setParameter('sourceExternalIds', $sourceExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('sourceExternalIds', $sourceExternalIdFilter->asArray(), ArrayParameterType::STRING);
         }
 
         if ($targetExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.target_external_id', ':targetExternalIds'));
-            $builder->setParameter('targetExternalIds', $targetExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('targetExternalIds', $targetExternalIdFilter->asArray(), ArrayParameterType::STRING);
         }
 
         if ($sourcePortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
@@ -89,7 +89,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             }
 
             $builder->andWhere($builder->expr()->in('source_portal_node.id', ':sourcePortalNodeIds'));
-            $builder->setParameter('sourcePortalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('sourcePortalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         if ($targetPortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
@@ -106,7 +106,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             }
 
             $builder->andWhere($builder->expr()->in('target_portal_node.id', ':targetPortalNodeIds'));
-            $builder->setParameter('targetPortalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('targetPortalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {

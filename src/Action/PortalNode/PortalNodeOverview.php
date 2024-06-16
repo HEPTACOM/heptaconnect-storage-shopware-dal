@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
@@ -39,7 +39,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 static fn (ClassStringReferenceContract $type): string => (string) $type
             ));
             $builder->andWhere($builder->expr()->in('portal_node.class_name', ':classNames'));
-            $builder->setParameter('classNames', $classNames, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('classNames', $classNames, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {

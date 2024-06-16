@@ -41,7 +41,7 @@ final readonly class PortalNodeStorageClear implements PortalNodeStorageClearAct
 
         try {
             $this->connection->transactional(function () use ($deleteBuilder): void {
-                $deleteBuilder->execute();
+                $deleteBuilder->executeStatement();
             });
         } catch (\Throwable $throwable) {
             throw new DeleteException(1646209691, $throwable);

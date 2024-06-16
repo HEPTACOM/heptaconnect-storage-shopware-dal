@@ -41,7 +41,7 @@ SQL;
     {
         $connection->executeStatement(self::UP);
 
-        if (!$connection->getSchemaManager()->tablesExist('heptaconnect_bridge_key_alias')) {
+        if (!$connection->createSchemaManager()->tablesExist('heptaconnect_bridge_key_alias')) {
             return;
         }
 
@@ -72,7 +72,7 @@ SQL;
             ->from('heptaconnect_bridge_key_alias')
             ->where($queryBuilderSelect->expr()->like('original', ':prefix'))
             ->setParameter('prefix', 'PortalNode:%')
-            ->execute()
+            ->executeQuery()
             ->fetchAllAssociative();
 
         $queryBuilderUpdate = $connection->createQueryBuilder();
@@ -90,7 +90,7 @@ SQL;
             $queryBuilderUpdate
                 ->setParameter('id', $portalNodeId, Types::BINARY)
                 ->setParameter('alias', $alias)
-                ->execute();
+                ->executeStatement();
         }
     }
 }

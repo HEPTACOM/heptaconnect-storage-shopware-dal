@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult;
@@ -121,7 +121,7 @@ final class RouteGet implements RouteGetActionInterface
     private function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         return \iterable_map(
             $this->iterator->iterate($builder),

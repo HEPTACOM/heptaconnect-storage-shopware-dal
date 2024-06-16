@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestGet\FileReferenceGetRequestCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestGet\FileReferenceGetRequestResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferenceGetRequestActionInterface;
@@ -48,8 +48,8 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
         }
 
         $queryBuilder = $this->getQueryBuilder()
-            ->setParameter('portalNodeKey', $portalNodeId, Type::BINARY)
-            ->setParameter('requestIds', $requestIds, Connection::PARAM_STR_ARRAY);
+            ->setParameter('portalNodeKey', $portalNodeId, Types::BINARY)
+            ->setParameter('requestIds', $requestIds, ArrayParameterType::STRING);
 
         return \iterable_map(
             $queryBuilder->iterateRows(),

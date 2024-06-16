@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Set\PortalNodeStorageSetPayload;
@@ -77,7 +78,7 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
-            ->setParameter('ids', $keysToCheck, Connection::PARAM_STR_ARRAY)
+            ->setParameter('ids', $keysToCheck, ArrayParameterType::STRING)
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', $nowFormatted);
 

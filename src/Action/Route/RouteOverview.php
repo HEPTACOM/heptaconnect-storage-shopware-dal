@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
 use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
@@ -40,7 +40,7 @@ final class RouteOverview implements RouteOverviewActionInterface
 
         if ($capabilityFilter !== null) {
             $builder->andWhere($builder->expr()->in('capability.name', ':caps'));
-            $builder->setParameter('caps', $capabilityFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('caps', $capabilityFilter->asArray(), ArrayParameterType::STRING);
         }
 
         $portalNodeKeys = $criteria->getSourcePortalNodeKeyFilter();
@@ -57,7 +57,7 @@ final class RouteOverview implements RouteOverviewActionInterface
             }
 
             $builder->andWhere($builder->expr()->in('source_portal_node.id', ':sourcePortals'));
-            $builder->setParameter('sourcePortals', Id::toBinaryList($portalNodeIds), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('sourcePortals', Id::toBinaryList($portalNodeIds), ArrayParameterType::STRING);
         }
 
         $portalNodeKeys = $criteria->getTargetPortalNodeKeyFilter();
@@ -74,7 +74,7 @@ final class RouteOverview implements RouteOverviewActionInterface
             }
 
             $builder->andWhere($builder->expr()->in('target_portal_node.id', ':targetPortals'));
-            $builder->setParameter('targetPortals', Id::toBinaryList($portalNodeIds), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('targetPortals', Id::toBinaryList($portalNodeIds), ArrayParameterType::STRING);
         }
 
         $entityTypes = $criteria->getEntityTypeFilter();
@@ -87,7 +87,7 @@ final class RouteOverview implements RouteOverviewActionInterface
             }
 
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entities'));
-            $builder->setParameter('entities', $entities, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entities', $entities, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {

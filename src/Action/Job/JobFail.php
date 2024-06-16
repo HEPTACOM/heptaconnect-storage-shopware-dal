@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailPayload;
@@ -44,9 +45,9 @@ final class JobFail implements JobFailActionInterface
             $transactionId = Id::randomBinary();
 
             $affected = $this->getUpdateQueryBuilder()
-                ->setParameter('jobIds', $jobIds, Connection::PARAM_STR_ARRAY)
+                ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
                 ->setParameter('transactionId', $transactionId, Types::BINARY)
-                ->execute();
+                ->executeStatement();
 
             if ($affected < \count($jobIds)) {
                 $affectedJobIds = \iterable_to_array(

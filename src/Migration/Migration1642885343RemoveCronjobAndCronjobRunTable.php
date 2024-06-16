@@ -18,8 +18,10 @@ final class Migration1642885343RemoveCronjobAndCronjobRunTable extends Migration
     #[\Override]
     public function update(Connection $connection): void
     {
-        $connection->getSchemaManager()->dropTable('heptaconnect_cronjob_run');
-        $connection->getSchemaManager()->dropTable('heptaconnect_cronjob');
+        $schemaManager = $connection->createSchemaManager();
+
+        $schemaManager->dropTable('heptaconnect_cronjob_run');
+        $schemaManager->dropTable('heptaconnect_cronjob');
     }
 
     #[\Override]

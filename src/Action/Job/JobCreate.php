@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
@@ -196,7 +197,7 @@ final readonly class JobCreate implements JobCreateActionInterface
             ])
             ->where($builder->expr()->in('job_payload.checksum', ':checksums'))
             ->setMaxResults(\count($checksums))
-            ->setParameter('checksums', $checksums, Connection::PARAM_STR_ARRAY);
+            ->setParameter('checksums', $checksums, ArrayParameterType::STRING);
         $builder->setIsForUpdate(true);
 
         $rows = [];

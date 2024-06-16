@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
@@ -50,17 +50,17 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             }
 
             $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-            $builder->setParameter('mappingNodeIds', $mappingNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('mappingNodeIds', $mappingNodeIds, ArrayParameterType::STRING);
         }
 
         if ($entityTypeFilter !== []) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), ArrayParameterType::STRING);
         }
 
         if ($externalIdFilter !== []) {
             $builder->andWhere($builder->expr()->in('mapping.external_id', ':externalIds'));
-            $builder->setParameter('externalIds', $externalIdFilter, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('externalIds', $externalIdFilter, ArrayParameterType::STRING);
         }
 
         if (!$portalNodeKeyFilter->isEmpty()) {
@@ -77,7 +77,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             }
 
             $builder->andWhere($builder->expr()->in('portal_node.id', ':portalNodeIds'));
-            $builder->setParameter('portalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('portalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Delete\IdentityRedirectDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -47,7 +47,7 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         }
 
         $searchBuilder = $this->getSearchQuery();
-        $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
+        $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
         $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
 
         foreach ($ids as $id) {
@@ -57,8 +57,8 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         }
 
         $deleteBuilder = $this->getDeleteQuery();
-        $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $deleteBuilder->execute();
+        $deleteBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $deleteBuilder->executeStatement();
     }
 
     private function getDeleteQuery(): QueryBuilder

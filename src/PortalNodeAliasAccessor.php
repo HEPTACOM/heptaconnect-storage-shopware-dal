@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
@@ -44,7 +44,7 @@ class PortalNodeAliasAccessor
                 ->andWhere($builder->expr()->in('portal_node.id', ':ids'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
                 ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
-                ->setParameter('ids', Id::toBinaryList($nonMatchingIds), Connection::PARAM_STR_ARRAY);
+                ->setParameter('ids', Id::toBinaryList($nonMatchingIds), ArrayParameterType::STRING);
 
             $aliasedIds = [];
 
@@ -81,7 +81,7 @@ class PortalNodeAliasAccessor
                 ->andWhere($builder->expr()->in('portal_node.alias', ':aliases'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
                 ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
-                ->setParameter('aliases', $nonMatchingAliases, Connection::PARAM_STR_ARRAY);
+                ->setParameter('aliases', $nonMatchingAliases, ArrayParameterType::STRING);
 
             $aliasedIds = [];
 

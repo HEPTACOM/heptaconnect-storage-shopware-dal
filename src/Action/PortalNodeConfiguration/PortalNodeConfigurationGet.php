@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeConfiguration\Get\PortalNodeConfigurationGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
@@ -52,7 +52,7 @@ final readonly class PortalNodeConfigurationGet implements PortalNodeConfigurati
                 'p.configuration portal_configuration',
             ])
             ->addOrderBy('p.id')
-            ->setParameter('ids', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            ->setParameter('ids', $portalNodeIds, ArrayParameterType::STRING);
 
         return \iterable_map(
             $builder->iterateRows(),

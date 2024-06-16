@@ -45,12 +45,24 @@ class QueryIterator
      */
     public function fetchRow(QueryBuilder $query): ?array
     {
-        return $query->executeQuery()->fetchAssociative() ?: null;
+        $result = $query->executeQuery()->fetchAssociative();
+
+        if (!\is_array($result)) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function fetchColumn(QueryBuilder $query): ?string
     {
-        return $query->executeQuery()->fetchOne() ?: null;
+        $result = $query->executeQuery()->fetchOne();
+
+        if (!\is_string($result)) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function fetchSingleValue(QueryBuilder $query): ?string

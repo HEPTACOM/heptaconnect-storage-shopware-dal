@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Delete\PortalNodeStorageDeleteCriteria;
@@ -56,11 +57,11 @@ final readonly class PortalNodeStorageDelete implements PortalNodeStorageDeleteA
 
         try {
             $this->connection->transactional(function () use ($idsPayloads, $deleteBuilder, $deleteExpiredBuilder): void {
-                $deleteExpiredBuilder->execute();
+                $deleteExpiredBuilder->executeStatement();
 
                 foreach ($idsPayloads as $idsPayload) {
-                    $deleteBuilder->setParameter('keys', $idsPayload, Connection::PARAM_STR_ARRAY);
-                    $deleteBuilder->execute();
+                    $deleteBuilder->setParameter('keys', $idsPayload, ArrayParameterType::STRING);
+                    $deleteBuilder->executeStatement();
                 }
             });
         } catch (\Throwable $throwable) {

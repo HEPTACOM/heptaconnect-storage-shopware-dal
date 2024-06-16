@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -46,7 +47,7 @@ class JobTypeAccessor
                 ])
                 ->addOrderBy('job_type.id')
                 ->andWhere($builder->expr()->in('job_type.type', ':types'))
-                ->setParameter('types', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
+                ->setParameter('types', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
@@ -228,7 +229,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
         foreach ($filtersByType as $typeId => $externalIds) {
             $builder->setParameter('typeId', Id::toBinary($typeId), Types::BINARY);
             $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
-            $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), ArrayParameterType::STRING);
 
             yield from $builder->iterateRows();
         }
@@ -269,7 +270,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), ArrayParameterType::STRING);
 
         return $builder->iterateRows();
     }

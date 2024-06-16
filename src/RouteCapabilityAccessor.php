@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
@@ -40,7 +40,7 @@ class RouteCapabilityAccessor
                 ])
                 ->addOrderBy('route_capability.id')
                 ->andWhere($builder->expr()->in('route_capability.name', ':names'))
-                ->setParameter('names', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
+                ->setParameter('names', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
 

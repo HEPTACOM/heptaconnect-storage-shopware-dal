@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
@@ -91,7 +92,7 @@ class EntityTypeAccessor
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
             ->addOrderBy('type.id')
-            ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
+            ->setParameter('types', $types, ArrayParameterType::STRING);
 
         $result = [];
 

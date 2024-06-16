@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Get\PortalNodeAliasGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeAlias\Get\PortalNodeAliasGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasGetActionInterface;
@@ -52,7 +52,7 @@ final readonly class PortalNodeAliasGet implements PortalNodeAliasGetActionInter
             ->andWhere($builder->expr()->in('portal_node.id', ':ids'))
             ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
             ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
-            ->setParameter('ids', Id::toBinaryList($portalNodeIds), Connection::PARAM_STR_ARRAY);
+            ->setParameter('ids', Id::toBinaryList($portalNodeIds), ArrayParameterType::STRING);
 
         return \iterable_map(
             $builder->iterateRows(),

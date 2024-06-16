@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Exception\IdentityConflictException;
@@ -199,7 +200,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodes)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodes)), ArrayParameterType::STRING);
 
         foreach ($builder->iterateRows() as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -269,7 +270,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), ArrayParameterType::STRING);
 
         foreach ($builder->iterateRows() as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -320,7 +321,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             $queryBuilder->setParameter(
                 $externalIdParameterKey,
                 \array_keys($externalIds),
-                Connection::PARAM_STR_ARRAY
+                ArrayParameterType::STRING
             );
         }
 
@@ -418,7 +419,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             )
             ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
-            ->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            ->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), ArrayParameterType::STRING);
 
         $types = [];
 
@@ -446,7 +447,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             ->setParameter('mappingNodeIds', Id::toBinaryList([
                 $fromMappingNodeId,
                 $intoMappingNodeId,
-            ]), Connection::PARAM_STR_ARRAY)
+            ]), ArrayParameterType::STRING)
             ->fetchSingleValue();
 
         return !$hasConflict;

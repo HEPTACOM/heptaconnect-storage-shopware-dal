@@ -18,7 +18,7 @@ final class Migration1636704625RemoveWebhookTable extends MigrationStep
     #[\Override]
     public function update(Connection $connection): void
     {
-        $connection->getSchemaManager()->dropTable('heptaconnect_webhook');
+        $connection->createSchemaManager()->dropTable('heptaconnect_webhook');
     }
 
     #[\Override]

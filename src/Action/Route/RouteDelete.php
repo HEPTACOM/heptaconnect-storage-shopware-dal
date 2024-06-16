@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Delete\RouteDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -48,7 +48,7 @@ final class RouteDelete implements RouteDeleteActionInterface
         }
 
         $searchBuilder = $this->getSearchQuery();
-        $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
+        $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
         $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
 
         foreach ($ids as $id) {
@@ -59,8 +59,8 @@ final class RouteDelete implements RouteDeleteActionInterface
 
         $deleteBuilder = $this->getDeleteQuery();
         $deleteBuilder->setParameter('now', DateTime::nowToStorage());
-        $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $deleteBuilder->execute();
+        $deleteBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $deleteBuilder->executeStatement();
     }
 
     private function getDeleteQuery(): QueryBuilder

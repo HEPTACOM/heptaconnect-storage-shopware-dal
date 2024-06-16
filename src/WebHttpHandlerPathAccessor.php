@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -53,7 +54,7 @@ class WebHttpHandlerPathAccessor
                 ->select(['handler_path.id id'])
                 ->addOrderBy('handler_path.id')
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
-                ->setParameter('ids', \array_values($nonMatchingBytes), Connection::PARAM_STR_ARRAY);
+                ->setParameter('ids', \array_values($nonMatchingBytes), ArrayParameterType::STRING);
 
             $foundIds = [];
             $inserts = [];

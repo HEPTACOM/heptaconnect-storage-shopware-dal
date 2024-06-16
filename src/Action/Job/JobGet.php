@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Dataset\Base\EntityType;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappingComponentStruct;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
@@ -119,7 +119,7 @@ final class JobGet implements JobGetActionInterface
     private function yieldJobs(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         return \iterable_map(
             $this->iterator->iterate($builder),

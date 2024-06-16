@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Delete\PortalNodeDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -50,7 +50,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         }
 
         $searchBuilder = $this->getSearchQuery();
-        $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
+        $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
 
         $idsCheck = \array_combine($ids, $ids);
 
@@ -65,8 +65,8 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $deleteBuilder = $this->getDeleteQuery();
         $deleteBuilder->setParameter('now', DateTime::nowToStorage());
-        $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $deleteBuilder->execute();
+        $deleteBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $deleteBuilder->executeStatement();
     }
 
     private function getDeleteQuery(): QueryBuilder

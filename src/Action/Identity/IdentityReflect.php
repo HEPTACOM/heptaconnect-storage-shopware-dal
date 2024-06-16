@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
@@ -111,7 +112,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
                 $builder->expr()->in('mapping_node.id', ':mappingNodes' . $sourcePortalNodeId),
             );
             $builder->setParameter('portalNode' . $sourcePortalNodeId, Id::toBinary($sourcePortalNodeId), Types::BINARY);
-            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('mappingNodes' . $sourcePortalNodeId, Id::toBinaryList($mappingNodeIds), ArrayParameterType::STRING);
         }
 
         $builder->andWhere($builder->expr()->or(...$mappingNodeExpressions));
@@ -153,7 +154,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $builder->andWhere($builder->expr()->eq('portal_node.id', ':portalNodeId'));
         $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
         $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Types::BINARY);
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), Connection::PARAM_STR_ARRAY);
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), ArrayParameterType::STRING);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
@@ -279,7 +280,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
                 $queryBuilder->setParameter(
                     $aliasSourceExternalIds,
                     \array_map('strval', \array_keys($externalIds)),
-                    Connection::PARAM_STR_ARRAY
+                    ArrayParameterType::STRING
                 );
             }
         }
