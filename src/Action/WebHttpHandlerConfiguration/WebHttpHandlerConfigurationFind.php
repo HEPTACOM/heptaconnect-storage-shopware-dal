@@ -33,7 +33,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         $portalNodeKey = $criteria->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         $builder = $this->getBuilderCached();

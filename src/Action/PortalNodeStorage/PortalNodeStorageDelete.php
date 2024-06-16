@@ -34,7 +34,7 @@ final readonly class PortalNodeStorageDelete implements PortalNodeStorageDeleteA
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         $deleteExpiredBuilder = $this->queryFactory->createBuilder(self::DELETE_EXPIRED_QUERY);

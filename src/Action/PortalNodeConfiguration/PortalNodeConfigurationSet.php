@@ -32,7 +32,7 @@ final readonly class PortalNodeConfigurationSet implements PortalNodeConfigurati
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1642863637, new UnsupportedStorageKeyException($portalNodeKey::class));
+                throw new InvalidCreatePayloadException($payload, 1642863637, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
             }
 
             $jsonValue = '{}';

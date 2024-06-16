@@ -32,7 +32,7 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         $portalNodeKey = $portalNodeKey->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         $portalNodeId = $portalNodeKey->getUuid();

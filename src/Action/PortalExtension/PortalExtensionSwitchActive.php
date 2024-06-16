@@ -200,7 +200,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $portalNodeKey = $portalNodeKey->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         return Id::toBinary($portalNodeKey->getUuid());

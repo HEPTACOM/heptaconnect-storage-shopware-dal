@@ -50,7 +50,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
             $externalId = $payload->getMappingComponent()->getExternalId();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1645308762, new UnsupportedStorageKeyException($portalNodeKey::class));
+                throw new InvalidCreatePayloadException($payload, 1645308762, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
             }
 
             $lookups[$portalNodeKey->getUuid()][(string) $entityType][] = $externalId;
@@ -97,7 +97,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
                 $key = \array_shift($keys) ?: null;
 
                 if (!$key instanceof IdentityErrorStorageKey) {
-                    throw new UnsupportedStorageKeyException($key === null ? 'null' : $key::class);
+                    throw new UnsupportedStorageKeyException(\get_debug_type($key));
                 }
 
                 $resultKey ??= $key;

@@ -83,7 +83,7 @@ final class JobFinish implements JobFinishActionInterface
 
         foreach ($payload->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException($jobKey::class);
+                throw new UnsupportedStorageKeyException(\get_debug_type($jobKey));
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;

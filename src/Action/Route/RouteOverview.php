@@ -50,7 +50,7 @@ final class RouteOverview implements RouteOverviewActionInterface
 
             foreach ($portalNodeKeys as $portalNodeKey) {
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException($portalNodeKey::class);
+                    throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
                 }
 
                 $portalNodeIds[] = $portalNodeKey->getUuid();
@@ -67,7 +67,7 @@ final class RouteOverview implements RouteOverviewActionInterface
 
             foreach ($portalNodeKeys as $portalNodeKey) {
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException($portalNodeKey::class);
+                    throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
                 }
 
                 $portalNodeIds[] = $portalNodeKey->getUuid();

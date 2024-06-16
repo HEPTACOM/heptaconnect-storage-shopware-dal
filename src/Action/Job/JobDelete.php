@@ -47,7 +47,7 @@ SQL;
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException($jobKey::class);
+                throw new UnsupportedStorageKeyException(\get_debug_type($jobKey));
             }
 
             $ids[] = Id::toBinary($jobKey->getUuid());

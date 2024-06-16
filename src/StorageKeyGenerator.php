@@ -71,7 +71,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
             $class = $key::class;
 
             if (!$key instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException($class);
+                throw new UnsupportedStorageKeyException(\get_debug_type($key));
             }
 
             $alias = $this->portalNodeAliasAccessor->getAliasesByIds([$key->getUuid()])[$key->getUuid()] ?? null;
@@ -86,7 +86,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
 
         if (($abbreviation = \array_search($class, self::ABBREVIATIONS, true)) === false) {
-            throw new UnsupportedStorageKeyException($class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($key));
         }
 
         return \sprintf('%s:%s', $abbreviation, $key->getUuid());

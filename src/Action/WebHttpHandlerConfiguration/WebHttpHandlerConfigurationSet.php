@@ -37,7 +37,7 @@ final readonly class WebHttpHandlerConfigurationSet implements WebHttpHandlerCon
             $portalNodeKey = $payload->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException($portalNodeKey::class));
+                throw new InvalidCreatePayloadException($payload, 1636827821, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
             }
 
             $path = $payload->getStackIdentifier()->getPath();

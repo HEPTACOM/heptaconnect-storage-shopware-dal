@@ -432,14 +432,14 @@ class IdentityPersistTest extends TestCase
     private function createMappingNode(string $entityType, PortalNodeKeyInterface $portalNodeKey): MappingNodeStorageKey
     {
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         $result = (new MappingNodeKeyCollection($this->storageKeyGenerator->generateKeys(MappingNodeKeyInterface::class, 1)))->first();
         $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType]);
 
         if (!$result instanceof MappingNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($result::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($result));
         }
 
         $this->getConnection()->insert('heptaconnect_mapping_node', [

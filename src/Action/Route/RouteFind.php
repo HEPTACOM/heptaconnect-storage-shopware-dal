@@ -32,13 +32,13 @@ final class RouteFind implements RouteFindActionInterface
         $sourceKey = $criteria->getSource()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($sourceKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($sourceKey));
         }
 
         $targetKey = $criteria->getTarget()->withoutAlias();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($targetKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($targetKey));
         }
 
         $builder = $this->getBuilderCached();

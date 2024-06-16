@@ -35,7 +35,7 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
             throw new InvalidCreatePayloadException(
                 $payload,
                 1645822126,
-                new UnsupportedStorageKeyException($portalNodeKey::class)
+                new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey))
             );
         }
 
@@ -58,7 +58,7 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
                     throw new InvalidCreatePayloadException(
                         $payload,
                         1645822126,
-                        new UnsupportedStorageKeyException($storageKey::class)
+                        new UnsupportedStorageKeyException(\get_debug_type($storageKey))
                     );
                 }
 

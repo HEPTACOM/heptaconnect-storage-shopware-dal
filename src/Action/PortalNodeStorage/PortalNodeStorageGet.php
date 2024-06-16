@@ -30,7 +30,7 @@ final readonly class PortalNodeStorageGet implements PortalNodeStorageGetActionI
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
         $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
