@@ -60,4 +60,9 @@ abstract class AbstractJobTransitionAction
             ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
+
+    /**
+     * @param list<string> $jobIds
+     */
+    protected abstract function updateAndCollectNumberAffected(array $jobIds, string $transactionId): int;
 }

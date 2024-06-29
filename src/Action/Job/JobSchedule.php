@@ -40,10 +40,7 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 
-            $affected = $this->getUpdateQueryBuilder()
-                ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
-                ->setParameter('transactionId', $transactionId, Types::BINARY)
-                ->executeStatement();
+            $affected = $this->updateAndCollectNumberAffected($jobIds, $transactionId);
 
             if ($affected < \count($jobIds)) {
                 $affectedJobIds = \iterable_to_array(
@@ -92,5 +89,14 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
                 JobStateEnum::failed(),
                 JobStateEnum::finished(),
             ], ArrayParameterType::STRING);
+    }
+
+    #[\Override]
+    protected function updateAndCollectNumberAffected(array $jobIds, string $transactionId): int
+    {
+        return $this->getUpdateQueryBuilder()
+            ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
+            ->setParameter('transactionId', $transactionId, Types::BINARY)
+            ->executeStatement();
     }
 }

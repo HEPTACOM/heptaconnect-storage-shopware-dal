@@ -40,10 +40,7 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 
-            $affected = $this->getUpdateQueryBuilder()
-                ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
-                ->setParameter('transactionId', $transactionId, Types::BINARY)
-                ->executeStatement();
+            $affected = $this->updateAndCollectNumberAffected($jobIds, $transactionId);
 
             if ($affected < \count($jobIds)) {
                 $affectedJobIds = \iterable_to_array(
@@ -88,5 +85,14 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
             ->andWhere($expr->in('job.id', ':jobIds'))
             ->andWhere($expr->neq('job.state_id', ':stateId'))
             ->setParameter('stateId', JobStateEnum::started(), Types::BINARY);
+    }
+
+    #[\Override]
+    protected function updateAndCollectNumberAffected(array $jobIds, string $transactionId): int
+    {
+        return $this->getUpdateQueryBuilder()
+            ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
+            ->setParameter('transactionId', $transactionId, Types::BINARY)
+            ->executeStatement();
     }
 }

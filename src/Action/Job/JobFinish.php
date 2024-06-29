@@ -40,10 +40,7 @@ final class JobFinish extends AbstractJobTransitionAction implements JobFinishAc
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
 
-            $affected = $this->getUpdateQueryBuilder()
-                ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
-                ->setParameter('transactionId', $transactionId, Types::BINARY)
-                ->executeStatement();
+            $affected = $this->updateAndCollectNumberAffected($jobIds, $transactionId);
 
             if ($affected < \count($jobIds)) {
                 $affectedJobIds = \iterable_to_array(
@@ -89,5 +86,14 @@ final class JobFinish extends AbstractJobTransitionAction implements JobFinishAc
             ->andWhere($expr->eq('job.state_id', ':oldStateId'))
             ->setParameter('newStateId', JobStateEnum::finished(), Types::BINARY)
             ->setParameter('oldStateId', JobStateEnum::started(), Types::BINARY);
+    }
+
+    #[\Override]
+    protected function updateAndCollectNumberAffected(array $jobIds, string $transactionId): int
+    {
+        return $this->getUpdateQueryBuilder()
+            ->setParameter('jobIds', $jobIds, ArrayParameterType::STRING)
+            ->setParameter('transactionId', $transactionId, Types::BINARY)
+            ->executeStatement();
     }
 }
