@@ -20,6 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 final readonly class IdentityPersist implements IdentityPersistActionInterface
@@ -181,28 +182,8 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         }
 
         $builder = $this->queryFactory->createBuilder(self::BUILD_UPDATE_PAYLOAD_QUERY);
-        $builder
-            ->from('heptaconnect_mapping', 'mapping')
-            ->select([
-                'mapping.id mapping_id',
-                'mapping_node.id mapping_node_id',
-            ])
-            ->innerJoin(
-                'mapping',
-                'heptaconnect_mapping_node',
-                'mapping_node',
-                $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
-            )
-            ->addOrderBy('mapping.id')
-            ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
-            ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
-            ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
-            ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
-        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodes)), ArrayParameterType::STRING);
-
-        foreach ($builder->iterateRows() as $mapping) {
+        foreach ($this->fetchMappingsToProcess($builder, $portalNodeId, $mappingNodes) as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = $mappingNodes[$mappingNodeId] ?? null;
@@ -251,28 +232,8 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         }
 
         $builder = $this->queryFactory->createBuilder(self::BUILD_DELETE_PAYLOAD_QUERY);
-        $builder
-            ->from('heptaconnect_mapping', 'mapping')
-            ->select([
-                'mapping.id mapping_id',
-                'mapping_node.id mapping_node_id',
-            ])
-            ->innerJoin(
-                'mapping',
-                'heptaconnect_mapping_node',
-                'mapping_node',
-                $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
-            )
-            ->addOrderBy('mapping.id')
-            ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
-            ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
-            ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
-            ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
 
-        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
-        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), ArrayParameterType::STRING);
-
-        foreach ($builder->iterateRows() as $mapping) {
+        foreach ($this->fetchMappingsToProcess($builder, $portalNodeId, $mappingNodeIds) as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
 
@@ -540,5 +501,34 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         }
 
         return $deletedMappings;
+    }
+
+    /**
+     * @return iterable<array{mapping_id: string, mapping_node_id: string}>
+     */
+    private function fetchMappingsToProcess(QueryBuilder $builder, string $portalNodeId, array $mappingNodeIds): iterable
+    {
+        $builder
+            ->from('heptaconnect_mapping', 'mapping')
+            ->select([
+                'mapping.id mapping_id',
+                'mapping_node.id mapping_node_id',
+            ])
+            ->innerJoin(
+                'mapping',
+                'heptaconnect_mapping_node',
+                'mapping_node',
+                $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
+            )
+            ->addOrderBy('mapping.id')
+            ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
+            ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
+            ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
+            ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
+
+        $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
+        $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), ArrayParameterType::STRING);
+
+        return $builder->iterateRows();
     }
 }
