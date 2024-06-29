@@ -55,7 +55,7 @@ abstract class Id
      */
     public static function toBinaryIterable(iterable $hex): iterable
     {
-        return \iterable_map(self::toBinary(...), $hex);
+        return \iterable_map($hex, self::toBinary(...));
     }
 
     public static function randomHex(): string
