@@ -11,9 +11,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Finish\JobFinishPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Finish\JobFinishResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFinishActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
@@ -35,38 +33,12 @@ final class JobFinish extends AbstractJobTransitionAction implements JobFinishAc
     public function finish(JobFinishPayload $payload): JobFinishResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobFinishResult {
-            $jobIds = $this->getJobIds($payload->getJobKeys());
-            $createdAt = DateTime::toStorage($payload->getCreatedAt());
-            $message = $payload->getMessage();
-            $transactionId = Id::randomBinary();
+            [
+                'affected' => $jobIds,
+                'skipped' => $skippedJobIds,
+            ] = $this->transition($payload, $connection, JobStateEnum::finished(), self::FIND_QUERY);
 
-            $affected = $this->updateAndCollectNumberAffected($jobIds, $transactionId);
-
-            if ($affected < \count($jobIds)) {
-                $affectedJobIds = \iterable_to_array(
-                    $this->getSelectQueryBuilder(self::FIND_QUERY)->setParameter('transactionId', $transactionId)->iterateColumn()
-                );
-                $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
-                $jobIds = $affectedJobIds;
-            } else {
-                $skippedJobIds = [];
-            }
-
-            foreach ($jobIds as $jobId) {
-                $connection->insert('heptaconnect_job_history', [
-                    'id' => Id::randomBinary(),
-                    'job_id' => $jobId,
-                    'state_id' => JobStateEnum::finished(),
-                    'message' => $message,
-                    'created_at' => $createdAt,
-                ], [
-                    'id' => Types::BINARY,
-                    'job_id' => Types::BINARY,
-                    'state_id' => Types::BINARY,
-                ]);
-            }
-
-            return new JobFinishResult($this->packJobKeys($jobIds), $this->packJobKeys($skippedJobIds));
+            return new JobFinishResult($jobIds, $skippedJobIds);
         });
     }
 
