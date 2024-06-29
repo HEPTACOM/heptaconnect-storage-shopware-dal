@@ -25,11 +25,9 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
-    private ?QueryBuilder $selectQueryBuilder = null;
-
     public function __construct(
         private readonly Connection $connection,
-        private readonly QueryFactory $queryFactory
+        protected readonly QueryFactory $queryFactory,
     ) {
     }
 
@@ -49,7 +47,7 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
 
             if ($affected < \count($jobIds)) {
                 $affectedJobIds = \iterable_to_array(
-                    $this->getSelectQueryBuilder()->setParameter('transactionId', $transactionId)->iterateColumn()
+                    $this->getSelectQueryBuilder(self::FIND_QUERY)->setParameter('transactionId', $transactionId)->iterateColumn()
                 );
                 $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
                 $jobIds = $affectedJobIds;
@@ -94,20 +92,5 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
                 JobStateEnum::failed(),
                 JobStateEnum::finished(),
             ], ArrayParameterType::STRING);
-    }
-
-    private function getSelectQueryBuilder(): QueryBuilder
-    {
-        if ($this->selectQueryBuilder instanceof QueryBuilder) {
-            return $this->selectQueryBuilder;
-        }
-
-        $queryBuilder = $this->queryFactory->createBuilder(self::FIND_QUERY);
-        $expr = $queryBuilder->expr();
-
-        return $this->selectQueryBuilder = $queryBuilder->select('job.id')
-            ->from('heptaconnect_job', 'job')
-            ->addOrderBy('job.id')
-            ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 }

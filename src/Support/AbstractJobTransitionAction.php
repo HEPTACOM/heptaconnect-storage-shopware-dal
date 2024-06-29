@@ -7,9 +7,15 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 abstract class AbstractJobTransitionAction
 {
+    protected ?QueryBuilder $selectQueryBuilder = null;
+
+    protected readonly QueryFactory $queryFactory;
+
     /**
      * @return list<string>
      * @throws UnsupportedStorageKeyException
@@ -38,5 +44,20 @@ abstract class AbstractJobTransitionAction
         }
 
         return $result;
+    }
+
+    protected function getSelectQueryBuilder(string $queryIdentifier): QueryBuilder
+    {
+        if ($this->selectQueryBuilder instanceof QueryBuilder) {
+            return $this->selectQueryBuilder;
+        }
+
+        $queryBuilder = $this->queryFactory->createBuilder($queryIdentifier);
+        $expr = $queryBuilder->expr();
+
+        return $this->selectQueryBuilder = $queryBuilder->select('job.id')
+            ->from('heptaconnect_job', 'job')
+            ->addOrderBy('job.id')
+            ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 }
