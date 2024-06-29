@@ -10,8 +10,6 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Start\JobStartPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Start\JobStartResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
@@ -73,7 +71,7 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
                 ]);
             }
 
-            return $this->packResult($jobIds, $skippedJobIds);
+            return new JobStartResult($this->packJobKeys($jobIds), $this->packJobKeys($skippedJobIds));
         });
     }
 
@@ -107,22 +105,5 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
-    }
-
-    private function packResult(array $affectedJobIds, array $skippedJobIds): JobStartResult
-    {
-        $startedJobs = new JobKeyCollection();
-
-        foreach ($affectedJobIds as $affectedJobId) {
-            $startedJobs->push([new JobStorageKey($affectedJobId)]);
-        }
-
-        $skippedJobs = new JobKeyCollection();
-
-        foreach ($skippedJobIds as $skippedJobId) {
-            $skippedJobs->push([new JobStorageKey($skippedJobId)]);
-        }
-
-        return new JobStartResult($startedJobs, $skippedJobs);
     }
 }

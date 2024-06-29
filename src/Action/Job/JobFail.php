@@ -10,8 +10,6 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Fail\JobFailResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
@@ -73,7 +71,7 @@ final class JobFail extends AbstractJobTransitionAction implements JobFailAction
                 ]);
             }
 
-            return $this->packResult($jobIds, $skippedJobIds);
+            return new JobFailResult($this->packJobKeys($jobIds), $this->packJobKeys($skippedJobIds));
         });
     }
 
@@ -108,22 +106,5 @@ final class JobFail extends AbstractJobTransitionAction implements JobFailAction
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
-    }
-
-    private function packResult(array $affectedJobIds, array $skippedJobIds): JobFailResult
-    {
-        $failedJobs = new JobKeyCollection();
-
-        foreach ($affectedJobIds as $affectedJobId) {
-            $failedJobs->push([new JobStorageKey($affectedJobId)]);
-        }
-
-        $skippedJobs = new JobKeyCollection();
-
-        foreach ($skippedJobIds as $skippedJobId) {
-            $skippedJobs->push([new JobStorageKey($skippedJobId)]);
-        }
-
-        return new JobFailResult($failedJobs, $skippedJobs);
     }
 }

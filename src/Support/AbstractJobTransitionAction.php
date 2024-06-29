@@ -28,4 +28,15 @@ abstract class AbstractJobTransitionAction
 
         return \array_keys($jobIds);
     }
+
+    protected function packJobKeys(array $jobIds): JobKeyCollection
+    {
+        $result = new JobKeyCollection();
+
+        foreach ($jobIds as $jobId) {
+            $result->push([new JobStorageKey($jobId)]);
+        }
+
+        return $result;
+    }
 }

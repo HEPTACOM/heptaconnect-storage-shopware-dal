@@ -10,8 +10,6 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Schedule\JobSchedulePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Schedule\JobScheduleResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
@@ -73,7 +71,7 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
                 ]);
             }
 
-            return $this->packResult($jobIds, $skippedJobIds);
+            return new JobScheduleResult($this->packJobKeys($jobIds), $this->packJobKeys($skippedJobIds));
         });
     }
 
@@ -111,22 +109,5 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
-    }
-
-    private function packResult(array $affectedJobIds, array $skippedJobIds): JobScheduleResult
-    {
-        $scheduledJobs = new JobKeyCollection();
-
-        foreach ($affectedJobIds as $affectedJobId) {
-            $scheduledJobs->push([new JobStorageKey($affectedJobId)]);
-        }
-
-        $skippedJobs = new JobKeyCollection();
-
-        foreach ($skippedJobIds as $skippedJobId) {
-            $skippedJobs->push([new JobStorageKey($skippedJobId)]);
-        }
-
-        return new JobScheduleResult($scheduledJobs, $skippedJobs);
     }
 }
