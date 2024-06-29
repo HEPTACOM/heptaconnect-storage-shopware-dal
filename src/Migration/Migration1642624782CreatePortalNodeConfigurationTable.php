@@ -73,7 +73,7 @@ SQL;
     private function migrateConfiguration(Connection $connection): void
     {
         $select = $connection->createQueryBuilder();
-        $migrateableConfiguration = $select->from('system_config')
+        $migrateableConfigs = $select->from('system_config')
             ->select([
                 'configuration_key',
                 'configuration_value',
@@ -88,7 +88,7 @@ SQL;
             ->set('configuration', ':config')
             ->where($update->expr()->eq('id', ':id'));
 
-        foreach ($migrateableConfiguration as $row) {
+        foreach ($migrateableConfigs as $row) {
             $configurationKey = (string) ($row['configuration_key'] ?? null);
             $configurationValue = (string) ($row['configuration_value'] ?? null);
 

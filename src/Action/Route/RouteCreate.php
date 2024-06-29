@@ -85,7 +85,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
         $routeInserts = [];
-        $routeCapabilityInserts = [];
+        $routeCapInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
@@ -110,7 +110,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             ];
 
             foreach ($payload->getCapabilities() as $capability) {
-                $routeCapabilityInserts[] = [
+                $routeCapInserts[] = [
                     'route_id' => Id::toBinary($key->getUuid()),
                     'route_capability_id' => Id::toBinary($capabilityIds[$capability]),
                     'created_at' => $now,
@@ -121,7 +121,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
         }
 
         try {
-            $this->connection->transactional(function () use ($routeCapabilityInserts, $routeInserts): void {
+            $this->connection->transactional(function () use ($routeCapInserts, $routeInserts): void {
                 // TODO batch
                 foreach ($routeInserts as $routeInsert) {
                     $this->connection->insert('heptaconnect_route', $routeInsert, [
@@ -132,7 +132,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
                     ]);
                 }
 
-                foreach ($routeCapabilityInserts as $routeCapabilityInsert) {
+                foreach ($routeCapInserts as $routeCapabilityInsert) {
                     $this->connection->insert('heptaconnect_route_has_capability', $routeCapabilityInsert, [
                         'route_id' => Types::BINARY,
                         'route_capability_id' => Types::BINARY,

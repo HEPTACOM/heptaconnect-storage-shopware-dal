@@ -45,7 +45,7 @@ class WebHttpHandlerPathAccessor
                 throw new \LogicException('array_combine should not have returned false', 1637467897);
             }
 
-            $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
+            $nonMatchingHexFlip = \array_flip($nonMatchingHexes);
             $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
             $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
@@ -70,7 +70,7 @@ class WebHttpHandlerPathAccessor
             }
 
             foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
-                $path = $flippedNonMatchingHexes[$typeId];
+                $path = $nonMatchingHexFlip[$typeId];
                 $foundIds[$path] = $typeId;
 
                 unset($inserts[$typeId]);

@@ -68,7 +68,7 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
 
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(IdentityRedirectKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
-        $identityRedirectInserts = [];
+        $redirectInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
@@ -84,7 +84,7 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
             /** @var PortalNodeStorageKey $targetKey */
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
-            $identityRedirectInserts[] = [
+            $redirectInserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
                 'source_portal_node_id' => Id::toBinary($sourceKey->getUuid()),
                 'source_external_id' => $payload->getSourceExternalId(),
@@ -98,10 +98,10 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
         }
 
         try {
-            $this->connection->transactional(function () use ($identityRedirectInserts): void {
+            $this->connection->transactional(function () use ($redirectInserts): void {
                 // TODO batch
-                foreach ($identityRedirectInserts as $identityRedirectInsert) {
-                    $this->connection->insert('heptaconnect_identity_redirect', $identityRedirectInsert, [
+                foreach ($redirectInserts as $redirectInsert) {
+                    $this->connection->insert('heptaconnect_identity_redirect', $redirectInsert, [
                         'id' => Types::BINARY,
                         'portal_node_source_id' => Types::BINARY,
                         'portal_node_target_id' => Types::BINARY,

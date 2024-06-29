@@ -58,15 +58,15 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
         $pass = $updates = [];
 
-        $existingExtensions = [];
-        $existingExtensionRows = $this->getSelectByClassNameQueryBuilder()
+        $knownExtClasses = [];
+        $dbKnownExtensions = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
             ->setParameter('extensionClassNames', $extensionsToToggle, ArrayParameterType::STRING)
             ->iterateRows();
 
-        foreach ($existingExtensionRows as $existingExtension) {
+        foreach ($dbKnownExtensions as $existingExtension) {
             $className = $existingExtension['class_name'];
-            $existingExtensions[] = $className;
+            $knownExtClasses[] = $className;
 
             if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
                 $pass[Id::toHex($existingExtension['id'])] = $className;
@@ -78,7 +78,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             }
         }
 
-        $missingExtensions = \array_diff($extensionsToToggle, $existingExtensions);
+        $missingExtensions = \array_diff($extensionsToToggle, $knownExtClasses);
 
         foreach ($missingExtensions as $missingExtension) {
             $missingExtensionId = Id::randomHex();
@@ -118,11 +118,11 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     $pass[Id::toHex($updatePayload['id'])] = $updatePayload['class_name'];
                 }
             } else {
-                $existingExtensions = $this->getSelectByIdQueryBuilder()
+                $knownExtClasses = $this->getSelectByIdQueryBuilder()
                     ->setParameter('ids', $updateIds, ArrayParameterType::STRING)
                     ->iterateRows();
 
-                foreach ($existingExtensions as $existingExtension) {
+                foreach ($knownExtClasses as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
                         $pass[Id::toHex($existingExtension['id'])] = $existingExtension['class_name'];
                     }

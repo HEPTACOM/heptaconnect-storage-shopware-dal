@@ -1,4 +1,86 @@
 <?xml version="1.0"?>
 <phpmd-baseline>
     <!-- Intentional -->
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityMap.php" method="map"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectUnidirectional"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/IdentityError/IdentityErrorCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/IdentityRedirect/IdentityRedirectOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Job/JobCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/PortalExtension/PortalExtensionSwitchActive.php" method="toggle"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/PortalNode/PortalNodeOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/PortalNodeAlias/PortalNodeAliasSet.php" method="set"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Route/RouteCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Route/RouteOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationSet.php" method="set"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityMap.php" method="map"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityPersist.php" method="validateMappingConflicts"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityReflect.php" method="reflectUnidirectional"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/IdentityError/IdentityErrorCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/IdentityRedirect/IdentityRedirectOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Job/JobCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Route/RouteCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Route/RouteOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationSet.php" method="set"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityMap.php" method="map"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectUnidirectional"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/IdentityError/IdentityErrorCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/IdentityRedirect/IdentityRedirectOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Job/JobCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/PortalNodeAlias/PortalNodeAliasSet.php" method="set"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Route/RouteCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Route/RouteOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationSet.php" method="set"/>
+    <violation rule="PHPMD\Rule\Design\WeightedMethodCount" file="src/Action/Identity/IdentityPersist.php"/>
+    <violation rule="PHPMD\Rule\Design\WeightedMethodCount" file="src/Bridge/StorageFacade.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1589662318CreateDatasetEntityTypeTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1589673188CreateMappingNodeTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1590250578CreateErrorMessageTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1596939935CreatePortalNodeKeyValueStorageTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1602667098ConvertPortalNodeStorageValueToBlob.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1604363856CreateJobPayloadStorageTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1622309810FixForeignKeyConstraints.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1622316410ReplaceMappingWithPortalNodeAndMappingNode.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1629148895ChangeTextCollateToEnsureCorrectComparison.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1629643769AddJobStartAndFinishFields.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1632763825RenameDatasetEntityTypeTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019143EntityTypeIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019144JobIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019145JobIndexNewHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019146JobPayloadIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019147JobTypeIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019148MappingIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019149MappingErrorMessageIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019150MappingNodeIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019151PortalNodeIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019152PortalNodeStorageIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635019153RouteIndexHappenedAtColumns.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635512814OnDeleteCascadeFromMappingNodeToMapping.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635713039CreateRouteCapabilityTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635713040SeedReceptionRouteCapability.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635713041CreateRouteToRouteCapabilityTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1635713042SeedReceptionCapabilityToRoute.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1636817108CreateWebHttpHandlerPathTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1636817109CreateWebHttpHandlerTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1636817110CreateWebHttpHandlerConfigurationTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1639246133CreateStateHistoryForJobs.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1640360050CreatePortalExtensionConfigurationTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1641403938AddChecksumIndexToJobPayloadTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1642624782CreatePortalNodeConfigurationTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1642885343RemoveCronjobAndCronjobRunTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1643220550CreatePortalNodeAliasColumn.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1645820922AddFileReferenceRequest.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1673717600AddIdentityRedirectTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1674420000AddJobTransactionIdIndex.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1677428200AddKeyIndexToPortalNodeStorageTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongClassName" file="src/Migration/Migration1677950300AddExternalIdIndexToJobTable.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Action/Identity/IdentityMap.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Action/Identity/IdentityPersist.php"/>
+    <violation rule="PHPMD\Rule\Naming\LongVariable" file="src/Action/Identity/IdentityReflect.php"/>
+    <violation rule="PHPMD\Rule\Naming\ShortClassName" file="src/Support/Id.php"/>
 </phpmd-baseline>

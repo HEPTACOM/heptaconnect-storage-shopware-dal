@@ -32,8 +32,8 @@ class WebHttpHandlerAccessor
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
-        $builder
+        $baseBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $baseBuilder
             ->from('heptaconnect_web_http_handler', 'handler')
             ->select([
                 'handler.id id',
@@ -46,21 +46,21 @@ class WebHttpHandlerAccessor
         $result = [];
         $now = DateTime::nowToStorage();
 
-        foreach (\array_chunk($httpHandlerPaths, 25, true) as $httpHandlerPathChunks) {
-            $b = clone $builder;
+        foreach (\array_chunk($httpHandlerPaths, 25, true) as $chunkedPaths) {
+            $builder = clone $baseBuilder;
             $keyIndex = [];
 
-            foreach ($httpHandlerPathChunks as $key => [$portalNodeKey, $path]) {
+            foreach ($chunkedPaths as $key => [$portalNodeKey, $path]) {
                 $pathId = $this->pathIdResolver->getIdFromPath($path);
                 $match = $portalNodeKey->getUuid() . $pathId;
                 $keyIndex[$match] = $key;
 
-                $b->orWhere($b->expr()->and(
-                    $b->expr()->eq('handler.portal_node_id', ':pn' . $match),
-                    $b->expr()->eq('handler.path_id', ':p' . $match)
+                $builder->orWhere($builder->expr()->and(
+                    $builder->expr()->eq('handler.portal_node_id', ':pn' . $match),
+                    $builder->expr()->eq('handler.path_id', ':p' . $match)
                 ));
-                $b->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
-                $b->setParameter('p' . $match, Id::toBinary($pathId), Types::BINARY);
+                $builder->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
+                $builder->setParameter('p' . $match, Id::toBinary($pathId), Types::BINARY);
 
                 $insertableId = Id::randomBinary();
                 $result[$keyIndex[$match]] = Id::toHex($insertableId);
@@ -73,7 +73,7 @@ class WebHttpHandlerAccessor
             }
 
             /** @var array{id: string, match_key: string} $row */
-            foreach ($b->iterateRows() as $row) {
+            foreach ($builder->iterateRows() as $row) {
                 $result[$keyIndex[$row['match_key']]] = Id::toHex($row['id']);
 
                 unset($inserts[$row['match_key']]);
