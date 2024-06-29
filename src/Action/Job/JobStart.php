@@ -10,16 +10,16 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Start\JobStartPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Start\JobStartResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class JobStart implements JobStartActionInterface
+final class JobStart extends AbstractJobTransitionAction implements JobStartActionInterface
 {
     public const string UPDATE_QUERY = '0803daca-3ca7-44c4-a492-42cc51e46854';
 
@@ -39,7 +39,7 @@ final class JobStart implements JobStartActionInterface
     public function start(JobStartPayload $payload): JobStartResult
     {
         return $this->connection->transactional(function (Connection $connection) use ($payload): JobStartResult {
-            $jobIds = $this->getJobIds($payload);
+            $jobIds = $this->getJobIds($payload->getJobKeys());
             $createdAt = DateTime::toStorage($payload->getCreatedAt());
             $message = $payload->getMessage();
             $transactionId = Id::randomBinary();
@@ -75,21 +75,6 @@ final class JobStart implements JobStartActionInterface
 
             return $this->packResult($jobIds, $skippedJobIds);
         });
-    }
-
-    private function getJobIds(JobStartPayload $payload): array
-    {
-        $jobIds = [];
-
-        foreach ($payload->getJobKeys() as $jobKey) {
-            if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($jobKey));
-            }
-
-            $jobIds[Id::toBinary($jobKey->getUuid())] = true;
-        }
-
-        return \array_keys($jobIds);
     }
 
     private function getUpdateQueryBuilder(): QueryBuilder
