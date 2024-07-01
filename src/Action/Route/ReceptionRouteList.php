@@ -44,10 +44,9 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        return \iterable_map(
-            Id::toHexIterable($this->iterator->iterateColumn($builder)),
-            static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id))
-        );
+        foreach ($builder->iterateColumn() as $id) {
+            yield new ReceptionRouteListResult(new RouteStorageKey($id));
+        }
     }
 
     private function getBuilderCached(): SelectQueryBuilder

@@ -55,8 +55,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $idsCheck = \array_combine($ids, $ids);
 
-        foreach ($searchBuilder->iterateRows() as $row) {
-            $id = \current($row);
+        foreach ($searchBuilder->iterateColumn() as $id) {
             unset($idsCheck[$id]);
         }
 

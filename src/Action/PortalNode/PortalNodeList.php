@@ -26,10 +26,9 @@ final class PortalNodeList implements PortalNodeListActionInterface
 
     public function list(): iterable
     {
-        return \iterable_map(
-            $this->queryIterator->iterateColumn($this->getSearchQuery()),
-            static fn (string $id) => new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)))
-        );
+        foreach ($this->getSearchQuery()->iterateColumn() as $id) {
+            yield new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)));
+        }
     }
 
     private function getSearchQuery(): SelectQueryBuilder

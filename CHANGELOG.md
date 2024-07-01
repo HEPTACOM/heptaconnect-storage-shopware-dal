@@ -19,6 +19,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1719673190` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::delete` when called as a select query builder is not meant to perform delete statements
 - Add exception code `1719673191` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::update` when called as a select query builder is not meant to perform update statements
 - Add exception code `1719673192` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::insert` when called as a select query builder is not meant to perform insert statements
+- Add exception code `1719685570` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn` when a fetched cell is null although strings are expected
 
 ### Changed
 
@@ -30,6 +31,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Extract shared logic for job transaction actions `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\AbstractJobTransitionAction`
 - Make internal query identifier `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::$identifier` public to make it accessible for others to read
 - Extract select statement related methods from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder` with other statement type forbidden to follow Doctrine suggestions to keep track of 
+- Change method `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateColumn` to only return strings as every occasion expects that
 
 ### Deprecated
 

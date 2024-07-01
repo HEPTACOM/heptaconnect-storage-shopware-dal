@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder as HeptaconnectQueryBuilder;
 
 class QueryIterator
 {
@@ -21,13 +22,31 @@ class QueryIterator
     }
 
     /**
-     * @return iterable<int, string|null>
+     * @return iterable<int, string>
+     * @throws \LogicException
      */
     public function iterateColumn(QueryBuilder $query, int $pageSize = 1000): iterable
     {
         return $this->iterateSafelyPaginated(
             $query,
-            fn (QueryBuilder $qb): array => $qb->executeQuery()->fetchFirstColumn(),
+            function (QueryBuilder $qb): array {
+                $result = $qb->executeQuery()->fetchFirstColumn();
+
+                foreach ($result as $cell) {
+                    if ($cell === null) {
+                        if ($qb instanceof HeptaconnectQueryBuilder) {
+                            throw new \LogicException(
+                                \sprintf('The queried column in query "%s" is expected to not fetch null values but returned a null value', $qb->identifier),
+                                1719685570
+                            );
+                        } else {
+                            throw new \LogicException('The queried column is expected to not fetch null values but returned a null value', 1719685570);
+                        }
+                    }
+                }
+
+                return $result;
+            },
             $pageSize
         );
     }

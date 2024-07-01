@@ -63,7 +63,8 @@ final class SelectQueryBuilder extends QueryBuilder
     }
 
     /**
-     * @return iterable<int, string|null>
+     * @return iterable<int, string>
+     * @throws \LogicException
      */
     public function iterateColumn(): iterable
     {

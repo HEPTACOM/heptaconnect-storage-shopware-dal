@@ -29,10 +29,9 @@ final class JobFinishedList implements JobListFinishedActionInterface
     #[\Override]
     public function list(): iterable
     {
-        return \iterable_map(
-            Id::toHexIterable($this->iterator->iterateColumn($this->getBuilderCached())),
-            static fn (string $id) => new JobListFinishedResult(new JobStorageKey($id))
-        );
+        foreach (Id::toHexIterable($this->getBuilderCached()->iterateColumn()) as $id) {
+            yield new JobListFinishedResult(new JobStorageKey($id));
+        }
     }
 
     private function getBuilderCached(): SelectQueryBuilder

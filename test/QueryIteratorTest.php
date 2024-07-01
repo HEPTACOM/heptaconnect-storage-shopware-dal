@@ -18,11 +18,19 @@ final class QueryIteratorTest extends TestCase
         parent::setUp();
 
         $connection = $this->getConnection();
-        $connection->executeStatement('CREATE TABLE storage_test_iterator (id INT AUTO_INCREMENT, PRIMARY KEY (id))');
+        $connection->executeStatement('CREATE TABLE storage_test_iterator (id INT AUTO_INCREMENT, value VARCHAR(16) NULL, PRIMARY KEY (id))');
         $connection->beginTransaction();
 
-        foreach (range(1, 50) as $_) {
-            $connection->insert('storage_test_iterator', []);
+        foreach (range(1, 25) as $_) {
+            $connection->insert('storage_test_iterator', [
+                'value' => null,
+            ]);
+        }
+
+        foreach (range(1, 25) as $rowId) {
+            $connection->insert('storage_test_iterator', [
+                'value' => (string) $rowId,
+            ]);
         }
     }
 
@@ -120,5 +128,37 @@ final class QueryIteratorTest extends TestCase
         } catch (\LogicException $exception) {
             static::assertSame(1645901522, $exception->getCode());
         }
+    }
+
+    public function testNullValueDetectionWhenIteratingNullableStringColumn(): void
+    {
+        $connection = $this->getConnection();
+        $builder = $connection->createQueryBuilder();
+        $builder->from('storage_test_iterator');
+        $builder->select(['value']);
+        $builder->addOrderBy('id');
+
+        $iterator = new QueryIterator();
+
+        try {
+            $iterator->iterateColumn($builder);
+            static::fail();
+        } catch (\LogicException $exception) {
+            static::assertSame(1719685570, $exception->getCode());
+        }
+    }
+
+    public function testIteratingStringOnlyColumn(): void
+    {
+        $connection = $this->getConnection();
+        $builder = $connection->createQueryBuilder();
+        $builder->from('storage_test_iterator');
+        $builder->select(['value']);
+        $builder->where($builder->expr()->isNotNull('value'));
+        $builder->addOrderBy('id');
+
+        $iterator = new QueryIterator();
+
+        static::assertCount(25, \iterable_to_array($iterator->iterateColumn($builder)));
     }
 }

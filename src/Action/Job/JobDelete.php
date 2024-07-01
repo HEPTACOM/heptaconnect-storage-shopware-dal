@@ -59,7 +59,8 @@ SQL;
             ->addOrderBy('job.id')
             ->select('job.payload_id')
             ->distinct()
-            ->where($selectBuilder->expr()->in('id', ':ids'));
+            ->where($selectBuilder->expr()->in('id', ':ids'))
+            ->andWhere($selectBuilder->expr()->isNotNull('job.payload_id'));
 
         $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteJobBuilder
