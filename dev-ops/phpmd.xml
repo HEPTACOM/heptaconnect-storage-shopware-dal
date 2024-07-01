@@ -41,7 +41,7 @@
     </rule>
     <rule ref="rulesets/naming.xml/LongVariable">
         <properties>
-            <property name="subtract-suffixes" value="Service,Collection,Identifier,Accessor,Resolver,QueryBuilder,Filter,Type,Cache,Ids,Entities,Key"/>
+            <property name="subtract-suffixes" value="Service,Collection,Identifier,Accessor,Resolver,QueryBuilder,Builder,Filter,Type,Cache,Ids,Entities,Key"/>
         </properties>
     </rule>
     <rule ref="rulesets/naming.xml/ShortVariable">

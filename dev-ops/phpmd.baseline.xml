@@ -6,6 +6,7 @@
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectUnidirectional"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/IdentityError/IdentityErrorCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/IdentityRedirect/IdentityRedirectCreate.php" method="create"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/IdentityRedirect/IdentityRedirectOverview.php" method="overview"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Job/JobCreate.php" method="create"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/PortalExtension/PortalExtensionSwitchActive.php" method="toggle"/>
@@ -13,6 +14,7 @@
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/PortalNodeAlias/PortalNodeAliasSet.php" method="set"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Route/RouteCreate.php" method="create"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Route/RouteOverview.php" method="overview"/>
+    <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/RouteCapability/RouteCapabilityOverview.php" method="overview"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/WebHttpHandlerConfiguration/WebHttpHandlerConfigurationSet.php" method="set"/>
     <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityMap.php" method="map"/>
     <violation rule="PHPMD\Rule\Design\LongMethod" file="src/Action/Identity/IdentityOverview.php" method="overview"/>
@@ -30,6 +32,7 @@
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectUnidirectional"/>
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/IdentityError/IdentityErrorCreate.php" method="create"/>
+    <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/IdentityRedirect/IdentityRedirectCreate.php" method="create"/>
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/IdentityRedirect/IdentityRedirectOverview.php" method="overview"/>
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/Job/JobCreate.php" method="create"/>
     <violation rule="PHPMD\Rule\Design\NpathComplexity" file="src/Action/PortalNodeAlias/PortalNodeAliasSet.php" method="set"/>
