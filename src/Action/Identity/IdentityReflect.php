@@ -117,7 +117,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
 
         $builder->andWhere($builder->expr()->or(...$mappingNodeExpressions));
 
-        /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string} $mapping */
+        /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string|null} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
             $portalNodeId = Id::toHex($mapping['portal_node_id']);
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
@@ -156,7 +156,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $builder->setParameter('portalNodeId', Id::toBinary($targetPortalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), ArrayParameterType::STRING);
 
-        /** @var array{mapping_node_id: string, mapping_external_id: string} $mapping */
+        /** @var array{mapping_node_id: string, mapping_external_id: string|null} $mapping */
         foreach ($builder->iterateRows() as $mapping) {
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
@@ -290,9 +290,10 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         /** @var MappingInterface[] $reflectionMappings */
         $reflectionMappings = [];
 
+        /** @var array{source_portal_node_id: string, type: string, source_external_id: string|null, target_external_id: string|null} $mapping */
         foreach ($queryBuilder->iterateRows() as $mapping) {
             $sourcePortalNodeId = Id::toHex($mapping['source_portal_node_id']);
-            $entityType = (string) $mapping['type'];
+            $entityType = $mapping['type'];
             $sourceExternalId = (string) $mapping['source_external_id'];
             $targetExternalId = (string) $mapping['target_external_id'];
 

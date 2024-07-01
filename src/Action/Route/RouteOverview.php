@@ -136,20 +136,31 @@ final class RouteOverview implements RouteOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): RouteOverviewResult => new RouteOverviewResult(
-                new RouteStorageKey(Id::toHex((string) $row['id'])),
-                new UnsafeClassString((string) $row['entity_type_name']),
-                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                new UnsafeClassString((string) $row['source_portal_node_class']),
-                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                new UnsafeClassString((string) $row['target_portal_node_class']),
+        /**
+         * @var array{
+         *     id: string,
+         *     entity_type_name: string,
+         *     source_portal_node_id: string,
+         *     source_portal_node_class: string,
+         *     target_portal_node_id: string,
+         *     target_portal_node_class: string,
+         *     ct: string,
+         *     capability_name: string|null
+         * } $row
+         */
+        foreach ($builder->iterateRows() as $row) {
+            yield new RouteOverviewResult(
+                new RouteStorageKey(Id::toHex($row['id'])),
+                new UnsafeClassString($row['entity_type_name']),
+                new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),
+                new UnsafeClassString($row['source_portal_node_class']),
+                new PortalNodeStorageKey(Id::toHex($row['target_portal_node_id'])),
+                new UnsafeClassString($row['target_portal_node_class']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['ct']),
                 new StringCollection(\explode(',', (string) $row['capability_name']))
-            )
-        );
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

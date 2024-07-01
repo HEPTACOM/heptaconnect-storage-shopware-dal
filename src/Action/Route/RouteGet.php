@@ -116,22 +116,30 @@ final class RouteGet implements RouteGetActionInterface
     /**
      * @param string[] $ids
      *
-     * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult>
+     * @return iterable<RouteGetResult>
      */
     private function yieldRoutes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $this->iterator->iterate($builder),
-            static fn (array $row): RouteGetResult => new RouteGetResult(
-                new RouteStorageKey(Id::toHex((string) $row['id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                new UnsafeClassString((string) $row['entity_type_name']),
+        /**
+         * @var array{
+         *     id: string,
+         *     entity_type_name: string,
+         *     source_portal_node_id: string,
+         *     target_portal_node_id: string,
+         *     capability_name: string|null
+         * } $row
+         **/
+        foreach ($builder->iterateRows() as $row) {
+            yield new RouteGetResult(
+                new RouteStorageKey(Id::toHex($row['id'])),
+                new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),
+                new PortalNodeStorageKey(Id::toHex($row['target_portal_node_id'])),
+                new UnsafeClassString($row['entity_type_name']),
                 \explode(',', (string) $row['capability_name'])
-            )
-        );
+            );
+        }
     }
 }

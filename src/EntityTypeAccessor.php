@@ -81,6 +81,11 @@ class EntityTypeAccessor
         return \array_intersect_key($this->entityTypeIds, \array_fill_keys($entityTypes, true));
     }
 
+    /**
+     * @param list<string> $types
+     *
+     * @return array<string, string>
+     */
     private function queryIdsForTypes(array $types): array
     {
         $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);

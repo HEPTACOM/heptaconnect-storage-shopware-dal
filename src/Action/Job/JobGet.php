@@ -121,22 +121,32 @@ final class JobGet implements JobGetActionInterface
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $this->iterator->iterate($builder),
-            fn (array $row): JobGetResult => new JobGetResult(
-                (string) $row['job_type_type'],
-                new JobStorageKey(Id::toHex((string) $row['job_id'])),
+        /**
+         * @var array{
+         *     job_id: string,
+         *     job_external_id: string,
+         *     job_type_type: string,
+         *     job_entity_type: string,
+         *     portal_node_id: string,
+         *     job_payload_payload: string|null,
+         *     job_payload_format: string|null
+         * } $row
+         */
+        foreach ($builder->iterateRows() as $row) {
+            yield new JobGetResult(
+                $row['job_type_type'],
+                new JobStorageKey(Id::toHex($row['job_id'])),
                 new MappingComponentStruct(
-                    new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
-                    new EntityType((string) $row['job_entity_type']),
-                    (string) $row['job_external_id']
+                    new PortalNodeStorageKey(Id::toHex($row['portal_node_id'])),
+                    new EntityType($row['job_entity_type']),
+                    $row['job_external_id']
                 ),
                 $this->unserializePayload($row['job_payload_payload'], (string) $row['job_payload_format'])
-            )
-        );
+            );
+        }
     }
 
-    private function unserializePayload($payload, string $format): ?array
+    private function unserializePayload(?string $payload, string $format): ?array
     {
         if (!\is_string($payload)) {
             return null;

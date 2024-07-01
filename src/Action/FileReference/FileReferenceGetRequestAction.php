@@ -51,14 +51,14 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
             ->setParameter('portalNodeKey', $portalNodeId, Types::BINARY)
             ->setParameter('requestIds', $requestIds, ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $queryBuilder->iterateRows(),
-            static fn (array $row): FileReferenceGetRequestResult => new FileReferenceGetRequestResult(
+        /** @var array{request_id: string, serialized_request: string} $row */
+        foreach ($queryBuilder->iterateRows() as $row) {
+            yield new FileReferenceGetRequestResult(
                 $portalNodeKey,
                 new FileReferenceRequestStorageKey(Id::toHex($row['request_id'])),
-                (string) $row['serialized_request']
-            )
-        );
+                $row['serialized_request']
+            );
+        }
     }
 
     private function getQueryBuilder(): QueryBuilder

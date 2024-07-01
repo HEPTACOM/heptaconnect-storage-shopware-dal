@@ -51,6 +51,7 @@ class JobTypeAccessor
 
             $typeIds = [];
 
+            /** @var array{id: string, type: string} $row */
             foreach ($builder->iterateRows() as $row) {
                 $typeIds[$row['type']] = Id::toHex($row['id']);
             }

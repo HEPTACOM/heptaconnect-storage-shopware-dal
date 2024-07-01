@@ -88,6 +88,7 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
 
                 $fetchBuilder->setIsForUpdate(true);
 
+                /** @var array{storage_id: string, storage_key: string} $storageRow */
                 foreach ($fetchBuilder->iterateRows() as $storageRow) {
                     $storageId = $storageRow['storage_id'];
                     $storageKey = $storageRow['storage_key'];

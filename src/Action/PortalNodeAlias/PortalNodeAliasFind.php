@@ -43,12 +43,12 @@ final readonly class PortalNodeAliasFind implements PortalNodeAliasFindActionInt
             ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
             ->setParameter('aliases', $aliases, ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): PortalNodeAliasFindResult => new PortalNodeAliasFindResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                (string) $row['alias']
-            )
-        );
+        /** @var array{id: string, alias: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new PortalNodeAliasFindResult(
+                new PortalNodeStorageKey(Id::toHex($row['id'])),
+                $row['alias']
+            );
+        }
     }
 }

@@ -64,14 +64,14 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
-                (string) $row['name'],
+        /** @var array{name: string, created_at: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new RouteCapabilityOverviewResult(
+                $row['name'],
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

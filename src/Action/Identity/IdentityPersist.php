@@ -139,7 +139,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
                 continue;
             }
 
-            $mappingNodeKey = $createMapping->getMappingNodeKey() ?? null;
+            $mappingNodeKey = $createMapping->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
                 throw new InvalidCreatePayloadException($createMapping, 1643149115, new UnsupportedStorageKeyException(\get_debug_type($mappingNodeKey)));
@@ -315,6 +315,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
 
         $mappingNodesToMerge = [];
 
+        /** @var array{mappingNodeId: string, externalId: string|null, typeId: string} $row */
         foreach ($queryBuilder->iterateRows() as $row) {
             $intoMappingNodeId = Id::toHex($row['mappingNodeId']);
             $externalId = $row['externalId'];
@@ -384,6 +385,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
 
         $types = [];
 
+        /** @var array{mappingNodeId: string, typeId: string} $row */
         foreach ($queryBuilder->iterateRows() as $row) {
             $types[Id::toHex($row['mappingNodeId'])] = Id::toHex($row['typeId']);
         }

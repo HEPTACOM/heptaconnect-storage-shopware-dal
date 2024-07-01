@@ -57,14 +57,14 @@ final readonly class PortalNodeStorageList implements PortalNodeStorageListActio
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', DateTime::nowToStorage());
 
-        return \iterable_map(
-            $fetchBuilder->iterateRows(),
-            static fn (array $row): PortalNodeStorageListResult => new PortalNodeStorageListResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['storage_value'])),
-                (string) $row['storage_key'],
-                (string) $row['storage_type'],
-                (string) $row['storage_value']
-            )
-        );
+        /** @var array{portal_node_id: string, storage_key: string, storage_value: string, storage_type: string} $row */
+        foreach ($fetchBuilder->iterateRows() as $row) {
+            yield new PortalNodeStorageListResult(
+                new PortalNodeStorageKey(Id::toHex($row['storage_value'])),
+                $row['storage_key'],
+                $row['storage_type'],
+                $row['storage_value']
+            );
+        }
     }
 }

@@ -97,13 +97,13 @@ final readonly class IdentityMap implements IdentityMapActionInterface
 
         if ($readMappingNodes !== []) {
             foreach ($this->getMappingNodes($readMappingNodes, $typeIds, $portalNodeId) as $mappingNode) {
-                $mappingExternalId = (string) $mappingNode['mapping_external_id'];
-                $mappingNodeType = (string) $mappingNode['mapping_node_type'];
+                $mappingExternalId = $mappingNode['mapping_external_id'];
+                $mappingNodeType = $mappingNode['mapping_node_type'];
 
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     unset($createMappingNodes[$key]);
 
-                    $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
+                    $mappingNodeId = Id::toHex($mappingNode['mapping_node_id']);
                     $resultMappings[$key] = new Mapping(
                         $mappingExternalId,
                         $portalNodeKey,
@@ -162,9 +162,9 @@ final readonly class IdentityMap implements IdentityMapActionInterface
 
         if ($readMappings !== []) {
             foreach ($this->getMappings($readMappings, $portalNodeId) as $mappingNode) {
-                $mappingExternalId = (string) $mappingNode['mapping_external_id'];
-                $mappingNodeType = (string) $mappingNode['mapping_node_type'];
-                $mappingNodeId = Id::toHex((string) $mappingNode['mapping_node_id']);
+                $mappingExternalId = $mappingNode['mapping_external_id'];
+                $mappingNodeType = $mappingNode['mapping_node_type'];
+                $mappingNodeId = Id::toHex($mappingNode['mapping_node_id']);
 
                 foreach ($readMappingNodesIndex[$mappingNodeType][$mappingExternalId] ?? [] as $key) {
                     $resultMappings[$key] = new Mapping(
@@ -227,7 +227,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
         }
 
         foreach ($filtersByType as $typeId => $externalIds) {
-            $builder->setParameter('typeId', Id::toBinary($typeId), Types::BINARY);
+            $builder->setParameter('typeId', Id::toBinary((string) $typeId), Types::BINARY);
             $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
             $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), ArrayParameterType::STRING);
 
@@ -236,7 +236,11 @@ final readonly class IdentityMap implements IdentityMapActionInterface
     }
 
     /**
-     * @return iterable<int, array>
+     * @return iterable<array{
+     *     mapping_node_type: string,
+     *     mapping_external_id: string|null,
+     *     mapping_node_id: string
+     * }>
      */
     private function getMappings(array $mappingNodeIds, string $portalNodeId): iterable
     {

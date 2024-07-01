@@ -78,19 +78,19 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
     /**
      * @param string[] $ids
      *
-     * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Get\PortalNodeGetResult>
+     * @return iterable<PortalNodeGetResult>
      */
     private function iteratePortalNodes(array $ids): iterable
     {
         $builder = $this->getBuilderCached();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $this->iterator->iterate($builder),
-            static fn (array $row): PortalNodeGetResult => new PortalNodeGetResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                new UnsafeClassString((string) $row['portal_node_class_name'])
-            )
-        );
+        /** @var array{id: string, portal_node_class_name: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new PortalNodeGetResult(
+                new PortalNodeStorageKey(Id::toHex($row['id'])),
+                new UnsafeClassString($row['portal_node_class_name'])
+            );
+        }
     }
 }

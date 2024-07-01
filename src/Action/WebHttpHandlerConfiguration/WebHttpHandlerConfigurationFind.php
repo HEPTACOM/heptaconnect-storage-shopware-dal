@@ -53,7 +53,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         switch ($row['type']) {
             case 'serialized':
             default:
-                $preValue = \unserialize((string) $row['value']);
+                $preValue = \unserialize($row['value']);
 
                 if (\is_array($preValue)) {
                     $value = $preValue;

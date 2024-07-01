@@ -78,15 +78,15 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): PortalNodeOverviewResult => new PortalNodeOverviewResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                new UnsafeClassString((string) $row['portal_node_class_name']),
+        /** @var array{id: string, portal_node_class_name: string, created_at: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new PortalNodeOverviewResult(
+                new PortalNodeStorageKey(Id::toHex($row['id'])),
+                new UnsafeClassString($row['portal_node_class_name']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at']),
-            )
-        );
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

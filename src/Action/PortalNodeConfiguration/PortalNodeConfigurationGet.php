@@ -54,23 +54,21 @@ final readonly class PortalNodeConfigurationGet implements PortalNodeConfigurati
             ->addOrderBy('p.id')
             ->setParameter('ids', $portalNodeIds, ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static function (array $row): PortalNodeConfigurationGetResult {
-                $portalNodeId = Id::toHex((string) $row['portal_node_id']);
+        /** @var array{portal_node_id: string, portal_configuration: string|null} $row */
+        foreach ($builder->iterateRows() as $row) {
+            $portalNodeId = Id::toHex($row['portal_node_id']);
 
-                try {
-                    $value = \json_decode((string) $row['portal_configuration'], true, \JSON_THROW_ON_ERROR, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException $exception) {
-                    throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863472, $exception);
-                }
-
-                if (!\is_array($value)) {
-                    throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863473);
-                }
-
-                return new PortalNodeConfigurationGetResult(new PortalNodeStorageKey($portalNodeId), $value);
+            try {
+                $value = \json_decode((string) $row['portal_configuration'], true, \JSON_THROW_ON_ERROR, \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $exception) {
+                throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863472, $exception);
             }
-        );
+
+            if (!\is_array($value)) {
+                throw new ReadException('portal node configuration for ' . $portalNodeId, 1642863473);
+            }
+
+            yield new PortalNodeConfigurationGetResult(new PortalNodeStorageKey($portalNodeId), $value);
+        }
     }
 }

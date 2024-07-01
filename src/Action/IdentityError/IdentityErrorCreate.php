@@ -107,7 +107,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
                 }
 
                 $exceptionAsJson = \json_encode($exception->getTrace(), \JSON_PARTIAL_OUTPUT_ON_ERROR);
-                $stackTrace = \is_string($exceptionAsJson) ? $exceptionAsJson : (string) \json_encode([
+                $stackTrace = \is_string($exceptionAsJson) ? $exceptionAsJson : \json_encode([
                     'json_last_error_msg' => \json_last_error_msg(),
                 ], \JSON_THROW_ON_ERROR);
 
@@ -181,7 +181,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
                 $builder->setParameter('entityTypeId', $entityTypeIds[$entityType]);
                 $builder->setParameter('externalIds', $externalIds, ArrayParameterType::STRING);
 
-                /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string, mapping_node_id: string} $match */
+                /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string|null, mapping_node_id: string} $match */
                 foreach ($builder->iterateRows() as $match) {
                     $matchPortalNodeId = Id::toHex($match['portal_node_id']);
                     $matchMappingNodeId = Id::toHex($match['mapping_node_id']);

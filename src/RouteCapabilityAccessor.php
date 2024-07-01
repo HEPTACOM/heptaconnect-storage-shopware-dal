@@ -44,7 +44,7 @@ class RouteCapabilityAccessor
 
             $typeIds = [];
 
-            /** @var object{id: string, name: string} $row */
+            /** @var array{id: string, name: string} $row */
             foreach ($builder->iterateRows() as $row) {
                 $typeIds[$row['name']] = Id::toHex($row['id']);
             }

@@ -59,12 +59,12 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         $pass = $updates = [];
 
         $knownExtClasses = [];
-        $dbKnownExtensions = $this->getSelectByClassNameQueryBuilder()
+        $classNameBuilder = $this->getSelectByClassNameQueryBuilder()
             ->setParameter('portalNodeId', $portalNodeId, Types::BINARY)
-            ->setParameter('extensionClassNames', $extensionsToToggle, ArrayParameterType::STRING)
-            ->iterateRows();
+            ->setParameter('extensionClassNames', $extensionsToToggle, ArrayParameterType::STRING);
 
-        foreach ($dbKnownExtensions as $existingExtension) {
+        /** @var array{id: string, class_name: string, active: string} $existingExtension */
+        foreach ($classNameBuilder->iterateRows() as $existingExtension) {
             $className = $existingExtension['class_name'];
             $knownExtClasses[] = $className;
 
@@ -118,11 +118,11 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     $pass[Id::toHex($updatePayload['id'])] = $updatePayload['class_name'];
                 }
             } else {
-                $knownExtClasses = $this->getSelectByIdQueryBuilder()
-                    ->setParameter('ids', $updateIds, ArrayParameterType::STRING)
-                    ->iterateRows();
+                $knownExtensionBuilder = $this->getSelectByIdQueryBuilder()
+                    ->setParameter('ids', $updateIds, ArrayParameterType::STRING);
 
-                foreach ($knownExtClasses as $existingExtension) {
+                /** @var array{id: string, class_name: string, active: string} $existingExtension */
+                foreach ($knownExtensionBuilder->iterateRows() as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
                         $pass[Id::toHex($existingExtension['id'])] = $existingExtension['class_name'];
                     }

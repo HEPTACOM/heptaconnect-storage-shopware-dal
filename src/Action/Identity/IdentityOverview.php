@@ -128,17 +128,16 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): IdentityOverviewResult => new IdentityOverviewResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
-                new MappingNodeStorageKey(Id::toHex((string) $row['mapping_node_id'])),
+        /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string|null, entity_type_type: string, created_at: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new IdentityOverviewResult(
+                new PortalNodeStorageKey(Id::toHex($row['portal_node_id'])),
+                new MappingNodeStorageKey(Id::toHex($row['mapping_node_id'])),
                 (string) $row['mapping_external_id'],
-                new UnsafeClassString((string) $row['entity_type_type']),
-                /* @phpstan-ignore-next-line */
-                DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
+                new UnsafeClassString($row['entity_type_type']),
+                DateTime::fromStorage($row['created_at'])
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

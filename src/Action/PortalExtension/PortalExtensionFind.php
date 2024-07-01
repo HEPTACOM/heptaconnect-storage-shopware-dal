@@ -39,8 +39,9 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         $builder = $this->getQueryBuilder()->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
         $result = new PortalExtensionFindResult();
 
+        /** @var array{class_name: string, active: string} $extension */
         foreach ($builder->iterateRows() as $extension) {
-            $result->add(new UnsafeClassString((string) $extension['class_name']), (bool) $extension['active']);
+            $result->add(new UnsafeClassString($extension['class_name']), (bool) $extension['active']);
         }
 
         return $result;

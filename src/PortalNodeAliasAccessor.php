@@ -48,6 +48,7 @@ class PortalNodeAliasAccessor
 
             $aliasedIds = [];
 
+            /** @var array{id: string, alias: string} $row */
             foreach ($builder->iterateRows() as $row) {
                 $aliasedIds[Id::toHex($row['id'])] = $row['alias'];
             }
@@ -85,6 +86,7 @@ class PortalNodeAliasAccessor
 
             $aliasedIds = [];
 
+            /** @var array{id: string, alias: string} $row */
             foreach ($builder->iterateRows() as $row) {
                 $aliasedIds[Id::toHex($row['id'])] = $row['alias'];
             }

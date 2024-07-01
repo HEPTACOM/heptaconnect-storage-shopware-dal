@@ -61,13 +61,13 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(
+        /** @var array{id: string, alias: string} $row */
+        foreach ($builder->iterateRows() as $row) {
+            yield new PortalNodeAliasOverviewResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']
-            ),
-        );
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

@@ -138,19 +138,28 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): IdentityRedirectOverviewResult => new IdentityRedirectOverviewResult(
-                new IdentityRedirectStorageKey(Id::toHex((string) $row['identity_redirect_id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                (string) $row['identity_redirect_source_external_id'],
-                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                (string) $row['identity_redirect_target_external_id'],
-                new UnsafeClassString((string) $row['entity_type_type']),
+        /** @var array{
+         *     identity_redirect_id: string,
+         *     source_portal_node_id: string,
+         *     identity_redirect_source_external_id: string,
+         *     target_portal_node_id: string,
+         *     identity_redirect_target_external_id: string,
+         *     entity_type_type: string,
+         *     created_at: string
+         * } $row
+         */
+        foreach ($builder->iterateRows() as $row) {
+            yield new IdentityRedirectOverviewResult(
+                new IdentityRedirectStorageKey(Id::toHex($row['identity_redirect_id'])),
+                new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),
+                $row['identity_redirect_source_external_id'],
+                new PortalNodeStorageKey(Id::toHex($row['target_portal_node_id'])),
+                $row['identity_redirect_target_external_id'],
+                new UnsafeClassString($row['entity_type_type']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
+            );
+        }
     }
 
     private function getBuilderCached(): QueryBuilder

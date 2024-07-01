@@ -202,6 +202,7 @@ final readonly class JobCreate implements JobCreateActionInterface
 
         $rows = [];
 
+        /** @var array{checksum: string, id: string} $row */
         foreach ($builder->iterateRows() as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
