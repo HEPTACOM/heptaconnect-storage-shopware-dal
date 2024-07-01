@@ -33,7 +33,7 @@ class PortalNodeAliasAccessor
         $nonMatchingIds = \array_diff($ids, $knownIds);
 
         if ($nonMatchingIds !== []) {
-            $builder = $this->queryFactory->createBuilder(self::ID_LOOKUP_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::ID_LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_portal_node', 'portal_node')
                 ->select([
@@ -71,7 +71,7 @@ class PortalNodeAliasAccessor
         $nonMatchingAliases = \array_diff($aliases, $knownAliases);
 
         if ($nonMatchingAliases !== []) {
-            $builder = $this->queryFactory->createBuilder(self::ALIAS_LOOKUP_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::ALIAS_LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_portal_node', 'portal_node')
                 ->select([

@@ -8,15 +8,15 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Listing\PortalNodeListR
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class PortalNodeList implements PortalNodeListActionInterface
 {
     public const string LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 
-    private ?QueryBuilder $searchBuilder = null;
+    private ?SelectQueryBuilder $searchBuilder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
@@ -32,15 +32,15 @@ final class PortalNodeList implements PortalNodeListActionInterface
         );
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
         $builder = $this->searchBuilder;
 
-        if ($builder instanceof QueryBuilder) {
+        if ($builder instanceof SelectQueryBuilder) {
             return clone $builder;
         }
 
-        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
+        $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->addOrderBy('id');

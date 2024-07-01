@@ -32,7 +32,7 @@ class WebHttpHandlerAccessor
             return [];
         }
 
-        $baseBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $baseBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
         $baseBuilder
             ->from('heptaconnect_web_http_handler', 'handler')
             ->select([

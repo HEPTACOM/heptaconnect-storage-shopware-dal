@@ -20,8 +20,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Ramsey\Uuid\Uuid;
 
 final readonly class IdentityReflect implements IdentityReflectActionInterface
@@ -347,9 +347,9 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         return $remainingPayload;
     }
 
-    private function getSearchExistingMappingsQueryBuilder(): QueryBuilder
+    private function getSearchExistingMappingsQueryBuilder(): SelectQueryBuilder
     {
-        $result = $this->queryFactory->createBuilder(self::LOOKUP_EXISTING_MAPPING_QUERY);
+        $result = $this->queryFactory->createSelectBuilder(self::LOOKUP_EXISTING_MAPPING_QUERY);
 
         $result->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -377,9 +377,9 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         return $result;
     }
 
-    private function getSearchExistingMappingNodesQueryBuilder(): QueryBuilder
+    private function getSearchExistingMappingNodesQueryBuilder(): SelectQueryBuilder
     {
-        $result = $this->queryFactory->createBuilder(self::LOOKUP_EXISTING_MAPPING_NODE_QUERY);
+        $result = $this->queryFactory->createSelectBuilder(self::LOOKUP_EXISTING_MAPPING_NODE_QUERY);
 
         $result->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(
@@ -412,9 +412,9 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         return $result;
     }
 
-    private function getSearchDirectionalMappingsQueryBuilder(): QueryBuilder
+    private function getSearchDirectionalMappingsQueryBuilder(): SelectQueryBuilder
     {
-        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_IDENTITY_REDIRECTS_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_IDENTITY_REDIRECTS_QUERY);
         $expr = $queryBuilder->expr();
 
         $queryBuilder->from('heptaconnect_identity_redirect', 'mapping');

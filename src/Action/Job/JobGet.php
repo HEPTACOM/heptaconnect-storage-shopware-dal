@@ -14,9 +14,9 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class JobGet implements JobGetActionInterface
 {
@@ -32,7 +32,7 @@ final class JobGet implements JobGetActionInterface
      */
     private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
@@ -56,9 +56,9 @@ final class JobGet implements JobGetActionInterface
         return $ids === [] ? [] : $this->yieldJobs($ids);
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -68,9 +68,9 @@ final class JobGet implements JobGetActionInterface
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_job', 'job')

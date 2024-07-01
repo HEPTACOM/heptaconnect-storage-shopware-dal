@@ -195,7 +195,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
      */
     private function getMappingNodes(array $readMappingNodes, array $typeIds, string $portalNodeId): iterable
     {
-        $builder = $this->queryFactory->createBuilder(self::MAPPING_NODE_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::MAPPING_NODE_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',
@@ -248,7 +248,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::MAPPING_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::MAPPING_QUERY);
         $builder->from('heptaconnect_entity_type', 'type')
             ->innerJoin(
                 'type',

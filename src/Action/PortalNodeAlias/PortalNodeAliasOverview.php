@@ -10,14 +10,14 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNod
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -70,9 +70,9 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
         }
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -82,9 +82,9 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

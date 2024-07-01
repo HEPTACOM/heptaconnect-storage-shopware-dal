@@ -38,7 +38,7 @@ class JobTypeAccessor
         $nonMatchingKeys = \array_diff($types, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_job_type', 'job_type')
                 ->select([

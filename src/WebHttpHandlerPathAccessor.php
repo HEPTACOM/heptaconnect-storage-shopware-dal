@@ -48,7 +48,7 @@ class WebHttpHandlerPathAccessor
             $nonMatchingHexFlip = \array_flip($nonMatchingHexes);
             $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
-            $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
             $builder
                 ->from('heptaconnect_web_http_handler_path', 'handler_path')
                 ->select(['handler_path.id id'])

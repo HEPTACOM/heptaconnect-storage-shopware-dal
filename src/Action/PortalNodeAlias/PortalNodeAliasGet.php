@@ -41,7 +41,7 @@ final readonly class PortalNodeAliasGet implements PortalNodeAliasGetActionInter
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
         $builder
             ->from('heptaconnect_portal_node', 'portal_node')
             ->select([

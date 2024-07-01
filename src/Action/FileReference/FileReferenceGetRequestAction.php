@@ -13,14 +13,14 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInterface
 {
     public const string FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
 
-    private ?QueryBuilder $queryBuilder = null;
+    private ?SelectQueryBuilder $queryBuilder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -61,10 +61,10 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
         }
     }
 
-    private function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->queryBuilder instanceof QueryBuilder) {
-            $this->queryBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        if (!$this->queryBuilder instanceof SelectQueryBuilder) {
+            $this->queryBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
             $expr = $this->queryBuilder->expr();
 
             $this->queryBuilder

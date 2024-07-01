@@ -88,7 +88,7 @@ class EntityTypeAccessor
      */
     private function queryIdsForTypes(array $types): array
     {
-        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([

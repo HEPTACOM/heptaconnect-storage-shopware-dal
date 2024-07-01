@@ -53,7 +53,7 @@ SQL;
             $ids[] = Id::toBinary($jobKey->getUuid());
         }
 
-        $selectBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $selectBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
         $selectBuilder
             ->from('heptaconnect_job', 'job')
             ->addOrderBy('job.id')

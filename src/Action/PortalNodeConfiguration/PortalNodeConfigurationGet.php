@@ -42,7 +42,7 @@ final readonly class PortalNodeConfigurationGet implements PortalNodeConfigurati
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
 
         $builder->from('heptaconnect_portal_node', 'p')
             ->andWhere($builder->expr()->in('p.id', ':ids'))

@@ -10,15 +10,15 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedAction
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class JobFinishedList implements JobListFinishedActionInterface
 {
     public const string LIST_QUERY = '008ced6c-7517-46f8-a8a0-8f3c31b50467';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
@@ -35,9 +35,9 @@ final class JobFinishedList implements JobListFinishedActionInterface
         );
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -47,9 +47,9 @@ final class JobFinishedList implements JobListFinishedActionInterface
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         return $builder
             ->from('heptaconnect_job', 'job')

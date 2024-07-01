@@ -30,7 +30,7 @@ final readonly class PortalNodeAliasFind implements PortalNodeAliasFindActionInt
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::FIND_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FIND_QUERY);
         $builder
             ->from('heptaconnect_portal_node', 'portal_node')
             ->select([

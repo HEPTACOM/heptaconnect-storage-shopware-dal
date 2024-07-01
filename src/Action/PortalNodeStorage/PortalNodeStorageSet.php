@@ -57,7 +57,7 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
             ];
         }
 
-        $fetchBuilder = $this->queryFactory->createBuilder(self::UPDATE_PREPARATION_QUERY);
+        $fetchBuilder = $this->queryFactory->createSelectBuilder(self::UPDATE_PREPARATION_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
             ->select([

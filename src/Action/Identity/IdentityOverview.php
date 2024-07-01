@@ -14,15 +14,15 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
 final class IdentityOverview implements IdentityOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -140,9 +140,9 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         }
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -152,9 +152,9 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

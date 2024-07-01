@@ -10,12 +10,12 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Contract\JobStateChangePayload
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 abstract class AbstractJobTransitionAction
 {
-    protected ?QueryBuilder $selectQueryBuilder = null;
+    protected ?SelectQueryBuilder $selectQueryBuilder = null;
 
     protected readonly QueryFactory $queryFactory;
 
@@ -97,13 +97,13 @@ abstract class AbstractJobTransitionAction
         return $result;
     }
 
-    protected function getSelectQueryBuilder(string $queryIdentifier): QueryBuilder
+    protected function getSelectQueryBuilder(string $queryIdentifier): SelectQueryBuilder
     {
-        if ($this->selectQueryBuilder instanceof QueryBuilder) {
+        if ($this->selectQueryBuilder instanceof SelectQueryBuilder) {
             return $this->selectQueryBuilder;
         }
 
-        $queryBuilder = $this->queryFactory->createBuilder($queryIdentifier);
+        $queryBuilder = $this->queryFactory->createSelectBuilder($queryIdentifier);
         $expr = $queryBuilder->expr();
 
         return $this->selectQueryBuilder = $queryBuilder->select('job.id')

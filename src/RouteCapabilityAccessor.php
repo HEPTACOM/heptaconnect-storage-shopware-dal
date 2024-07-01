@@ -31,7 +31,7 @@ class RouteCapabilityAccessor
         $nonMatchingKeys = \array_diff($capabilities, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
             $builder
                 ->from('heptaconnect_route_capability', 'route_capability')
                 ->select([

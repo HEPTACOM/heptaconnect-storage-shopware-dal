@@ -23,8 +23,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInterface
 {
@@ -196,9 +196,9 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
         return $result;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

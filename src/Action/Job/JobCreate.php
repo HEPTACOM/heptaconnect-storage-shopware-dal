@@ -185,7 +185,7 @@ final readonly class JobCreate implements JobCreateActionInterface
      */
     private function getPayloadIds(array $checksums): array
     {
-        $builder = $this->queryFactory->createBuilder(self::PAYLOAD_LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::PAYLOAD_LOOKUP_QUERY);
         $checksums = \array_unique($checksums);
 
         $builder

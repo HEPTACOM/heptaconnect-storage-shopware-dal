@@ -11,16 +11,16 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetA
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
 final class PortalNodeGet implements PortalNodeGetActionInterface
 {
     public const string FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
@@ -46,9 +46,9 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return $ids === [] ? [] : $this->iteratePortalNodes($ids);
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -58,9 +58,9 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

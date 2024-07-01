@@ -29,6 +29,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -46,6 +47,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 #[CoversClass(QueryFactory::class)]
 #[CoversClass(QueryIterator::class)]
 #[CoversClass(RouteStorageKey::class)]
+#[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
 #[CoversClass(StorageKeyGenerator::class)]
 class StorageKeyGeneratorTest extends TestCase

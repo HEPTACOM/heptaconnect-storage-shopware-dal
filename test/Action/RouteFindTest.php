@@ -18,6 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -29,6 +30,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryFactory::class)]
 #[CoversClass(QueryIterator::class)]
 #[CoversClass(RouteFind::class)]
+#[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
 class RouteFindTest extends TestCase
 {

@@ -32,7 +32,7 @@ final readonly class PortalNodeStorageList implements PortalNodeStorageListActio
             throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
-        $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $fetchBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
             ->select([

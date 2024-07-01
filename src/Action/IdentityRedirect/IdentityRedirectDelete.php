@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorage
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterface
 {
@@ -75,12 +76,12 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         return clone $builder;
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
         $builder = $this->searchBuilder;
 
-        if (!$builder instanceof QueryBuilder) {
-            $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        if (!$builder instanceof SelectQueryBuilder) {
+            $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
             $builder->from('heptaconnect_identity_redirect');
             $builder->select('id');

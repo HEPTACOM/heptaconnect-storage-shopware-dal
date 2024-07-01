@@ -9,14 +9,14 @@ use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 
-    private ?QueryBuilder $builder = null;
+    private ?SelectQueryBuilder $builder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -74,9 +74,9 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
         }
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilderCached(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
+        if (!$this->builder instanceof SelectQueryBuilder) {
             $this->builder = $this->getBuilder();
             $this->builder->setFirstResult(0);
             $this->builder->setMaxResults(null);
@@ -86,9 +86,9 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
         return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route_capability', 'capability')

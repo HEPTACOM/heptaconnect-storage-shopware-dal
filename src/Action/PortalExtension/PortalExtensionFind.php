@@ -11,15 +11,15 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExt
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
 final class PortalExtensionFind implements PortalExtensionFindActionInterface
 {
     public const string LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
 
-    private ?QueryBuilder $queryBuilder = null;
+    private ?SelectQueryBuilder $queryBuilder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -47,10 +47,10 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         return $result;
     }
 
-    private function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->queryBuilder instanceof QueryBuilder) {
-            $this->queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        if (!$this->queryBuilder instanceof SelectQueryBuilder) {
+            $this->queryBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
             $expr = $this->queryBuilder->expr();
 
             $this->queryBuilder

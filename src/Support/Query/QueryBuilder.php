@@ -8,35 +8,21 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder as BaseQueryBuilder;
 use Doctrine\DBAL\Types\Types;
 
-final class QueryBuilder extends BaseQueryBuilder
+class QueryBuilder extends BaseQueryBuilder
 {
     public const string PARAM_FIRST_RESULT = 'frf0703687f4ca4b70a4cc85bf9e7377c7';
 
     public const string PARAM_MAX_RESULT = 'mrf0703687f4ca4b70a4cc85bf9e7377c7';
 
-    private bool $isForUpdate = false;
-
     public function __construct(
         Connection $connection,
-        private readonly QueryIterator $queryIterator,
-        private readonly string $identifier,
-        private readonly int $paginationPageSize
+        public readonly string $identifier,
     ) {
         parent::__construct($connection);
     }
 
-    public function getIsForUpdate(): bool
-    {
-        return $this->isForUpdate;
-    }
-
-    public function setIsForUpdate(bool $isForUpdate): void
-    {
-        $this->isForUpdate = $isForUpdate;
-    }
-
     #[\Override]
-    public function setFirstResult($firstResult)
+    public function setFirstResult($firstResult): static
     {
         /** @var int|mixed $firstResult */
         if (\is_int($firstResult) && $firstResult > 0) {
@@ -52,13 +38,13 @@ final class QueryBuilder extends BaseQueryBuilder
     }
 
     #[\Override]
-    public function getFirstResult()
+    public function getFirstResult(): int
     {
         return $this->getParameter(self::PARAM_FIRST_RESULT) ?? 0;
     }
 
     #[\Override]
-    public function setMaxResults($maxResults)
+    public function setMaxResults($maxResults): static
     {
         if (\is_int($maxResults)) {
             return $this->setParameter(self::PARAM_MAX_RESULT, $maxResults, Types::INTEGER);
@@ -73,67 +59,26 @@ final class QueryBuilder extends BaseQueryBuilder
     }
 
     #[\Override]
-    public function getMaxResults()
+    public function getMaxResults(): ?int
     {
         return $this->getParameter(self::PARAM_MAX_RESULT);
     }
 
     #[\Override]
-    public function getSQL()
+    public function getSQL(): string
     {
         $result = parent::getSQL();
 
-        switch ($this->getType()) {
-            case self::INSERT:
-            case self::DELETE:
-            case self::UPDATE:
-                break;
-            case self::SELECT:
-            default:
-                if ($this->getMaxResults() !== null) {
-                    $result .= ' LIMIT :' . self::PARAM_MAX_RESULT;
-                    /** @var int|mixed $firstResult */
-                    $firstResult = $this->getFirstResult();
+        if ($this->getMaxResults() !== null) {
+            $result .= ' LIMIT :' . self::PARAM_MAX_RESULT;
+            /** @var int|mixed $firstResult */
+            $firstResult = $this->getFirstResult();
 
-                    if (\is_int($firstResult) && $firstResult > 0) {
-                        $result .= ' OFFSET :' . self::PARAM_FIRST_RESULT;
-                    }
-                } elseif ($this->isForUpdate) {
-                    $result .= ' FOR UPDATE';
-                }
-
-                break;
+            if (\is_int($firstResult) && $firstResult > 0) {
+                $result .= ' OFFSET :' . self::PARAM_FIRST_RESULT;
+            }
         }
 
         return ' # heptaconnect-query-id ' . $this->identifier . \PHP_EOL . $result;
-    }
-
-    public function fetchSingleValue(): ?string
-    {
-        return $this->queryIterator->fetchSingleValue($this);
-    }
-
-    /**
-     * @return array<string, string|null>|null
-     */
-    public function fetchSingleRow(): ?array
-    {
-        return $this->queryIterator->fetchSingleRow($this);
-    }
-
-    /**
-     * @return iterable<int, array<string, string|null>>
-     */
-    public function iterateRows(): iterable
-    {
-        return $this->queryIterator->iterate($this, $this->paginationPageSize);
-    }
-
-    /**
-     * @return iterable<int, string|null>
-     */
-    public function iterateColumn(): iterable
-    {
-        return $this->queryIterator->iterateColumn($this, $this->paginationPageSize);
     }
 }

@@ -16,6 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
@@ -30,9 +31,9 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     public const string SWITCH_QUERY = '5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a';
 
-    private ?QueryBuilder $selectByClassNameQueryBuilder = null;
+    private ?SelectQueryBuilder $selectByClassNameQueryBuilder = null;
 
-    private ?QueryBuilder $selectByIdQueryBuilder = null;
+    private ?SelectQueryBuilder $selectByIdQueryBuilder = null;
 
     private ?QueryBuilder $updateQueryBuilder = null;
 
@@ -136,10 +137,10 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         ));
     }
 
-    protected function getSelectByClassNameQueryBuilder(): QueryBuilder
+    protected function getSelectByClassNameQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->selectByClassNameQueryBuilder instanceof QueryBuilder) {
-            $this->selectByClassNameQueryBuilder = $this->queryFactory->createBuilder(self::CLASS_NAME_LOOKUP_QUERY);
+        if (!$this->selectByClassNameQueryBuilder instanceof SelectQueryBuilder) {
+            $this->selectByClassNameQueryBuilder = $this->queryFactory->createSelectBuilder(self::CLASS_NAME_LOOKUP_QUERY);
             $expr = $this->selectByClassNameQueryBuilder->expr();
 
             $this->selectByClassNameQueryBuilder
@@ -159,10 +160,10 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
         return $this->selectByClassNameQueryBuilder;
     }
 
-    protected function getSelectByIdQueryBuilder(): QueryBuilder
+    protected function getSelectByIdQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->selectByIdQueryBuilder instanceof QueryBuilder) {
-            $this->selectByIdQueryBuilder = $this->queryFactory->createBuilder(self::ID_LOOKUP_QUERY);
+        if (!$this->selectByIdQueryBuilder instanceof SelectQueryBuilder) {
+            $this->selectByIdQueryBuilder = $this->queryFactory->createSelectBuilder(self::ID_LOOKUP_QUERY);
             $expr = $this->selectByIdQueryBuilder->expr();
 
             $this->selectByIdQueryBuilder

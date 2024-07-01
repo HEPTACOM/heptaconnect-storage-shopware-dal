@@ -14,6 +14,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class RouteDelete implements RouteDeleteActionInterface
 {
@@ -23,7 +24,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     private ?QueryBuilder $deleteBuilder = null;
 
-    private ?QueryBuilder $searchBuilder = null;
+    private ?SelectQueryBuilder $searchBuilder = null;
 
     public function __construct(
         private readonly QueryFactory $queryFactory
@@ -81,15 +82,15 @@ final class RouteDelete implements RouteDeleteActionInterface
         return $builder;
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
         $builder = $this->searchBuilder;
 
-        if ($builder instanceof QueryBuilder) {
+        if ($builder instanceof SelectQueryBuilder) {
             return clone $builder;
         }
 
-        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_route');
         $builder->select('id');

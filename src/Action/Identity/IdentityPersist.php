@@ -20,8 +20,8 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final readonly class IdentityPersist implements IdentityPersistActionInterface
 {
@@ -181,7 +181,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::BUILD_UPDATE_PAYLOAD_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::BUILD_UPDATE_PAYLOAD_QUERY);
 
         foreach ($this->fetchMappingsToProcess($builder, $portalNodeId, $mappingNodes) as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -231,7 +231,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::BUILD_DELETE_PAYLOAD_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::BUILD_DELETE_PAYLOAD_QUERY);
 
         foreach ($this->fetchMappingsToProcess($builder, $portalNodeId, $mappingNodeIds) as $mapping) {
             $mappingId = Id::toHex($mapping['mapping_id']);
@@ -264,7 +264,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         $changedMappings = $this->getChangedMappings($update);
         $deletedMappings = $this->getDeletedMappings($delete);
 
-        $queryBuilder = $this->queryFactory->createBuilder(self::VALIDATE_CONFLICTS_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::VALIDATE_CONFLICTS_QUERY);
         $expr = $queryBuilder->expr();
 
         $typeConditions = [];
@@ -361,7 +361,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
     private function fetchTypes(array $mappingNodeIds): array
     {
         $mappingNodeIds = \array_unique($mappingNodeIds);
-        $queryBuilder = $this->queryFactory->createBuilder(self::TYPE_LOOKUP_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::TYPE_LOOKUP_QUERY);
         $expr = $queryBuilder->expr();
 
         $queryBuilder
@@ -395,7 +395,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
 
     private function validateMappingNodesCanBeMerged(string $fromMappingNodeId, string $intoMappingNodeId): bool
     {
-        $queryBuilder = $this->queryFactory->createBuilder(self::VALIDATE_MERGE_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::VALIDATE_MERGE_QUERY);
         $expr = $queryBuilder->expr();
 
         $hasConflict = (bool) $queryBuilder->select('1')
@@ -508,7 +508,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
     /**
      * @return iterable<array{mapping_id: string, mapping_node_id: string}>
      */
-    private function fetchMappingsToProcess(QueryBuilder $builder, string $portalNodeId, array $mappingNodeIds): iterable
+    private function fetchMappingsToProcess(SelectQueryBuilder $builder, string $portalNodeId, array $mappingNodeIds): iterable
     {
         $builder
             ->from('heptaconnect_mapping', 'mapping')
