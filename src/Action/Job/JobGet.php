@@ -15,7 +15,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class JobGet implements JobGetActionInterface
@@ -36,7 +35,6 @@ final class JobGet implements JobGetActionInterface
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
-        private readonly QueryIterator $iterator
     ) {
     }
 

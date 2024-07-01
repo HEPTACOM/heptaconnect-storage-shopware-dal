@@ -11,7 +11,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 final class JobFinishedList implements JobListFinishedActionInterface
@@ -22,7 +21,6 @@ final class JobFinishedList implements JobListFinishedActionInterface
 
     public function __construct(
         private readonly QueryFactory $queryFactory,
-        private readonly QueryIterator $iterator
     ) {
     }
 

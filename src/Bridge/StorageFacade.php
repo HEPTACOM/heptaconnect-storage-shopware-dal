@@ -230,12 +230,12 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createJobGetAction(): JobGetActionInterface
     {
-        return new JobGet($this->getQueryFactory(), $this->getQueryIterator());
+        return new JobGet($this->getQueryFactory());
     }
 
     protected function createJobListFinishedAction(): JobListFinishedActionInterface
     {
-        return new JobFinishedList($this->getQueryFactory(), $this->getQueryIterator());
+        return new JobFinishedList($this->getQueryFactory());
     }
 
     protected function createJobScheduleAction(): JobScheduleActionInterface
@@ -279,12 +279,12 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeGetAction(): PortalNodeGetActionInterface
     {
-        return new PortalNodeGet($this->getQueryFactory(), $this->getQueryIterator());
+        return new PortalNodeGet($this->getQueryFactory());
     }
 
     protected function createPortalNodeListAction(): PortalNodeListActionInterface
     {
-        return new PortalNodeList($this->getQueryFactory(), $this->getQueryIterator());
+        return new PortalNodeList($this->getQueryFactory());
     }
 
     protected function createPortalNodeOverviewAction(): PortalNodeOverviewActionInterface
@@ -369,12 +369,12 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createRouteGetAction(): RouteGetActionInterface
     {
-        return new RouteGet($this->getQueryFactory(), $this->getQueryIterator());
+        return new RouteGet($this->getQueryFactory());
     }
 
     protected function createReceptionRouteListAction(): ReceptionRouteListActionInterface
     {
-        return new ReceptionRouteList($this->getQueryFactory(), $this->getQueryIterator());
+        return new ReceptionRouteList($this->getQueryFactory());
     }
 
     protected function createRouteOverviewAction(): RouteOverviewActionInterface

@@ -32,6 +32,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Make internal query identifier `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder::$identifier` public to make it accessible for others to read
 - Extract select statement related methods from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder` into `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder` with other statement type forbidden to follow Doctrine suggestions to keep track of 
 - Change method `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateColumn` to only return strings as every occasion expects that
+- Remove parameter to `Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList::__construct` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet::__construct`
 
 ### Deprecated
 
