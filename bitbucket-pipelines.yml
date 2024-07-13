@@ -1,10 +1,10 @@
-image: heptacom/heptaconnect-pipeline:php83-8.0.0
+image: heptacom/heptaconnect-pipeline:php83-no-xdebug-10.0.0
 
 definitions:
     partials:
         -   step: &php84-image
                 # TODO wait for PHP 8.4 and provide the actual image
-                image: heptacom/heptaconnect-pipeline:php83-8.0.0
+                image: heptacom/heptaconnect-pipeline:php83-no-xdebug-10.0.0
     services:
         mysql:
             image: mysql:8.0
@@ -80,7 +80,8 @@ definitions:
                     - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_high81;'
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
-                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_high81' COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+                    - # TODO re-enable coverage tests, when https://bugs.xdebug.org/view.php?id=2252 is solved
+                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_high' COMPOSER_EXTRA_ARGS=-vvv make -e tests-without-coverage
         -   step: &test-coverage-low-install-84
                 <<: *php84-image
                 name: Install and Unit test (8.4 + Low dependencies)
@@ -90,7 +91,8 @@ definitions:
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - composer update --prefer-lowest --prefer-stable
-                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_low81' COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+                    - # TODO re-enable coverage tests, when https://bugs.xdebug.org/view.php?id=2252 is solved
+                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_low' COMPOSER_EXTRA_ARGS=-vvv make -e tests-without-coverage
         -   step: &test-coverage
                 <<: *default-step
                 name: Test coverage
@@ -98,7 +100,8 @@ definitions:
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'GRANT ALL ON *.* TO test_user@127.0.0.1 IDENTIFIED BY "let_me_in_as_well";'
                     - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_covr;'
                     - bash setup-vendor.sh
-                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' XDEBUG_MODE=coverage COMPOSER_EXTRA_ARGS=-vvv make -e coverage
+                    - # TODO re-enable coverage tests, when https://bugs.xdebug.org/view.php?id=2252 is solved
+                    - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_covr' COMPOSER_EXTRA_ARGS=-vvv make -e tests-without-coverage
         -   step: &test-code-style-php
                 <<: *default-step
                 name: ECS (Code style)
