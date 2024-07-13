@@ -35,9 +35,9 @@ final readonly class WebHttpHandlerConfigurationFind implements WebHttpHandlerCo
         }
 
         $builder = $this->getBuilder();
-        $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
-        $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
+        $builder->setParameter('key', $criteria->getConfigurationKey());
+        $builder->setParameter('pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
+        $builder->setParameter('portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
         $row = $builder->fetchSingleRow();
