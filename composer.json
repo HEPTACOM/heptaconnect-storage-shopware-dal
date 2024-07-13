@@ -67,10 +67,5 @@
             "php-http/discovery": true,
             "symfony/runtime": true
         }
-    },
-    "extra": {
-        "unused": [
-            "bentools/iterable-functions"
-        ]
     }
 }
