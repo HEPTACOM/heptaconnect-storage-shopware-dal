@@ -44,6 +44,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 ### Removed
 
 - Remove support for `php: 7.4` as it will not receive any updates anymore, it is unlikely to be used. By raising the minimum PHP version we also make use of features introduced by PHP 8.0, which mainly have no effect on public API
+- Remove exception related to code `1645901525` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` as pagination is ensured by `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder`
 
 ### Fixed
 

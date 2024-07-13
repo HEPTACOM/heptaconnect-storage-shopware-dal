@@ -149,10 +149,6 @@ class QueryIterator
 
         $query = $paginatableQuery->createPaginatableQueryBuilder();
 
-        if ($query->getQueryPart('orderBy') === []) {
-            throw new \LogicException('Pagination without order is not reliable', 1645901525);
-        }
-
         $initOffset = $query->getFirstResult();
         $initLimit = $query->getMaxResults();
         $rowIndexer = $this->createRowIndexer();
