@@ -20,8 +20,6 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
     public const string LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -36,7 +34,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
             throw new UnsupportedStorageKeyException(\get_debug_type($sourceKey));
         }
 
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', (string) $criteria->getEntityType());
@@ -45,18 +43,6 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         foreach ($builder->iterateColumn('route.id') as $id) {
             yield new ReceptionRouteListResult(new RouteStorageKey($id));
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

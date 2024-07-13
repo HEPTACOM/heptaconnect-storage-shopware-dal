@@ -19,8 +19,6 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
 {
     public const string FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -42,18 +40,6 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         }
 
         return $ids === [] ? [] : $this->iteratePortalNodes($ids);
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder
@@ -79,7 +65,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
      */
     private function iteratePortalNodes(array $ids): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         /** @var array{id: string, portal_node_class_name: string} $row */

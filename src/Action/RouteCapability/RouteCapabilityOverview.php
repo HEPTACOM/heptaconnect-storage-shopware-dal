@@ -16,8 +16,6 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
 {
     public const string OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -26,7 +24,7 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
     #[\Override]
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -70,18 +68,6 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
                 DateTime::fromStorage((string) $row['created_at'])
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

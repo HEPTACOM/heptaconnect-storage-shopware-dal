@@ -17,8 +17,6 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
 {
     public const string OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -27,7 +25,7 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
     #[\Override]
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === PortalNodeAliasOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -66,18 +64,6 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
                 $row['alias']
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

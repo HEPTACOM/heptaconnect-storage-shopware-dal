@@ -15,10 +15,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
 abstract class AbstractJobTransitionAction
 {
-    protected ?SelectQueryBuilder $selectQueryBuilder = null;
-
-    protected readonly QueryFactory $queryFactory;
-
     /**
      * @return list<string>
      * @throws UnsupportedStorageKeyException
@@ -99,14 +95,10 @@ abstract class AbstractJobTransitionAction
 
     protected function getSelectQueryBuilder(string $queryIdentifier): SelectQueryBuilder
     {
-        if ($this->selectQueryBuilder instanceof SelectQueryBuilder) {
-            return $this->selectQueryBuilder;
-        }
-
         $queryBuilder = $this->queryFactory->createSelectBuilder($queryIdentifier);
         $expr = $queryBuilder->expr();
 
-        return $this->selectQueryBuilder = $queryBuilder->select('job.id')
+        return $queryBuilder->select('job.id')
             ->from('heptaconnect_job', 'job')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }

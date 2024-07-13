@@ -17,8 +17,6 @@ final class JobFinishedList implements JobListFinishedActionInterface
 {
     public const string LIST_QUERY = '008ced6c-7517-46f8-a8a0-8f3c31b50467';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -27,21 +25,9 @@ final class JobFinishedList implements JobListFinishedActionInterface
     #[\Override]
     public function list(): iterable
     {
-        foreach (Id::toHexIterable($this->getBuilderCached()->iterateColumn('job.id')) as $id) {
+        foreach (Id::toHexIterable($this->getBuilder()->iterateColumn('job.id')) as $id) {
             yield new JobListFinishedResult(new JobStorageKey($id));
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

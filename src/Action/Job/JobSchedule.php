@@ -21,8 +21,6 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
 
     public const string FIND_QUERY = '87c10b4f-3dcd-460d-ba04-b38acbad6cbe';
 
-    private ?QueryBuilder $updateQueryBuilder = null;
-
     public function __construct(
         private readonly Connection $connection,
         protected readonly QueryFactory $queryFactory,
@@ -44,14 +42,10 @@ final class JobSchedule extends AbstractJobTransitionAction implements JobSchedu
 
     private function getUpdateQueryBuilder(): QueryBuilder
     {
-        if ($this->updateQueryBuilder instanceof QueryBuilder) {
-            return $this->updateQueryBuilder;
-        }
-
         $builder = $this->queryFactory->createBuilder(self::UPDATE_QUERY);
         $expr = $builder->expr();
 
-        return $this->updateQueryBuilder = $builder->update('heptaconnect_job', 'job')
+        return $builder->update('heptaconnect_job', 'job')
             ->set('job.state_id', ':newStateId')
             ->set('job.transaction_id', ':transactionId')
             ->andWhere($expr->in('job.id', ':jobIds'))

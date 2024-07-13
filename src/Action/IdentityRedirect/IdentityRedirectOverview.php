@@ -27,8 +27,6 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
 {
     public const string OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -37,7 +35,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
     #[\Override]
     public function overview(IdentityRedirectOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $identityRedirectKeyFilter = $criteria->getIdentityRedirectKeyFilter();
         $entityTypeFilter = $criteria->getEntityTypeFilter();
         $sourcePortalNodeKeyFilter = $criteria->getSourcePortalNodeKeyFilter();
@@ -158,18 +156,6 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 DateTime::fromStorage((string) $row['created_at'])
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

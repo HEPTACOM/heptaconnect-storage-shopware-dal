@@ -21,8 +21,6 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
 
     public const string FIND_QUERY = '1bbfc5fe-756c-4171-b645-ad2a6c10f4e7';
 
-    private ?QueryBuilder $updateQueryBuilder = null;
-
     public function __construct(
         private readonly Connection $connection,
         protected readonly QueryFactory $queryFactory,
@@ -44,14 +42,10 @@ final class JobStart extends AbstractJobTransitionAction implements JobStartActi
 
     private function getUpdateQueryBuilder(): QueryBuilder
     {
-        if ($this->updateQueryBuilder instanceof QueryBuilder) {
-            return $this->updateQueryBuilder;
-        }
-
         $builder = $this->queryFactory->createBuilder(self::UPDATE_QUERY);
         $expr = $builder->expr();
 
-        return $this->updateQueryBuilder = $builder->update('heptaconnect_job', 'job')
+        return $builder->update('heptaconnect_job', 'job')
             ->set('job.state_id', ':stateId')
             ->set('job.transaction_id', ':transactionId')
             ->andWhere($expr->in('job.id', ':jobIds'))

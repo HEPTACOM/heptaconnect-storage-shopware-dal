@@ -21,10 +21,6 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
 
     public const string DELETE_QUERY = 'ca54ecac-3b6b-4f54-882e-fea1f19336ba';
 
-    private ?QueryBuilder $deleteBuilder = null;
-
-    private ?QueryBuilder $searchBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -64,30 +60,22 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
 
     private function getDeleteQuery(): QueryBuilder
     {
-        $builder = $this->deleteBuilder;
+        $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
-        if (!$builder instanceof QueryBuilder) {
-            $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+        $builder->delete('heptaconnect_identity_redirect');
+        $builder->andWhere($builder->expr()->in('id', ':ids'));
 
-            $builder->delete('heptaconnect_identity_redirect');
-            $builder->andWhere($builder->expr()->in('id', ':ids'));
-        }
-
-        return clone $builder;
+        return $builder;
     }
 
     private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
-        if (!$builder instanceof SelectQueryBuilder) {
-            $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
+        $builder->from('heptaconnect_identity_redirect');
+        $builder->select('id');
+        $builder->andWhere($builder->expr()->in('id', ':ids'));
 
-            $builder->from('heptaconnect_identity_redirect');
-            $builder->select('id');
-            $builder->andWhere($builder->expr()->in('id', ':ids'));
-        }
-
-        return clone $builder;
+        return $builder;
     }
 }

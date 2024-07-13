@@ -15,8 +15,6 @@ final class PortalNodeList implements PortalNodeListActionInterface
 {
     public const string LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 
-    private ?SelectQueryBuilder $searchBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -31,13 +29,7 @@ final class PortalNodeList implements PortalNodeListActionInterface
 
     private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
-
-        if ($builder instanceof SelectQueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->select('id');

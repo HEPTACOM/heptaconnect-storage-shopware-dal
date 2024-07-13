@@ -25,8 +25,6 @@ final class RouteOverview implements RouteOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -35,7 +33,7 @@ final class RouteOverview implements RouteOverviewActionInterface
     #[\Override]
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $capabilityFilter = $criteria->getCapabilityFilter();
 
         if ($capabilityFilter !== null) {
@@ -159,18 +157,6 @@ final class RouteOverview implements RouteOverviewActionInterface
                 new StringCollection(\explode(',', (string) $row['capability_name']))
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

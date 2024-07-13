@@ -20,8 +20,6 @@ final class RouteGet implements RouteGetActionInterface
 {
     public const string FETCH_QUERY = '24ab04cd-03f5-40c8-af25-715856281314';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -41,18 +39,6 @@ final class RouteGet implements RouteGetActionInterface
         }
 
         return $ids === [] ? [] : $this->yieldRoutes($ids);
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder
@@ -117,7 +103,7 @@ final class RouteGet implements RouteGetActionInterface
      */
     private function yieldRoutes(array $ids): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         /**

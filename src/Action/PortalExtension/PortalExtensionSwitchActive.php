@@ -31,12 +31,6 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     public const string SWITCH_QUERY = '5444ccf3-cf11-4a5b-bf5f-8c268dce9c1a';
 
-    private ?SelectQueryBuilder $selectByClassNameQueryBuilder = null;
-
-    private ?SelectQueryBuilder $selectByIdQueryBuilder = null;
-
-    private ?QueryBuilder $updateQueryBuilder = null;
-
     public function __construct(
         private Connection $connection,
         private QueryFactory $queryFactory
@@ -139,59 +133,47 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     protected function getSelectByClassNameQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->selectByClassNameQueryBuilder instanceof SelectQueryBuilder) {
-            $this->selectByClassNameQueryBuilder = $this->queryFactory->createSelectBuilder(self::CLASS_NAME_LOOKUP_QUERY);
-            $expr = $this->selectByClassNameQueryBuilder->expr();
+        $result = $this->queryFactory->createSelectBuilder(self::CLASS_NAME_LOOKUP_QUERY);
+        $expr = $result->expr();
 
-            $this->selectByClassNameQueryBuilder
-                ->select([
-                    'portal_node_extension.id',
-                    'portal_node_extension.class_name',
-                    'portal_node_extension.active',
-                ])
-                ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->where(
-                    $expr->eq('portal_node_extension.portal_node_id', ':portalNodeId'),
-                    $expr->in('portal_node_extension.class_name', ':extensionClassNames')
-                );
-        }
-
-        return $this->selectByClassNameQueryBuilder;
+        return $result
+            ->select([
+                'portal_node_extension.id',
+                'portal_node_extension.class_name',
+                'portal_node_extension.active',
+            ])
+            ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
+            ->where(
+                $expr->eq('portal_node_extension.portal_node_id', ':portalNodeId'),
+                $expr->in('portal_node_extension.class_name', ':extensionClassNames')
+            );
     }
 
     protected function getSelectByIdQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->selectByIdQueryBuilder instanceof SelectQueryBuilder) {
-            $this->selectByIdQueryBuilder = $this->queryFactory->createSelectBuilder(self::ID_LOOKUP_QUERY);
-            $expr = $this->selectByIdQueryBuilder->expr();
+        $result = $this->queryFactory->createSelectBuilder(self::ID_LOOKUP_QUERY);
+        $expr = $result->expr();
 
-            $this->selectByIdQueryBuilder
-                ->select([
-                    'portal_node_extension.id',
-                    'portal_node_extension.class_name',
-                    'portal_node_extension.active',
-                ])
-                ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->where($expr->in('portal_node_extension.id', ':ids'));
-        }
-
-        return $this->selectByIdQueryBuilder;
+        return $result
+            ->select([
+                'portal_node_extension.id',
+                'portal_node_extension.class_name',
+                'portal_node_extension.active',
+            ])
+            ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
+            ->where($expr->in('portal_node_extension.id', ':ids'));
     }
 
     protected function getUpdateQueryBuilder(): QueryBuilder
     {
-        if (!$this->updateQueryBuilder instanceof QueryBuilder) {
-            $this->updateQueryBuilder = $this->queryFactory->createBuilder(self::SWITCH_QUERY);
-            $expr = $this->updateQueryBuilder->expr();
+        $result = $this->queryFactory->createBuilder(self::SWITCH_QUERY);
+        $expr = $result->expr();
 
-            $this->updateQueryBuilder
-                ->update('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->set('portal_node_extension.active', (string) $this->getTargetActiveState())
-                ->set('portal_node_extension.updated_at', ':now')
-                ->where($expr->in('portal_node_extension.id', ':ids'));
-        }
-
-        return $this->updateQueryBuilder;
+        return $result
+            ->update('heptaconnect_portal_node_extension', 'portal_node_extension')
+            ->set('portal_node_extension.active', (string) $this->getTargetActiveState())
+            ->set('portal_node_extension.updated_at', ':now')
+            ->where($expr->in('portal_node_extension.id', ':ids'));
     }
 
     protected function getPortalNodeId(PortalNodeKeyInterface $portalNodeKey): string

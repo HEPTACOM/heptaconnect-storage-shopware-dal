@@ -22,10 +22,6 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     public const string DELETE_QUERY = '384f50ca-1e0a-464b-80fd-824fc83b87ca';
 
-    private ?QueryBuilder $deleteBuilder = null;
-
-    private ?SelectQueryBuilder $searchBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -66,13 +62,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     private function getDeleteQuery(): QueryBuilder
     {
-        $builder = $this->deleteBuilder;
-
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+        $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
         $builder->update('heptaconnect_route');
         $builder->set('deleted_at', ':now');
@@ -84,13 +74,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
     private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
-
-        if ($builder instanceof SelectQueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_route');
         $builder->select('id');

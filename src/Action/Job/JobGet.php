@@ -31,8 +31,6 @@ final class JobGet implements JobGetActionInterface
      */
     private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
     ) {
@@ -52,18 +50,6 @@ final class JobGet implements JobGetActionInterface
         }
 
         return $ids === [] ? [] : $this->yieldJobs($ids);
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder
@@ -115,7 +101,7 @@ final class JobGet implements JobGetActionInterface
      */
     private function yieldJobs(array $ids): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         /**

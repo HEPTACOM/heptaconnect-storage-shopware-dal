@@ -22,10 +22,6 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     public const string LOOKUP_QUERY = 'aafca974-b95e-46ea-a680-834a93d13140';
 
-    private ?QueryBuilder $deleteBuilder = null;
-
-    private ?SelectQueryBuilder $searchBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -71,13 +67,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     private function getDeleteQuery(): QueryBuilder
     {
-        $builder = $this->deleteBuilder;
-
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+        $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
         $builder->update('heptaconnect_portal_node');
         $builder->set('deleted_at', ':now');
@@ -91,13 +81,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
     private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
-
-        if ($builder instanceof SelectQueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->select('id');

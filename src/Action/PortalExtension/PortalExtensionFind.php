@@ -19,8 +19,6 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
 {
     public const string LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
 
-    private ?SelectQueryBuilder $queryBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -49,20 +47,16 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
 
     private function getQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->queryBuilder instanceof SelectQueryBuilder) {
-            $this->queryBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
-            $expr = $this->queryBuilder->expr();
+        $result = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
+        $expr = $result->expr();
 
-            $this->queryBuilder
-                ->select([
-                    'portal_node_extension.class_name',
-                    'portal_node_extension.active',
-                ])
-                ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->where($expr->eq('portal_node_id', ':portalNodeId'))
-            ;
-        }
-
-        return $this->queryBuilder;
+        return $result
+            ->select([
+                'portal_node_extension.class_name',
+                'portal_node_extension.active',
+            ])
+            ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
+            ->where($expr->eq('portal_node_id', ':portalNodeId'))
+        ;
     }
 }

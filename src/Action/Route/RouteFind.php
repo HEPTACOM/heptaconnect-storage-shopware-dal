@@ -19,8 +19,6 @@ final class RouteFind implements RouteFindActionInterface
 {
     public const string LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -41,7 +39,7 @@ final class RouteFind implements RouteFindActionInterface
             throw new UnsupportedStorageKeyException(\get_debug_type($targetKey));
         }
 
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('target_key', Id::toBinary($targetKey->getUuid()), ParameterType::BINARY);
@@ -54,18 +52,6 @@ final class RouteFind implements RouteFindActionInterface
         }
 
         return new RouteFindResult(new RouteStorageKey(Id::toHex($id)));
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

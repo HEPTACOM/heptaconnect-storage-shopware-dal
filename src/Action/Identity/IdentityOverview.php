@@ -22,8 +22,6 @@ final class IdentityOverview implements IdentityOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -32,7 +30,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
     #[\Override]
     public function overview(IdentityOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $mappingNodeKeyFilter = $criteria->getMappingNodeKeyFilter();
         $entityTypeFilter = $criteria->getEntityTypeFilter();
         $externalIdFilter = $criteria->getExternalIdFilter();
@@ -136,18 +134,6 @@ final class IdentityOverview implements IdentityOverviewActionInterface
                 DateTime::fromStorage($row['created_at'])
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

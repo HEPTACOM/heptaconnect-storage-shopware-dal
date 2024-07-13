@@ -20,8 +20,6 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
 {
     public const string FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
 
-    private ?SelectQueryBuilder $queryBuilder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -63,27 +61,24 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
 
     private function getQueryBuilder(): SelectQueryBuilder
     {
-        if (!$this->queryBuilder instanceof SelectQueryBuilder) {
-            $this->queryBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
-            $expr = $this->queryBuilder->expr();
+        $result = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
+        $expr = $result->expr();
 
-            $this->queryBuilder
-                ->select([
-                    'request.id request_id',
-                    'serialized_request',
-                ])
-                ->from('heptaconnect_file_reference_request', 'request')
-                ->innerJoin(
-                    'request',
-                    'heptaconnect_portal_node',
-                    'portal_node',
-                    $expr->eq('portal_node.id', 'request.portal_node_id')
-                )
-                ->andWhere($expr->eq('request.portal_node_id', ':portalNodeKey'))
-                ->andWhere($expr->isNull('portal_node.deleted_at'))
-                ->andWhere($expr->in('request.id', ':requestIds'));
-        }
-
-        return clone $this->queryBuilder;
+        return $result
+            ->select([
+                'request.id request_id',
+                'serialized_request',
+            ])
+            ->from('heptaconnect_file_reference_request', 'request')
+            ->innerJoin(
+                'request',
+                'heptaconnect_portal_node',
+                'portal_node',
+                $expr->eq('portal_node.id', 'request.portal_node_id')
+            )
+            ->andWhere($expr->eq('request.portal_node_id', ':portalNodeKey'))
+            ->andWhere($expr->isNull('portal_node.deleted_at'))
+            ->andWhere($expr->in('request.id', ':requestIds'))
+        ;
     }
 }

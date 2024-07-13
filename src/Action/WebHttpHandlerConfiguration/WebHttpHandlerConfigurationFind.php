@@ -19,8 +19,6 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
 {
     public const string LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory,
         private readonly WebHttpHandlerPathIdResolver $pathIdResolver
@@ -36,7 +34,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
             throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
         }
 
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $builder->setParameter(':key', $criteria->getConfigurationKey());
         $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
         $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
@@ -63,18 +61,6 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         }
 
         return new WebHttpHandlerConfigurationFindResult(\is_array($value) ? $value : null);
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder

@@ -21,8 +21,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
 
-    private ?SelectQueryBuilder $builder = null;
-
     public function __construct(
         private readonly QueryFactory $queryFactory
     ) {
@@ -31,7 +29,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
     #[\Override]
     public function overview(PortalNodeOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $classNameFilter = $criteria->getClassNameFilter();
 
         if ($classNameFilter->count() > 0) {
@@ -85,18 +83,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 DateTime::fromStorage((string) $row['created_at']),
             );
         }
-    }
-
-    private function getBuilderCached(): SelectQueryBuilder
-    {
-        if (!$this->builder instanceof SelectQueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
     }
 
     private function getBuilder(): SelectQueryBuilder
