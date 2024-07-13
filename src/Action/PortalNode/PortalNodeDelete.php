@@ -16,14 +16,14 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class PortalNodeDelete implements PortalNodeDeleteActionInterface
+final readonly class PortalNodeDelete implements PortalNodeDeleteActionInterface
 {
     public const string DELETE_QUERY = '219156bb-0598-49df-8205-6d10e8f92a61';
 
     public const string LOOKUP_QUERY = 'aafca974-b95e-46ea-a680-834a93d13140';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

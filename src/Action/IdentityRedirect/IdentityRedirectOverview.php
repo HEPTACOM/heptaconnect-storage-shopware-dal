@@ -23,12 +23,12 @@ use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 use Heptacom\HeptaConnect\Utility\Collection\Scalar\StringCollection;
 
-final class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
+final readonly class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

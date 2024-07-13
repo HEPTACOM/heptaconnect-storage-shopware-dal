@@ -15,13 +15,13 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
-final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
+final readonly class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
 {
     public const string LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
-        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
+        private QueryFactory $queryFactory,
+        private WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 

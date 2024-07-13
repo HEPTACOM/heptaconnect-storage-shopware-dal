@@ -15,12 +15,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class PortalExtensionFind implements PortalExtensionFindActionInterface
+final readonly class PortalExtensionFind implements PortalExtensionFindActionInterface
 {
     public const string LOOKUP_QUERY = '82bb12c6-ed9c-4646-901a-4ff7e8e4e88c';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

@@ -16,12 +16,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class ReceptionRouteList implements ReceptionRouteListActionInterface
+final readonly class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
     public const string LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
+        private QueryFactory $queryFactory,
     ) {
     }
 

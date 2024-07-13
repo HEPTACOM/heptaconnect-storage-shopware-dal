@@ -16,12 +16,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInterface
+final readonly class FileReferenceGetRequestAction implements FileReferenceGetRequestActionInterface
 {
     public const string FETCH_QUERY = '25e53ac0-de53-4039-a790-253fb5803fec';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

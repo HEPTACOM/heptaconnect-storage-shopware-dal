@@ -18,12 +18,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class IdentityOverview implements IdentityOverviewActionInterface
+final readonly class IdentityOverview implements IdentityOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

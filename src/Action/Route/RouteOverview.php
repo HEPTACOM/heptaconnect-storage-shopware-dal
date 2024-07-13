@@ -21,12 +21,12 @@ use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 use Heptacom\HeptaConnect\Utility\Collection\Scalar\StringCollection;
 
-final class RouteOverview implements RouteOverviewActionInterface
+final readonly class RouteOverview implements RouteOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '6cb18ac6-6f5a-4d31-bed3-44849eb51f6f';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

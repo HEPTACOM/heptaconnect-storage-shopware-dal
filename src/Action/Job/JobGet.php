@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class JobGet implements JobGetActionInterface
+final readonly class JobGet implements JobGetActionInterface
 {
     public const string FETCH_QUERY = '809ecd5e-291f-417c-9c76-003c7ead65e9';
 
@@ -32,7 +32,7 @@ final class JobGet implements JobGetActionInterface
     private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
+        private QueryFactory $queryFactory,
     ) {
     }
 

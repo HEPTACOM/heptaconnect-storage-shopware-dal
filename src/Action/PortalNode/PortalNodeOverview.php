@@ -17,12 +17,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\Contract\ClassStringReferenceContract;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class PortalNodeOverview implements PortalNodeOverviewActionInterface
+final readonly class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

@@ -12,12 +12,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
+final readonly class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
     public const string OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

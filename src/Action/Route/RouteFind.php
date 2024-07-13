@@ -15,12 +15,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class RouteFind implements RouteFindActionInterface
+final readonly class RouteFind implements RouteFindActionInterface
 {
     public const string LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

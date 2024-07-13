@@ -15,16 +15,17 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class JobFinish extends AbstractJobTransitionAction implements JobFinishActionInterface
+final readonly class JobFinish extends AbstractJobTransitionAction implements JobFinishActionInterface
 {
     public const string UPDATE_QUERY = '393a0ae1-5f42-4a49-96a3-9a23c26e6bd2';
 
     public const string FIND_QUERY = '84e5495d-4733-4e8a-b775-aafba23daa8c';
 
     public function __construct(
-        private readonly Connection $connection,
-        protected readonly QueryFactory $queryFactory,
+        private Connection $connection,
+        private QueryFactory $queryFactory,
     ) {
+        parent::__construct($this->queryFactory);
     }
 
     #[\Override]

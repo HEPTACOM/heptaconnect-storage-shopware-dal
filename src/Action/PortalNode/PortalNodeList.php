@@ -11,12 +11,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class PortalNodeList implements PortalNodeListActionInterface
+final readonly class PortalNodeList implements PortalNodeListActionInterface
 {
     public const string LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
+        private QueryFactory $queryFactory,
     ) {
     }
 

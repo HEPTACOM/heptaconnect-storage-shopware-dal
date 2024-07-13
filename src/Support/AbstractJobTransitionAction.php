@@ -13,8 +13,13 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-abstract class AbstractJobTransitionAction
+abstract readonly class AbstractJobTransitionAction
 {
+    public function __construct(
+        private QueryFactory $queryFactory,
+    ) {
+    }
+
     /**
      * @return list<string>
      * @throws UnsupportedStorageKeyException

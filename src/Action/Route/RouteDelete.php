@@ -16,14 +16,14 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class RouteDelete implements RouteDeleteActionInterface
+final readonly class RouteDelete implements RouteDeleteActionInterface
 {
     public const string LOOKUP_QUERY = 'b270142d-c897-4d1d-bddb-7641fbfb95a2';
 
     public const string DELETE_QUERY = '384f50ca-1e0a-464b-80fd-824fc83b87ca';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory
+        private QueryFactory $queryFactory
     ) {
     }
 

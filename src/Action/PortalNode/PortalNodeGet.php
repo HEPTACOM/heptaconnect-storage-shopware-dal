@@ -15,12 +15,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class PortalNodeGet implements PortalNodeGetActionInterface
+final readonly class PortalNodeGet implements PortalNodeGetActionInterface
 {
     public const string FETCH_QUERY = 'efbd19ba-bc8e-412c-afb2-8a21f35e21f9';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
+        private QueryFactory $queryFactory,
     ) {
     }
 

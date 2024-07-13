@@ -13,12 +13,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class JobFinishedList implements JobListFinishedActionInterface
+final readonly class JobFinishedList implements JobListFinishedActionInterface
 {
     public const string LIST_QUERY = '008ced6c-7517-46f8-a8a0-8f3c31b50467';
 
     public function __construct(
-        private readonly QueryFactory $queryFactory,
+        private QueryFactory $queryFactory,
     ) {
     }
 
