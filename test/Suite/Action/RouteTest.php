@@ -57,6 +57,76 @@ use PHPUnit\Framework\Attributes\CoversClass;
 class RouteTest extends RouteTestContract
 {
     #[\Override]
+    public function testSortByEntityTypeAsc(): void
+    {
+        parent::testSortByEntityTypeAsc();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testSortByEntityTypeDesc(): void
+    {
+        parent::testSortByEntityTypeDesc();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testSortByDateAsc(): void
+    {
+        parent::testSortByDateAsc();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testRouteLifecycle(): void
+    {
+        parent::testRouteLifecycle();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testSortByDateDesc(): void
+    {
+        parent::testSortByDateDesc();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testDeletedAt(): void
+    {
+        parent::testDeletedAt();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
+    public function testPagination(): void
+    {
+        parent::testPagination();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());

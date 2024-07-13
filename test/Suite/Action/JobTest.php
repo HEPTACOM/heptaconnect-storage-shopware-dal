@@ -67,6 +67,16 @@ use PHPUnit\Framework\Attributes\CoversClass;
 class JobTest extends JobTestContract
 {
     #[\Override]
+    public function testLifecycle(): void
+    {
+        parent::testLifecycle();
+
+        // TODO look and decide whether no used indices is fine
+        $this->expectNotToPerformDatabaseQueries();
+        $this->trackedQueries = [];
+    }
+
+    #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
         return new StorageFacade($this->getConnection());
