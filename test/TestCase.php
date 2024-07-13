@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
@@ -23,7 +25,8 @@ abstract class TestCase extends BaseTestCase
 
     private bool $performsDatabaseQueries = true;
 
-    protected function setUp(): void
+    #[Before]
+    public function setUpKernelAndConnection(): void
     {
         if ($this->setupKernel) {
             $this->upKernel();
@@ -35,7 +38,8 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    protected function tearDown(): void
+    #[After]
+    public function tearDownKernelAndConnection(): void
     {
         if ($this->setupKernel) {
             $this->downKernel();
