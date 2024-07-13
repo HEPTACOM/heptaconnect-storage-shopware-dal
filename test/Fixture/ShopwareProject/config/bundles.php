@@ -8,6 +8,7 @@ $result = [
     Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     Shopware\Core\Framework\Framework::class => ['all' => true],
+    Shopware\Core\Maintenance\Maintenance::class => ['all' => true],
     Shopware\Core\System\System::class => ['all' => true],
     Shopware\Core\Content\Content::class => ['all' => true],
     Shopware\Core\Checkout\Checkout::class => ['all' => true],
