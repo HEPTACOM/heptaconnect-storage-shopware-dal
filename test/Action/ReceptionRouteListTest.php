@@ -141,6 +141,6 @@ class ReceptionRouteListTest extends TestCase
 
     private function getReceptionCapability(): string
     {
-        return (string) $this->getConnection()->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION])->fetchColumn();
+        return (string) $this->getConnection()->fetchOne('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION]);
     }
 }

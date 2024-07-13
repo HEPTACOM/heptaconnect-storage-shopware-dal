@@ -83,9 +83,9 @@ class RouteCreateTest extends TestCase
             new RouteCreatePayload(new PortalNodeStorageKey($targetHex), new PortalNodeStorageKey($sourceHex), Simple::class()),
         ])));
 
-        $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route')->fetchColumn();
+        $count = (int) $connection->fetchOne('SELECT count(1) FROM heptaconnect_route');
         static::assertSame(2, $count);
-        $count = (int) $connection->executeQuery('SELECT count(1) FROM heptaconnect_route_has_capability')->fetchColumn();
+        $count = (int) $connection->fetchOne('SELECT count(1) FROM heptaconnect_route_has_capability');
         static::assertSame(1, $count);
     }
 }

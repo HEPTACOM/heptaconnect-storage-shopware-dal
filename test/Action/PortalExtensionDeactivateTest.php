@@ -64,13 +64,12 @@ class PortalExtensionDeactivateTest extends TestCase
         static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND NOT active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -112,13 +111,12 @@ class PortalExtensionDeactivateTest extends TestCase
         static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND NOT active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -160,13 +158,12 @@ class PortalExtensionDeactivateTest extends TestCase
         static::assertSame(1, $result->getPassedDeactivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND NOT active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]

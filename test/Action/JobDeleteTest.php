@@ -106,15 +106,15 @@ class JobDeleteTest extends TestCase
     {
         $connection = $this->getConnection();
 
-        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
-        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
+        static::assertEquals(1, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job_payload'));
+        static::assertEquals(1, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job'));
 
         $facade = new StorageFacade($connection);
         $action = $facade->getJobDeleteAction();
         $criteria = new JobDeleteCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $action->delete($criteria);
 
-        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job'));
-        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_job_payload'));
+        static::assertEquals(0, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job'));
+        static::assertEquals(0, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job_payload'));
     }
 }

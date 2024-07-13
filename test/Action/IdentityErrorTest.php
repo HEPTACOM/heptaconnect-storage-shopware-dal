@@ -136,7 +136,7 @@ class IdentityErrorTest extends TestCase
 
         static::assertInstanceOf(MappedDatasetEntityStruct::class, $mappedEntity);
 
-        $oldCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $oldCount = (int) $this->getConnection()->fetchOne('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
             new IdentityErrorCreatePayload(
@@ -149,7 +149,7 @@ class IdentityErrorTest extends TestCase
             ),
         ]));
 
-        $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $newCount = (int) $this->getConnection()->fetchOne('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         static::assertSame($newCount, $oldCount + 2);
     }
@@ -164,7 +164,7 @@ class IdentityErrorTest extends TestCase
         $entity = new $entityClass();
         $entity->setPrimaryKey('b85d0182-4392-4c81-bb77-411be927ca39');
 
-        $oldCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $oldCount = (int) $this->getConnection()->fetchOne('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         try {
             $this->identityErrorCreateAction->create(new IdentityErrorCreatePayloads([
@@ -181,7 +181,7 @@ class IdentityErrorTest extends TestCase
         } catch (CreateException) {
         }
 
-        $newCount = (int) $this->getConnection()->fetchColumn('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
+        $newCount = (int) $this->getConnection()->fetchOne('SELECT COUNT(1) FROM heptaconnect_mapping_error_message');
 
         static::assertSame($newCount, $oldCount);
     }

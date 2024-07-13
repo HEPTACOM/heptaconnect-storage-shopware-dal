@@ -56,12 +56,12 @@ class PortalNodeDeleteTest extends TestCase
         $connection = $this->getConnection();
         $facade = new StorageFacade($connection);
 
-        static::assertEquals(1, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
+        static::assertEquals(1, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
 
         $action = $facade->getPortalNodeDeleteAction();
         $criteria = new PortalNodeDeleteCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL)]));
         $action->delete($criteria);
 
-        static::assertEquals(0, $connection->fetchColumn('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
+        static::assertEquals(0, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_portal_node WHERE deleted_at IS NULL'));
     }
 }

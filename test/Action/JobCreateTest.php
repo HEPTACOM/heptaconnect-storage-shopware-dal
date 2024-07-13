@@ -79,9 +79,9 @@ class JobCreateTest extends TestCase
             new JobCreatePayload('foobar', new MappingComponentStruct(new PortalNodeStorageKey($sourceHex), Simple::class(), '3'), null),
         ]));
 
-        $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job`')->fetchColumn();
+        $count = (int) $connection->fetchOne('SELECT count(1) FROM `heptaconnect_job`');
         static::assertSame(3, $count);
-        $count = (int) $connection->executeQuery('SELECT count(1) FROM `heptaconnect_job_payload`')->fetchColumn();
+        $count = (int) $connection->fetchOne('SELECT count(1) FROM `heptaconnect_job_payload`');
         static::assertSame(1, $count);
     }
 }
