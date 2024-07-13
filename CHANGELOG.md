@@ -20,6 +20,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Add exception code `1719673191` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::update` when called as a select query builder is not meant to perform update statements
 - Add exception code `1719673192` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::insert` when called as a select query builder is not meant to perform insert statements
 - Add exception code `1719685570` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn` when a fetched cell is null although strings are expected
+- Add enum `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilderSortingDirection` to be used as reference the sorting directions ascending and descending
 
 ### Changed
 
