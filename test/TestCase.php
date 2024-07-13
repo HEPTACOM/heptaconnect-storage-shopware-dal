@@ -139,6 +139,16 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
+                // skip traces that contain the setUp method (does not yet track Before attributed methods)
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, '->setUp ')) !== []) {
+                    return;
+                }
+
+                // skip traces that contain the tearDown method (does not yet track After attributed methods)
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, '->tearDown ')) !== []) {
+                    return;
+                }
+
                 if ($frames === []) {
                     return;
                 }
