@@ -58,7 +58,7 @@ abstract class AbstractJobTransitionAction
             $affectedJobIds = \iterable_to_array(
                 $this->getSelectQueryBuilder($selectQueryIdentifier)
                     ->setParameter('transactionId', $transactionId)
-                    ->iterateColumn()
+                    ->iterateColumn('job.id')
             );
             $skippedJobIds = \array_diff($jobIds, $affectedJobIds);
             $jobIds = $affectedJobIds;
@@ -108,7 +108,6 @@ abstract class AbstractJobTransitionAction
 
         return $this->selectQueryBuilder = $queryBuilder->select('job.id')
             ->from('heptaconnect_job', 'job')
-            ->addOrderBy('job.id')
             ->where($expr->eq('job.transaction_id', ':transactionId'));
     }
 

@@ -42,7 +42,7 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
         $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        foreach ($builder->iterateColumn() as $id) {
+        foreach ($builder->iterateColumn('route.id') as $id) {
             yield new ReceptionRouteListResult(new RouteStorageKey($id));
         }
     }
@@ -98,7 +98,6 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
                     $builder->expr()->isNull('capability.deleted_at')
                 )
             )
-            ->addOrderBy('route.id')
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),

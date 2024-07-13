@@ -52,7 +52,7 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
             ->setParameter('requestIds', $requestIds, ArrayParameterType::STRING);
 
         /** @var array{request_id: string, serialized_request: string} $row */
-        foreach ($queryBuilder->iterateRows() as $row) {
+        foreach ($queryBuilder->iterateRows('request.id') as $row) {
             yield new FileReferenceGetRequestResult(
                 $portalNodeKey,
                 new FileReferenceRequestStorageKey(Id::toHex($row['request_id'])),
@@ -79,7 +79,6 @@ final class FileReferenceGetRequestAction implements FileReferenceGetRequestActi
                     'portal_node',
                     $expr->eq('portal_node.id', 'request.portal_node_id')
                 )
-                ->addOrderBy('request.id')
                 ->andWhere($expr->eq('request.portal_node_id', ':portalNodeKey'))
                 ->andWhere($expr->isNull('portal_node.deleted_at'))
                 ->andWhere($expr->in('request.id', ':requestIds'));

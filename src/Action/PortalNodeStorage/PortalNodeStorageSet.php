@@ -70,7 +70,6 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
                 'portal_node',
                 $fetchBuilder->expr()->eq('portal_node_storage.portal_node_id', 'portal_node.id')
             )
-            ->addOrderBy('portal_node_storage.id')
             ->andWhere($fetchBuilder->expr()->in('portal_node_storage.key', ':ids'))
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
@@ -89,7 +88,7 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
                 $fetchBuilder->setIsForUpdate(true);
 
                 /** @var array{storage_id: string, storage_key: string} $storageRow */
-                foreach ($fetchBuilder->iterateRows() as $storageRow) {
+                foreach ($fetchBuilder->iterateRows('portal_node_storage.id') as $storageRow) {
                     $storageId = $storageRow['storage_id'];
                     $storageKey = $storageRow['storage_key'];
 

@@ -47,8 +47,6 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('portal_node.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -62,7 +60,7 @@ final class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInte
         }
 
         /** @var array{id: string, alias: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
             yield new PortalNodeAliasOverviewResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']

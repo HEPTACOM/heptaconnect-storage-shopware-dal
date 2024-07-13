@@ -122,8 +122,6 @@ final class RouteOverview implements RouteOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('route.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -148,7 +146,7 @@ final class RouteOverview implements RouteOverviewActionInterface
          *     capability_name: string|null
          * } $row
          */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('route.id') as $row) {
             yield new RouteOverviewResult(
                 new RouteStorageKey(Id::toHex($row['id'])),
                 new UnsafeClassString($row['entity_type_name']),

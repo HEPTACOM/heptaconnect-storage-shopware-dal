@@ -37,14 +37,13 @@ final readonly class PortalNodeAliasFind implements PortalNodeAliasFindActionInt
                 'portal_node.id id',
                 'portal_node.alias alias',
             ])
-            ->addOrderBy('portal_node.id')
             ->andWhere($builder->expr()->in('portal_node.alias', ':aliases'))
             ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
             ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
             ->setParameter('aliases', $aliases, ArrayParameterType::STRING);
 
         /** @var array{id: string, alias: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
             yield new PortalNodeAliasFindResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']

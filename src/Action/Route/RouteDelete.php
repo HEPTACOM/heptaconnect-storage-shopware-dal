@@ -50,7 +50,7 @@ final class RouteDelete implements RouteDeleteActionInterface
 
         $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
-        $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
+        $foundIds = \iterable_to_array($searchBuilder->iterateColumn('id'));
 
         foreach ($ids as $id) {
             if (!\in_array($id, $foundIds, true)) {
@@ -94,7 +94,6 @@ final class RouteDelete implements RouteDeleteActionInterface
 
         $builder->from('heptaconnect_route');
         $builder->select('id');
-        $builder->addOrderBy('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 

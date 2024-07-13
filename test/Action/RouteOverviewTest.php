@@ -13,6 +13,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -24,6 +25,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(AbstractStorageKey::class)]
 #[CoversClass(DateTime::class)]
 #[CoversClass(Id::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
 #[CoversClass(QueryBuilder::class)]
 #[CoversClass(QueryFactory::class)]
 #[CoversClass(QueryIterator::class)]

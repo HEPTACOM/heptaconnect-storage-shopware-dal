@@ -51,11 +51,10 @@ final readonly class PortalNodeConfigurationGet implements PortalNodeConfigurati
                 'p.id portal_node_id',
                 'p.configuration portal_configuration',
             ])
-            ->addOrderBy('p.id')
             ->setParameter('ids', $portalNodeIds, ArrayParameterType::STRING);
 
         /** @var array{portal_node_id: string, portal_configuration: string|null} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('p.id') as $row) {
             $portalNodeId = Id::toHex($row['portal_node_id']);
 
             try {

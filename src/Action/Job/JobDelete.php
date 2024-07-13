@@ -56,7 +56,6 @@ SQL;
         $selectBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
         $selectBuilder
             ->from('heptaconnect_job', 'job')
-            ->addOrderBy('job.id')
             ->select('job.payload_id')
             ->distinct()
             ->where($selectBuilder->expr()->in('id', ':ids'))
@@ -71,7 +70,7 @@ SQL;
             $chunkedPayloadIds = $selectBuilder
                 ->setParameter('ids', $chunkedIds, ArrayParameterType::STRING)
                 ->setMaxResults(\count($chunkedIds))
-                ->iterateColumn();
+                ->iterateColumn('job.id');
 
             $payloadIds = \iterable_to_array($chunkedPayloadIds);
 

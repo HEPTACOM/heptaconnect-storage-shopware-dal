@@ -57,18 +57,18 @@ final class SelectQueryBuilder extends QueryBuilder
     /**
      * @return iterable<int, array<string, string|null>>
      */
-    public function iterateRows(): iterable
+    public function iterateRows(string $sortedBy, QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING): iterable
     {
-        return $this->queryIterator->iterate($this, $this->paginationPageSize);
+        return $this->queryIterator->iterate($this, $sortedBy, $direction, $this->paginationPageSize);
     }
 
     /**
      * @return iterable<int, string>
      * @throws \LogicException
      */
-    public function iterateColumn(): iterable
+    public function iterateColumn(string $sortedBy, QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING): iterable
     {
-        return $this->queryIterator->iterateColumn($this, $this->paginationPageSize);
+        return $this->queryIterator->iterateColumn($this, $sortedBy, $direction, $this->paginationPageSize);
     }
 
     #[\Override]

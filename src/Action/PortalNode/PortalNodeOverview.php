@@ -64,8 +64,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('portal_node.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -79,7 +77,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
         }
 
         /** @var array{id: string, portal_node_class_name: string, created_at: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
             yield new PortalNodeOverviewResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 new UnsafeClassString($row['portal_node_class_name']),

@@ -114,8 +114,6 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('mapping.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -129,7 +127,7 @@ final class IdentityOverview implements IdentityOverviewActionInterface
         }
 
         /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string|null, entity_type_type: string, created_at: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('mapping.id') as $row) {
             yield new IdentityOverviewResult(
                 new PortalNodeStorageKey(Id::toHex($row['portal_node_id'])),
                 new MappingNodeStorageKey(Id::toHex($row['mapping_node_id'])),

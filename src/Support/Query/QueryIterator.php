@@ -12,10 +12,14 @@ class QueryIterator
     /**
      * @return iterable<int, array<string, string|null>>
      */
-    public function iterate(QueryBuilder $query, int $pageSize = 1000): iterable
-    {
+    public function iterate(
+        QueryBuilder $query,
+        string $sortedBy,
+        QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING,
+        int $pageSize = 1000
+    ): iterable {
         return $this->iterateSafelyPaginated(
-            $query,
+            new PaginatableQueryBuilder($query, $sortedBy, $direction),
             \Closure::fromCallable($this->fetchRows(...)),
             $pageSize,
         );
@@ -25,10 +29,14 @@ class QueryIterator
      * @return iterable<int, string>
      * @throws \LogicException
      */
-    public function iterateColumn(QueryBuilder $query, int $pageSize = 1000): iterable
-    {
+    public function iterateColumn(
+        QueryBuilder $query,
+        string $sortedBy,
+        QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING,
+        int $pageSize = 1000
+    ): iterable {
         return $this->iterateSafelyPaginated(
-            $query,
+            new PaginatableQueryBuilder($query, $sortedBy, $direction),
             function (QueryBuilder $qb): array {
                 $result = $qb->executeQuery()->fetchFirstColumn();
 
@@ -133,11 +141,13 @@ class QueryIterator
      *
      * @return iterable<int, T>
      */
-    public function iterateSafelyPaginated(QueryBuilder $query, callable $fetchRow, int $safeFetchSize): iterable
+    public function iterateSafelyPaginated(PaginatableQueryBuilder $paginatableQuery, callable $fetchRow, int $safeFetchSize): iterable
     {
         if ($safeFetchSize < 1) {
             throw new \LogicException('Safe fetch size is too small', 1645901524);
         }
+
+        $query = $paginatableQuery->createPaginatableQueryBuilder();
 
         if ($query->getQueryPart('orderBy') === []) {
             throw new \LogicException('Pagination without order is not reliable', 1645901525);

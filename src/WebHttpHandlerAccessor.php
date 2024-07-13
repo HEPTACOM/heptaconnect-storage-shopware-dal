@@ -39,8 +39,7 @@ class WebHttpHandlerAccessor
                 'handler.id id',
                 'CONCAT(LOWER(HEX(handler.portal_node_id)), LOWER(HEX(handler.path_id))) `match_key`',
             ])
-            ->addOrderBy('handler.id')
-            ->addOrderBy('match_key');
+            ->addOrderBy('handler.id');
 
         $inserts = [];
         $result = [];
@@ -73,7 +72,7 @@ class WebHttpHandlerAccessor
             }
 
             /** @var array{id: string, match_key: string} $row */
-            foreach ($builder->iterateRows() as $row) {
+            foreach ($builder->iterateRows('match_key') as $row) {
                 $result[$keyIndex[$row['match_key']]] = Id::toHex($row['id']);
 
                 unset($inserts[$row['match_key']]);

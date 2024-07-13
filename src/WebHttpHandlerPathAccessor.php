@@ -52,7 +52,6 @@ class WebHttpHandlerPathAccessor
             $builder
                 ->from('heptaconnect_web_http_handler_path', 'handler_path')
                 ->select(['handler_path.id id'])
-                ->addOrderBy('handler_path.id')
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
                 ->setParameter('ids', \array_values($nonMatchingBytes), ArrayParameterType::STRING);
 
@@ -69,7 +68,7 @@ class WebHttpHandlerPathAccessor
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }
 
-            foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
+            foreach (Id::toHexIterable($builder->iterateColumn('handler_path.id')) as $typeId) {
                 $path = $nonMatchingHexFlip[$typeId];
                 $foundIds[$path] = $typeId;
 

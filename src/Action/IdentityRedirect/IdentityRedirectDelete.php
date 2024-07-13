@@ -49,7 +49,7 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
 
         $searchBuilder = $this->getSearchQuery();
         $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
-        $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
+        $foundIds = \iterable_to_array($searchBuilder->iterateColumn('id'));
 
         foreach ($ids as $id) {
             if (!\in_array($id, $foundIds, true)) {
@@ -85,7 +85,6 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
 
             $builder->from('heptaconnect_identity_redirect');
             $builder->select('id');
-            $builder->addOrderBy('id');
             $builder->andWhere($builder->expr()->in('id', ':ids'));
         }
 

@@ -104,7 +104,6 @@ final class RouteGet implements RouteGetActionInterface
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])
-            ->addOrderBy('route.id')
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')
@@ -130,7 +129,7 @@ final class RouteGet implements RouteGetActionInterface
          *     capability_name: string|null
          * } $row
          **/
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('route.id') as $row) {
             yield new RouteGetResult(
                 new RouteStorageKey(Id::toHex($row['id'])),
                 new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),

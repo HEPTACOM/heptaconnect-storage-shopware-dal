@@ -27,7 +27,7 @@ final class JobFinishedList implements JobListFinishedActionInterface
     #[\Override]
     public function list(): iterable
     {
-        foreach (Id::toHexIterable($this->getBuilderCached()->iterateColumn()) as $id) {
+        foreach (Id::toHexIterable($this->getBuilderCached()->iterateColumn('job.id')) as $id) {
             yield new JobListFinishedResult(new JobStorageKey($id));
         }
     }
@@ -52,7 +52,6 @@ final class JobFinishedList implements JobListFinishedActionInterface
             ->from('heptaconnect_job', 'job')
             ->select(['job.id id'])
             ->where($builder->expr()->eq('job.state_id', ':finished'))
-            ->addOrderBy('job.id')
             ->setParameter('finished', JobStateEnum::finished(), Types::BINARY);
     }
 }

@@ -50,8 +50,6 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('capability.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -65,7 +63,7 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
         }
 
         /** @var array{name: string, created_at: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('capability.id') as $row) {
             yield new RouteCapabilityOverviewResult(
                 $row['name'],
                 /* @phpstan-ignore-next-line */

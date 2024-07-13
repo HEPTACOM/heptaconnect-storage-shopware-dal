@@ -303,7 +303,6 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
                 'mappingNode',
                 $expr->eq('mapping.mapping_node_id', 'mappingNode.id')
             )
-            ->addOrderBy('mapping.id')
             ->where($expr->and(
                 $expr->isNull('mapping.deleted_at'),
                 $expr->isNull('mappingNode.deleted_at'),
@@ -316,7 +315,7 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         $mappingNodesToMerge = [];
 
         /** @var array{mappingNodeId: string, externalId: string|null, typeId: string} $row */
-        foreach ($queryBuilder->iterateRows() as $row) {
+        foreach ($queryBuilder->iterateRows('mapping.id') as $row) {
             $intoMappingNodeId = Id::toHex($row['mappingNodeId']);
             $externalId = $row['externalId'];
             $typeId = Id::toHex($row['typeId']);
@@ -379,14 +378,13 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
                     $expr->isNull('mappingNode.deleted_at'),
                 )
             )
-            ->addOrderBy('mappingNode.id')
             ->where($expr->in('mappingNode.id', ':mappingNodeIds'))
             ->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), ArrayParameterType::STRING);
 
         $types = [];
 
         /** @var array{mappingNodeId: string, typeId: string} $row */
-        foreach ($queryBuilder->iterateRows() as $row) {
+        foreach ($queryBuilder->iterateRows('mappingNode.id') as $row) {
             $types[Id::toHex($row['mappingNodeId'])] = Id::toHex($row['typeId']);
         }
 
@@ -522,7 +520,6 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
                 'mapping_node',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
-            ->addOrderBy('mapping.id')
             ->andWhere($builder->expr()->isNull('mapping.deleted_at'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
@@ -531,6 +528,6 @@ final readonly class IdentityPersist implements IdentityPersistActionInterface
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId));
         $builder->setParameter('mappingNodeIds', Id::toBinaryList(\array_keys($mappingNodeIds)), ArrayParameterType::STRING);
 
-        return $builder->iterateRows();
+        return $builder->iterateRows('mapping.id');
     }
 }

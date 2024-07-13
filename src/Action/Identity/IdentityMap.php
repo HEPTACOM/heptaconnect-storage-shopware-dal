@@ -209,7 +209,6 @@ final readonly class IdentityMap implements IdentityMapActionInterface
                 'mapping',
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
-            ->addOrderBy('mapping.id')
             ->select([
                 'type.type mapping_node_type',
                 'mapping.external_id mapping_external_id',
@@ -231,7 +230,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
             $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
             $builder->setParameter('externalIds', \array_map('strval', \array_keys($externalIds)), ArrayParameterType::STRING);
 
-            yield from $builder->iterateRows();
+            yield from $builder->iterateRows('mapping.id');
         }
     }
 
@@ -267,7 +266,6 @@ final readonly class IdentityMap implements IdentityMapActionInterface
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])
-            ->addOrderBy('mapping_node.id')
             ->andWhere($builder->expr()->eq('mapping.portal_node_id', ':portalNodeId'))
             ->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'))
             ->andWhere($builder->expr()->isNull('mapping_node.deleted_at'))
@@ -276,6 +274,6 @@ final readonly class IdentityMap implements IdentityMapActionInterface
         $builder->setParameter('portalNodeId', Id::toBinary($portalNodeId), Types::BINARY);
         $builder->setParameter('mappingNodeIds', Id::toBinaryList($mappingNodeIds), ArrayParameterType::STRING);
 
-        return $builder->iterateRows();
+        return $builder->iterateRows('mapping_node.id');
     }
 }

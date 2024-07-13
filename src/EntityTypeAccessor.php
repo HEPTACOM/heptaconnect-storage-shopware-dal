@@ -96,13 +96,12 @@ class EntityTypeAccessor
                 'type.type type_type',
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
-            ->addOrderBy('type.id')
             ->setParameter('types', $types, ArrayParameterType::STRING);
 
         $result = [];
 
         /** @var array{type_id: string, type_type: string} $row */
-        foreach ($queryBuilder->iterateRows() as $row) {
+        foreach ($queryBuilder->iterateRows('type.id') as $row) {
             $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
 

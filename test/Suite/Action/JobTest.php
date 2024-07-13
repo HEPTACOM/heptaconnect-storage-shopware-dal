@@ -27,6 +27,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
@@ -49,6 +50,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(JobStart::class)]
 #[CoversClass(JobStateEnum::class)]
 #[CoversClass(JobTypeAccessor::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
 #[CoversClass(PortalNodeAliasAccessor::class)]
 #[CoversClass(PortalNodeCreate::class)]
 #[CoversClass(PortalNodeDelete::class)]

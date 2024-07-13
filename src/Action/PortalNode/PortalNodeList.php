@@ -24,7 +24,7 @@ final class PortalNodeList implements PortalNodeListActionInterface
 
     public function list(): iterable
     {
-        foreach ($this->getSearchQuery()->iterateColumn() as $id) {
+        foreach ($this->getSearchQuery()->iterateColumn('id') as $id) {
             yield new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)));
         }
     }
@@ -40,7 +40,6 @@ final class PortalNodeList implements PortalNodeListActionInterface
         $this->searchBuilder = $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         $builder->from('heptaconnect_portal_node');
-        $builder->addOrderBy('id');
         $builder->select('id');
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 

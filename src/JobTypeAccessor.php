@@ -45,14 +45,13 @@ class JobTypeAccessor
                     'job_type.id id',
                     'job_type.type type',
                 ])
-                ->addOrderBy('job_type.id')
                 ->andWhere($builder->expr()->in('job_type.type', ':types'))
                 ->setParameter('types', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
 
             /** @var array{id: string, type: string} $row */
-            foreach ($builder->iterateRows() as $row) {
+            foreach ($builder->iterateRows('job_type.id') as $row) {
                 $typeIds[$row['type']] = Id::toHex($row['id']);
             }
 

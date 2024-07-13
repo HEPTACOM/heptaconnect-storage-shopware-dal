@@ -65,7 +65,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
             ->setParameter('extensionClassNames', $extensionsToToggle, ArrayParameterType::STRING);
 
         /** @var array{id: string, class_name: string, active: string} $existingExtension */
-        foreach ($classNameBuilder->iterateRows() as $existingExtension) {
+        foreach ($classNameBuilder->iterateRows('portal_node_extension.id') as $existingExtension) {
             $className = $existingExtension['class_name'];
             $knownExtClasses[] = $className;
 
@@ -123,7 +123,7 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     ->setParameter('ids', $updateIds, ArrayParameterType::STRING);
 
                 /** @var array{id: string, class_name: string, active: string} $existingExtension */
-                foreach ($knownExtensionBuilder->iterateRows() as $existingExtension) {
+                foreach ($knownExtensionBuilder->iterateRows('portal_node_extension.id') as $existingExtension) {
                     if (((int) $existingExtension['active']) === $this->getTargetActiveState()) {
                         $pass[Id::toHex($existingExtension['id'])] = $existingExtension['class_name'];
                     }
@@ -150,7 +150,6 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     'portal_node_extension.active',
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->addOrderBy('portal_node_extension.id')
                 ->where(
                     $expr->eq('portal_node_extension.portal_node_id', ':portalNodeId'),
                     $expr->in('portal_node_extension.class_name', ':extensionClassNames')
@@ -173,7 +172,6 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
                     'portal_node_extension.active',
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
-                ->addOrderBy('portal_node_extension.id')
                 ->where($expr->in('portal_node_extension.id', ':ids'));
         }
 

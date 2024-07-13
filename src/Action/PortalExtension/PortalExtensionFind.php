@@ -40,7 +40,7 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
         $result = new PortalExtensionFindResult();
 
         /** @var array{class_name: string, active: string} $extension */
-        foreach ($builder->iterateRows() as $extension) {
+        foreach ($builder->iterateRows('portal_node_extension.id') as $extension) {
             $result->add(new UnsafeClassString($extension['class_name']), (bool) $extension['active']);
         }
 
@@ -60,7 +60,6 @@ final class PortalExtensionFind implements PortalExtensionFindActionInterface
                 ])
                 ->from('heptaconnect_portal_node_extension', 'portal_node_extension')
                 ->where($expr->eq('portal_node_id', ':portalNodeId'))
-                ->addOrderBy('portal_node_extension.id')
             ;
         }
 

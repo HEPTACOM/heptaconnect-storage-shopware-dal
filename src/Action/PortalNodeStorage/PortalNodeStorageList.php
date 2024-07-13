@@ -47,7 +47,6 @@ final readonly class PortalNodeStorageList implements PortalNodeStorageListActio
                 'portal_node',
                 $fetchBuilder->expr()->eq('portal_node_storage.portal_node_id', 'portal_node.id')
             )
-            ->addOrderBy('portal_node_storage.id')
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($fetchBuilder->expr()->or(
@@ -58,7 +57,7 @@ final readonly class PortalNodeStorageList implements PortalNodeStorageListActio
             ->setParameter('now', DateTime::nowToStorage());
 
         /** @var array{portal_node_id: string, storage_key: string, storage_value: string, storage_type: string} $row */
-        foreach ($fetchBuilder->iterateRows() as $row) {
+        foreach ($fetchBuilder->iterateRows('portal_node_storage.id') as $row) {
             yield new PortalNodeStorageListResult(
                 new PortalNodeStorageKey(Id::toHex($row['storage_value'])),
                 $row['storage_key'],

@@ -105,7 +105,6 @@ final class JobGet implements JobGetActionInterface
                 'job_payload.payload job_payload_payload',
                 'job_payload.format job_payload_format',
             ])
-            ->addOrderBy('job.id')
             ->where($builder->expr()->in('job.id', ':ids'));
     }
 
@@ -130,7 +129,7 @@ final class JobGet implements JobGetActionInterface
          *     job_payload_format: string|null
          * } $row
          */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('job.id') as $row) {
             yield new JobGetResult(
                 $row['job_type_type'],
                 new JobStorageKey(Id::toHex($row['job_id'])),

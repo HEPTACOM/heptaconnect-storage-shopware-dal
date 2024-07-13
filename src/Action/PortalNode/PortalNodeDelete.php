@@ -55,7 +55,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $idsCheck = \array_combine($ids, $ids);
 
-        foreach ($searchBuilder->iterateColumn() as $id) {
+        foreach ($searchBuilder->iterateColumn('id') as $id) {
             unset($idsCheck[$id]);
         }
 
@@ -103,7 +103,6 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         $builder->select('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
-        $builder->addOrderBy('id');
 
         return $builder;
     }

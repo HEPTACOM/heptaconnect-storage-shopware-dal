@@ -38,14 +38,13 @@ class RouteCapabilityAccessor
                     'route_capability.id id',
                     'route_capability.name name',
                 ])
-                ->addOrderBy('route_capability.id')
                 ->andWhere($builder->expr()->in('route_capability.name', ':names'))
                 ->setParameter('names', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
 
             /** @var array{id: string, name: string} $row */
-            foreach ($builder->iterateRows() as $row) {
+            foreach ($builder->iterateRows('route_capability.id') as $row) {
                 $typeIds[$row['name']] = Id::toHex($row['id']);
             }
 

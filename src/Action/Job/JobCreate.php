@@ -190,7 +190,6 @@ final readonly class JobCreate implements JobCreateActionInterface
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
-            ->addOrderBy('job_payload.id')
             ->select([
                 'job_payload.checksum checksum',
                 'job_payload.id id',
@@ -203,7 +202,7 @@ final readonly class JobCreate implements JobCreateActionInterface
         $rows = [];
 
         /** @var array{checksum: string, id: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('job_payload.id') as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
 

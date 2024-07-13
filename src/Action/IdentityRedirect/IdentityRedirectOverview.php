@@ -124,8 +124,6 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('identity_redirect.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -148,7 +146,7 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
          *     created_at: string
          * } $row
          */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('identity_redirect.id') as $row) {
             yield new IdentityRedirectOverviewResult(
                 new IdentityRedirectStorageKey(Id::toHex($row['identity_redirect_id'])),
                 new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),

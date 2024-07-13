@@ -66,7 +66,6 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
                 'portal_node.id id',
                 'portal_node.class_name portal_node_class_name',
             ])
-            ->orderBy('id')
             ->where(
                 $builder->expr()->isNull('portal_node.deleted_at'),
                 $builder->expr()->in('portal_node.id', ':ids')
@@ -84,7 +83,7 @@ final class PortalNodeGet implements PortalNodeGetActionInterface
         $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
         /** @var array{id: string, portal_node_class_name: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('id') as $row) {
             yield new PortalNodeGetResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 new UnsafeClassString($row['portal_node_class_name'])

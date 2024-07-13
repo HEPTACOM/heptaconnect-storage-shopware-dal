@@ -182,7 +182,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
                 $builder->setParameter('externalIds', $externalIds, ArrayParameterType::STRING);
 
                 /** @var array{portal_node_id: string, entity_type_type: string, mapping_external_id: string|null, mapping_node_id: string} $match */
-                foreach ($builder->iterateRows() as $match) {
+                foreach ($builder->iterateRows('mapping.id') as $match) {
                     $matchPortalNodeId = Id::toHex($match['portal_node_id']);
                     $matchMappingNodeId = Id::toHex($match['mapping_node_id']);
                     $matchExternalId = $match['mapping_external_id'];
@@ -219,7 +219,6 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
                 'entity_type',
                 $builder->expr()->eq('mapping_node.type_id', 'entity_type.id')
             )
-            ->addOrderBy('mapping.id')
             ->select([
                 'portal_node.id portal_node_id',
                 'entity_type.type entity_type_type',

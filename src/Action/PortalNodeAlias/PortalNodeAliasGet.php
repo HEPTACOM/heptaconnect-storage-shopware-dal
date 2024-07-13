@@ -48,14 +48,13 @@ final readonly class PortalNodeAliasGet implements PortalNodeAliasGetActionInter
                 'portal_node.id id',
                 'portal_node.alias alias',
             ])
-            ->addOrderBy('portal_node.id')
             ->andWhere($builder->expr()->in('portal_node.id', ':ids'))
             ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
             ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
             ->setParameter('ids', Id::toBinaryList($portalNodeIds), ArrayParameterType::STRING);
 
         /** @var array{id: string, alias: string} $row */
-        foreach ($builder->iterateRows() as $row) {
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
             yield new PortalNodeAliasGetResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']

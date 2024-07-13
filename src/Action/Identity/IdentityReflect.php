@@ -118,7 +118,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $builder->andWhere($builder->expr()->or(...$mappingNodeExpressions));
 
         /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string|null} $mapping */
-        foreach ($builder->iterateRows() as $mapping) {
+        foreach ($builder->iterateRows('mapping.id') as $mapping) {
             $portalNodeId = Id::toHex($mapping['portal_node_id']);
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
@@ -157,7 +157,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $builder->setParameter('mappingNodeIds', Id::toBinaryList($reflectedMappingNodes), ArrayParameterType::STRING);
 
         /** @var array{mapping_node_id: string, mapping_external_id: string|null} $mapping */
-        foreach ($builder->iterateRows() as $mapping) {
+        foreach ($builder->iterateRows('mapping.id') as $mapping) {
             $mappingNodeId = Id::toHex($mapping['mapping_node_id']);
             $externalId = (string) $mapping['mapping_external_id'];
             $reflectionMapping = null;
@@ -291,7 +291,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $reflectionMappings = [];
 
         /** @var array{source_portal_node_id: string, type: string, source_external_id: string|null, target_external_id: string|null} $mapping */
-        foreach ($queryBuilder->iterateRows() as $mapping) {
+        foreach ($queryBuilder->iterateRows('mapping.id') as $mapping) {
             $sourcePortalNodeId = Id::toHex($mapping['source_portal_node_id']);
             $entityType = $mapping['type'];
             $sourceExternalId = (string) $mapping['source_external_id'];
@@ -404,7 +404,6 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
                 'mapping_node.id mapping_node_id',
                 'mapping.external_id mapping_external_id',
             ])
-            ->addOrderBy('mapping.id')
             ->andWhere($result->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping_node.deleted_at'))
             ->andWhere($result->expr()->isNull('mapping.deleted_at'));
@@ -436,8 +435,6 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $queryBuilder->where(
             $expr->eq('mapping.target_portal_node_id', ':targetPortalNode')
         );
-
-        $queryBuilder->addOrderBy('mapping.id', 'ASC');
 
         return $queryBuilder;
     }
