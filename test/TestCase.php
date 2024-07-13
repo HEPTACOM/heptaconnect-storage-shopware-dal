@@ -48,7 +48,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function upKernel(): void
     {
-        $this->kernel = new ShopwareKernel();
+        $this->kernel = new ShopwareKernel(ShopwareKernel::getConnection());
         $this->kernel->boot();
         $connection = $this->getConnection();
 
