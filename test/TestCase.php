@@ -187,29 +187,24 @@ abstract class TestCase extends BaseTestCase
     {
         $trackedQueries = $this->trackedQueries;
 
+        if (!$this->status()->isSuccess()) {
+            if ($trackedQueries !== []) {
+                [$trackedQuery, $params, $_, $__, $frames, $warnings] = $trackedQueries[\array_key_last($trackedQueries)];
+
+                $params = $this->makeStringableParams($params);
+                $context = $this->makeStringableQueryContext($trackedQuery, $params, $warnings, $frames);
+
+                static::assertSame('', $context, 'This is meant to fail to print the last usage SQL query to better understand the previous error');
+            }
+        }
+
         if ($this->performsDatabaseQueries) {
             static::assertNotEmpty($trackedQueries);
         }
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
-            foreach ($params as &$param) {
-                try {
-                    if (\is_array($param)) {
-                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
-                    } else {
-                        $param = '0x' . Id::toHex($param);
-                    }
-                } catch (\Throwable) {
-                }
-            }
-
-            $context = \implode(\PHP_EOL, [
-                '',
-                $trackedQuery,
-                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                ...$frames,
-            ]);
+            $params = $this->makeStringableParams($params);
+            $context = $this->makeStringableQueryContext($trackedQuery, $params, $warnings, $frames);
 
             if (\mb_stripos((string) $trackedQuery, 'select') !== false) {
                 static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
@@ -253,5 +248,32 @@ abstract class TestCase extends BaseTestCase
     protected function expectNotToPerformDatabaseQueries(): void
     {
         $this->performsDatabaseQueries = false;
+    }
+
+    private function makeStringableParams(array $params): array
+    {
+        foreach ($params as &$param) {
+            try {
+                if (\is_array($param)) {
+                    $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
+                } else {
+                    $param = '0x' . Id::toHex($param);
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        return $params;
+    }
+
+    private function makeStringableQueryContext(string $trackedQuery, array $params, mixed $warnings, mixed $frames): string
+    {
+        return \implode(\PHP_EOL, [
+            '',
+            $trackedQuery,
+            \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+            \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+            ...$frames,
+        ]);
     }
 }
