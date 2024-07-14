@@ -168,11 +168,15 @@ class RouteOverviewTest extends TestCase
         $criteria4 = clone $criteria0;
         $criteria4->setPage(4);
 
-        static::assertCount(1, [...$action->overview($criteria0)]);
-        static::assertCount(1, [...$action->overview($criteria1)]);
-        static::assertCount(1, [...$action->overview($criteria2)]);
-        static::assertCount(1, [...$action->overview($criteria3)]);
-        static::assertCount(0, [...$action->overview($criteria4)]);
+        $criteria5 = clone $criteria0;
+        $criteria5->setPage(5);
+
+        static::assertCount(1, [...$action->overview($criteria0)]); // page 0 equals page 1
+        static::assertCount(1, [...$action->overview($criteria1)]); // likely route type a
+        static::assertCount(1, [...$action->overview($criteria2)]); // likely route type b
+        static::assertCount(1, [...$action->overview($criteria3)]); // likely first route
+        static::assertCount(1, [...$action->overview($criteria4)]); // likely last route
+        static::assertCount(0, [...$action->overview($criteria5)]); // none
     }
 
     public function testSortByDateAsc(): void
