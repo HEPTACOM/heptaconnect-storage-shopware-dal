@@ -41,7 +41,7 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
         foreach ($builder->iterateColumn('route.id') as $id) {
-            yield new ReceptionRouteListResult(new RouteStorageKey($id));
+            yield new ReceptionRouteListResult(new RouteStorageKey(Id::toHex($id)));
         }
     }
 
