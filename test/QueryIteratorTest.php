@@ -132,6 +132,8 @@ final class QueryIteratorTest extends TestCase
 
     public function testNullValueDetectionWhenIteratingNullableStringColumn(): void
     {
+        $this->expectNotToPerformDatabaseQueries();
+
         $connection = $this->getConnection();
         $builder = $connection->createQueryBuilder();
         $builder->from('storage_test_iterator');
@@ -140,7 +142,7 @@ final class QueryIteratorTest extends TestCase
         $iterator = new QueryIterator();
 
         try {
-            $iterator->iterateColumn($builder, 'id');
+            [...$iterator->iterateColumn($builder, 'id')];
             static::fail();
         } catch (\LogicException $exception) {
             static::assertSame(1719685570, $exception->getCode());
