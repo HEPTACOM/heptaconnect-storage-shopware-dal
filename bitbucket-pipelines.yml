@@ -73,6 +73,7 @@ definitions:
                     - mv vendor .build/vendor-low
                     - echo 'mkdir -p vendor; rm -rf vendor; mv .build/vendor-low vendor' > setup-vendor.sh
         -   step: &test-coverage-high-install-84
+                <<: *default-step
                 <<: *php84-image
                 name: Install and Unit test (8.4 + High dependencies)
                 script:
@@ -83,6 +84,7 @@ definitions:
                     - # TODO re-enable coverage tests, when https://bugs.xdebug.org/view.php?id=2252 is solved
                     - DATABASE_URL='mysql://root:let_me_in@127.0.0.1/pipelines_high' COMPOSER_EXTRA_ARGS=-vvv make -e tests-without-coverage
         -   step: &test-coverage-low-install-84
+                <<: *default-step
                 <<: *php84-image
                 name: Install and Unit test (8.4 + Low dependencies)
                 script:
