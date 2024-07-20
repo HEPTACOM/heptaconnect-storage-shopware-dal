@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface;
@@ -18,7 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
+final readonly class FileReferencePersistRequestAction implements FileReferencePersistRequestActionInterface
 {
     public function __construct(
         private Connection $connection,
@@ -26,6 +26,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
     ) {
     }
 
+    #[\Override]
     public function persistRequest(FileReferencePersistRequestPayload $payload): FileReferencePersistRequestResult
     {
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
@@ -34,7 +35,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
             throw new InvalidCreatePayloadException(
                 $payload,
                 1645822126,
-                new UnsupportedStorageKeyException($portalNodeKey::class)
+                new UnsupportedStorageKeyException($portalNodeKey),
             );
         }
 
@@ -57,7 +58,7 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
                     throw new InvalidCreatePayloadException(
                         $payload,
                         1645822126,
-                        new UnsupportedStorageKeyException($storageKey::class)
+                        new UnsupportedStorageKeyException($storageKey),
                     );
                 }
 
@@ -67,8 +68,8 @@ final class FileReferencePersistRequestAction implements FileReferencePersistReq
                     'serialized_request' => $serializedRequest,
                     'created_at' => $now,
                 ], [
-                    'id' => Type::BINARY,
-                    'portal_node_id' => Type::BINARY,
+                    'id' => Types::BINARY,
+                    'portal_node_id' => Types::BINARY,
                 ]);
 
                 $result->addFileReferenceRequestKey($key, $storageKey);

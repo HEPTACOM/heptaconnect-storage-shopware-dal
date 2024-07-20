@@ -14,9 +14,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
+final readonly class PortalNodeStorageClear implements PortalNodeStorageClearActionInterface
 {
-    public const CLEAR_QUERY = '1087e0dc-07fe-48d7-903c-9353167c3e89';
+    public const string CLEAR_QUERY = '1087e0dc-07fe-48d7-903c-9353167c3e89';
 
     public function __construct(
         private QueryFactory $queryFactory,
@@ -24,12 +24,13 @@ final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterf
     ) {
     }
 
+    #[\Override]
     public function clear(PortalNodeStorageClearCriteria $criteria): void
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $deleteBuilder = $this->queryFactory->createBuilder(self::CLEAR_QUERY);
@@ -40,7 +41,7 @@ final class PortalNodeStorageClear implements PortalNodeStorageClearActionInterf
 
         try {
             $this->connection->transactional(function () use ($deleteBuilder): void {
-                $deleteBuilder->execute();
+                $deleteBuilder->executeStatement();
             });
         } catch (\Throwable $throwable) {
             throw new DeleteException(1646209691, $throwable);

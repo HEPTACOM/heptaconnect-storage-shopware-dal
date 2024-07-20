@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity;
 
-use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
@@ -15,23 +14,23 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class IdentityOverview implements IdentityOverviewActionInterface
+final readonly class IdentityOverview implements IdentityOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
-
-    private ?QueryBuilder $builder = null;
+    public const string OVERVIEW_QUERY = '510bb5ac-4bcb-4ddf-927c-05971298bc55';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function overview(IdentityOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $mappingNodeKeyFilter = $criteria->getMappingNodeKeyFilter();
         $entityTypeFilter = $criteria->getEntityTypeFilter();
         $externalIdFilter = $criteria->getExternalIdFilter();
@@ -42,24 +41,24 @@ final class IdentityOverview implements IdentityOverviewActionInterface
 
             foreach ($mappingNodeKeyFilter as $mappingNodeKey) {
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException($mappingNodeKey::class));
+                    throw new InvalidOverviewCriteriaException($criteria, 1643877525, new UnsupportedStorageKeyException($mappingNodeKey));
                 }
 
                 $mappingNodeIds[] = Id::toBinary($mappingNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('mapping_node.id', ':mappingNodeIds'));
-            $builder->setParameter('mappingNodeIds', $mappingNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('mappingNodeIds', $mappingNodeIds, ArrayParameterType::STRING);
         }
 
         if ($entityTypeFilter !== []) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), ArrayParameterType::STRING);
         }
 
         if ($externalIdFilter !== []) {
             $builder->andWhere($builder->expr()->in('mapping.external_id', ':externalIds'));
-            $builder->setParameter('externalIds', $externalIdFilter, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('externalIds', $externalIdFilter, ArrayParameterType::STRING);
         }
 
         if (!$portalNodeKeyFilter->isEmpty()) {
@@ -69,14 +68,14 @@ final class IdentityOverview implements IdentityOverviewActionInterface
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException($portalNodeKey::class));
+                    throw new InvalidOverviewCriteriaException($criteria, 1643877526, new UnsupportedStorageKeyException($portalNodeKey));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('portal_node.id', ':portalNodeIds'));
-            $builder->setParameter('portalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('portalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {
@@ -113,8 +112,6 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('mapping.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -127,34 +124,21 @@ final class IdentityOverview implements IdentityOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): IdentityOverviewResult => new IdentityOverviewResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['portal_node_id'])),
-                new MappingNodeStorageKey(Id::toHex((string) $row['mapping_node_id'])),
+        /** @var array{portal_node_id: string, mapping_node_id: string, mapping_external_id: string|null, entity_type_type: string, created_at: string} $row */
+        foreach ($builder->iterateRows('mapping.id') as $row) {
+            yield new IdentityOverviewResult(
+                new PortalNodeStorageKey(Id::toHex($row['portal_node_id'])),
+                new MappingNodeStorageKey(Id::toHex($row['mapping_node_id'])),
                 (string) $row['mapping_external_id'],
-                new UnsafeClassString((string) $row['entity_type_type']),
-                /* @phpstan-ignore-next-line */
-                DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
-    }
-
-    private function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+                new UnsafeClassString($row['entity_type_type']),
+                DateTime::fromStorage($row['created_at'])
+            );
         }
-
-        return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         $builder->from('heptaconnect_mapping', 'mapping')
             ->innerJoin(

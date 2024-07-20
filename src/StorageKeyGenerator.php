@@ -27,7 +27,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
-    private const IMPLEMENTATION_MAP = [
+    private const array IMPLEMENTATION_MAP = [
         PortalNodeKeyInterface::class => PortalNodeStorageKey::class,
         MappingNodeKeyInterface::class => MappingNodeStorageKey::class,
         RouteKeyInterface::class => RouteStorageKey::class,
@@ -37,7 +37,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         FileReferenceRequestKeyInterface::class => FileReferenceRequestStorageKey::class,
     ];
 
-    private const ABBREVIATIONS = [
+    private const array ABBREVIATIONS = [
         'PortalNode' => PortalNodeStorageKey::class,
         'MappingNode' => MappingNodeStorageKey::class,
         'Route' => RouteStorageKey::class,
@@ -49,10 +49,11 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
     ];
 
     public function __construct(
-        private PortalNodeAliasAccessor $portalNodeAliasAccessor
+        private readonly PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
     }
 
+    #[\Override]
     public function generateKeys(string $keyClassName, int $count): iterable
     {
         while ($count-- > 0) {
@@ -60,6 +61,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
     }
 
+    #[\Override]
     public function serialize(StorageKeyInterface $key): string
     {
         $class = $key::class;
@@ -69,7 +71,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
             $class = $key::class;
 
             if (!$key instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException($class);
+                throw new UnsupportedStorageKeyException($key);
             }
 
             $alias = $this->portalNodeAliasAccessor->getAliasesByIds([$key->getUuid()])[$key->getUuid()] ?? null;
@@ -84,12 +86,13 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
 
         if (($abbreviation = \array_search($class, self::ABBREVIATIONS, true)) === false) {
-            throw new UnsupportedStorageKeyException($class);
+            throw new UnsupportedStorageKeyException($key);
         }
 
         return \sprintf('%s:%s', $abbreviation, $key->getUuid());
     }
 
+    #[\Override]
     public function deserialize(string $keyData): StorageKeyInterface
     {
         $portalNodeKeyData = $this->portalNodeAliasAccessor->getIdsByAliases([$keyData])[$keyData] ?? null;
@@ -111,13 +114,13 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
 
         if (!\array_key_exists($abbreviation, self::ABBREVIATIONS)) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         $class = self::ABBREVIATIONS[$abbreviation];
 
         if (($interface = \array_search($class, self::IMPLEMENTATION_MAP, true)) === false) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         return $this->createKey($interface, $key);
@@ -128,7 +131,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         $uuid ??= Id::randomHex();
 
         if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
-            throw new UnsupportedStorageKeyException($interface);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         $class = self::IMPLEMENTATION_MAP[$interface];

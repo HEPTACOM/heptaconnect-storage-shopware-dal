@@ -8,6 +8,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\ShopwareKernel;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Shopware\Core\System\Language\CachedLanguageLoader;
 
@@ -23,10 +25,9 @@ abstract class TestCase extends BaseTestCase
 
     private bool $performsDatabaseQueries = true;
 
-    protected function setUp(): void
+    #[Before]
+    public function setUpKernelAndConnection(): void
     {
-        parent::setUp();
-
         if ($this->setupKernel) {
             $this->upKernel();
 
@@ -37,10 +38,9 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    protected function tearDown(): void
+    #[After]
+    public function tearDownKernelAndConnection(): void
     {
-        parent::tearDown();
-
         if ($this->setupKernel) {
             $this->downKernel();
 
@@ -52,7 +52,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function upKernel(): void
     {
-        $this->kernel = new ShopwareKernel();
+        $this->kernel = new ShopwareKernel(ShopwareKernel::getConnection());
         $this->kernel->boot();
         $connection = $this->getConnection();
 
@@ -83,19 +83,19 @@ abstract class TestCase extends BaseTestCase
         $connection->getConfiguration()->setSQLLogger(new class($pushQuery, $connection, $projectDir, $this) implements SQLLogger {
             public function __construct(
                 private \Closure $track,
-                private Connection $connection,
-                private string $projectDir,
-                private BaseTestCase $test
+                private readonly Connection $connection,
+                private readonly string $projectDir,
+                private readonly BaseTestCase $test
             ) {
             }
 
             public function startQuery($sql, ?array $params = null, ?array $types = null): void
             {
-                if (\stripos($sql, 'EXPLAIN') === 0 || \stripos($sql, 'SHOW WARNINGS') === 0) {
+                if (\stripos((string) $sql, 'EXPLAIN') === 0 || \stripos((string) $sql, 'SHOW WARNINGS') === 0) {
                     return;
                 }
 
-                if (\stripos($sql, 'INSERT INTO') === 0 && \stripos($sql, 'VALUES') !== false) {
+                if (\stripos((string) $sql, 'INSERT INTO') === 0 && \stripos((string) $sql, 'VALUES') !== false) {
                     return;
                 }
 
@@ -132,10 +132,20 @@ abstract class TestCase extends BaseTestCase
                     return;
                 }
 
-                $frames = \array_map([$this, 'formatFrame'], \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
+                $frames = \array_map($this->formatFrame(...), \array_reverse(\array_slice($rawFrames, 2, $startFrame - 2)));
 
                 // skip traces that only contain code from test cases and vendor folders
                 if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, ' (src/')) === []) {
+                    return;
+                }
+
+                // skip traces that contain the setUp method (does not yet track Before attributed methods)
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, '->setUp ')) !== []) {
+                    return;
+                }
+
+                // skip traces that contain the tearDown method (does not yet track After attributed methods)
+                if (\array_filter($frames, static fn (string $frame): bool => \str_contains($frame, '->tearDown ')) !== []) {
                     return;
                 }
 
@@ -177,31 +187,26 @@ abstract class TestCase extends BaseTestCase
     {
         $trackedQueries = $this->trackedQueries;
 
+        if (!$this->status()->isSuccess()) {
+            if ($trackedQueries !== []) {
+                [$trackedQuery, $params, $_, $__, $frames, $warnings] = $trackedQueries[\array_key_last($trackedQueries)];
+
+                $params = $this->makeStringableParams($params);
+                $context = $this->makeStringableQueryContext($trackedQuery, $params, $warnings, $frames);
+
+                static::assertSame('', $context, 'This is meant to fail to print the last usage SQL query to better understand the previous error');
+            }
+        }
+
         if ($this->performsDatabaseQueries) {
             static::assertNotEmpty($trackedQueries);
         }
 
         foreach ($trackedQueries as [$trackedQuery, $params, $types, $explanations, $frames, $warnings]) {
-            foreach ($params as &$param) {
-                try {
-                    if (\is_array($param)) {
-                        $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
-                    } else {
-                        $param = '0x' . Id::toHex($param);
-                    }
-                } catch (\Throwable) {
-                }
-            }
+            $params = $this->makeStringableParams($params);
+            $context = $this->makeStringableQueryContext($trackedQuery, $params, $warnings, $frames);
 
-            $context = \implode(\PHP_EOL, [
-                '',
-                $trackedQuery,
-                \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
-                ...$frames,
-            ]);
-
-            if (\mb_stripos($trackedQuery, 'select') !== false) {
+            if (\mb_stripos((string) $trackedQuery, 'select') !== false) {
                 static::assertStringContainsStringIgnoringCase('limit', $trackedQuery, 'Unlimited select found in ' . $context);
                 static::assertStringContainsStringIgnoringCase('order by', $trackedQuery, 'Limited select without order by found in ' . $context);
             }
@@ -243,5 +248,32 @@ abstract class TestCase extends BaseTestCase
     protected function expectNotToPerformDatabaseQueries(): void
     {
         $this->performsDatabaseQueries = false;
+    }
+
+    private function makeStringableParams(array $params): array
+    {
+        foreach ($params as &$param) {
+            try {
+                if (\is_array($param)) {
+                    $param = \array_map(static fn (string $i): string => '0x' . Id::toHex($i), $param);
+                } else {
+                    $param = '0x' . Id::toHex($param);
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        return $params;
+    }
+
+    private function makeStringableQueryContext(string $trackedQuery, array $params, mixed $warnings, mixed $frames): string
+    {
+        return \implode(\PHP_EOL, [
+            '',
+            $trackedQuery,
+            \json_encode(['params' => $params], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+            \json_encode(['warnings' => $warnings], \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR),
+            ...$frames,
+        ]);
     }
 }

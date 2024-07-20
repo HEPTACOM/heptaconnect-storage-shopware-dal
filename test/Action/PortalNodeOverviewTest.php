@@ -5,36 +5,45 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
+use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(DateTime::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
+#[CoversClass(PortalNodeOverview::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(SelectQueryBuilder::class)]
+#[CoversClass(StorageFacade::class)]
 class PortalNodeOverviewTest extends TestCase
 {
-    private const PORTAL_FIRST_CREATED = 'b43cbc506680462c8a50513fa02032a6';
+    private const string PORTAL_FIRST_CREATED = 'b43cbc506680462c8a50513fa02032a6';
 
-    private const PORTAL_LAST_CREATED = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL_LAST_CREATED = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
+    private const string PORTAL_DELETED = '48f0cb70cdce4085953e9608d584b097';
 
     protected bool $setupQueryTracking = false;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -73,7 +82,7 @@ class PortalNodeOverviewTest extends TestCase
         $facade = new StorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
-        static::assertCount(2, $action->overview($criteria));
+        static::assertCount(2, [...$action->overview($criteria)]);
     }
 
     public function testPagination(): void
@@ -90,9 +99,9 @@ class PortalNodeOverviewTest extends TestCase
         $criteria2 = clone $criteria0;
         $criteria2->setPage(4);
 
-        static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(1, $action->overview($criteria1));
-        static::assertCount(0, $action->overview($criteria2));
+        static::assertCount(1, [...$action->overview($criteria0)]);
+        static::assertCount(1, [...$action->overview($criteria1)]);
+        static::assertCount(0, [...$action->overview($criteria2)]);
     }
 
     public function testSortByDateAsc(): void
@@ -188,7 +197,7 @@ class PortalNodeOverviewTest extends TestCase
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter(new ClassStringReferenceCollection([new UnsafeClassString(TestCase::class)]));
 
-        static::assertCount(1, $action->overview($criteria));
+        static::assertCount(1, [...$action->overview($criteria)]);
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {

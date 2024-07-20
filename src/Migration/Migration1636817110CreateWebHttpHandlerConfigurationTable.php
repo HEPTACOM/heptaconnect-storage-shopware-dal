@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1636817110CreateWebHttpHandlerConfigurationTable extends MigrationStep
+final class Migration1636817110CreateWebHttpHandlerConfigurationTable extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_web_http_handler_configuration` (
     `id` BINARY(16) NOT NULL,
     `handler_id` BINARY(16) NOT NULL,
@@ -31,15 +31,17 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 SQL;
 
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1636817110;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
@@ -47,6 +49,7 @@ SQL;
         $this->addDateTimeIndex($connection, 'heptaconnect_web_http_handler_configuration', 'updated_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

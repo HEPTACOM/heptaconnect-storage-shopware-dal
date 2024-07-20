@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -12,7 +13,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class WebHttpHandlerPathAccessor
 {
-    public const FETCH_QUERY = 'f683453e-336f-4913-8bb9-aa0e34745f97';
+    public const string FETCH_QUERY = 'f683453e-336f-4913-8bb9-aa0e34745f97';
 
     /**
      * @var array<string, string>
@@ -20,9 +21,9 @@ class WebHttpHandlerPathAccessor
     private array $known = [];
 
     public function __construct(
-        private Connection $connection,
-        private QueryFactory $queryFactory,
-        private WebHttpHandlerPathIdResolver $pathIdResolver
+        private readonly Connection $connection,
+        private readonly QueryFactory $queryFactory,
+        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 
@@ -38,22 +39,21 @@ class WebHttpHandlerPathAccessor
         $nonMatchingKeys = \array_diff($httpHandlerPaths, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $nonMatchingHexes = \array_combine($nonMatchingKeys, \array_map([$this->pathIdResolver, 'getIdFromPath'], $nonMatchingKeys));
+            $nonMatchingHexes = \array_combine($nonMatchingKeys, \array_map($this->pathIdResolver->getIdFromPath(...), $nonMatchingKeys));
 
             if (!\is_array($nonMatchingHexes)) {
                 throw new \LogicException('array_combine should not have returned false', 1637467897);
             }
 
-            $flippedNonMatchingHexes = \array_flip($nonMatchingHexes);
+            $nonMatchingHexFlip = \array_flip($nonMatchingHexes);
             $nonMatchingBytes = Id::toBinaryList($nonMatchingHexes);
 
-            $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
             $builder
                 ->from('heptaconnect_web_http_handler_path', 'handler_path')
                 ->select(['handler_path.id id'])
-                ->addOrderBy('handler_path.id')
                 ->andWhere($builder->expr()->in('handler_path.id', ':ids'))
-                ->setParameter('ids', \array_values($nonMatchingBytes), Connection::PARAM_STR_ARRAY);
+                ->setParameter('ids', \array_values($nonMatchingBytes), ArrayParameterType::STRING);
 
             $foundIds = [];
             $inserts = [];
@@ -68,8 +68,8 @@ class WebHttpHandlerPathAccessor
                 $foundIds[$nonMatchingKey] = $nonMatchingHexes[$nonMatchingKey];
             }
 
-            foreach (Id::toHexIterable($builder->iterateColumn()) as $typeId) {
-                $path = $flippedNonMatchingHexes[$typeId];
+            foreach (Id::toHexIterable($builder->iterateColumn('handler_path.id')) as $typeId) {
+                $path = $nonMatchingHexFlip[$typeId];
                 $foundIds[$path] = $typeId;
 
                 unset($inserts[$typeId]);

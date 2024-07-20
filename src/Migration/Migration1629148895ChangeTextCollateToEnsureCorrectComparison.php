@@ -7,13 +7,15 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends MigrationStep
+final class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends MigrationStep
 {
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1629148895;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $sqls = [
@@ -51,28 +53,29 @@ class Migration1629148895ChangeTextCollateToEnsureCorrectComparison extends Migr
         $connection->executeStatement($sql);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }
 
-    protected function createConversionSql(string $table, string $column, int $newSize, bool $nullable): string
+    private function createConversionSql(string $table, string $column, int $newSize, bool $nullable): string
     {
         $nullType = $nullable ? ' NULL' : '';
 
         return \sprintf('ALTER TABLE `%s` CHANGE `%s` `%s` VARCHAR(%s) %s;', $table, $column, $column, $newSize, $nullType);
     }
 
-    protected function createConversionTableSql(string $table): string
+    private function createConversionTableSql(string $table): string
     {
         return \sprintf('ALTER TABLE `%s` CONVERT TO CHARACTER SET \'binary\';', $table);
     }
 
-    protected function createIndexDropSql(string $table, string $index): string
+    private function createIndexDropSql(string $table, string $index): string
     {
         return \sprintf('DROP INDEX `%s` ON `%s`;', $index, $table);
     }
 
-    protected function createIndexCreateSql(string $table, string $index, string $column, bool $unique): string
+    private function createIndexCreateSql(string $table, string $index, string $column, bool $unique): string
     {
         $uniqueType = $unique ? ' UNIQUE ' : ' ';
 

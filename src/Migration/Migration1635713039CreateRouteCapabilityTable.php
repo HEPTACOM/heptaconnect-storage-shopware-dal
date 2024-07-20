@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1635713039CreateRouteCapabilityTable extends MigrationStep
+final class Migration1635713039CreateRouteCapabilityTable extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_route_capability` (
     `id` BINARY(16) NOT NULL,
     `name` VARCHAR(1020) NOT NULL,
@@ -24,15 +24,17 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 SQL;
 
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635713039;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
@@ -41,6 +43,7 @@ SQL;
         $this->addDateTimeIndex($connection, 'heptaconnect_route_capability', 'deleted_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

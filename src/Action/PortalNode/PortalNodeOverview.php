@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Overview\PortalNodeOverviewResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
@@ -12,25 +12,24 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaExceptio
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Utility\ClassString\Contract\ClassStringReferenceContract;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class PortalNodeOverview implements PortalNodeOverviewActionInterface
+final readonly class PortalNodeOverview implements PortalNodeOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
-
-    private ?QueryBuilder $builder = null;
+    public const string OVERVIEW_QUERY = '478b14da-d0a8-44fd-bd1a-0a60ef948dd7';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function overview(PortalNodeOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $classNameFilter = $criteria->getClassNameFilter();
 
         if ($classNameFilter->count() > 0) {
@@ -38,7 +37,7 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
                 static fn (ClassStringReferenceContract $type): string => (string) $type
             ));
             $builder->andWhere($builder->expr()->in('portal_node.class_name', ':classNames'));
-            $builder->setParameter('classNames', $classNames, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('classNames', $classNames, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {
@@ -63,8 +62,6 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('portal_node.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -77,32 +74,20 @@ final class PortalNodeOverview implements PortalNodeOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): PortalNodeOverviewResult => new PortalNodeOverviewResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['id'])),
-                new UnsafeClassString((string) $row['portal_node_class_name']),
+        /** @var array{id: string, portal_node_class_name: string, created_at: string} $row */
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
+            yield new PortalNodeOverviewResult(
+                new PortalNodeStorageKey(Id::toHex($row['id'])),
+                new UnsafeClassString($row['portal_node_class_name']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at']),
-            )
-        );
-    }
-
-    private function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+            );
         }
-
-        return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

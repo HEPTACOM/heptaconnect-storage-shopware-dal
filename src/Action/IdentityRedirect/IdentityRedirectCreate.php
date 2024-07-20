@@ -22,7 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
+final readonly class IdentityRedirectCreate implements IdentityRedirectCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
@@ -31,6 +31,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
     ) {
     }
 
+    #[\Override]
     public function create(IdentityRedirectCreatePayloadCollection $payloads): IdentityRedirectCreateResultCollection
     {
         $entityTypes = [];
@@ -40,13 +41,13 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722278, new UnsupportedStorageKeyException($sourceKey::class));
+                throw new InvalidCreatePayloadException($payload, 1673722278, new UnsupportedStorageKeyException($sourceKey));
             }
 
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722279, new UnsupportedStorageKeyException($targetKey::class));
+                throw new InvalidCreatePayloadException($payload, 1673722279, new UnsupportedStorageKeyException($targetKey));
             }
 
             $entityTypes[] = (string) $payload->getEntityType();
@@ -67,7 +68,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
 
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(IdentityRedirectKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
-        $identityRedirectInserts = [];
+        $redirectInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
@@ -75,7 +76,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
             $keys->next();
 
             if (!$key instanceof IdentityRedirectStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException($key::class));
+                throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException($key));
             }
 
             /** @var PortalNodeStorageKey $sourceKey */
@@ -83,7 +84,7 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
             /** @var PortalNodeStorageKey $targetKey */
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
-            $identityRedirectInserts[] = [
+            $redirectInserts[] = [
                 'id' => Id::toBinary($key->getUuid()),
                 'source_portal_node_id' => Id::toBinary($sourceKey->getUuid()),
                 'source_external_id' => $payload->getSourceExternalId(),
@@ -97,10 +98,10 @@ final class IdentityRedirectCreate implements IdentityRedirectCreateActionInterf
         }
 
         try {
-            $this->connection->transactional(function () use ($identityRedirectInserts): void {
+            $this->connection->transactional(function () use ($redirectInserts): void {
                 // TODO batch
-                foreach ($identityRedirectInserts as $identityRedirectInsert) {
-                    $this->connection->insert('heptaconnect_identity_redirect', $identityRedirectInsert, [
+                foreach ($redirectInserts as $redirectInsert) {
+                    $this->connection->insert('heptaconnect_identity_redirect', $redirectInsert, [
                         'id' => Types::BINARY,
                         'portal_node_source_id' => Types::BINARY,
                         'portal_node_target_id' => Types::BINARY,

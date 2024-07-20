@@ -6,36 +6,46 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetCriteria;
+use Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult;
 use Heptacom\HeptaConnect\Storage\Base\JobKeyCollection;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(DateTime::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(JobGet::class)]
+#[CoversClass(JobStateEnum::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(SelectQueryBuilder::class)]
+#[CoversClass(StorageFacade::class)]
 class JobGetTest extends TestCase
 {
-    private const ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
+    private const string ENTITY_TYPE = 'c6aad9f6355b4bf78f548a73caa502aa';
 
-    private const JOB_TYPE = '448dc638a1304864b0c66935dafe1b6e';
+    private const string JOB_TYPE = '448dc638a1304864b0c66935dafe1b6e';
 
-    private const PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
+    private const string PORTAL = '4632d49df5d4430f9b498ecd44cc7c58';
 
-    private const JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
+    private const string JOB = '4e836953e1eb4916b4410b9af2b9b2f9';
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -100,7 +110,7 @@ class JobGetTest extends TestCase
         $criteria = new JobGetCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $count = 0;
 
-        /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Job\Get\JobGetResult $item */
+        /** @var JobGetResult $item */
         foreach ($action->get($criteria) as $item) {
             ++$count;
             static::assertTrue(Simple::class()->equals($item->getMappingComponent()->getEntityType()));

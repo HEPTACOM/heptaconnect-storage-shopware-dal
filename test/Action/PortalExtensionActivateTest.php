@@ -6,27 +6,37 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExtensionActivatePayload;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\PortalExtension\PortalExtension;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionSwitchActive
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(DateTime::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
+#[CoversClass(PortalExtensionActivate::class)]
+#[CoversClass(PortalExtensionSwitchActive::class)]
+#[CoversClass(PortalNodeAliasAccessor::class)]
+#[CoversClass(PortalNodeStorageKey::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(SelectQueryBuilder::class)]
+#[CoversClass(StorageFacade::class)]
 class PortalExtensionActivateTest extends TestCase
 {
     public function testActivateWithoutConfiguration(): void
@@ -52,13 +62,12 @@ class PortalExtensionActivateTest extends TestCase
         static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -100,13 +109,12 @@ class PortalExtensionActivateTest extends TestCase
         static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]
@@ -148,13 +156,12 @@ class PortalExtensionActivateTest extends TestCase
         static::assertSame(1, $result->getPassedActivations()->count());
         static::assertTrue($result->isSuccess());
 
-        $activeEntries = $connection->fetchColumn(
+        $activeEntries = $connection->fetchOne(
             'SELECT count(1) FROM heptaconnect_portal_node_extension WHERE class_name = :className AND portal_node_id = :id AND active',
             [
                 'className' => PortalExtension::class,
                 'id' => $portalNode,
             ],
-            0,
             [
                 'id' => Types::BINARY,
             ]

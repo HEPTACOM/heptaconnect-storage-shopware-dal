@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class PortalNodeAliasAccessor
 {
-    public const ID_LOOKUP_QUERY = '8f493191-2ba8-4c9f-b4ff-641fc1afdc56';
+    public const string ID_LOOKUP_QUERY = '8f493191-2ba8-4c9f-b4ff-641fc1afdc56';
 
-    public const ALIAS_LOOKUP_QUERY = '81bd204c-97c0-4259-bf82-8b835f2f0237';
+    public const string ALIAS_LOOKUP_QUERY = '81bd204c-97c0-4259-bf82-8b835f2f0237';
 
     private array $known = [];
 
     public function __construct(
-        private QueryFactory $queryFactory
+        private readonly QueryFactory $queryFactory
     ) {
     }
 
@@ -33,22 +33,22 @@ class PortalNodeAliasAccessor
         $nonMatchingIds = \array_diff($ids, $knownIds);
 
         if ($nonMatchingIds !== []) {
-            $builder = $this->queryFactory->createBuilder(self::ID_LOOKUP_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::ID_LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_portal_node', 'portal_node')
                 ->select([
                     'portal_node.id id',
                     'portal_node.alias alias',
                 ])
-                ->addOrderBy('portal_node.id')
                 ->andWhere($builder->expr()->in('portal_node.id', ':ids'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
                 ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
-                ->setParameter('ids', Id::toBinaryList($nonMatchingIds), Connection::PARAM_STR_ARRAY);
+                ->setParameter('ids', Id::toBinaryList($nonMatchingIds), ArrayParameterType::STRING);
 
             $aliasedIds = [];
 
-            foreach ($builder->iterateRows() as $row) {
+            /** @var array{id: string, alias: string} $row */
+            foreach ($builder->iterateRows('portal_node.id') as $row) {
                 $aliasedIds[Id::toHex($row['id'])] = $row['alias'];
             }
 
@@ -70,22 +70,22 @@ class PortalNodeAliasAccessor
         $nonMatchingAliases = \array_diff($aliases, $knownAliases);
 
         if ($nonMatchingAliases !== []) {
-            $builder = $this->queryFactory->createBuilder(self::ALIAS_LOOKUP_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::ALIAS_LOOKUP_QUERY);
             $builder
                 ->from('heptaconnect_portal_node', 'portal_node')
                 ->select([
                     'portal_node.id id',
                     'portal_node.alias alias',
                 ])
-                ->addOrderBy('portal_node.id')
                 ->andWhere($builder->expr()->in('portal_node.alias', ':aliases'))
                 ->andWhere($builder->expr()->isNotNull('portal_node.alias'))
                 ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))
-                ->setParameter('aliases', $nonMatchingAliases, Connection::PARAM_STR_ARRAY);
+                ->setParameter('aliases', $nonMatchingAliases, ArrayParameterType::STRING);
 
             $aliasedIds = [];
 
-            foreach ($builder->iterateRows() as $row) {
+            /** @var array{id: string, alias: string} $row */
+            foreach ($builder->iterateRows('portal_node.id') as $row) {
                 $aliasedIds[Id::toHex($row['id'])] = $row['alias'];
             }
 

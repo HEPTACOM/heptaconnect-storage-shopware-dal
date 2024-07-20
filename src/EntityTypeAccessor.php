@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
@@ -14,9 +15,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class EntityTypeAccessor
 {
-    public const ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
+    public const string ENTITY_TYPE_ID_NS = '0d114f3b-c3a9-43da-bc27-3d3ec524a145';
 
-    public const LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
+    public const string LOOKUP_QUERY = '992a88ac-a232-4d99-b1cc-4165da81ba77';
 
     /**
      * @var array<string, string>
@@ -24,8 +25,8 @@ class EntityTypeAccessor
     private array $entityTypeIds = [];
 
     public function __construct(
-        private Connection $connection,
-        private QueryFactory $queryFactory
+        private readonly Connection $connection,
+        private readonly QueryFactory $queryFactory
     ) {
     }
 
@@ -80,9 +81,14 @@ class EntityTypeAccessor
         return \array_intersect_key($this->entityTypeIds, \array_fill_keys($entityTypes, true));
     }
 
+    /**
+     * @param list<string> $types
+     *
+     * @return array<string, string>
+     */
     private function queryIdsForTypes(array $types): array
     {
-        $queryBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $queryBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([
@@ -90,13 +96,12 @@ class EntityTypeAccessor
                 'type.type type_type',
             ])
             ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
-            ->addOrderBy('type.id')
-            ->setParameter('types', $types, Connection::PARAM_STR_ARRAY);
+            ->setParameter('types', $types, ArrayParameterType::STRING);
 
         $result = [];
 
         /** @var array{type_id: string, type_type: string} $row */
-        foreach ($queryBuilder->iterateRows() as $row) {
+        foreach ($queryBuilder->iterateRows('type.id') as $row) {
             $result[$row['type_type']] = Id::toHex($row['type_id']);
         }
 

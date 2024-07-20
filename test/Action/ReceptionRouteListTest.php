@@ -6,26 +6,34 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Action;
 
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Listing\ReceptionRouteListCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Enum\RouteCapability;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(DateTime::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
+#[CoversClass(PortalNodeStorageKey::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(ReceptionRouteList::class)]
+#[CoversClass(SelectQueryBuilder::class)]
+#[CoversClass(StorageFacade::class)]
 class ReceptionRouteListTest extends TestCase
 {
     public function testDeletedAt(): void
@@ -133,6 +141,6 @@ class ReceptionRouteListTest extends TestCase
 
     private function getReceptionCapability(): string
     {
-        return (string) $this->getConnection()->executeQuery('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION])->fetchColumn();
+        return (string) $this->getConnection()->fetchOne('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION]);
     }
 }

@@ -12,35 +12,34 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class RouteFind implements RouteFindActionInterface
+final readonly class RouteFind implements RouteFindActionInterface
 {
-    public const LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
-
-    private ?QueryBuilder $builder = null;
+    public const string LOOKUP_QUERY = '1f0d7c11-0d1c-4834-8b15-148d826d64e8';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function find(RouteFindCriteria $criteria): ?RouteFindResult
     {
         $sourceKey = $criteria->getSource()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($sourceKey::class);
+            throw new UnsupportedStorageKeyException($sourceKey);
         }
 
         $targetKey = $criteria->getTarget()->withoutAlias();
 
         if (!$targetKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($targetKey::class);
+            throw new UnsupportedStorageKeyException($targetKey);
         }
 
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('target_key', Id::toBinary($targetKey->getUuid()), ParameterType::BINARY);
@@ -55,21 +54,9 @@ final class RouteFind implements RouteFindActionInterface
         return new RouteFindResult(new RouteStorageKey(Id::toHex($id)));
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
-    }
-
-    private function getBuilder(): QueryBuilder
-    {
-        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')

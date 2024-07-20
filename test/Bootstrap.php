@@ -16,7 +16,7 @@ include_once __DIR__ . '/../test-suite/TestCase.php';
 $loader = require __DIR__ . '/../vendor/autoload.php';
 KernelLifecycleManager::prepare($loader);
 
-(new Dotenv(true))->load(__DIR__ . '/../.env.test');
+(new Dotenv())->load(__DIR__ . '/../.env.test');
 
 $connection = ShopwareKernel::getConnection();
 
@@ -38,7 +38,7 @@ do {
 $connection->executeStatement('SET FOREIGN_KEY_CHECKS = 1');
 $connection->executeStatement(\file_get_contents(__DIR__ . '/../vendor/shopware/core/schema.sql'));
 
-$kernel = new ShopwareKernel();
+$kernel = new ShopwareKernel($connection);
 $kernel->boot();
 $kernel->registerBundles();
 $application = new Application($kernel);

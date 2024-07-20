@@ -22,7 +22,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class RouteCreate implements RouteCreateActionInterface
+final readonly class RouteCreate implements RouteCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
@@ -32,6 +32,7 @@ final class RouteCreate implements RouteCreateActionInterface
     ) {
     }
 
+    #[\Override]
     public function create(RouteCreatePayloads $payloads): RouteCreateResults
     {
         $capabilities = [];
@@ -42,13 +43,13 @@ final class RouteCreate implements RouteCreateActionInterface
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException($sourceKey::class));
+                throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException($sourceKey));
             }
 
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException($targetKey::class));
+                throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException($targetKey));
             }
 
             $entityTypes[] = (string) $payload->getEntityType();
@@ -84,7 +85,7 @@ final class RouteCreate implements RouteCreateActionInterface
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
         $routeInserts = [];
-        $routeCapabilityInserts = [];
+        $routeCapInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
@@ -92,7 +93,7 @@ final class RouteCreate implements RouteCreateActionInterface
             $keys->next();
 
             if (!$key instanceof RouteStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException($key::class));
+                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException($key));
             }
 
             /** @var PortalNodeStorageKey $sourceKey */
@@ -109,7 +110,7 @@ final class RouteCreate implements RouteCreateActionInterface
             ];
 
             foreach ($payload->getCapabilities() as $capability) {
-                $routeCapabilityInserts[] = [
+                $routeCapInserts[] = [
                     'route_id' => Id::toBinary($key->getUuid()),
                     'route_capability_id' => Id::toBinary($capabilityIds[$capability]),
                     'created_at' => $now,
@@ -120,7 +121,7 @@ final class RouteCreate implements RouteCreateActionInterface
         }
 
         try {
-            $this->connection->transactional(function () use ($routeCapabilityInserts, $routeInserts): void {
+            $this->connection->transactional(function () use ($routeCapInserts, $routeInserts): void {
                 // TODO batch
                 foreach ($routeInserts as $routeInsert) {
                     $this->connection->insert('heptaconnect_route', $routeInsert, [
@@ -131,7 +132,7 @@ final class RouteCreate implements RouteCreateActionInterface
                     ]);
                 }
 
-                foreach ($routeCapabilityInserts as $routeCapabilityInsert) {
+                foreach ($routeCapInserts as $routeCapabilityInsert) {
                     $this->connection->insert('heptaconnect_route_has_capability', $routeCapabilityInsert, [
                         'route_id' => Types::BINARY,
                         'route_capability_id' => Types::BINARY,

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class RouteCapabilityAccessor
 {
-    public const FETCH_QUERY = '93fd2b30-ca58-4d60-b29e-d14115b5ea2b';
+    public const string FETCH_QUERY = '93fd2b30-ca58-4d60-b29e-d14115b5ea2b';
 
     private array $knownCapabilities = [];
 
     public function __construct(
-        private QueryFactory $queryFactory
+        private readonly QueryFactory $queryFactory
     ) {
     }
 
@@ -31,21 +31,20 @@ class RouteCapabilityAccessor
         $nonMatchingKeys = \array_diff($capabilities, $knownKeys);
 
         if ($nonMatchingKeys !== []) {
-            $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+            $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
             $builder
                 ->from('heptaconnect_route_capability', 'route_capability')
                 ->select([
                     'route_capability.id id',
                     'route_capability.name name',
                 ])
-                ->addOrderBy('route_capability.id')
                 ->andWhere($builder->expr()->in('route_capability.name', ':names'))
-                ->setParameter('names', $nonMatchingKeys, Connection::PARAM_STR_ARRAY);
+                ->setParameter('names', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
 
-            /** @var object{id: string, name: string} $row */
-            foreach ($builder->iterateRows() as $row) {
+            /** @var array{id: string, name: string} $row */
+            foreach ($builder->iterateRows('route_capability.id') as $row) {
                 $typeIds[$row['name']] = Id::toHex($row['id']);
             }
 

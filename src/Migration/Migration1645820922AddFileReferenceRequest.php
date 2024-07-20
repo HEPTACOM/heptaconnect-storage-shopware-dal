@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1645820922AddFileReferenceRequest extends MigrationStep
+final class Migration1645820922AddFileReferenceRequest extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 create table heptaconnect_file_reference_request
 (
     id                 binary(16)  not null primary key,
@@ -27,15 +27,17 @@ DEFAULT CHARSET='binary'
 COLLATE='binary';
 SQL;
 
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1645820922;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
@@ -43,6 +45,7 @@ SQL;
         $this->addDateTimeIndex($connection, 'heptaconnect_file_reference_request', 'updated_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

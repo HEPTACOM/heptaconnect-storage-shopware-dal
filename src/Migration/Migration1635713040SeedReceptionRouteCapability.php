@@ -9,9 +9,9 @@ use Doctrine\DBAL\Types\Types;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Shopware\Core\Framework\Uuid\Uuid;
 
-class Migration1635713040SeedReceptionRouteCapability extends MigrationStep
+final class Migration1635713040SeedReceptionRouteCapability extends MigrationStep
 {
-    private const UP = <<<'SQL'
+    private const string UP = <<<'SQL'
 INSERT INTO `heptaconnect_route_capability` (
     `id`,
     `name`,
@@ -23,16 +23,19 @@ INSERT INTO `heptaconnect_route_capability` (
 );
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635713040;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP, ['id' => Uuid::randomBytes()], ['id' => Types::BINARY]);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

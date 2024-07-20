@@ -17,7 +17,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
+final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
 {
     public function __construct(
         private Connection $connection,
@@ -25,16 +25,19 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
     ) {
     }
 
+    #[\Override]
     public function set(PortalNodeAliasSetPayloads $payloads): void
     {
         $updates = [];
+        $aliasToSet = [];
+
         /** @var PortalNodeAliasSetPayload $payload */
         foreach ($payloads as $payload) {
             $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
             $alias = $payload->getAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException($portalNodeKey::class));
+                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException($portalNodeKey));
             }
 
             if ($alias === '') {
@@ -42,19 +45,25 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
             }
 
             $updates[$portalNodeKey->getUuid()] = $alias;
+
+            if ($alias !== null) {
+                $aliasToSet[] = $alias;
+            }
         }
 
         if ($updates === []) {
             return;
         }
 
-        $matches = $this->portalNodeAliasAccessor->getIdsByAliases(\array_values(\array_filter($updates, 'strlen')));
+        if ($aliasToSet !== []) {
+            $matches = $this->portalNodeAliasAccessor->getIdsByAliases($aliasToSet);
 
-        if ($matches !== []) {
-            foreach ($matches as $match) {
-                foreach ($payloads as $payload) {
-                    if ($payload->getAlias() === $match) {
-                        throw new InvalidCreatePayloadException($payload, 1645446810);
+            if ($matches !== []) {
+                foreach ($matches as $match) {
+                    foreach ($payloads as $payload) {
+                        if ($payload->getAlias() === $match) {
+                            throw new InvalidCreatePayloadException($payload, 1645446810);
+                        }
                     }
                 }
             }

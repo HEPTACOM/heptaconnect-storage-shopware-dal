@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1639270114InsertJobStates extends MigrationStep
+final class Migration1639270114InsertJobStates extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 insert into heptaconnect_job_state (id, name, created_at)
 values (0x3aee495720734539b98f0605c33e59d2, 'open', NOW());
 
@@ -23,16 +23,19 @@ insert into heptaconnect_job_state (id, name, created_at)
 values (0x6575ad837c71416f887d0e516a1bd813, 'finished', NOW());
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1639270114;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

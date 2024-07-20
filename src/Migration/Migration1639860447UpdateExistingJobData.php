@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1639860447UpdateExistingJobData extends MigrationStep
+final class Migration1639860447UpdateExistingJobData extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 insert into heptaconnect_job_history
 select
     unhex(md5(concat(job.id, 0xca5ef83ffd114913a81477efafa14272))) as id,
@@ -54,16 +54,19 @@ alter table heptaconnect_job
 set FOREIGN_KEY_CHECKS = 1;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1639860447;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

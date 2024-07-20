@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1640360050CreatePortalExtensionConfigurationTable extends MigrationStep
+final class Migration1640360050CreatePortalExtensionConfigurationTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 create table heptaconnect_portal_node_extension
 (
     id             binary(16)                   not null,
@@ -25,16 +25,19 @@ create table heptaconnect_portal_node_extension
 ) charset = `binary`;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1640360050;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

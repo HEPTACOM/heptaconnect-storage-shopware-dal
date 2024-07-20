@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Delete\JobDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
@@ -12,13 +13,13 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class JobDelete implements JobDeleteActionInterface
+final readonly class JobDelete implements JobDeleteActionInterface
 {
-    public const DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
+    public const string DELETE_QUERY = 'f60b01fc-8f9a-4a37-a009-a00db9a64b11';
 
-    public const LOOKUP_QUERY = 'c1c41a80-6aec-4499-a07a-26ee57b07594';
+    public const string LOOKUP_QUERY = 'c1c41a80-6aec-4499-a07a-26ee57b07594';
 
-    private const DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
+    private const string DELETE_AFFECTED_JOBS_PAYLOAD = <<<'SQL'
 DELETE
     job_payload
 FROM
@@ -39,25 +40,26 @@ SQL;
     ) {
     }
 
+    #[\Override]
     public function delete(JobDeleteCriteria $criteria): void
     {
         $ids = [];
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException($jobKey::class);
+                throw new UnsupportedStorageKeyException($jobKey);
             }
 
             $ids[] = Id::toBinary($jobKey->getUuid());
         }
 
-        $selectBuilder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $selectBuilder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
         $selectBuilder
             ->from('heptaconnect_job', 'job')
-            ->addOrderBy('job.id')
             ->select('job.payload_id')
             ->distinct()
-            ->where($selectBuilder->expr()->in('id', ':ids'));
+            ->where($selectBuilder->expr()->in('id', ':ids'))
+            ->andWhere($selectBuilder->expr()->isNotNull('job.payload_id'));
 
         $deleteJobBuilder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
         $deleteJobBuilder
@@ -66,9 +68,9 @@ SQL;
 
         foreach (\array_chunk($ids, 1000) as $chunkedIds) {
             $chunkedPayloadIds = $selectBuilder
-                ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
+                ->setParameter('ids', $chunkedIds, ArrayParameterType::STRING)
                 ->setMaxResults(\count($chunkedIds))
-                ->iterateColumn();
+                ->iterateColumn('job.id');
 
             $payloadIds = \iterable_to_array($chunkedPayloadIds);
 
@@ -78,14 +80,14 @@ SQL;
                 $payloadIds
             ): void {
                 $deleteJobBuilder
-                    ->setParameter('ids', $chunkedIds, Connection::PARAM_STR_ARRAY)
-                    ->execute();
+                    ->setParameter('ids', $chunkedIds, ArrayParameterType::STRING)
+                    ->executeStatement();
 
                 if ($payloadIds !== []) {
                     $this->connection->executeStatement(
                         self::DELETE_AFFECTED_JOBS_PAYLOAD,
                         ['ids' => $payloadIds],
-                        ['ids' => Connection::PARAM_STR_ARRAY]
+                        ['ids' => ArrayParameterType::STRING]
                     );
                 }
             });

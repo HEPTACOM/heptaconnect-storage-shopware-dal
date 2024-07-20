@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Delete\IdentityRedirectDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -13,29 +13,27 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorage
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterface
+final readonly class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterface
 {
-    public const LOOKUP_QUERY = '26f18fa9-9246-45cf-b7f7-2fc80f61151d';
+    public const string LOOKUP_QUERY = '26f18fa9-9246-45cf-b7f7-2fc80f61151d';
 
-    public const DELETE_QUERY = 'ca54ecac-3b6b-4f54-882e-fea1f19336ba';
-
-    private ?QueryBuilder $deleteBuilder = null;
-
-    private ?QueryBuilder $searchBuilder = null;
+    public const string DELETE_QUERY = 'ca54ecac-3b6b-4f54-882e-fea1f19336ba';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function delete(IdentityRedirectDeleteCriteria $criteria): void
     {
         $ids = [];
 
         foreach ($criteria->getIdentityRedirectKeys() as $identityRedirectKey) {
             if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
-                throw new UnsupportedStorageKeyException($identityRedirectKey::class);
+                throw new UnsupportedStorageKeyException($identityRedirectKey);
             }
 
             $ids[] = Id::toBinary($identityRedirectKey->getUuid());
@@ -46,8 +44,8 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         }
 
         $searchBuilder = $this->getSearchQuery();
-        $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $foundIds = \iterable_to_array($searchBuilder->iterateColumn());
+        $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $foundIds = \iterable_to_array($searchBuilder->iterateColumn('id'));
 
         foreach ($ids as $id) {
             if (!\in_array($id, $foundIds, true)) {
@@ -56,37 +54,28 @@ final class IdentityRedirectDelete implements IdentityRedirectDeleteActionInterf
         }
 
         $deleteBuilder = $this->getDeleteQuery();
-        $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $deleteBuilder->execute();
+        $deleteBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $deleteBuilder->executeStatement();
     }
 
     private function getDeleteQuery(): QueryBuilder
     {
-        $builder = $this->deleteBuilder;
+        $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
-        if (!$builder instanceof QueryBuilder) {
-            $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+        $builder->delete('heptaconnect_identity_redirect');
+        $builder->andWhere($builder->expr()->in('id', ':ids'));
 
-            $builder->delete('heptaconnect_identity_redirect');
-            $builder->andWhere($builder->expr()->in('id', ':ids'));
-        }
-
-        return clone $builder;
+        return $builder;
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
-        if (!$builder instanceof QueryBuilder) {
-            $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $builder->from('heptaconnect_identity_redirect');
+        $builder->select('id');
+        $builder->andWhere($builder->expr()->in('id', ':ids'));
 
-            $builder->from('heptaconnect_identity_redirect');
-            $builder->select('id');
-            $builder->addOrderBy('id');
-            $builder->andWhere($builder->expr()->in('id', ':ids'));
-        }
-
-        return clone $builder;
+        return $builder;
     }
 }

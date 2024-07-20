@@ -7,13 +7,15 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1589673188CreateMappingNodeTable extends MigrationStep
+final class Migration1589673188CreateMappingNodeTable extends MigrationStep
 {
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1589673188;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $sql = <<<SQL
@@ -42,6 +44,7 @@ SQL;
         $connection->executeStatement($sql);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

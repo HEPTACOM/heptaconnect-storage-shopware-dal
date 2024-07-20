@@ -14,24 +14,25 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class PortalNodeStorageList implements PortalNodeStorageListActionInterface
+final readonly class PortalNodeStorageList implements PortalNodeStorageListActionInterface
 {
-    public const FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
+    public const string FETCH_QUERY = '7e532256-22d2-492e-8e76-ab1649ddc4e0';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function list(PortalNodeStorageListCriteria $criteria): iterable
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
-        $fetchBuilder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $fetchBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
             ->select([
@@ -46,7 +47,6 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
                 'portal_node',
                 $fetchBuilder->expr()->eq('portal_node_storage.portal_node_id', 'portal_node.id')
             )
-            ->addOrderBy('portal_node_storage.id')
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
             ->andWhere($fetchBuilder->expr()->or(
@@ -56,14 +56,14 @@ final class PortalNodeStorageList implements PortalNodeStorageListActionInterfac
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', DateTime::nowToStorage());
 
-        return \iterable_map(
-            $fetchBuilder->iterateRows(),
-            static fn (array $row): PortalNodeStorageListResult => new PortalNodeStorageListResult(
-                new PortalNodeStorageKey(Id::toHex((string) $row['storage_value'])),
-                (string) $row['storage_key'],
-                (string) $row['storage_type'],
-                (string) $row['storage_value']
-            )
-        );
+        /** @var array{portal_node_id: string, storage_key: string, storage_value: string, storage_type: string} $row */
+        foreach ($fetchBuilder->iterateRows('portal_node_storage.id') as $row) {
+            yield new PortalNodeStorageListResult(
+                new PortalNodeStorageKey(Id::toHex($row['storage_value'])),
+                $row['storage_key'],
+                $row['storage_type'],
+                $row['storage_value']
+            );
+        }
     }
 }

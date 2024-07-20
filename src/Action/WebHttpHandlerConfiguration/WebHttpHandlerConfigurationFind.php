@@ -11,15 +11,13 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfigurati
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
 
-final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
+final readonly class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurationFindActionInterface
 {
-    public const LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
-
-    private ?QueryBuilder $builder = null;
+    public const string LOOKUP_QUERY = 'f6c5db7b-004d-40c8-b9cc-53707aab658b';
 
     public function __construct(
         private QueryFactory $queryFactory,
@@ -27,18 +25,19 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
     ) {
     }
 
+    #[\Override]
     public function find(WebHttpHandlerConfigurationFindCriteria $criteria): WebHttpHandlerConfigurationFindResult
     {
         $portalNodeKey = $criteria->getStackIdentifier()->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
-        $builder = $this->getBuilderCached();
-        $builder->setParameter(':key', $criteria->getConfigurationKey());
-        $builder->setParameter(':pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
-        $builder->setParameter(':portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
+        $builder = $this->getBuilder();
+        $builder->setParameter('key', $criteria->getConfigurationKey());
+        $builder->setParameter('pathId', Id::toBinary($this->pathIdResolver->getIdFromPath($criteria->getStackIdentifier()->getPath())), Types::BINARY);
+        $builder->setParameter('portalNodeKey', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
 
         /** @var array{type: string, value: string}|null $row */
         $row = $builder->fetchSingleRow();
@@ -52,7 +51,7 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         switch ($row['type']) {
             case 'serialized':
             default:
-                $preValue = \unserialize((string) $row['value']);
+                $preValue = \unserialize($row['value']);
 
                 if (\is_array($preValue)) {
                     $value = $preValue;
@@ -64,21 +63,9 @@ final class WebHttpHandlerConfigurationFind implements WebHttpHandlerConfigurati
         return new WebHttpHandlerConfigurationFindResult(\is_array($value) ? $value : null);
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
-    }
-
-    private function getBuilder(): QueryBuilder
-    {
-        $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         return $builder
             ->from('heptaconnect_web_http_handler_configuration', 'config')

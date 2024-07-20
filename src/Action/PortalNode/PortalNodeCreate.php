@@ -20,7 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
-final class PortalNodeCreate implements PortalNodeCreateActionInterface
+final readonly class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
@@ -29,6 +29,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
     ) {
     }
 
+    #[\Override]
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
     {
         $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(PortalNodeKeyInterface::class, $payloads->count())));
@@ -42,7 +43,7 @@ final class PortalNodeCreate implements PortalNodeCreateActionInterface
             $keys->next();
 
             if (!$key instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException($key::class));
+                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException($key));
             }
 
             $alias = $payload->getAlias();

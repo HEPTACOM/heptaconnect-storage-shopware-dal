@@ -5,29 +5,56 @@ declare(strict_types=1);
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder as HeptaconnectQueryBuilder;
 
 class QueryIterator
 {
     /**
      * @return iterable<int, array<string, string|null>>
      */
-    public function iterate(QueryBuilder $query, int $pageSize = 1000): iterable
-    {
+    public function iterate(
+        QueryBuilder $query,
+        string $sortedBy,
+        QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING,
+        int $pageSize = 1000
+    ): iterable {
         return $this->iterateSafelyPaginated(
-            $query,
-            \Closure::fromCallable([$this, 'fetchRows']),
+            new PaginatableQueryBuilder($query, $sortedBy, $direction),
+            \Closure::fromCallable($this->fetchRows(...)),
             $pageSize,
         );
     }
 
     /**
-     * @return iterable<int, string|null>
+     * @return iterable<int, string>
+     * @throws \LogicException
      */
-    public function iterateColumn(QueryBuilder $query, int $pageSize = 1000): iterable
-    {
+    public function iterateColumn(
+        QueryBuilder $query,
+        string $sortedBy,
+        QueryBuilderSortingDirection $direction = QueryBuilderSortingDirection::ASCENDING,
+        int $pageSize = 1000
+    ): iterable {
         return $this->iterateSafelyPaginated(
-            $query,
-            fn (QueryBuilder $qb): array => $qb->executeQuery()->fetchFirstColumn(),
+            new PaginatableQueryBuilder($query, $sortedBy, $direction),
+            function (QueryBuilder $qb): array {
+                $result = $qb->executeQuery()->fetchFirstColumn();
+
+                foreach ($result as $cell) {
+                    if ($cell === null) {
+                        if ($qb instanceof HeptaconnectQueryBuilder) {
+                            throw new \LogicException(
+                                \sprintf('The queried column in query "%s" is expected to not fetch null values but returned a null value', $qb->getIdentifier()),
+                                1719685570
+                            );
+                        } else {
+                            throw new \LogicException('The queried column is expected to not fetch null values but returned a null value', 1719685570);
+                        }
+                    }
+                }
+
+                return $result;
+            },
             $pageSize
         );
     }
@@ -45,12 +72,24 @@ class QueryIterator
      */
     public function fetchRow(QueryBuilder $query): ?array
     {
-        return $query->executeQuery()->fetchAssociative() ?: null;
+        $result = $query->executeQuery()->fetchAssociative();
+
+        if (!\is_array($result)) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function fetchColumn(QueryBuilder $query): ?string
     {
-        return $query->executeQuery()->fetchOne() ?: null;
+        $result = $query->executeQuery()->fetchOne();
+
+        if (!\is_string($result)) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function fetchSingleValue(QueryBuilder $query): ?string
@@ -102,15 +141,13 @@ class QueryIterator
      *
      * @return iterable<int, T>
      */
-    public function iterateSafelyPaginated(QueryBuilder $query, callable $fetchRow, int $safeFetchSize): iterable
+    public function iterateSafelyPaginated(PaginatableQueryBuilder $paginatableQuery, callable $fetchRow, int $safeFetchSize): iterable
     {
         if ($safeFetchSize < 1) {
             throw new \LogicException('Safe fetch size is too small', 1645901524);
         }
 
-        if ($query->getQueryPart('orderBy') === []) {
-            throw new \LogicException('Pagination without order is not reliable', 1645901525);
-        }
+        $query = $paginatableQuery->createPaginatableQueryBuilder();
 
         $initOffset = $query->getFirstResult();
         $initLimit = $query->getMaxResults();

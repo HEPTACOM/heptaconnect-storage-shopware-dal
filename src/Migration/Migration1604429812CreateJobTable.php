@@ -7,9 +7,9 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1604429812CreateJobTable extends MigrationStep
+final class Migration1604429812CreateJobTable extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 CREATE TABLE `heptaconnect_job_type`
 (
 	`id` BINARY(16) NOT NULL PRIMARY KEY,
@@ -41,16 +41,19 @@ CREATE TABLE `heptaconnect_job`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1604429812;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

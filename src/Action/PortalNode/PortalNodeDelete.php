@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Delete\PortalNodeDeleteCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\NotFoundException;
@@ -14,22 +14,20 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class PortalNodeDelete implements PortalNodeDeleteActionInterface
+final readonly class PortalNodeDelete implements PortalNodeDeleteActionInterface
 {
-    public const DELETE_QUERY = '219156bb-0598-49df-8205-6d10e8f92a61';
+    public const string DELETE_QUERY = '219156bb-0598-49df-8205-6d10e8f92a61';
 
-    public const LOOKUP_QUERY = 'aafca974-b95e-46ea-a680-834a93d13140';
-
-    private ?QueryBuilder $deleteBuilder = null;
-
-    private ?QueryBuilder $searchBuilder = null;
+    public const string LOOKUP_QUERY = 'aafca974-b95e-46ea-a680-834a93d13140';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function delete(PortalNodeDeleteCriteria $criteria): void
     {
         $ids = [];
@@ -38,7 +36,7 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException($portalNodeKey::class);
+                throw new UnsupportedStorageKeyException($portalNodeKey);
             }
 
             $ids[] = Id::toBinary($portalNodeKey->getUuid());
@@ -49,12 +47,11 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         }
 
         $searchBuilder = $this->getSearchQuery();
-        $searchBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
+        $searchBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
 
         $idsCheck = \array_combine($ids, $ids);
 
-        foreach ($searchBuilder->iterateRows() as $row) {
-            $id = \current($row);
+        foreach ($searchBuilder->iterateColumn('id') as $id) {
             unset($idsCheck[$id]);
         }
 
@@ -64,19 +61,13 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
 
         $deleteBuilder = $this->getDeleteQuery();
         $deleteBuilder->setParameter('now', DateTime::nowToStorage());
-        $deleteBuilder->setParameter('ids', $ids, Connection::PARAM_STR_ARRAY);
-        $deleteBuilder->execute();
+        $deleteBuilder->setParameter('ids', $ids, ArrayParameterType::STRING);
+        $deleteBuilder->executeStatement();
     }
 
     private function getDeleteQuery(): QueryBuilder
     {
-        $builder = $this->deleteBuilder;
-
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->deleteBuilder = $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
+        $builder = $this->queryFactory->createBuilder(self::DELETE_QUERY);
 
         $builder->update('heptaconnect_portal_node');
         $builder->set('deleted_at', ':now');
@@ -88,21 +79,14 @@ final class PortalNodeDelete implements PortalNodeDeleteActionInterface
         return $builder;
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
-
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LOOKUP_QUERY);
 
         $builder->from('heptaconnect_portal_node');
         $builder->select('id');
         $builder->andWhere($builder->expr()->in('id', ':ids'));
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
-        $builder->addOrderBy('id');
 
         return $builder;
     }

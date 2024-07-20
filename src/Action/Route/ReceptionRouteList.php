@@ -13,57 +13,41 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class ReceptionRouteList implements ReceptionRouteListActionInterface
+final readonly class ReceptionRouteList implements ReceptionRouteListActionInterface
 {
-    public const LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
-
-    private ?QueryBuilder $builder = null;
+    public const string LIST_QUERY = 'a2dc9481-5738-448a-9c85-617fec45a00d';
 
     public function __construct(
         private QueryFactory $queryFactory,
-        private QueryIterator $iterator
     ) {
     }
 
+    #[\Override]
     public function list(ReceptionRouteListCriteria $criteria): iterable
     {
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($sourceKey::class);
+            throw new UnsupportedStorageKeyException($sourceKey);
         }
 
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', (string) $criteria->getEntityType());
         $builder->setParameter('capability', RouteCapability::RECEPTION);
 
-        return \iterable_map(
-            Id::toHexIterable($this->iterator->iterateColumn($builder)),
-            static fn (string $id) => new ReceptionRouteListResult(new RouteStorageKey($id))
-        );
-    }
-
-    private function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+        foreach ($builder->iterateColumn('route.id') as $id) {
+            yield new ReceptionRouteListResult(new RouteStorageKey(Id::toHex($id)));
         }
-
-        return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -100,7 +84,6 @@ final class ReceptionRouteList implements ReceptionRouteListActionInterface
                     $builder->expr()->isNull('capability.deleted_at')
                 )
             )
-            ->addOrderBy('route.id')
             ->select(['route.id id'])
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),

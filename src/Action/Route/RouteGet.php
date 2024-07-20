@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route;
 
-use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
@@ -13,29 +12,27 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 
-final class RouteGet implements RouteGetActionInterface
+final readonly class RouteGet implements RouteGetActionInterface
 {
-    public const FETCH_QUERY = '24ab04cd-03f5-40c8-af25-715856281314';
-
-    private ?QueryBuilder $builder = null;
+    public const string FETCH_QUERY = '24ab04cd-03f5-40c8-af25-715856281314';
 
     public function __construct(
         private QueryFactory $queryFactory,
-        private QueryIterator $iterator
     ) {
     }
 
+    #[\Override]
     public function get(RouteGetCriteria $criteria): iterable
     {
         $ids = [];
 
         foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException($routeKey::class);
+                throw new UnsupportedStorageKeyException($routeKey);
             }
 
             $ids[] = $routeKey->getUuid();
@@ -44,21 +41,9 @@ final class RouteGet implements RouteGetActionInterface
         return $ids === [] ? [] : $this->yieldRoutes($ids);
     }
 
-    private function getBuilderCached(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
-        }
-
-        return clone $this->builder;
-    }
-
-    private function getBuilder(): QueryBuilder
-    {
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
 
         return $builder
             ->from('heptaconnect_route', 'route')
@@ -105,7 +90,6 @@ final class RouteGet implements RouteGetActionInterface
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])
-            ->addOrderBy('route.id')
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')
@@ -115,22 +99,30 @@ final class RouteGet implements RouteGetActionInterface
     /**
      * @param string[] $ids
      *
-     * @return iterable<\Heptacom\HeptaConnect\Storage\Base\Action\Route\Get\RouteGetResult>
+     * @return iterable<RouteGetResult>
      */
     private function yieldRoutes(array $ids): iterable
     {
-        $builder = $this->getBuilderCached();
-        $builder->setParameter('ids', Id::toBinaryList($ids), Connection::PARAM_STR_ARRAY);
+        $builder = $this->getBuilder();
+        $builder->setParameter('ids', Id::toBinaryList($ids), ArrayParameterType::STRING);
 
-        return \iterable_map(
-            $this->iterator->iterate($builder),
-            static fn (array $row): RouteGetResult => new RouteGetResult(
-                new RouteStorageKey(Id::toHex((string) $row['id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                new UnsafeClassString((string) $row['entity_type_name']),
+        /**
+         * @var array{
+         *     id: string,
+         *     entity_type_name: string,
+         *     source_portal_node_id: string,
+         *     target_portal_node_id: string,
+         *     capability_name: string|null
+         * } $row
+         **/
+        foreach ($builder->iterateRows('route.id') as $row) {
+            yield new RouteGetResult(
+                new RouteStorageKey(Id::toHex($row['id'])),
+                new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),
+                new PortalNodeStorageKey(Id::toHex($row['target_portal_node_id'])),
+                new UnsafeClassString($row['entity_type_name']),
                 \explode(',', (string) $row['capability_name'])
-            )
-        );
+            );
+        }
     }
 }

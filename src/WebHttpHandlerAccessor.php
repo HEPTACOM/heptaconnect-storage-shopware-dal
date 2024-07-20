@@ -12,12 +12,12 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
 class WebHttpHandlerAccessor
 {
-    public const FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
+    public const string FETCH_QUERY = '900bdcb4-3a2a-4092-9eed-f5902e97b02f';
 
     public function __construct(
-        private Connection $connection,
-        private QueryFactory $queryFactory,
-        private WebHttpHandlerPathIdResolver $pathIdResolver
+        private readonly Connection $connection,
+        private readonly QueryFactory $queryFactory,
+        private readonly WebHttpHandlerPathIdResolver $pathIdResolver
     ) {
     }
 
@@ -32,35 +32,34 @@ class WebHttpHandlerAccessor
             return [];
         }
 
-        $builder = $this->queryFactory->createBuilder(self::FETCH_QUERY);
-        $builder
+        $baseBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);
+        $baseBuilder
             ->from('heptaconnect_web_http_handler', 'handler')
             ->select([
                 'handler.id id',
                 'CONCAT(LOWER(HEX(handler.portal_node_id)), LOWER(HEX(handler.path_id))) `match_key`',
             ])
-            ->addOrderBy('handler.id')
-            ->addOrderBy('match_key');
+            ->addOrderBy('handler.id');
 
         $inserts = [];
         $result = [];
         $now = DateTime::nowToStorage();
 
-        foreach (\array_chunk($httpHandlerPaths, 25, true) as $httpHandlerPathChunks) {
-            $b = clone $builder;
+        foreach (\array_chunk($httpHandlerPaths, 25, true) as $chunkedPaths) {
+            $builder = clone $baseBuilder;
             $keyIndex = [];
 
-            foreach ($httpHandlerPathChunks as $key => [$portalNodeKey, $path]) {
+            foreach ($chunkedPaths as $key => [$portalNodeKey, $path]) {
                 $pathId = $this->pathIdResolver->getIdFromPath($path);
                 $match = $portalNodeKey->getUuid() . $pathId;
                 $keyIndex[$match] = $key;
 
-                $b->orWhere($b->expr()->and(
-                    $b->expr()->eq('handler.portal_node_id', ':pn' . $match),
-                    $b->expr()->eq('handler.path_id', ':p' . $match)
+                $builder->orWhere($builder->expr()->and(
+                    $builder->expr()->eq('handler.portal_node_id', ':pn' . $match),
+                    $builder->expr()->eq('handler.path_id', ':p' . $match)
                 ));
-                $b->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
-                $b->setParameter('p' . $match, Id::toBinary($pathId), Types::BINARY);
+                $builder->setParameter('pn' . $match, Id::toBinary($portalNodeKey->getUuid()), Types::BINARY);
+                $builder->setParameter('p' . $match, Id::toBinary($pathId), Types::BINARY);
 
                 $insertableId = Id::randomBinary();
                 $result[$keyIndex[$match]] = Id::toHex($insertableId);
@@ -73,7 +72,7 @@ class WebHttpHandlerAccessor
             }
 
             /** @var array{id: string, match_key: string} $row */
-            foreach ($b->iterateRows() as $row) {
+            foreach ($builder->iterateRows('match_key') as $row) {
                 $result[$keyIndex[$row['match_key']]] = Id::toHex($row['id']);
 
                 unset($inserts[$row['match_key']]);

@@ -7,23 +7,26 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1635019149MappingErrorMessageIndexHappenedAtColumns extends MigrationStep
+final class Migration1635019149MappingErrorMessageIndexHappenedAtColumns extends MigrationStep
 {
-    private const INDEX = <<<'SQL'
+    private const string INDEX = <<<'SQL'
 CREATE INDEX `dt_desc.__TABLE__.__COL__` ON `__TABLE__` (`__COL__` desc);
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1635019149;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $this->addDateTimeIndex($connection, 'heptaconnect_mapping_error_message', 'created_at');
         $this->addDateTimeIndex($connection, 'heptaconnect_mapping_error_message', 'updated_at');
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }

@@ -8,9 +8,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
-class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
+final class Migration1643220550CreatePortalNodeAliasColumn extends MigrationStep
 {
-    public const UP = <<<'SQL'
+    public const string UP = <<<'SQL'
 ALTER TABLE `heptaconnect_portal_node`
     ADD COLUMN `alias`
         VARCHAR(512)
@@ -20,26 +20,28 @@ ALTER TABLE `heptaconnect_portal_node`
     ADD UNIQUE INDEX `uniq.heptaconnect_portal_node.alias` (`alias`)
 SQL;
 
-    public const REVERSE_UP = <<<'SQL'
+    public const string REVERSE_UP = <<<'SQL'
 DROP INDEX `uniq.heptaconnect_portal_node.alias` ON `heptaconnect_portal_node`;
 ALTER TABLE `heptaconnect_portal_node`
     DROP COLUMN `alias`;
 SQL;
 
-    public const DESTRUCTIVE = <<<'SQL'
+    public const string DESTRUCTIVE = <<<'SQL'
 DROP TABLE heptaconnect_bridge_key_alias
 SQL;
 
+    #[\Override]
     public function getCreationTimestamp(): int
     {
         return 1643220550;
     }
 
+    #[\Override]
     public function update(Connection $connection): void
     {
         $connection->executeStatement(self::UP);
 
-        if (!$connection->getSchemaManager()->tablesExist('heptaconnect_bridge_key_alias')) {
+        if (!$connection->createSchemaManager()->tablesExist('heptaconnect_bridge_key_alias')) {
             return;
         }
 
@@ -54,6 +56,7 @@ SQL;
         $connection->executeStatement(self::DESTRUCTIVE);
     }
 
+    #[\Override]
     public function updateDestructive(Connection $connection): void
     {
     }
@@ -69,7 +72,7 @@ SQL;
             ->from('heptaconnect_bridge_key_alias')
             ->where($queryBuilderSelect->expr()->like('original', ':prefix'))
             ->setParameter('prefix', 'PortalNode:%')
-            ->execute()
+            ->executeQuery()
             ->fetchAllAssociative();
 
         $queryBuilderUpdate = $connection->createQueryBuilder();
@@ -87,7 +90,7 @@ SQL;
             $queryBuilderUpdate
                 ->setParameter('id', $portalNodeId, Types::BINARY)
                 ->setParameter('alias', $alias)
-                ->execute();
+                ->executeStatement();
         }
     }
 }

@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect;
 
-use Doctrine\DBAL\Connection;
-use Heptacom\HeptaConnect\Dataset\Base\ClassStringReferenceCollection;
-use Heptacom\HeptaConnect\Dataset\Base\ScalarCollection\StringCollection;
-use Heptacom\HeptaConnect\Dataset\Base\UnsafeClassString;
+use Doctrine\DBAL\ArrayParameterType;
 use Heptacom\HeptaConnect\Portal\Base\StorageKey\PortalNodeKeyCollection;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Overview\IdentityOverviewCriteria;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityRedirect\Overview\IdentityRedirectOverviewCriteria;
@@ -20,23 +17,25 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorage
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
+use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
+use Heptacom\HeptaConnect\Utility\Collection\Scalar\StringCollection;
 
-final class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
+final readonly class IdentityRedirectOverview implements IdentityRedirectOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
-
-    private ?QueryBuilder $builder = null;
+    public const string OVERVIEW_QUERY = '832dbfc9-4939-4301-ade4-aa73d961454f';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function overview(IdentityRedirectOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
         $identityRedirectKeyFilter = $criteria->getIdentityRedirectKeyFilter();
         $entityTypeFilter = $criteria->getEntityTypeFilter();
         $sourcePortalNodeKeyFilter = $criteria->getSourcePortalNodeKeyFilter();
@@ -49,29 +48,29 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
 
             foreach ($identityRedirectKeyFilter as $identityRedirectKey) {
                 if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException($identityRedirectKey::class));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException($identityRedirectKey));
                 }
 
                 $identityRedirectIds[] = Id::toBinary($identityRedirectKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('identity_redirect.id', ':identityRedirectIds'));
-            $builder->setParameter('identityRedirectIds', $identityRedirectIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('identityRedirectIds', $identityRedirectIds, ArrayParameterType::STRING);
         }
 
         if ($entityTypeFilter instanceof ClassStringReferenceCollection) {
             $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
-            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter->asArray()), ArrayParameterType::STRING);
         }
 
         if ($sourceExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.source_external_id', ':sourceExternalIds'));
-            $builder->setParameter('sourceExternalIds', $sourceExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('sourceExternalIds', $sourceExternalIdFilter->asArray(), ArrayParameterType::STRING);
         }
 
         if ($targetExternalIdFilter instanceof StringCollection) {
             $builder->andWhere($builder->expr()->in('identity_redirect.target_external_id', ':targetExternalIds'));
-            $builder->setParameter('targetExternalIds', $targetExternalIdFilter->asArray(), Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('targetExternalIds', $targetExternalIdFilter->asArray(), ArrayParameterType::STRING);
         }
 
         if ($sourcePortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
@@ -81,14 +80,14 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729809, new UnsupportedStorageKeyException($portalNodeKey::class));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729809, new UnsupportedStorageKeyException($portalNodeKey));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('source_portal_node.id', ':sourcePortalNodeIds'));
-            $builder->setParameter('sourcePortalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('sourcePortalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         if ($targetPortalNodeKeyFilter instanceof PortalNodeKeyCollection) {
@@ -98,14 +97,14 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729810, new UnsupportedStorageKeyException($portalNodeKey::class));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729810, new UnsupportedStorageKeyException($portalNodeKey));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
             }
 
             $builder->andWhere($builder->expr()->in('target_portal_node.id', ':targetPortalNodeIds'));
-            $builder->setParameter('targetPortalNodeIds', $portalNodeIds, Connection::PARAM_STR_ARRAY);
+            $builder->setParameter('targetPortalNodeIds', $portalNodeIds, ArrayParameterType::STRING);
         }
 
         foreach ($criteria->getSort() as $field => $direction) {
@@ -123,8 +122,6 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('identity_redirect.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -137,36 +134,33 @@ final class IdentityRedirectOverview implements IdentityRedirectOverviewActionIn
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): IdentityRedirectOverviewResult => new IdentityRedirectOverviewResult(
-                new IdentityRedirectStorageKey(Id::toHex((string) $row['identity_redirect_id'])),
-                new PortalNodeStorageKey(Id::toHex((string) $row['source_portal_node_id'])),
-                (string) $row['identity_redirect_source_external_id'],
-                new PortalNodeStorageKey(Id::toHex((string) $row['target_portal_node_id'])),
-                (string) $row['identity_redirect_target_external_id'],
-                new UnsafeClassString((string) $row['entity_type_type']),
+        /** @var array{
+         *     identity_redirect_id: string,
+         *     source_portal_node_id: string,
+         *     identity_redirect_source_external_id: string,
+         *     target_portal_node_id: string,
+         *     identity_redirect_target_external_id: string,
+         *     entity_type_type: string,
+         *     created_at: string
+         * } $row
+         */
+        foreach ($builder->iterateRows('identity_redirect.id') as $row) {
+            yield new IdentityRedirectOverviewResult(
+                new IdentityRedirectStorageKey(Id::toHex($row['identity_redirect_id'])),
+                new PortalNodeStorageKey(Id::toHex($row['source_portal_node_id'])),
+                $row['identity_redirect_source_external_id'],
+                new PortalNodeStorageKey(Id::toHex($row['target_portal_node_id'])),
+                $row['identity_redirect_target_external_id'],
+                new UnsafeClassString($row['entity_type_type']),
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
-    }
-
-    private function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+            );
         }
-
-        return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         $builder->from('heptaconnect_identity_redirect', 'identity_redirect')
             ->innerJoin(

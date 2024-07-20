@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Delete\PortalNodeStorageDeleteCriteria;
@@ -15,11 +16,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
+final readonly class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInterface
 {
-    public const DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
+    public const string DELETE_EXPIRED_QUERY = '1972fcfd-5d64-4bce-a6b5-19cb6a8ad671';
 
-    public const DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
+    public const string DELETE_QUERY = '40e42cd4-4ac3-4304-8cfc-9083d37e81cd';
 
     public function __construct(
         private QueryFactory $queryFactory,
@@ -27,12 +28,13 @@ final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInte
     ) {
     }
 
+    #[\Override]
     public function delete(PortalNodeStorageDeleteCriteria $criteria): void
     {
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $deleteExpiredBuilder = $this->queryFactory->createBuilder(self::DELETE_EXPIRED_QUERY);
@@ -55,11 +57,11 @@ final class PortalNodeStorageDelete implements PortalNodeStorageDeleteActionInte
 
         try {
             $this->connection->transactional(function () use ($idsPayloads, $deleteBuilder, $deleteExpiredBuilder): void {
-                $deleteExpiredBuilder->execute();
+                $deleteExpiredBuilder->executeStatement();
 
                 foreach ($idsPayloads as $idsPayload) {
-                    $deleteBuilder->setParameter('keys', $idsPayload, Connection::PARAM_STR_ARRAY);
-                    $deleteBuilder->execute();
+                    $deleteBuilder->setParameter('keys', $idsPayload, ArrayParameterType::STRING);
+                    $deleteBuilder->executeStatement();
                 }
             });
         } catch (\Throwable $throwable) {

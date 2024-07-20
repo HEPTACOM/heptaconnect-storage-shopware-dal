@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNodeStorage\Set\PortalNodeStorageSetPayload;
@@ -15,9 +16,9 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
+final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 {
-    public const UPDATE_PREPARATION_QUERY = '75fada39-34f0-4e03-b3b5-141da358181d';
+    public const string UPDATE_PREPARATION_QUERY = '75fada39-34f0-4e03-b3b5-141da358181d';
 
     public function __construct(
         private QueryFactory $queryFactory,
@@ -25,12 +26,13 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
     ) {
     }
 
+    #[\Override]
     public function set(PortalNodeStorageSetPayload $payload): void
     {
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($portalNodeKey::class);
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $keysToCheck = [];
@@ -55,7 +57,7 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
             ];
         }
 
-        $fetchBuilder = $this->queryFactory->createBuilder(self::UPDATE_PREPARATION_QUERY);
+        $fetchBuilder = $this->queryFactory->createSelectBuilder(self::UPDATE_PREPARATION_QUERY);
         $fetchBuilder
             ->from('heptaconnect_portal_node_storage', 'portal_node_storage')
             ->select([
@@ -68,7 +70,6 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 'portal_node',
                 $fetchBuilder->expr()->eq('portal_node_storage.portal_node_id', 'portal_node.id')
             )
-            ->addOrderBy('portal_node_storage.id')
             ->andWhere($fetchBuilder->expr()->in('portal_node_storage.key', ':ids'))
             ->andWhere($fetchBuilder->expr()->eq('portal_node.id', ':portal_node_id'))
             ->andWhere($fetchBuilder->expr()->isNull('portal_node.deleted_at'))
@@ -76,7 +77,7 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
                 $fetchBuilder->expr()->isNull('expired_at'),
                 $fetchBuilder->expr()->gt('expired_at', ':now')
             ))
-            ->setParameter('ids', $keysToCheck, Connection::PARAM_STR_ARRAY)
+            ->setParameter('ids', $keysToCheck, ArrayParameterType::STRING)
             ->setParameter('portal_node_id', Id::toBinary($portalNodeKey->getUuid()), Types::BINARY)
             ->setParameter('now', $nowFormatted);
 
@@ -86,7 +87,8 @@ final class PortalNodeStorageSet implements PortalNodeStorageSetActionInterface
 
                 $fetchBuilder->setIsForUpdate(true);
 
-                foreach ($fetchBuilder->iterateRows() as $storageRow) {
+                /** @var array{storage_id: string, storage_key: string} $storageRow */
+                foreach ($fetchBuilder->iterateRows('portal_node_storage.id') as $storageRow) {
                     $storageId = $storageRow['storage_id'];
                     $storageKey = $storageRow['storage_key'];
 

@@ -23,6 +23,7 @@ final class PortalExtensionActivate extends PortalExtensionSwitchActive implemen
         return new PortalExtensionActivateResult($pass, $fail);
     }
 
+    #[\Override]
     protected function getTargetActiveState(): int
     {
         return 1;

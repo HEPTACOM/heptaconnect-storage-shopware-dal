@@ -1,0 +1,107 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Class Heptacom\\\\HeptaConnect\\\\Ui\\\\Admin\\\\Base\\\\Contract\\\\Audit\\\\AuditableDataAwareInterface not found\\.$#"
+			count: 1
+			path: dev-ops/bin/phpstan/src/Support/StructDetector.php
+
+		-
+			message: "#^Generator expects value type array\\{mapping_node_type\\: string, mapping_external_id\\: string, mapping_node_id\\: string\\}, array\\<string, string\\|null\\> given\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityMap.php
+
+		-
+			message: "#^Method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Action\\\\Identity\\\\IdentityMap\\:\\:getMappings\\(\\) should return iterable\\<array\\{mapping_node_type\\: string, mapping_external_id\\: string\\|null, mapping_node_id\\: string\\}\\> but returns iterable\\<int, array\\<string, string\\|null\\>\\>\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityMap.php
+
+		-
+			message: "#^Method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Action\\\\Identity\\\\IdentityPersist\\:\\:fetchMappingsToProcess\\(\\) should return iterable\\<array\\{mapping_id\\: string, mapping_node_id\\: string\\}\\> but returns iterable\\<int, array\\<string, string\\|null\\>\\>\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityPersist.php
+
+		-
+			message: "#^Parameter \\#5 \\$externalId of class Heptacom\\\\HeptaConnect\\\\Storage\\\\Base\\\\Action\\\\Identity\\\\Exception\\\\IdentityConflictException constructor expects string, string\\|null given\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityPersist.php
+
+		-
+			message: "#^Foreach overwrites \\$entityType with its key variable\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityReflect.php
+
+		-
+			message: "#^Foreach overwrites \\$sourcePortalNodeKey with its key variable\\.$#"
+			count: 1
+			path: src/Action/Identity/IdentityReflect.php
+
+		-
+			message: "#^Parameter \\#1 \\$entityTypes of method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\EntityTypeAccessor\\:\\:getIdsForTypes\\(\\) expects array\\<class\\-string\\<Heptacom\\\\HeptaConnect\\\\Dataset\\\\Base\\\\Contract\\\\DatasetEntityContract\\>\\>, array\\<string\\> given\\.$#"
+			count: 1
+			path: src/Action/IdentityError/IdentityErrorCreate.php
+
+		-
+			message: "#^Parameter \\#1 \\$lookups of method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Action\\\\IdentityError\\\\IdentityErrorCreate\\:\\:lookupMappingNodeIds\\(\\) expects array\\<string, array\\<class\\-string\\<Heptacom\\\\HeptaConnect\\\\Dataset\\\\Base\\\\Contract\\\\DatasetEntityContract\\>, string\\>\\>, array\\<string, array\\<class\\-string\\<Heptacom\\\\HeptaConnect\\\\Dataset\\\\Base\\\\Contract\\\\DatasetEntityContract\\>, array\\<int, string\\>\\>\\> given\\.$#"
+			count: 1
+			path: src/Action/IdentityError/IdentityErrorCreate.php
+
+		-
+			message: "#^Short ternary operator is not allowed\\. Use null coalesce operator if applicable or consider using long ternary\\.$#"
+			count: 1
+			path: src/Action/IdentityError/IdentityErrorCreate.php
+
+		-
+			message: """
+				#^Fetching deprecated class constant FORMAT_SERIALIZED of class Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Action\\\\Job\\\\JobGet\\:
+				TODO remove serialized format$#
+			"""
+			count: 1
+			path: src/Action/Job/JobGet.php
+
+		-
+			message: """
+				#^Fetching deprecated class constant FORMAT_SERIALIZED_GZPRESS of class Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Action\\\\Job\\\\JobGet\\:
+				TODO remove serialized format$#
+			"""
+			count: 1
+			path: src/Action/Job/JobGet.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/Action/Job/JobGet.php
+
+		-
+			message: "#^Foreach overwrites \\$payload with its value variable\\.$#"
+			count: 1
+			path: src/Action/PortalNodeAlias/PortalNodeAliasSet.php
+
+		-
+			message: "#^Offset 'id' does not exist on array\\{update\\: false\\}\\|array\\{update\\: true, id\\: string\\}\\.$#"
+			count: 1
+			path: src/Action/PortalNodeStorage/PortalNodeStorageSet.php
+
+		-
+			message: "#^Method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Support\\\\DateTime\\:\\:fromStorage\\(\\) should return DateTimeInterface but returns DateTimeImmutable\\|false\\.$#"
+			count: 1
+			path: src/Support/DateTime.php
+
+		-
+			message: "#^Method Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Support\\\\Id\\:\\:toBinary\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: src/Support/Id.php
+
+		-
+			message: "#^Class 'Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Support\\\\Query\\\\PaginatableQueryBuilder' that is final neither looks like a struct, extends a contract nor implements an interface$#"
+			count: 1
+			path: src/Support/Query/PaginatableQueryBuilder.php
+
+		-
+			message: "#^Generator expects value type T, array given\\.$#"
+			count: 2
+			path: src/Support/Query/QueryIterator.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with non\\-empty\\-array\\<string, string\\> will always evaluate to true\\.$#"
+			count: 1
+			path: src/WebHttpHandlerPathAccessor.php

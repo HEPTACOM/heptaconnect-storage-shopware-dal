@@ -10,23 +10,22 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNod
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
+final readonly class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
-
-    private ?QueryBuilder $builder = null;
+    public const string OVERVIEW_QUERY = '8467ced0-3575-410f-8155-e36e7e8f0e0b';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function overview(PortalNodeAliasOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === PortalNodeAliasOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -46,8 +45,6 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('portal_node.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -60,30 +57,18 @@ class PortalNodeAliasOverview implements PortalNodeAliasOverviewActionInterface
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): PortalNodeAliasOverviewResult => new PortalNodeAliasOverviewResult(
+        /** @var array{id: string, alias: string} $row */
+        foreach ($builder->iterateRows('portal_node.id') as $row) {
+            yield new PortalNodeAliasOverviewResult(
                 new PortalNodeStorageKey(Id::toHex($row['id'])),
                 $row['alias']
-            ),
-        );
-    }
-
-    protected function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+            );
         }
-
-        return clone $this->builder;
     }
 
-    protected function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_portal_node', 'portal_node')

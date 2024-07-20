@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture;
 
+use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\Kernel;
 use Shopware\Core\System\Language\CachedLanguageLoader;
@@ -11,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class ShopwareKernel extends Kernel
 {
-    public function __construct()
+    public function __construct(Connection $connection)
     {
         /** @var \Composer\Autoload\ClassLoader $classLoader */
         $classLoader = require __DIR__ . '/../../vendor/autoload.php';
@@ -22,7 +23,7 @@ class ShopwareKernel extends Kernel
             new StaticKernelPluginLoader($classLoader),
             'prod',
             self::SHOPWARE_FALLBACK_VERSION,
-            null,
+            $connection,
             __DIR__ . '/ShopwareProject'
         );
     }

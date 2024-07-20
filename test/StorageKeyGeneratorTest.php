@@ -15,26 +15,43 @@ use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityRedirectStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\IdentityErrorStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory
- * @covers \Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator
- */
+#[CoversClass(AbstractStorageKey::class)]
+#[CoversClass(FileReferenceRequestStorageKey::class)]
+#[CoversClass(Id::class)]
+#[CoversClass(IdentityErrorStorageKey::class)]
+#[CoversClass(IdentityRedirectStorageKey::class)]
+#[CoversClass(JobStorageKey::class)]
+#[CoversClass(MappingNodeStorageKey::class)]
+#[CoversClass(PaginatableQueryBuilder::class)]
+#[CoversClass(PortalNodeAliasAccessor::class)]
+#[CoversClass(PortalNodeStorageKey::class)]
+#[CoversClass(QueryBuilder::class)]
+#[CoversClass(QueryFactory::class)]
+#[CoversClass(QueryIterator::class)]
+#[CoversClass(RouteStorageKey::class)]
+#[CoversClass(SelectQueryBuilder::class)]
+#[CoversClass(StorageFacade::class)]
+#[CoversClass(StorageKeyGenerator::class)]
 class StorageKeyGeneratorTest extends TestCase
 {
     protected bool $setupQueryTracking = false;
@@ -43,7 +60,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $this->expectException(UnsupportedStorageKeyException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Unsupported storage key class: ' . AbstractStorageKey::class);
+        $this->expectExceptionMessage('Unsupported storage key class: null');
 
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $keys = \iterable_to_array($generator->generateKeys(AbstractStorageKey::class, 1));
@@ -67,67 +84,57 @@ class StorageKeyGeneratorTest extends TestCase
         static::assertTrue(Portal::class()->equals($deserialized->getPortalType()));
     }
 
-    /**
-     * @dataProvider provideKeyInterfaces
-     */
+    #[DataProvider('provideKeyInterfaces')]
     public function testKeyGenerator(string $interface): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        /** @var AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertInstanceOf($interface, $key);
     }
 
-    /**
-     * @dataProvider provideKeyInterfaces
-     */
+    #[DataProvider('provideKeyInterfaces')]
     public function testKeyGeneratorList(string $interface): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /* @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        static::assertCount(100, $generator->generateKeys($interface, 100));
-        static::assertCount(10, $generator->generateKeys($interface, 10));
-        static::assertCount(0, $generator->generateKeys($interface, 0));
-        static::assertCount(0, $generator->generateKeys($interface, -10));
+        /* @var AbstractStorageKey $key */
+        static::assertCount(100, [...$generator->generateKeys($interface, 100)]);
+        static::assertCount(10, [...$generator->generateKeys($interface, 10)]);
+        static::assertCount(0, [...$generator->generateKeys($interface, 0)]);
+        static::assertCount(0, [...$generator->generateKeys($interface, -10)]);
     }
 
-    /**
-     * @dataProvider provideKeyInterfaces
-     */
+    #[DataProvider('provideKeyInterfaces')]
     public function testKeySerialization(string $interface): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        /** @var AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         static::assertStringContainsString($key->getUuid(), $serialized);
     }
 
-    /**
-     * @dataProvider provideKeyInterfaces
-     */
+    #[DataProvider('provideKeyInterfaces')]
     public function testKeyDeserialization(string $interface): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        /** @var AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         $deserialized = $generator->deserialize($serialized);
         static::assertTrue($key->equals($deserialized), 'Keys are not equal');
     }
 
-    /**
-     * @dataProvider provideKeyInterfaces
-     */
+    #[DataProvider('provideKeyInterfaces')]
     public function testKeyJsonSerialization(string $interface): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
+        /** @var AbstractStorageKey $key */
         $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertStringContainsString($key->getUuid(), \json_encode($key, \JSON_THROW_ON_ERROR));
     }
 
-    public function provideKeyInterfaces(): iterable
+    public static function provideKeyInterfaces(): iterable
     {
         yield [PortalNodeKeyInterface::class];
         yield [MappingNodeKeyInterface::class];

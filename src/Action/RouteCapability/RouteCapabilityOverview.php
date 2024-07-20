@@ -9,23 +9,22 @@ use Heptacom\HeptaConnect\Storage\Base\Action\RouteCapability\Overview\RouteCapa
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\RouteCapability\RouteCapabilityOverviewActionInterface;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidOverviewCriteriaException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
+final readonly class RouteCapabilityOverview implements RouteCapabilityOverviewActionInterface
 {
-    public const OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
-
-    private ?QueryBuilder $builder = null;
+    public const string OVERVIEW_QUERY = '329b4aa3-e576-4930-b89f-c63dca05c16e';
 
     public function __construct(
         private QueryFactory $queryFactory
     ) {
     }
 
+    #[\Override]
     public function overview(RouteCapabilityOverviewCriteria $criteria): iterable
     {
-        $builder = $this->getBuilderCached();
+        $builder = $this->getBuilder();
 
         foreach ($criteria->getSort() as $field => $direction) {
             $dbalDirection = $direction === RouteCapabilityOverviewCriteria::SORT_ASC ? 'ASC' : 'DESC';
@@ -49,8 +48,6 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
             $builder->addOrderBy($dbalFieldName, $dbalDirection);
         }
 
-        $builder->addOrderBy('capability.id', 'ASC');
-
         $pageSize = $criteria->getPageSize();
 
         if ($pageSize !== null && $pageSize > 0) {
@@ -63,31 +60,19 @@ final class RouteCapabilityOverview implements RouteCapabilityOverviewActionInte
             }
         }
 
-        return \iterable_map(
-            $builder->iterateRows(),
-            static fn (array $row): RouteCapabilityOverviewResult => new RouteCapabilityOverviewResult(
-                (string) $row['name'],
+        /** @var array{name: string, created_at: string} $row */
+        foreach ($builder->iterateRows('capability.id') as $row) {
+            yield new RouteCapabilityOverviewResult(
+                $row['name'],
                 /* @phpstan-ignore-next-line */
                 DateTime::fromStorage((string) $row['created_at'])
-            )
-        );
-    }
-
-    private function getBuilderCached(): QueryBuilder
-    {
-        if (!$this->builder instanceof QueryBuilder) {
-            $this->builder = $this->getBuilder();
-            $this->builder->setFirstResult(0);
-            $this->builder->setMaxResults(null);
-            $this->builder->getSQL();
+            );
         }
-
-        return clone $this->builder;
     }
 
-    private function getBuilder(): QueryBuilder
+    private function getBuilder(): SelectQueryBuilder
     {
-        $builder = $this->queryFactory->createBuilder(self::OVERVIEW_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::OVERVIEW_QUERY);
 
         return $builder
             ->from('heptaconnect_route_capability', 'capability')

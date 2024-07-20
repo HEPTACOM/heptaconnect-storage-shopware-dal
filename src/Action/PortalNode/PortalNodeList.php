@@ -8,42 +8,30 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Listing\PortalNodeListR
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 
-final class PortalNodeList implements PortalNodeListActionInterface
+final readonly class PortalNodeList implements PortalNodeListActionInterface
 {
-    public const LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
-
-    private ?QueryBuilder $searchBuilder = null;
+    public const string LIST_QUERY = '52e85ba9-3610-403b-be28-b8d138481ace';
 
     public function __construct(
         private QueryFactory $queryFactory,
-        private QueryIterator $queryIterator
     ) {
     }
 
     public function list(): iterable
     {
-        return \iterable_map(
-            $this->queryIterator->iterateColumn($this->getSearchQuery()),
-            static fn (string $id) => new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)))
-        );
+        foreach ($this->getSearchQuery()->iterateColumn('id') as $id) {
+            yield new PortalNodeListResult(new PortalNodeStorageKey(Id::toHex($id)));
+        }
     }
 
-    private function getSearchQuery(): QueryBuilder
+    private function getSearchQuery(): SelectQueryBuilder
     {
-        $builder = $this->searchBuilder;
-
-        if ($builder instanceof QueryBuilder) {
-            return clone $builder;
-        }
-
-        $this->searchBuilder = $builder = $this->queryFactory->createBuilder(self::LIST_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::LIST_QUERY);
 
         $builder->from('heptaconnect_portal_node');
-        $builder->addOrderBy('id');
         $builder->select('id');
         $builder->andWhere($builder->expr()->isNull('deleted_at'));
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayload;
@@ -25,11 +26,11 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 
-final class JobCreate implements JobCreateActionInterface
+final readonly class JobCreate implements JobCreateActionInterface
 {
-    public const PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
+    public const string PAYLOAD_LOOKUP_QUERY = 'b2234327-93a0-4854-ac52-fba75f71da74';
 
-    private const FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
+    private const string FORMAT_SERIALIZED_GZPRESS = 'serialized+gzpress';
 
     public function __construct(
         private Connection $connection,
@@ -40,6 +41,7 @@ final class JobCreate implements JobCreateActionInterface
     ) {
     }
 
+    #[\Override]
     public function create(JobCreatePayloads $payloads): JobCreateResults
     {
         $jobTypes = [];
@@ -62,7 +64,7 @@ final class JobCreate implements JobCreateActionInterface
             }
 
             if (!($portalNodeKey instanceof PortalNodeStorageKey)) {
-                throw new InvalidCreatePayloadException($payload, 1639268730, new UnsupportedStorageKeyException($portalNodeKey::class));
+                throw new InvalidCreatePayloadException($payload, 1639268730, new UnsupportedStorageKeyException($portalNodeKey));
             }
         }
 
@@ -111,7 +113,7 @@ final class JobCreate implements JobCreateActionInterface
                 $keys->next();
 
                 if (!$key instanceof JobStorageKey) {
-                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException($key::class));
+                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException($key));
                 }
 
                 $jobPayloadKey = null;
@@ -183,24 +185,24 @@ final class JobCreate implements JobCreateActionInterface
      */
     private function getPayloadIds(array $checksums): array
     {
-        $builder = $this->queryFactory->createBuilder(self::PAYLOAD_LOOKUP_QUERY);
+        $builder = $this->queryFactory->createSelectBuilder(self::PAYLOAD_LOOKUP_QUERY);
         $checksums = \array_unique($checksums);
 
         $builder
             ->from('heptaconnect_job_payload', 'job_payload')
-            ->addOrderBy('job_payload.id')
             ->select([
                 'job_payload.checksum checksum',
                 'job_payload.id id',
             ])
             ->where($builder->expr()->in('job_payload.checksum', ':checksums'))
             ->setMaxResults(\count($checksums))
-            ->setParameter('checksums', $checksums, Connection::PARAM_STR_ARRAY);
+            ->setParameter('checksums', $checksums, ArrayParameterType::STRING);
         $builder->setIsForUpdate(true);
 
         $rows = [];
 
-        foreach ($builder->iterateRows() as $row) {
+        /** @var array{checksum: string, id: string} $row */
+        foreach ($builder->iterateRows('job_payload.id') as $row) {
             $rows[$row['checksum']] = $row['id'];
         }
 
