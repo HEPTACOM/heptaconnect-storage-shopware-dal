@@ -78,7 +78,7 @@ definitions:
                 name: Install and Unit test (8.4 + High dependencies)
                 script:
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'CREATE USER test_user@127.0.0.1 IDENTIFIED WITH mysql_native_password BY "let_me_in_as_well"; GRANT ALL ON *.* TO test_user@127.0.0.1;'
-                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_high81;'
+                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_high;'
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - # TODO re-enable coverage tests, when https://bugs.xdebug.org/view.php?id=2252 is solved
@@ -89,7 +89,7 @@ definitions:
                 name: Install and Unit test (8.4 + Low dependencies)
                 script:
                     - mysql -uroot -plet_me_in -h127.0.0.1 -e 'CREATE USER test_user@127.0.0.1 IDENTIFIED WITH mysql_native_password BY "let_me_in_as_well"; GRANT ALL ON *.* TO test_user@127.0.0.1;'
-                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_low81;'
+                    - mysql -utest_user -plet_me_in_as_well -h127.0.0.1 -e 'CREATE DATABASE pipelines_low;'
                     - make clean
                     - GLOBAL_REPOSITORIES_DIR=`pwd`/.build/private-composer composer-repository
                     - composer update --prefer-lowest --prefer-stable
