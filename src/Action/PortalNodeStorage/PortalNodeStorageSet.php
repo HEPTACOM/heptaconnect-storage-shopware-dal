@@ -32,7 +32,7 @@ final readonly class PortalNodeStorageSet implements PortalNodeStorageSetActionI
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $keysToCheck = [];

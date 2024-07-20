@@ -50,7 +50,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($targetPortalNodeKey));
+            throw new UnsupportedStorageKeyException($targetPortalNodeKey);
         }
 
         $mappedEntities = $payload->getMappedDatasetEntities();
@@ -59,13 +59,13 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
             $sourcePortalNodeKey = $mappedEntity->getMapping()->getPortalNodeKey()->withoutAlias();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($sourcePortalNodeKey));
+                throw new UnsupportedStorageKeyException($sourcePortalNodeKey);
             }
 
             $mappingNodeKey = $mappedEntity->getMapping()->getMappingNodeKey();
 
             if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($mappingNodeKey));
+                throw new UnsupportedStorageKeyException($mappingNodeKey);
             }
         }
 
@@ -219,7 +219,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $targetPortalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$targetPortalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($targetPortalNodeKey));
+            throw new UnsupportedStorageKeyException($targetPortalNodeKey);
         }
 
         $identities = [];
@@ -229,7 +229,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
             $sourcePortalNodeKey = $mappedDatasetEntity->getMapping()->getPortalNodeKey()->withoutAlias();
 
             if (!$sourcePortalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($sourcePortalNodeKey));
+                throw new UnsupportedStorageKeyException($sourcePortalNodeKey);
             }
 
             $entityType = (string) $mappedDatasetEntity->getMapping()->getEntityType();

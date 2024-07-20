@@ -31,7 +31,7 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
         $sourceKey = $criteria->getSourcePortalNodeKey()->withoutAlias();
 
         if (!$sourceKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($sourceKey));
+            throw new UnsupportedStorageKeyException($sourceKey);
         }
 
         $builder = $this->getBuilder();

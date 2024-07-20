@@ -31,7 +31,7 @@ final readonly class PortalNodeAliasGet implements PortalNodeAliasGetActionInter
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey);
             }
 
             $portalNodeIds[] = $portalNodeKey->getUuid();

@@ -43,7 +43,7 @@ final readonly class JobGet implements JobGetActionInterface
 
         foreach ($criteria->getJobKeys() as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey);
             }
 
             $ids[] = $jobKey->getUuid();

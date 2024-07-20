@@ -43,13 +43,13 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException(\get_debug_type($sourceKey)));
+                throw new InvalidCreatePayloadException($payload, 1636573803, new UnsupportedStorageKeyException($sourceKey));
             }
 
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException(\get_debug_type($targetKey)));
+                throw new InvalidCreatePayloadException($payload, 1636573804, new UnsupportedStorageKeyException($targetKey));
             }
 
             $entityTypes[] = (string) $payload->getEntityType();
@@ -93,7 +93,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             $keys->next();
 
             if (!$key instanceof RouteStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException(\get_debug_type($key)));
+                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException($key));
             }
 
             /** @var PortalNodeStorageKey $sourceKey */

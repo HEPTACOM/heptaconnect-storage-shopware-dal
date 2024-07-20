@@ -41,13 +41,13 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
 
             if (!$sourceKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722278, new UnsupportedStorageKeyException(\get_debug_type($sourceKey)));
+                throw new InvalidCreatePayloadException($payload, 1673722278, new UnsupportedStorageKeyException($sourceKey));
             }
 
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             if (!$targetKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722279, new UnsupportedStorageKeyException(\get_debug_type($targetKey)));
+                throw new InvalidCreatePayloadException($payload, 1673722279, new UnsupportedStorageKeyException($targetKey));
             }
 
             $entityTypes[] = (string) $payload->getEntityType();
@@ -76,7 +76,7 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
             $keys->next();
 
             if (!$key instanceof IdentityRedirectStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException(\get_debug_type($key)));
+                throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException($key));
             }
 
             /** @var PortalNodeStorageKey $sourceKey */

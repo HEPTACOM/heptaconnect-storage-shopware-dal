@@ -33,7 +33,7 @@ final readonly class IdentityRedirectDelete implements IdentityRedirectDeleteAct
 
         foreach ($criteria->getIdentityRedirectKeys() as $identityRedirectKey) {
             if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($identityRedirectKey));
+                throw new UnsupportedStorageKeyException($identityRedirectKey);
             }
 
             $ids[] = Id::toBinary($identityRedirectKey->getUuid());

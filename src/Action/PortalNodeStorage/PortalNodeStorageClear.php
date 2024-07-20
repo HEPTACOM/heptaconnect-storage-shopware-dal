@@ -30,7 +30,7 @@ final readonly class PortalNodeStorageClear implements PortalNodeStorageClearAct
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $deleteBuilder = $this->queryFactory->createBuilder(self::CLEAR_QUERY);

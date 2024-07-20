@@ -37,7 +37,7 @@ final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInter
             $alias = $payload->getAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
+                throw new InvalidCreatePayloadException($payload, 1645446078, new UnsupportedStorageKeyException($portalNodeKey));
             }
 
             if ($alias === '') {

@@ -48,7 +48,7 @@ final readonly class IdentityRedirectOverview implements IdentityRedirectOvervie
 
             foreach ($identityRedirectKeyFilter as $identityRedirectKey) {
                 if (!$identityRedirectKey instanceof IdentityRedirectStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException(\get_debug_type($identityRedirectKey)));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729808, new UnsupportedStorageKeyException($identityRedirectKey));
                 }
 
                 $identityRedirectIds[] = Id::toBinary($identityRedirectKey->getUuid());
@@ -80,7 +80,7 @@ final readonly class IdentityRedirectOverview implements IdentityRedirectOvervie
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729809, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729809, new UnsupportedStorageKeyException($portalNodeKey));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
@@ -97,7 +97,7 @@ final readonly class IdentityRedirectOverview implements IdentityRedirectOvervie
                 $portalNodeKey = $portalNodeKey->withoutAlias();
 
                 if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                    throw new InvalidOverviewCriteriaException($criteria, 1673729810, new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey)));
+                    throw new InvalidOverviewCriteriaException($criteria, 1673729810, new UnsupportedStorageKeyException($portalNodeKey));
                 }
 
                 $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());

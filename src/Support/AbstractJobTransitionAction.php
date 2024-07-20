@@ -30,7 +30,7 @@ abstract readonly class AbstractJobTransitionAction
 
         foreach ($jobKeys as $jobKey) {
             if (!$jobKey instanceof JobStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($jobKey));
+                throw new UnsupportedStorageKeyException($jobKey);
             }
 
             $jobIds[Id::toBinary($jobKey->getUuid())] = true;

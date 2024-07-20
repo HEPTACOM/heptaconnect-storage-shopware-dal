@@ -34,7 +34,7 @@ final readonly class RouteDelete implements RouteDeleteActionInterface
 
         foreach ($criteria->getRouteKeys() as $routeKey) {
             if (!$routeKey instanceof RouteStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($routeKey));
+                throw new UnsupportedStorageKeyException($routeKey);
             }
 
             $ids[] = Id::toBinary($routeKey->getUuid());

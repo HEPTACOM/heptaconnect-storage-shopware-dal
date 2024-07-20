@@ -47,7 +47,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
         $portalNodeKey = $payload->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $portalNodeId = $portalNodeKey->getUuid();
@@ -125,7 +125,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
                 $mappingNodeKey = \array_shift($mappingNodeKeys);
 
                 if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException(\get_debug_type($mappingNodeKey));
+                    throw new UnsupportedStorageKeyException($mappingNodeKey);
                 }
 
                 $mappingNodeId = $mappingNodeKey->getUuid();

@@ -29,7 +29,7 @@ final readonly class PortalNodeStorageList implements PortalNodeStorageListActio
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $fetchBuilder = $this->queryFactory->createSelectBuilder(self::FETCH_QUERY);

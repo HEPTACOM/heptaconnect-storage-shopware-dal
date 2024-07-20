@@ -33,7 +33,7 @@ final readonly class PortalNodeGet implements PortalNodeGetActionInterface
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey);
             }
 
             $ids[] = $portalNodeKey->getUuid();

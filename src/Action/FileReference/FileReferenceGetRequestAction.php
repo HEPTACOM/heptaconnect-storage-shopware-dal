@@ -31,7 +31,7 @@ final readonly class FileReferenceGetRequestAction implements FileReferenceGetRe
         $portalNodeKey = $criteria->getPortalNodeKey()->withoutAlias();
 
         if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-            throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+            throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
         $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
@@ -39,7 +39,7 @@ final readonly class FileReferenceGetRequestAction implements FileReferenceGetRe
 
         foreach ($criteria->getFileReferenceRequestKeys() as $requestKey) {
             if (!$requestKey instanceof FileReferenceRequestStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($requestKey));
+                throw new UnsupportedStorageKeyException($requestKey);
             }
 
             $requestIds[] = Id::toBinary($requestKey->getUuid());

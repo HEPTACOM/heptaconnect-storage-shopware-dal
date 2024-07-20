@@ -32,7 +32,7 @@ final readonly class PortalNodeConfigurationGet implements PortalNodeConfigurati
             $portalNodeKey = $portalNodeKey->withoutAlias();
 
             if (!$portalNodeKey instanceof PortalNodeStorageKey) {
-                throw new UnsupportedStorageKeyException(\get_debug_type($portalNodeKey));
+                throw new UnsupportedStorageKeyException($portalNodeKey);
             }
 
             $portalNodeIds[] = Id::toBinary($portalNodeKey->getUuid());
