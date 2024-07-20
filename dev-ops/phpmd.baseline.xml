@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <phpmd-baseline>
     <!-- Intentional -->
+    <!-- To generate use: $ dev-ops/bin/phpmd --generate-baseline src xml dev-ops/phpmd.xml -->
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityMap.php" method="map"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityOverview.php" method="overview"/>
     <violation rule="PHPMD\Rule\CyclomaticComplexity" file="src/Action/Identity/IdentityReflect.php" method="reflectBidirectional"/>
