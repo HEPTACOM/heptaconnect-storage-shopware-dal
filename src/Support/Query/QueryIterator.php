@@ -44,7 +44,7 @@ class QueryIterator
                     if ($cell === null) {
                         if ($qb instanceof HeptaconnectQueryBuilder) {
                             throw new \LogicException(
-                                \sprintf('The queried column in query "%s" is expected to not fetch null values but returned a null value', $qb->identifier),
+                                \sprintf('The queried column in query "%s" is expected to not fetch null values but returned a null value', $qb->getIdentifier()),
                                 1719685570
                             );
                         } else {

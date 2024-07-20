@@ -78,7 +78,7 @@ final class SelectQueryBuilder extends QueryBuilder
             \sprintf(
                 'Changing an instance of "%s" in query "%s" to perform DELETE statements if prohibited. Use "%s" instead for it',
                 SelectQueryBuilder::class,
-                $this->identifier,
+                $this->getIdentifier(),
                 QueryBuilder::class,
             ),
             1719673190
@@ -92,7 +92,7 @@ final class SelectQueryBuilder extends QueryBuilder
             \sprintf(
                 'Changing an instance of "%s" in query "%s" to perform UPDATE statements if prohibited. Use "%s" instead for it',
                 SelectQueryBuilder::class,
-                $this->identifier,
+                $this->getIdentifier(),
                 QueryBuilder::class,
             ),
             1719673191
@@ -106,7 +106,7 @@ final class SelectQueryBuilder extends QueryBuilder
             \sprintf(
                 'Changing an instance of "%s" in query "%s" to perform INSERT statements if prohibited. Use "%s" instead for it',
                 SelectQueryBuilder::class,
-                $this->identifier,
+                $this->getIdentifier(),
                 QueryBuilder::class,
             ),
             1719673192

@@ -16,9 +16,14 @@ class QueryBuilder extends BaseQueryBuilder
 
     public function __construct(
         Connection $connection,
-        public readonly string $identifier,
+        private readonly string $identifier,
     ) {
         parent::__construct($connection);
+    }
+
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
     }
 
     #[\Override]
