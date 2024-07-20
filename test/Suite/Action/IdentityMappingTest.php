@@ -79,7 +79,6 @@ class IdentityMappingTest extends IdentityMappingTestContract
         $this->trackedQueries = [];
     }
 
-
     #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
