@@ -60,7 +60,7 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $this->expectException(UnsupportedStorageKeyException::class);
         $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Unsupported storage key class: ' . AbstractStorageKey::class);
+        $this->expectExceptionMessage('Unsupported storage key class: null');
 
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         $keys = \iterable_to_array($generator->generateKeys(AbstractStorageKey::class, 1));

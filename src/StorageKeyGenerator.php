@@ -114,13 +114,13 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         }
 
         if (!\array_key_exists($abbreviation, self::ABBREVIATIONS)) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         $class = self::ABBREVIATIONS[$abbreviation];
 
         if (($interface = \array_search($class, self::IMPLEMENTATION_MAP, true)) === false) {
-            throw new UnsupportedStorageKeyException(StorageKeyInterface::class);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         return $this->createKey($interface, $key);
@@ -131,7 +131,7 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         $uuid ??= Id::randomHex();
 
         if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
-            throw new UnsupportedStorageKeyException($interface);
+            throw new UnsupportedStorageKeyException(null);
         }
 
         $class = self::IMPLEMENTATION_MAP[$interface];
