@@ -439,12 +439,8 @@ class IdentityPersistTest extends TestCase
             throw new UnsupportedStorageKeyException($portalNodeKey);
         }
 
-        $result = (new MappingNodeKeyCollection($this->storageKeyGenerator->generateKeys(MappingNodeKeyInterface::class, 1)))->first();
+        $result = new MappingNodeStorageKey(Id::randomHex());
         $typeIds = $this->datasetEntityTypeAccessor->getIdsForTypes([$entityType]);
-
-        if (!$result instanceof MappingNodeStorageKey) {
-            throw new UnsupportedStorageKeyException($result);
-        }
 
         $this->getConnection()->insert('heptaconnect_mapping_node', [
             'id' => Id::toBinary($result->getUuid()),

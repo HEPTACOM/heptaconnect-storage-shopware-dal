@@ -142,11 +142,7 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createIdentityRedirectCreateActionInterface(): IdentityRedirectCreateActionInterface
     {
-        return new IdentityRedirectCreate(
-            $this->connection,
-            $this->getStorageKeyGenerator(),
-            $this->getEntityTypeAccessor()
-        );
+        return new IdentityRedirectCreate($this->connection, $this->getEntityTypeAccessor());
     }
 
     protected function createIdentityRedirectDeleteActionInterface(): IdentityRedirectDeleteActionInterface
@@ -161,27 +157,17 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createFileReferencePersistRequestAction(): FileReferencePersistRequestActionInterface
     {
-        return new FileReferencePersistRequestAction($this->connection, $this->getStorageKeyGenerator());
+        return new FileReferencePersistRequestAction($this->connection);
     }
 
     protected function createIdentityErrorCreateAction(): IdentityErrorCreateActionInterface
     {
-        return new IdentityErrorCreate(
-            $this->connection,
-            $this->getQueryFactory(),
-            $this->getStorageKeyGenerator(),
-            $this->getEntityTypeAccessor()
-        );
+        return new IdentityErrorCreate($this->connection, $this->getQueryFactory(), $this->getEntityTypeAccessor());
     }
 
     protected function createIdentityMapAction(): IdentityMapActionInterface
     {
-        return new IdentityMap(
-            $this->getStorageKeyGenerator(),
-            $this->getEntityTypeAccessor(),
-            $this->connection,
-            $this->getQueryFactory()
-        );
+        return new IdentityMap($this->getEntityTypeAccessor(), $this->connection, $this->getQueryFactory());
     }
 
     protected function createIdentityOverviewAction(): IdentityOverviewActionInterface
@@ -206,10 +192,9 @@ final class StorageFacade extends AbstractSingletonStorageFacade
     {
         return new JobCreate(
             $this->connection,
-            $this->getStorageKeyGenerator(),
             $this->getJobTypeAccessor(),
             $this->getEntityTypeAccessor(),
-            $this->getQueryFactory()
+            $this->getQueryFactory(),
         );
     }
 
@@ -265,11 +250,7 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createPortalNodeCreateAction(): PortalNodeCreateActionInterface
     {
-        return new PortalNodeCreate(
-            $this->connection,
-            $this->getStorageKeyGenerator(),
-            $this->getPortalNodeAliasAccessor()
-        );
+        return new PortalNodeCreate($this->connection, $this->getPortalNodeAliasAccessor());
     }
 
     protected function createPortalNodeDeleteAction(): PortalNodeDeleteActionInterface
@@ -349,12 +330,7 @@ final class StorageFacade extends AbstractSingletonStorageFacade
 
     protected function createRouteCreateAction(): RouteCreateActionInterface
     {
-        return new RouteCreate(
-            $this->connection,
-            $this->getStorageKeyGenerator(),
-            $this->getEntityTypeAccessor(),
-            $this->getRouteCapabilityAccessor()
-        );
+        return new RouteCreate($this->connection, $this->getEntityTypeAccessor(), $this->getRouteCapabilityAccessor());
     }
 
     protected function createRouteDeleteAction(): RouteDeleteActionInterface

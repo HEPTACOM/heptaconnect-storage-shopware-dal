@@ -38,6 +38,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Change parameter in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` of type `\Doctrine\DBAL\Query\QueryBuilder` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder` to ensure the given query builder is paginatable
 - Add required parameter of type `string` as SQL name for a column to sort by to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateRows`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateColumn`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterate` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn`
 - Add optional parameter of type `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilderSortingDirection` as SQL sorting direction to sort by to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateRows`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder::iterateColumn`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterate` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateColumn`
+- Remove parameter to `\Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::__construct` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate::__construct`
 
 ### Deprecated
 
@@ -45,6 +46,12 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 - Remove support for `php: 7.4` as it will not receive any updates anymore, it is unlikely to be used. By raising the minimum PHP version we also make use of features introduced by PHP 8.0, which mainly have no effect on public API
 - Remove exception related to code `1645901525` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator::iterateSafelyPaginated` as pagination is ensured by `\Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder`
+- Remove method `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator::generateKeys` as the matching contract also removed the method
+- Remove exception related to code `1645822126` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction::persistRequest` as underlying reason will not occur anymore
+- Remove exception related to code `1673722281` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::create` as underlying reason will not occur anymore
+- Remove exception related to code `1639268733` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::create` as underlying reason will not occur anymore
+- Remove exception related to code `1640048751` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` as underlying reason will not occur anymore
+- Remove exception related to code `1636573807` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate::create` as underlying reason will not occur anymore
 
 ### Fixed
 

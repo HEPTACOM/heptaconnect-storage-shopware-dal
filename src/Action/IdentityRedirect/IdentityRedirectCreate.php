@@ -26,7 +26,6 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
 {
     public function __construct(
         private Connection $connection,
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private EntityTypeAccessor $entityTypes
     ) {
     }
@@ -66,18 +65,12 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
             }
         }
 
-        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(IdentityRedirectKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
         $redirectInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
-            $key = $keys->current();
-            $keys->next();
-
-            if (!$key instanceof IdentityRedirectStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1673722281, new UnsupportedStorageKeyException($key));
-            }
+            $id = Id::randomBinary();
 
             /** @var PortalNodeStorageKey $sourceKey */
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
@@ -85,7 +78,7 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             $redirectInserts[] = [
-                'id' => Id::toBinary($key->getUuid()),
+                'id' => $id,
                 'source_portal_node_id' => Id::toBinary($sourceKey->getUuid()),
                 'source_external_id' => $payload->getSourceExternalId(),
                 'target_portal_node_id' => Id::toBinary($targetKey->getUuid()),
@@ -94,7 +87,7 @@ final readonly class IdentityRedirectCreate implements IdentityRedirectCreateAct
                 'created_at' => $now,
             ];
 
-            $result[] = new IdentityRedirectCreateResult($key);
+            $result[] = new IdentityRedirectCreateResult(new IdentityRedirectStorageKey(Id::toHex($id)));
         }
 
         try {

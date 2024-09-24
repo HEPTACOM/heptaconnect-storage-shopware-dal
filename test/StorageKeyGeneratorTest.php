@@ -4,15 +4,7 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test;
 
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\IdentityRedirectKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\Base\PreviewPortalNodeKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
@@ -56,16 +48,6 @@ class StorageKeyGeneratorTest extends TestCase
 {
     protected bool $setupQueryTracking = false;
 
-    public function testUnsupportedClassException(): void
-    {
-        $this->expectException(UnsupportedStorageKeyException::class);
-        $this->expectExceptionCode(0);
-        $this->expectExceptionMessage('Unsupported storage key class: null');
-
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        $keys = \iterable_to_array($generator->generateKeys(AbstractStorageKey::class, 1));
-    }
-
     public function testPreviewKeySerialization(): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
@@ -84,65 +66,38 @@ class StorageKeyGeneratorTest extends TestCase
         static::assertTrue(Portal::class()->equals($deserialized->getPortalType()));
     }
 
-    #[DataProvider('provideKeyInterfaces')]
-    public function testKeyGenerator(string $interface): void
+    #[DataProvider('provideKeys')]
+    public function testKeySerialization(AbstractStorageKey $key): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
-        static::assertInstanceOf($interface, $key);
-    }
-
-    #[DataProvider('provideKeyInterfaces')]
-    public function testKeyGeneratorList(string $interface): void
-    {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /* @var AbstractStorageKey $key */
-        static::assertCount(100, [...$generator->generateKeys($interface, 100)]);
-        static::assertCount(10, [...$generator->generateKeys($interface, 10)]);
-        static::assertCount(0, [...$generator->generateKeys($interface, 0)]);
-        static::assertCount(0, [...$generator->generateKeys($interface, -10)]);
-    }
-
-    #[DataProvider('provideKeyInterfaces')]
-    public function testKeySerialization(string $interface): void
-    {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         static::assertStringContainsString($key->getUuid(), $serialized);
     }
 
-    #[DataProvider('provideKeyInterfaces')]
-    public function testKeyDeserialization(string $interface): void
+    #[DataProvider('provideKeys')]
+    public function testKeyDeserialization(AbstractStorageKey $key): void
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         $serialized = $generator->serialize($key);
         $deserialized = $generator->deserialize($serialized);
         static::assertTrue($key->equals($deserialized), 'Keys are not equal');
     }
 
-    #[DataProvider('provideKeyInterfaces')]
-    public function testKeyJsonSerialization(string $interface): void
+    #[DataProvider('provideKeys')]
+    public function testKeyJsonSerialization(AbstractStorageKey $key): void
     {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
-        /** @var AbstractStorageKey $key */
-        $key = \iterable_to_array($generator->generateKeys($interface, 1))[0];
         static::assertStringContainsString($key->getUuid(), \json_encode($key, \JSON_THROW_ON_ERROR));
     }
 
-    public static function provideKeyInterfaces(): iterable
+    public static function provideKeys(): iterable
     {
-        yield [PortalNodeKeyInterface::class];
-        yield [MappingNodeKeyInterface::class];
-        yield [RouteKeyInterface::class];
-        yield [IdentityRedirectKeyInterface::class];
-        yield [IdentityErrorKeyInterface::class];
-        yield [JobKeyInterface::class];
-        yield [FileReferenceRequestKeyInterface::class];
+        yield [new PortalNodeStorageKey(Id::randomHex())];
+        yield [new MappingNodeStorageKey(Id::randomHex())];
+        yield [new RouteStorageKey(Id::randomHex())];
+        yield [new IdentityRedirectStorageKey(Id::randomHex())];
+        yield [new IdentityErrorStorageKey(Id::randomHex())];
+        yield [new JobStorageKey(Id::randomHex())];
+        yield [new FileReferenceRequestStorageKey(Id::randomHex())];
     }
 
     protected function createStorageFacade(): StorageFacadeInterface

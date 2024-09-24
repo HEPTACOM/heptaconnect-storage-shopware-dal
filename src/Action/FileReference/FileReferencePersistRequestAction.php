@@ -9,8 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\FileReference\RequestPersist\FileReferencePersistRequestResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\FileReferenceRequestKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\FileReferenceRequestStorageKey;
@@ -22,7 +20,6 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
 {
     public function __construct(
         private Connection $connection,
-        private StorageKeyGeneratorContract $storageKeyGenerator
     ) {
     }
 
@@ -45,25 +42,11 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
             $portalNodeId = Id::toBinary($portalNodeKey->getUuid());
             $now = DateTime::nowToStorage();
 
-            $storageKeys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(
-                FileReferenceRequestKeyInterface::class,
-                \count($payload->getSerializedRequests())
-            )));
-
             foreach ($payload->getSerializedRequests() as $key => $serializedRequest) {
-                $storageKey = $storageKeys->current();
-                $storageKeys->next();
-
-                if (!$storageKey instanceof FileReferenceRequestStorageKey) {
-                    throw new InvalidCreatePayloadException(
-                        $payload,
-                        1645822126,
-                        new UnsupportedStorageKeyException($storageKey),
-                    );
-                }
+                $id = Id::randomBinary();
 
                 $connection->insert('heptaconnect_file_reference_request', [
-                    'id' => Id::toBinary($storageKey->getUuid()),
+                    'id' => $id,
                     'portal_node_id' => $portalNodeId,
                     'serialized_request' => $serializedRequest,
                     'created_at' => $now,
@@ -72,7 +55,7 @@ final readonly class FileReferencePersistRequestAction implements FileReferenceP
                     'portal_node_id' => Types::BINARY,
                 ]);
 
-                $result->addFileReferenceRequestKey($key, $storageKey);
+                $result->addFileReferenceRequestKey($key, new FileReferenceRequestStorageKey(Id::toHex($id)));
             }
         });
 
