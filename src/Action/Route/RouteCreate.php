@@ -10,8 +10,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreateResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\RouteKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -26,7 +24,6 @@ final readonly class RouteCreate implements RouteCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private EntityTypeAccessor $entityTypes,
         private RouteCapabilityAccessor $routeCapabilities
     ) {
@@ -82,27 +79,20 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             }
         }
 
-        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(RouteKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
         $routeInserts = [];
         $routeCapInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
-            $key = $keys->current();
-            $keys->next();
-
-            if (!$key instanceof RouteStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1636573807, new UnsupportedStorageKeyException($key));
-            }
-
+            $id = Id::randomBinary();
             /** @var PortalNodeStorageKey $sourceKey */
             $sourceKey = $payload->getSourcePortalNodeKey()->withoutAlias();
             /** @var PortalNodeStorageKey $targetKey */
             $targetKey = $payload->getTargetPortalNodeKey()->withoutAlias();
 
             $routeInserts[] = [
-                'id' => Id::toBinary($key->getUuid()),
+                'id' => $id,
                 'source_id' => Id::toBinary($sourceKey->getUuid()),
                 'target_id' => Id::toBinary($targetKey->getUuid()),
                 'type_id' => Id::toBinary($entityTypeIds[(string) $payload->getEntityType()]),
@@ -111,13 +101,13 @@ final readonly class RouteCreate implements RouteCreateActionInterface
 
             foreach ($payload->getCapabilities() as $capability) {
                 $routeCapInserts[] = [
-                    'route_id' => Id::toBinary($key->getUuid()),
+                    'route_id' => $id,
                     'route_capability_id' => Id::toBinary($capabilityIds[$capability]),
                     'created_at' => $now,
                 ];
             }
 
-            $result[] = new RouteCreateResult($key);
+            $result[] = new RouteCreateResult(new RouteStorageKey(Id::toHex($id)));
         }
 
         try {

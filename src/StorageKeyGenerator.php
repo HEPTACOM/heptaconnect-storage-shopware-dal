@@ -23,7 +23,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 
 final class StorageKeyGenerator extends StorageKeyGeneratorContract
 {
@@ -51,14 +50,6 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
     public function __construct(
         private readonly PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
-    }
-
-    #[\Override]
-    public function generateKeys(string $keyClassName, int $count): iterable
-    {
-        while ($count-- > 0) {
-            yield $this->createKey($keyClassName, null);
-        }
     }
 
     #[\Override]
@@ -126,10 +117,8 @@ final class StorageKeyGenerator extends StorageKeyGeneratorContract
         return $this->createKey($interface, $key);
     }
 
-    private function createKey(string $interface, ?string $uuid): StorageKeyInterface
+    private function createKey(string $interface, string $uuid): StorageKeyInterface
     {
-        $uuid ??= Id::randomHex();
-
         if (!\array_key_exists($interface, self::IMPLEMENTATION_MAP)) {
             throw new UnsupportedStorageKeyException(null);
         }

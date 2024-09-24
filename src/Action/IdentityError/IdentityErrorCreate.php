@@ -8,7 +8,6 @@ use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Dataset\Base\Contract\DatasetEntityContract;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\IdentityErrorKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Action\IdentityError\Create\IdentityErrorCreateResult;
@@ -33,7 +32,6 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
     public function __construct(
         private Connection $connection,
         private QueryFactory $queryFactory,
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private EntityTypeAccessor $entityTypeAccessor
     ) {
     }
@@ -88,18 +86,9 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
             unset($insertPayload['throwable']);
 
             $throwables = self::unwrapException($throwable);
-            $keys = \iterable_to_array($this->storageKeyGenerator->generateKeys(
-                IdentityErrorKeyInterface::class,
-                \count($throwables)
-            ));
 
             foreach ($throwables as $exception) {
-                $key = \array_shift($keys) ?: null;
-
-                if (!$key instanceof IdentityErrorStorageKey) {
-                    throw new UnsupportedStorageKeyException($key);
-                }
-
+                $key = new IdentityErrorStorageKey(Id::randomHex());
                 $resultKey ??= $key;
 
                 if (!$previousKey instanceof IdentityErrorStorageKey) {

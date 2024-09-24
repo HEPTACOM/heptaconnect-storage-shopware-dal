@@ -12,8 +12,6 @@ use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Job\Create\JobCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\JobKeyInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
@@ -34,7 +32,6 @@ final readonly class JobCreate implements JobCreateActionInterface
 
     public function __construct(
         private Connection $connection,
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private JobTypeAccessor $jobTypes,
         private EntityTypeAccessor $entityTypes,
         private QueryFactory $queryFactory
@@ -97,7 +94,6 @@ final readonly class JobCreate implements JobCreateActionInterface
         $result = new JobCreateResults();
 
         $this->connection->transactional(function () use ($payloads, $result, $entityTypeIds, $jobTypeIds, $jobPayloads, $jobPayloadChecksumIds): void {
-            $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(JobKeyInterface::class, $payloads->count())));
             $now = DateTime::nowToStorage();
             $jobInserts = [];
             $payloadInserts = [];
@@ -108,14 +104,6 @@ final readonly class JobCreate implements JobCreateActionInterface
                 $entityTypeId = $entityTypeIds[(string) $payload->getMapping()->getEntityType()];
                 /** @var PortalNodeStorageKey $portalNodeKey */
                 $portalNodeKey = $payload->getMapping()->getPortalNodeKey()->withoutAlias();
-
-                $key = $keys->current();
-                $keys->next();
-
-                if (!$key instanceof JobStorageKey) {
-                    throw new InvalidCreatePayloadException($payload, 1639268733, new UnsupportedStorageKeyException($key));
-                }
-
                 $jobPayloadKey = null;
                 $jobPayload = $payload->getJobPayload();
                 $jobPayloadIndex = $jobPayloads[$payloadId] ?? null;
@@ -136,8 +124,9 @@ final readonly class JobCreate implements JobCreateActionInterface
                     }
                 }
 
+                $jobId = Id::randomBinary();
                 $jobInserts[] = [
-                    'id' => Id::toBinary($key->getUuid()),
+                    'id' => $jobId,
                     'external_id' => $payload->getMapping()->getExternalId(),
                     'portal_node_id' => Id::toBinary($portalNodeKey->getUuid()),
                     'entity_type_id' => Id::toBinary($entityTypeId),
@@ -147,7 +136,7 @@ final readonly class JobCreate implements JobCreateActionInterface
                     'created_at' => $now,
                 ];
 
-                $result->push([new JobCreateResult($key)]);
+                $result->push([new JobCreateResult(new JobStorageKey(Id::toHex($jobId)))]);
             }
 
             try {

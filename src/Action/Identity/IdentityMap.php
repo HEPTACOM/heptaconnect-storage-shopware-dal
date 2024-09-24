@@ -12,12 +12,10 @@ use Heptacom\HeptaConnect\Dataset\Base\EntityType;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\Contract\MappingInterface;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityCollection;
 use Heptacom\HeptaConnect\Portal\Base\Mapping\MappedDatasetEntityStruct;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\MappingNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapPayload;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Map\IdentityMapResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\Identity\Mapping;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
@@ -34,7 +32,6 @@ final readonly class IdentityMap implements IdentityMapActionInterface
     public const string MAPPING_QUERY = '3c3f73e2-a95c-4ff3-89c5-c5f166195c24';
 
     public function __construct(
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private EntityTypeAccessor $entityTypeAccessor,
         private Connection $connection,
         private QueryFactory $queryFactory
@@ -115,22 +112,10 @@ final readonly class IdentityMap implements IdentityMapActionInterface
         }
 
         if ($createMappingNodes !== []) {
-            /** @var MappingNodeKeyInterface[] $mappingNodeKeys */
-            $mappingNodeKeys = \iterable_to_array($this->storageKeyGenerator->generateKeys(
-                MappingNodeKeyInterface::class,
-                \count($createMappingNodes)
-            ));
-
             foreach (\array_keys($createMappingNodes) as $key) {
-                $mappingNodeKey = \array_shift($mappingNodeKeys);
-
-                if (!$mappingNodeKey instanceof MappingNodeStorageKey) {
-                    throw new UnsupportedStorageKeyException($mappingNodeKey);
-                }
-
-                $mappingNodeId = $mappingNodeKey->getUuid();
-                $createMappingNodes[$key]['id'] = Id::toBinary($mappingNodeId);
-                $readMappings[$key] = $mappingNodeId;
+                $mappingNodeId = Id::randomBinary();
+                $createMappingNodes[$key]['id'] = $mappingNodeId;
+                $readMappings[$key] = new MappingNodeStorageKey(Id::toHex($mappingNodeId));
             }
 
             try {

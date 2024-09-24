@@ -6,15 +6,12 @@ namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use Heptacom\HeptaConnect\Portal\Base\StorageKey\Contract\PortalNodeKeyInterface;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayloads;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreateResult;
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreateResults;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
-use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract;
 use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
-use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -24,7 +21,6 @@ final readonly class PortalNodeCreate implements PortalNodeCreateActionInterface
 {
     public function __construct(
         private Connection $connection,
-        private StorageKeyGeneratorContract $storageKeyGenerator,
         private PortalNodeAliasAccessor $portalNodeAliasAccessor
     ) {
     }
@@ -32,20 +28,12 @@ final readonly class PortalNodeCreate implements PortalNodeCreateActionInterface
     #[\Override]
     public function create(PortalNodeCreatePayloads $payloads): PortalNodeCreateResults
     {
-        $keys = new \ArrayIterator(\iterable_to_array($this->storageKeyGenerator->generateKeys(PortalNodeKeyInterface::class, $payloads->count())));
         $now = DateTime::nowToStorage();
         $inserts = [];
         $result = [];
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\PortalNode\Create\PortalNodeCreatePayload $payload */
         foreach ($payloads as $payload) {
-            $key = $keys->current();
-            $keys->next();
-
-            if (!$key instanceof PortalNodeStorageKey) {
-                throw new InvalidCreatePayloadException($payload, 1640048751, new UnsupportedStorageKeyException($key));
-            }
-
             $alias = $payload->getAlias();
 
             if ($alias === '') {
@@ -58,14 +46,15 @@ final readonly class PortalNodeCreate implements PortalNodeCreateActionInterface
                 }
             }
 
+            $id = Id::randomBinary();
             $inserts[] = [
-                'id' => Id::toBinary($key->getUuid()),
+                'id' => $id,
                 'alias' => $alias,
                 'class_name' => (string) $payload->getPortalClass(),
                 'configuration' => '{}',
                 'created_at' => $now,
             ];
-            $result[] = new PortalNodeCreateResult($key);
+            $result[] = new PortalNodeCreateResult(new PortalNodeStorageKey(Id::toHex($id)));
         }
 
         try {
