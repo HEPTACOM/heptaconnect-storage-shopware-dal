@@ -16,7 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\JobStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\MappingNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeySerializer;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
@@ -43,8 +43,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 #[CoversClass(RouteStorageKey::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
-#[CoversClass(StorageKeyGenerator::class)]
-class StorageKeyGeneratorTest extends TestCase
+#[CoversClass(StorageKeySerializer::class)]
+class StorageKeySerializerTest extends TestCase
 {
     protected bool $setupQueryTracking = false;
 

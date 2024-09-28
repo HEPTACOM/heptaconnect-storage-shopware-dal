@@ -16,7 +16,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeySerializer;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
@@ -46,7 +46,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(RouteCapabilityAccessor::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
-#[CoversClass(StorageKeyGenerator::class)]
+#[CoversClass(StorageKeySerializer::class)]
 #[CoversClass(TestCase::class)]
 class PortalNodeTest extends PortalNodeTestContract
 {

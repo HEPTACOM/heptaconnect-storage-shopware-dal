@@ -15,7 +15,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Enum\JobStateEnum;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
@@ -43,7 +42,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryIterator::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
-#[CoversClass(StorageKeyGenerator::class)]
 class JobCreateTest extends TestCase
 {
     public function testCreate(): void

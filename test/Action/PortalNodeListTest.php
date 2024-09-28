@@ -8,7 +8,6 @@ use Doctrine\DBAL\Types\Types;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\PaginatableQueryBuilder;
@@ -29,7 +28,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryIterator::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
-#[CoversClass(StorageKeyGenerator::class)]
 class PortalNodeListTest extends TestCase
 {
     public function testDeletedAt(): void
