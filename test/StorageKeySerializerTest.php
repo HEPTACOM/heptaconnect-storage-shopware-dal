@@ -50,7 +50,7 @@ class StorageKeySerializerTest extends TestCase
 
     public function testPreviewKeySerialization(): void
     {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeySerializer();
         $serialized = $generator->serialize(new PreviewPortalNodeKey(Portal::class()));
 
         static::assertStringContainsString(\addcslashes(Portal::class, '\\'), $serialized);
@@ -58,7 +58,7 @@ class StorageKeySerializerTest extends TestCase
 
     public function testPreviewKeyDeserialization(): void
     {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeySerializer();
         $deserialized = $generator->deserialize('{"preview":"Heptacom\\\\HeptaConnect\\\\Storage\\\\ShopwareDal\\\\Test\\\\Fixture\\\\Portal\\\\Portal"}');
 
         static::assertInstanceOf(PreviewPortalNodeKey::class, $deserialized);
@@ -69,7 +69,7 @@ class StorageKeySerializerTest extends TestCase
     #[DataProvider('provideKeys')]
     public function testKeySerialization(AbstractStorageKey $key): void
     {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeySerializer();
         $serialized = $generator->serialize($key);
         static::assertStringContainsString($key->getUuid(), $serialized);
     }
@@ -77,7 +77,7 @@ class StorageKeySerializerTest extends TestCase
     #[DataProvider('provideKeys')]
     public function testKeyDeserialization(AbstractStorageKey $key): void
     {
-        $generator = $this->createStorageFacade()->getStorageKeyGenerator();
+        $generator = $this->createStorageFacade()->getStorageKeySerializer();
         $serialized = $generator->serialize($key);
         $deserialized = $generator->deserialize($serialized);
         static::assertTrue($key->equals($deserialized), 'Keys are not equal');

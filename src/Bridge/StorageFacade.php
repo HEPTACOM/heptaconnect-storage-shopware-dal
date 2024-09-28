@@ -377,7 +377,7 @@ final class StorageFacade extends AbstractSingletonStorageFacade
         );
     }
 
-    protected function createStorageKeyGenerator(): StorageKeySerializerContract
+    protected function createStorageKeySerializer(): StorageKeySerializerContract
     {
         return new StorageKeySerializer($this->getPortalNodeAliasAccessor());
     }
