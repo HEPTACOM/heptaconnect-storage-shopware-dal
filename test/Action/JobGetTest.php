@@ -71,6 +71,7 @@ class JobGetTest extends TestCase
             'id' => $portal,
             'configuration' => '{}',
             'class_name' => self::class,
+            'alias' => self::class,
             'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_payload', [

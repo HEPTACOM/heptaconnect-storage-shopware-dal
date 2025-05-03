@@ -59,18 +59,21 @@ class PortalNodeOverviewTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalFirstCreated,
             'class_name' => TestCase::class,
+            'alias' => TestCase::class . '1',
             'configuration' => '{}',
             'created_at' => $yesterday,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalLastCreated,
             'class_name' => self::class,
+            'alias' => self::class . '2',
             'configuration' => '{}',
             'created_at' => $tomorrow,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalDeleted,
             'class_name' => self::class,
+            'alias' => self::class . '3',
             'configuration' => '{}',
             'created_at' => $now,
             'deleted_at' => $now,

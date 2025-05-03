@@ -81,8 +81,8 @@ class IdentityPersistTest extends TestCase
     public function testMergingMappingNodes(): void
     {
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
 
         $externalIdSource = Id::randomHex();
@@ -111,8 +111,8 @@ class IdentityPersistTest extends TestCase
     public function testMergingMappingNodesAfterTheSourceChangedPrimaryKeyOrTargetMapsObjectTwice(): void
     {
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
 
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
@@ -152,8 +152,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -187,8 +187,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -226,8 +226,8 @@ class IdentityPersistTest extends TestCase
         $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -262,8 +262,8 @@ class IdentityPersistTest extends TestCase
         $externalId2Target = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -300,8 +300,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTargetB = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -344,8 +344,8 @@ class IdentityPersistTest extends TestCase
         $externalIdTarget = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalA'),
+            new PortalNodeCreatePayload(Portal::class(), 'PortalB'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
         $portalNodeKeyTarget = $portalNodeCreateResult[1]->getPortalNodeKey();
@@ -381,7 +381,7 @@ class IdentityPersistTest extends TestCase
         $externalIdSource = Id::randomHex();
 
         $portalNodeCreateResult = $this->portalNodeCreateAction->create(new PortalNodeCreatePayloads([
-            new PortalNodeCreatePayload(Portal::class()),
+            new PortalNodeCreatePayload(Portal::class(), 'Portal'),
         ]));
         $portalNodeKeySource = $portalNodeCreateResult[0]->getPortalNodeKey();
 

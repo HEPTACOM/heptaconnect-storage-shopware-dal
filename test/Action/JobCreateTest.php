@@ -62,6 +62,7 @@ class JobCreateTest extends TestCase
             'id' => $source,
             'configuration' => '{}',
             'class_name' => self::class,
+            'alias' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 
