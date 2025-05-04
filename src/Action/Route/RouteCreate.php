@@ -14,7 +14,6 @@ use Heptacom\HeptaConnect\Storage\Base\Exception\CreateException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\InvalidCreatePayloadException;
 use Heptacom\HeptaConnect\Storage\Base\Exception\UnsupportedStorageKeyException;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\RouteStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -25,14 +24,12 @@ final readonly class RouteCreate implements RouteCreateActionInterface
     public function __construct(
         private Connection $connection,
         private EntityTypeAccessor $entityTypes,
-        private RouteCapabilityAccessor $routeCapabilities
     ) {
     }
 
     #[\Override]
     public function create(RouteCreatePayloads $payloads): RouteCreateResults
     {
-        $capabilities = [];
         $entityTypes = [];
 
         /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
@@ -50,23 +47,9 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             }
 
             $entityTypes[] = (string) $payload->getEntityType();
-            $capabilities[] = $payload->getCapabilities();
         }
 
-        $allCapabilities = \array_merge([], ...$capabilities);
         $entityTypeIds = $this->entityTypes->getIdsForTypes($entityTypes);
-        $capabilityIds = $this->routeCapabilities->getIdsForNames($allCapabilities);
-
-        foreach ($allCapabilities as $capability) {
-            if (!\array_key_exists($capability, $capabilityIds)) {
-                /** @var \Heptacom\HeptaConnect\Storage\Base\Action\Route\Create\RouteCreatePayload $payload */
-                foreach ($payloads as $payload) {
-                    if (\in_array($capability, $payload->getCapabilities(), true)) {
-                        throw new InvalidCreatePayloadException($payload, 1636573805);
-                    }
-                }
-            }
-        }
 
         foreach ($entityTypes as $entityType) {
             if (!\array_key_exists($entityType, $entityTypeIds)) {
@@ -81,7 +64,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
 
         $now = DateTime::nowToStorage();
         $routeInserts = [];
-        $routeCapInserts = [];
+        $routeConfigurationInserts = [];
         $result = [];
 
         foreach ($payloads as $payload) {
@@ -100,9 +83,12 @@ final readonly class RouteCreate implements RouteCreateActionInterface
             ];
 
             foreach ($payload->getCapabilities() as $capability) {
-                $routeCapInserts[] = [
+                $routeConfigurationInserts[] = [
+                    'id' => Id::randomBinary(),
                     'route_id' => $id,
-                    'route_capability_id' => Id::toBinary($capabilityIds[$capability]),
+                    '`key`' => 'core_capability:' . $capability,
+                    'value' => 'true',
+                    'type' => 'bool',
                     'created_at' => $now,
                 ];
             }
@@ -111,7 +97,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
         }
 
         try {
-            $this->connection->transactional(function () use ($routeCapInserts, $routeInserts): void {
+            $this->connection->transactional(function () use ($routeConfigurationInserts, $routeInserts): void {
                 // TODO batch
                 foreach ($routeInserts as $routeInsert) {
                     $this->connection->insert('heptaconnect_route', $routeInsert, [
@@ -122,10 +108,16 @@ final readonly class RouteCreate implements RouteCreateActionInterface
                     ]);
                 }
 
-                foreach ($routeCapInserts as $routeCapabilityInsert) {
-                    $this->connection->insert('heptaconnect_route_has_capability', $routeCapabilityInsert, [
+                foreach ($routeConfigurationInserts as $routeCapabilityInsert) {
+                    $this->connection->delete('heptaconnect_route_configuration', [
+                        'route_id' => $routeCapabilityInsert['route_id'],
+                        '`key`' => $routeCapabilityInsert['key'],
+                    ], [
                         'route_id' => Types::BINARY,
-                        'route_capability_id' => Types::BINARY,
+                    ]);
+                    $this->connection->insert('heptaconnect_route_configuration', $routeCapabilityInsert, [
+                        'id' => Types::BINARY,
+                        'route_id' => Types::BINARY,
                     ]);
                 }
             });

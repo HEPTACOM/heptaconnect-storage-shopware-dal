@@ -38,7 +38,9 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', (string) $criteria->getEntityType());
-        $builder->setParameter('capability', RouteCapability::RECEPTION);
+        $builder->setParameter('configPrefix', 'core_capability:' . RouteCapability::RECEPTION);
+        $builder->setParameter('configType', 'bool');
+        $builder->setParameter('configValue', 'true');
 
         foreach ($builder->iterateColumn('route.id') as $id) {
             yield new ReceptionRouteListResult(new RouteStorageKey(Id::toHex($id)));
@@ -71,18 +73,9 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
             )
             ->innerJoin(
                 'route',
-                'heptaconnect_route_has_capability',
-                'route_has_capability',
-                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
-            )
-            ->innerJoin(
-                'route_has_capability',
-                'heptaconnect_route_capability',
-                'capability',
-                (string) $builder->expr()->and(
-                    $builder->expr()->eq('capability.id', 'route_has_capability.route_capability_id'),
-                    $builder->expr()->isNull('capability.deleted_at')
-                )
+                'heptaconnect_route_configuration',
+                'route_config',
+                $builder->expr()->eq('route_config.route_id', 'route.id')
             )
             ->select(['route.id id'])
             ->where(
@@ -91,7 +84,9 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
                 $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('entity_type.name', ':type'),
-                $builder->expr()->eq('capability.name', ':capability')
+                $builder->expr()->eq('route_config.key', ':configPrefix'),
+                $builder->expr()->eq('route_config.value', ':configValue'),
+                $builder->expr()->eq('route_config.type', ':configType'),
             );
     }
 }
