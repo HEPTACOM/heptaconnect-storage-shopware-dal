@@ -209,7 +209,7 @@ final readonly class IdentityErrorCreate implements IdentityErrorCreateActionInt
             )
             ->select([
                 'portal_node.id portal_node_id',
-                'entity_type.type entity_type_type',
+                'entity_type.name entity_type_type',
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])

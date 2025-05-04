@@ -90,7 +90,7 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
                 $builder->expr()->isNull('source_portal_node.deleted_at'),
                 $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
-                $builder->expr()->eq('entity_type.type', ':type'),
+                $builder->expr()->eq('entity_type.name', ':type'),
                 $builder->expr()->eq('capability.name', ':capability')
             );
     }

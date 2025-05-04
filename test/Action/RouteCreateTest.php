@@ -55,7 +55,7 @@ class RouteCreateTest extends TestCase
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
-            'type' => Simple::class,
+            'name' => Simple::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 

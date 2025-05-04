@@ -84,7 +84,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 $entities[] = (string) $entityType;
             }
 
-            $builder->andWhere($builder->expr()->in('entity_type.type', ':entities'));
+            $builder->andWhere($builder->expr()->in('entity_type.name', ':entities'));
             $builder->setParameter('entities', $entities, ArrayParameterType::STRING);
         }
 
@@ -98,7 +98,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
 
                     break;
                 case RouteOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dbalFieldName = 'entity_type.type';
+                    $dbalFieldName = 'entity_type.name';
 
                     break;
                 case RouteOverviewCriteria::FIELD_SOURCE:
@@ -200,7 +200,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
             )
             ->select([
                 'route.id id',
-                'entity_type.type entity_type_name',
+                'entity_type.name entity_type_name',
                 'source_portal_node.id source_portal_node_id',
                 'source_portal_node.class_name source_portal_node_class',
                 'target_portal_node.id target_portal_node_id',
@@ -210,7 +210,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
             ])
             ->groupBy([
                 'route.id',
-                'entity_type.type',
+                'entity_type.name',
                 'source_portal_node.id',
                 'source_portal_node.class_name',
                 'target_portal_node.id',

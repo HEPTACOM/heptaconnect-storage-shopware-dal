@@ -52,7 +52,7 @@ final readonly class IdentityOverview implements IdentityOverviewActionInterface
         }
 
         if ($entityTypeFilter !== []) {
-            $builder->andWhere($builder->expr()->in('entity_type.type', ':entityTypes'));
+            $builder->andWhere($builder->expr()->in('entity_type.name', ':entityTypes'));
             $builder->setParameter('entityTypes', \array_map('strval', $entityTypeFilter), ArrayParameterType::STRING);
         }
 
@@ -88,7 +88,7 @@ final readonly class IdentityOverview implements IdentityOverviewActionInterface
 
                     break;
                 case IdentityOverviewCriteria::FIELD_ENTITY_TYPE:
-                    $dbalFieldName = 'entity_type.type';
+                    $dbalFieldName = 'entity_type.name';
 
                     break;
                 case IdentityOverviewCriteria::FIELD_EXTERNAL_ID:
@@ -163,7 +163,7 @@ final readonly class IdentityOverview implements IdentityOverviewActionInterface
                 'portal_node.id portal_node_id',
                 'mapping_node.id mapping_node_id',
                 'mapping.external_id mapping_external_id',
-                'entity_type.type entity_type_type',
+                'entity_type.name entity_type_type',
                 'mapping.created_at created_at',
             ])
             ->andWhere($builder->expr()->isNull('portal_node.deleted_at'))

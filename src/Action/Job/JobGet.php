@@ -85,8 +85,8 @@ final readonly class JobGet implements JobGetActionInterface
             ->select([
                 'job.id job_id',
                 'job.external_id job_external_id',
-                'job_type.type job_type_type',
-                'entity_type.type job_entity_type',
+                'job_type.name job_type_type',
+                'entity_type.name job_entity_type',
                 'portal_node.id portal_node_id',
                 'job_payload.payload job_payload_payload',
                 'job_payload.format job_payload_format',

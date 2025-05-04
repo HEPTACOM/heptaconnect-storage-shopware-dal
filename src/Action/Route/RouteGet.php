@@ -79,14 +79,14 @@ final readonly class RouteGet implements RouteGetActionInterface
             )
             ->select([
                 'route.id id',
-                'entity_type.type entity_type_name',
+                'entity_type.name entity_type_name',
                 'source_portal_node.id source_portal_node_id',
                 'target_portal_node.id target_portal_node_id',
                 'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
             ])
             ->addGroupBy([
                 'route.id',
-                'entity_type.type',
+                'entity_type.name',
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])

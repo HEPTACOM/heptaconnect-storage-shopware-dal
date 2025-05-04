@@ -55,7 +55,7 @@ class ReceptionRouteListTest extends TestCase
         $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
-            'type' => self::class,
+            'name' => self::class,
             'created_at' => $now,
         ], [
             'id' => Types::BINARY,
@@ -104,7 +104,7 @@ class ReceptionRouteListTest extends TestCase
         $entityType = Id::randomBinary();
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
-            'type' => self::class,
+            'name' => self::class,
             'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,

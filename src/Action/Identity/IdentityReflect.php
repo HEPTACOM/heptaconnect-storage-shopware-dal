@@ -261,7 +261,7 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
 
                 $conditions[] = $expr->and(
                     $expr->eq('mapping.source_portal_node_id', ':' . $aliasSourcePortalNode),
-                    $expr->eq('type.type', ':' . $aliasEntityType),
+                    $expr->eq('type.name', ':' . $aliasEntityType),
                     $expr->in('mapping.source_external_id', ':' . $aliasSourceExternalIds)
                 );
 
@@ -419,10 +419,10 @@ final readonly class IdentityReflect implements IdentityReflectActionInterface
         $queryBuilder->from('heptaconnect_identity_redirect', 'mapping');
 
         $queryBuilder->select([
-            'mapping.source_portal_node_id',
-            'type.type',
-            'mapping.source_external_id',
-            'mapping.target_external_id',
+            'mapping.source_portal_node_id source_portal_node_id',
+            'type.name type',
+            'mapping.source_external_id source_external_id',
+            'mapping.target_external_id target_external_id',
         ]);
 
         $queryBuilder->innerJoin(

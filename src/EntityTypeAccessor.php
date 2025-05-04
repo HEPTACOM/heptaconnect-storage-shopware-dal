@@ -56,7 +56,7 @@ class EntityTypeAccessor
                 $id = Id::hashedBinary(self::ENTITY_TYPE_ID_NS, $nonMatchingKey);
                 $inserts[] = [
                     'id' => $id,
-                    'type' => $nonMatchingKey,
+                    'name' => $nonMatchingKey,
                     'created_at' => $now,
                 ];
                 $this->entityTypeIds[$nonMatchingKey] = Id::toHex($id);
@@ -93,9 +93,9 @@ class EntityTypeAccessor
         $queryBuilder->from('heptaconnect_entity_type', 'type')
             ->select([
                 'type.id type_id',
-                'type.type type_type',
+                'type.name type_type',
             ])
-            ->andWhere($queryBuilder->expr()->in('type.type', ':types'))
+            ->andWhere($queryBuilder->expr()->in('type.name', ':types'))
             ->setParameter('types', $types, ArrayParameterType::STRING);
 
         $result = [];
