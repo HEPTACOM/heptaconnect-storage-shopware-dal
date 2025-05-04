@@ -31,6 +31,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -126,6 +127,6 @@ final class FileReferenceRequestTest extends TestCase
 
     protected function getStorageFacade(): StorageFacadeInterface
     {
-        return new StorageFacade($this->getConnection());
+        return StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
     }
 }

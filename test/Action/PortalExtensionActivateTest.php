@@ -21,6 +21,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\PortalExtension\PortalExtension;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -42,7 +43,7 @@ class PortalExtensionActivateTest extends TestCase
     public function testActivateWithoutConfiguration(): void
     {
         $connection = $this->getConnection();
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -79,7 +80,7 @@ class PortalExtensionActivateTest extends TestCase
     public function testActivateWithPreviousDeactivatedConfiguration(): void
     {
         $connection = $this->getConnection();
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
@@ -126,7 +127,7 @@ class PortalExtensionActivateTest extends TestCase
     public function testActivateWithPreviousActivatedConfiguration(): void
     {
         $connection = $this->getConnection();
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $portalNode = Id::randomBinary();
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,

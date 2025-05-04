@@ -24,6 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -102,6 +103,6 @@ class StorageKeySerializerTest extends TestCase
 
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        return new StorageFacade($this->getConnection());
+        return StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
     }
 }

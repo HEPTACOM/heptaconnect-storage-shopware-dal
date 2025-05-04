@@ -17,14 +17,10 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Id;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
 
-abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
+abstract readonly class PortalExtensionSwitchActive
 {
-    use LoggerAwareTrait;
-
     public const string CLASS_NAME_LOOKUP_QUERY = 'a6bbbe3b-bf42-455d-824e-8c1aac4453b6';
 
     public const string ID_LOOKUP_QUERY = '2fc478d7-4f03-4a3d-a335-d6daf4244c27';
@@ -33,9 +29,9 @@ abstract class PortalExtensionSwitchActive implements LoggerAwareInterface
 
     public function __construct(
         private Connection $connection,
-        private QueryFactory $queryFactory
+        private QueryFactory $queryFactory,
+        private LoggerInterface $logger,
     ) {
-        $this->setLogger(new NullLogger());
     }
 
     abstract protected function getTargetActiveState(): int;
