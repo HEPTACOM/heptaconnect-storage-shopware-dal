@@ -39,6 +39,7 @@ class PortalNodeListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'alias' => self::class,
             'configuration' => '{}',
             'created_at' => $now,
             'deleted_at' => $now,
@@ -59,6 +60,7 @@ class PortalNodeListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'alias' => self::class,
             'configuration' => '{}',
             'created_at' => DateTime::nowToStorage(),
         ], [

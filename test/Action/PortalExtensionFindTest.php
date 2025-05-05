@@ -42,6 +42,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'configuration' => '{}',
             'created_at' => DateTime::nowToStorage(),
         ], [
@@ -63,6 +64,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'configuration' => '{}',
             'created_at' => DateTime::nowToStorage(),
         ], [
@@ -94,6 +96,7 @@ class PortalExtensionFindTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'configuration' => '{}',
             'created_at' => DateTime::nowToStorage(),
         ], [

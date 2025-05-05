@@ -47,6 +47,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'alias' => self::class,
             'configuration' => '{}',
             'created_at' => $now,
         ], [
@@ -96,6 +97,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalNode,
             'class_name' => self::class,
+            'alias' => self::class,
             'configuration' => '{}',
             'created_at' => DateTime::nowToStorage(),
         ], [

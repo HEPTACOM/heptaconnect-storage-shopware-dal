@@ -48,6 +48,7 @@ class PortalExtensionActivateTest extends TestCase
             'id' => $portalNode,
             'configuration' => '{}',
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
@@ -85,6 +86,7 @@ class PortalExtensionActivateTest extends TestCase
             'id' => $portalNode,
             'configuration' => '{}',
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,
@@ -132,6 +134,7 @@ class PortalExtensionActivateTest extends TestCase
             'id' => $portalNode,
             'configuration' => '{}',
             'class_name' => Portal::class,
+            'alias' => Portal::class,
             'created_at' => DateTime::nowToStorage(),
         ], [
             'id' => Types::BINARY,

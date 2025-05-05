@@ -82,12 +82,14 @@ class RouteOverviewTest extends TestCase
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalA,
             'class_name' => self::class,
+            'alias' => self::class,
             'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [
             'id' => $portalB,
             'class_name' => TestCase::class,
+            'alias' => TestCase::class,
             'configuration' => '{}',
             'created_at' => $now,
         ], ['id' => Types::BINARY]);

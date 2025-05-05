@@ -85,7 +85,7 @@ class IdentityErrorTest extends TestCase
         $this->identityMap = $facade->getIdentityMapAction();
         $this->identityErrorCreateAction = $facade->getIdentityErrorCreateAction();
 
-        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class())]);
+        $createPayloads = new PortalNodeCreatePayloads([new PortalNodeCreatePayload(PortalA::class(), 'PortalA')]);
         $createResults = $portalNodeCreate->create($createPayloads);
         $getCriteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection($createResults->column('getPortalNodeKey')));
 

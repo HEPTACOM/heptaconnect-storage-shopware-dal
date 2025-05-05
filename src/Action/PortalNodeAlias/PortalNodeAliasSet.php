@@ -45,10 +45,7 @@ final readonly class PortalNodeAliasSet implements PortalNodeAliasSetActionInter
             }
 
             $updates[$portalNodeKey->getUuid()] = $alias;
-
-            if ($alias !== null) {
-                $aliasToSet[] = $alias;
-            }
+            $aliasToSet[] = $alias;
         }
 
         if ($updates === []) {
