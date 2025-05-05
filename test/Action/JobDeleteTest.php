@@ -58,12 +58,12 @@ class JobDeleteTest extends TestCase
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $entityType,
-            'type' => Simple::class,
+            'name' => Simple::class,
             'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_job_type', [
             'id' => $jobType,
-            'type' => 'act',
+            'name' => 'act',
             'created_at' => DateTime::nowToStorage(),
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_portal_node', [

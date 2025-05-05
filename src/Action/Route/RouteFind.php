@@ -87,7 +87,7 @@ final readonly class RouteFind implements RouteFindActionInterface
                 $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('route.target_id', ':target_key'),
-                $builder->expr()->eq('entity_type.type', ':type'),
+                $builder->expr()->eq('entity_type.name', ':type'),
             );
     }
 }

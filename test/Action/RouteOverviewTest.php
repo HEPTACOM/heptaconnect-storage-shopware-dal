@@ -70,12 +70,12 @@ class RouteOverviewTest extends TestCase
 
         $connection->insert('heptaconnect_entity_type', [
             'id' => $typeA,
-            'type' => self::class,
+            'name' => self::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
         $connection->insert('heptaconnect_entity_type', [
             'id' => $typeB,
-            'type' => Simple::class,
+            'name' => Simple::class,
             'created_at' => $now,
         ], ['id' => Types::BINARY]);
 

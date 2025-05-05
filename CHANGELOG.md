@@ -41,6 +41,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove parameter to `\Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeyGeneratorContract` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::__construct`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::__construct` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate::__construct`
 - Rename class `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeyGenerator` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeySerializer` as base class has been renamed
 - Rename method `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createStorageKeyGenerator` to `\Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade::createStorageKeySerializer` as return type has been renamed
+- Change column name `type` to `name` in underlying tables `heptaconnect_job_type` and `heptaconnect_entity_type` 
 
 ### Deprecated
 

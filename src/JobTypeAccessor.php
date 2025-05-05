@@ -43,9 +43,9 @@ class JobTypeAccessor
                 ->from('heptaconnect_job_type', 'job_type')
                 ->select([
                     'job_type.id id',
-                    'job_type.type type',
+                    'job_type.name type',
                 ])
-                ->andWhere($builder->expr()->in('job_type.type', ':types'))
+                ->andWhere($builder->expr()->in('job_type.name', ':types'))
                 ->setParameter('types', $nonMatchingKeys, ArrayParameterType::STRING);
 
             $typeIds = [];
@@ -63,7 +63,7 @@ class JobTypeAccessor
                     $id = Id::randomBinary();
                     $inserts[] = [
                         'id' => $id,
-                        'type' => $type,
+                        'name' => $type,
                         'created_at' => $now,
                     ];
                     $typeIds[$type] = Id::toHex($id);

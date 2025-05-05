@@ -195,7 +195,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
             ->select([
-                'type.type mapping_node_type',
+                'type.name mapping_node_type',
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])
@@ -247,7 +247,7 @@ final readonly class IdentityMap implements IdentityMapActionInterface
                 $builder->expr()->eq('mapping.mapping_node_id', 'mapping_node.id')
             )
             ->select([
-                'type.type mapping_node_type',
+                'type.name mapping_node_type',
                 'mapping.external_id mapping_external_id',
                 'mapping_node.id mapping_node_id',
             ])
