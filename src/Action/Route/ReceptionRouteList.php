@@ -38,7 +38,7 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
 
         $builder->setParameter('source_key', Id::toBinary($sourceKey->getUuid()), ParameterType::BINARY);
         $builder->setParameter('type', (string) $criteria->getEntityType());
-        $builder->setParameter('configPrefix', 'core_capability:' . RouteCapability::RECEPTION);
+        $builder->setParameter('configKey', RouteCapability::RECEPTION);
         $builder->setParameter('configType', 'bool');
         $builder->setParameter('configValue', 'true');
 
@@ -84,7 +84,7 @@ final readonly class ReceptionRouteList implements ReceptionRouteListActionInter
                 $builder->expr()->isNull('target_portal_node.deleted_at'),
                 $builder->expr()->eq('route.source_id', ':source_key'),
                 $builder->expr()->eq('entity_type.name', ':type'),
-                $builder->expr()->eq('route_config.key', ':configPrefix'),
+                $builder->expr()->eq('route_config.key', ':configKey'),
                 $builder->expr()->eq('route_config.value', ':configValue'),
                 $builder->expr()->eq('route_config.type', ':configType'),
             );

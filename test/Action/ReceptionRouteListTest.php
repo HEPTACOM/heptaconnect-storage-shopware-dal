@@ -73,7 +73,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_route_configuration', [
             'id' => Id::randomBinary(),
             'route_id' => $routeId,
-            '`key`' => 'core_capability:' . RouteCapability::RECEPTION,
+            '`key`' => RouteCapability::RECEPTION,
             'value' => 'true',
             'type' => 'bool',
             'created_at' => $now,
@@ -130,7 +130,7 @@ class ReceptionRouteListTest extends TestCase
         $connection->insert('heptaconnect_route_configuration', [
             'id' => Id::randomBinary(),
             'route_id' => $routeId,
-            '`key`' => 'core_capability:' . RouteCapability::RECEPTION,
+            '`key`' => RouteCapability::RECEPTION,
             'value' => 'true',
             'type' => 'bool',
             'created_at' => DateTime::nowToStorage(),

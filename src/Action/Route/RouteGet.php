@@ -71,7 +71,6 @@ final readonly class RouteGet implements RouteGetActionInterface
                 'route_config',
                 $builder->expr()->and(
                     $builder->expr()->eq('route_config.route_id', 'route.id'),
-                    $builder->expr()->like('route_config.key', ':configPrefix'),
                     $builder->expr()->eq('route_config.value', ':configValue'),
                     $builder->expr()->eq('route_config.type', ':configType'),
                 )
@@ -81,7 +80,7 @@ final readonly class RouteGet implements RouteGetActionInterface
                 'entity_type.name entity_type_name',
                 'source_portal_node.id source_portal_node_id',
                 'target_portal_node.id target_portal_node_id',
-                'GROUP_CONCAT(SUBSTRING(route_config.value, 1, LENGTH(:configPrefix) - 1) SEPARATOR \',\') capability_name',
+                'GROUP_CONCAT(route_config.value SEPARATOR \',\') capability_name',
             ])
             ->addGroupBy([
                 'route.id',
@@ -89,7 +88,6 @@ final readonly class RouteGet implements RouteGetActionInterface
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])
-            ->setParameter('configPrefix', 'core_capability:%')
             ->setParameter('configType', 'bool')
             ->setParameter('configValue', 'true')
             ->where(

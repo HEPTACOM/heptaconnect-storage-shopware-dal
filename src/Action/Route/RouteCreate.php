@@ -86,7 +86,7 @@ final readonly class RouteCreate implements RouteCreateActionInterface
                 $routeConfigurationInserts[] = [
                     'id' => Id::randomBinary(),
                     'route_id' => $id,
-                    '`key`' => 'core_capability:' . $capability,
+                    '`key`' => $capability,
                     'value' => 'true',
                     'type' => 'bool',
                     'created_at' => $now,

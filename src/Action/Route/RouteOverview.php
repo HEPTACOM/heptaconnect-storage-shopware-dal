@@ -182,7 +182,6 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 'route_config',
                 $builder->expr()->and(
                     $builder->expr()->eq('route_config.route_id', 'route.id'),
-                    $builder->expr()->like('route_config.key', ':configPrefix'),
                     $builder->expr()->eq('route_config.value', ':configValue'),
                     $builder->expr()->eq('route_config.type', ':configType'),
                 )
@@ -195,7 +194,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.id target_portal_node_id',
                 'target_portal_node.class_name target_portal_node_class',
                 'route.created_at ct',
-                'GROUP_CONCAT(SUBSTRING(route_config.value, 1, LENGTH(:configPrefix) - 1) SEPARATOR \',\') capability_name',
+                'GROUP_CONCAT(route_config.value SEPARATOR \',\') capability_name',
             ])
             ->groupBy([
                 'route.id',
@@ -206,7 +205,6 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.class_name',
                 'route.created_at',
             ])
-            ->setParameter('configPrefix', 'core_capability:%')
             ->setParameter('configType', 'bool')
             ->setParameter('configValue', 'true')
             ->where(
