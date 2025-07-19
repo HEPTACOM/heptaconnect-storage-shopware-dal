@@ -22,6 +22,6 @@ final class HeptaConnectStorageBundle extends Bundle
     {
         parent::build($container);
 
-        (new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../src/DependencyInjection/Resources/')))->load('services.php');
+        (new PhpFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/Resources/')))->load('services.php');
     }
 }
