@@ -55,6 +55,9 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 - Remove exception related to code `1639268733` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate::create` as underlying reason will not occur anymore
 - Remove exception related to code `1640048751` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate::create` as underlying reason will not occur anymore
 - Remove exception related to code `1636573807` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate::create` as underlying reason will not occur anymore
+- Remove exception related to code `1636573805` from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate::create` as underlying reason will not occur anymore
+- Remove `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview`, `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor`, query identifier `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\RouteCapability\RouteCapabilityOverview::OVERVIEW_QUERY` with value `329b4aa3-e576-4930-b89f-c63dca05c16e` and `\Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor::FETCH_QUERY` with value `93fd2b30-ca58-4d60-b29e-d14115b5ea2b` as route capabilities are removed and the query will not be used anymore
+- Remove route capability filter from `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview`
 
 ### Fixed
 

@@ -12,7 +12,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\DateTime;
@@ -36,7 +35,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryBuilder::class)]
 #[CoversClass(QueryFactory::class)]
 #[CoversClass(QueryIterator::class)]
-#[CoversClass(RouteCapabilityAccessor::class)]
 #[CoversClass(RouteCreate::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
@@ -85,7 +83,7 @@ class RouteCreateTest extends TestCase
 
         $count = (int) $connection->fetchOne('SELECT count(1) FROM heptaconnect_route');
         static::assertSame(2, $count);
-        $count = (int) $connection->fetchOne('SELECT count(1) FROM heptaconnect_route_has_capability');
+        $count = (int) $connection->fetchOne('SELECT count(1) FROM heptaconnect_route_configuration');
         static::assertSame(1, $count);
     }
 }

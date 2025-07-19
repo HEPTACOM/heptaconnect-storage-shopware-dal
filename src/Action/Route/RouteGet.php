@@ -67,22 +67,20 @@ final readonly class RouteGet implements RouteGetActionInterface
             )
             ->leftJoin(
                 'route',
-                'heptaconnect_route_has_capability',
-                'route_has_capability',
-                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
-            )
-            ->leftJoin(
-                'route_has_capability',
-                'heptaconnect_route_capability',
-                'capability',
-                $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id')
+                'heptaconnect_route_configuration',
+                'route_config',
+                $builder->expr()->and(
+                    $builder->expr()->eq('route_config.route_id', 'route.id'),
+                    $builder->expr()->eq('route_config.value', ':configValue'),
+                    $builder->expr()->eq('route_config.type', ':configType'),
+                )
             )
             ->select([
                 'route.id id',
                 'entity_type.name entity_type_name',
                 'source_portal_node.id source_portal_node_id',
                 'target_portal_node.id target_portal_node_id',
-                'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
+                'GROUP_CONCAT(route_config.value SEPARATOR \',\') capability_name',
             ])
             ->addGroupBy([
                 'route.id',
@@ -90,6 +88,8 @@ final readonly class RouteGet implements RouteGetActionInterface
                 'source_portal_node.id',
                 'target_portal_node.id',
             ])
+            ->setParameter('configType', 'bool')
+            ->setParameter('configValue', 'true')
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->in('route.id', ':ids')

@@ -19,7 +19,6 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
-use Heptacom\HeptaConnect\Storage\ShopwareDal\RouteCapabilityAccessor;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\PortalNodeStorageKey;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeySerializer;
@@ -53,7 +52,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 #[CoversClass(QueryBuilder::class)]
 #[CoversClass(QueryFactory::class)]
 #[CoversClass(QueryIterator::class)]
-#[CoversClass(RouteCapabilityAccessor::class)]
 #[CoversClass(SelectQueryBuilder::class)]
 #[CoversClass(StorageFacade::class)]
 #[CoversClass(StorageKeySerializer::class)]

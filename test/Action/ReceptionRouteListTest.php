@@ -39,7 +39,6 @@ class ReceptionRouteListTest extends TestCase
     public function testDeletedAt(): void
     {
         $connection = $this->getConnection();
-        $receptionId = $this->getReceptionCapability();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
         $now = DateTime::nowToStorage();
@@ -72,13 +71,16 @@ class ReceptionRouteListTest extends TestCase
         ], [
             'id' => Types::BINARY,
         ]);
-        $connection->insert('heptaconnect_route_has_capability', [
+        $connection->insert('heptaconnect_route_configuration', [
+            'id' => Id::randomBinary(),
             'route_id' => $routeId,
-            'route_capability_id' => $receptionId,
+            '`key`' => RouteCapability::RECEPTION,
+            'value' => 'true',
+            'type' => 'bool',
             'created_at' => $now,
         ], [
+            'id' => Types::BINARY,
             'route_id' => Types::BINARY,
-            'route_capability_id' => Types::BINARY,
         ]);
 
         $facade = new StorageFacade($connection);
@@ -91,7 +93,6 @@ class ReceptionRouteListTest extends TestCase
     public function testCapability(): void
     {
         $connection = $this->getConnection();
-        $receptionId = $this->getReceptionCapability();
         $portalNode = Id::randomBinary();
         $portalNodeHex = Id::toHex($portalNode);
         $connection->insert('heptaconnect_portal_node', [
@@ -128,21 +129,19 @@ class ReceptionRouteListTest extends TestCase
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(0, $resultItems);
 
-        $connection->insert('heptaconnect_route_has_capability', [
+        $connection->insert('heptaconnect_route_configuration', [
+            'id' => Id::randomBinary(),
             'route_id' => $routeId,
-            'route_capability_id' => $receptionId,
+            '`key`' => RouteCapability::RECEPTION,
+            'value' => 'true',
+            'type' => 'bool',
             'created_at' => DateTime::nowToStorage(),
         ], [
+            'id' => Types::BINARY,
             'route_id' => Types::BINARY,
-            'route_capability_id' => Types::BINARY,
         ]);
 
         $resultItems = \iterable_to_array($action->list($criteria));
         static::assertCount(1, $resultItems);
-    }
-
-    private function getReceptionCapability(): string
-    {
-        return (string) $this->getConnection()->fetchOne('SELECT `id` FROM `heptaconnect_route_capability` WHERE `name` = ?', [RouteCapability::RECEPTION]);
     }
 }

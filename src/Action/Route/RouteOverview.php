@@ -34,13 +34,6 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
     public function overview(RouteOverviewCriteria $criteria): iterable
     {
         $builder = $this->getBuilder();
-        $capabilityFilter = $criteria->getCapabilityFilter();
-
-        if ($capabilityFilter !== null) {
-            $builder->andWhere($builder->expr()->in('capability.name', ':caps'));
-            $builder->setParameter('caps', $capabilityFilter->asArray(), ArrayParameterType::STRING);
-        }
-
         $portalNodeKeys = $criteria->getSourcePortalNodeKeyFilter();
 
         if ($portalNodeKeys instanceof PortalNodeKeyCollection) {
@@ -185,17 +178,12 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
             )
             ->leftJoin(
                 'route',
-                'heptaconnect_route_has_capability',
-                'route_has_capability',
-                $builder->expr()->eq('route_has_capability.route_id', 'route.id')
-            )
-            ->leftJoin(
-                'route_has_capability',
-                'heptaconnect_route_capability',
-                'capability',
-                (string) $builder->expr()->and(
-                    $builder->expr()->eq('route_has_capability.route_capability_id', 'capability.id'),
-                    $builder->expr()->isNull('capability.deleted_at')
+                'heptaconnect_route_configuration',
+                'route_config',
+                $builder->expr()->and(
+                    $builder->expr()->eq('route_config.route_id', 'route.id'),
+                    $builder->expr()->eq('route_config.value', ':configValue'),
+                    $builder->expr()->eq('route_config.type', ':configType'),
                 )
             )
             ->select([
@@ -206,7 +194,7 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.id target_portal_node_id',
                 'target_portal_node.class_name target_portal_node_class',
                 'route.created_at ct',
-                'GROUP_CONCAT(capability.name SEPARATOR \',\') capability_name',
+                'GROUP_CONCAT(route_config.value SEPARATOR \',\') capability_name',
             ])
             ->groupBy([
                 'route.id',
@@ -217,6 +205,8 @@ final readonly class RouteOverview implements RouteOverviewActionInterface
                 'target_portal_node.class_name',
                 'route.created_at',
             ])
+            ->setParameter('configType', 'bool')
+            ->setParameter('configValue', 'true')
             ->where(
                 $builder->expr()->isNull('route.deleted_at'),
                 $builder->expr()->isNull('source_portal_node.deleted_at'),
