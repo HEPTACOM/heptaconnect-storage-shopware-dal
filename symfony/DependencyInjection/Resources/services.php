@@ -120,12 +120,13 @@ return static function (ContainerConfigurator $container): void {
     $defaults->autowire();
     $defaults->public();
     $defaults->tag('container.ignore_attributes');
-    $defaults->tag('heptaconnect-storage-service');
 
     $services->set(StorageFacadeInterface::class, StorageFacade::class)
         ->args([
-            tagged_iterator('heptaconnect-storage-service', indexAttribute: 'key'),
+            tagged_locator('heptaconnect-storage-service', indexAttribute: 'key'),
         ]);
+
+    $defaults->tag('heptaconnect-storage-service');
 
     $services->set(QueryIterator::class);
     $services->set(EntityTypeAccessor::class);
