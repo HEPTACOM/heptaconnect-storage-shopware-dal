@@ -12,12 +12,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 final class HeptaConnectStorageBundle extends Bundle
 {
     #[\Override]
-    public function getPath(): string
-    {
-        return \dirname(__DIR__);
-    }
-
-    #[\Override]
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
