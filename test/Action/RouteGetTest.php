@@ -20,6 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -100,7 +101,7 @@ class RouteGetTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
 
@@ -109,7 +110,7 @@ class RouteGetTest extends TestCase
 
     public function testGet(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_ACTIVE)]));
 

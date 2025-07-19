@@ -9,7 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Deactivate\PortalE
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Deactivate\PortalExtensionDeactivateResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface;
 
-final class PortalExtensionDeactivate extends PortalExtensionSwitchActive implements PortalExtensionDeactivateActionInterface
+final readonly class PortalExtensionDeactivate extends PortalExtensionSwitchActive implements PortalExtensionDeactivateActionInterface
 {
     public function deactivate(PortalExtensionDeactivatePayload $payload): PortalExtensionDeactivateResult
     {

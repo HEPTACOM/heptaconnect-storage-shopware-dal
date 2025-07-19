@@ -18,6 +18,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Heptacom\HeptaConnect\Utility\ClassString\ClassStringReferenceCollection;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
@@ -82,7 +83,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         static::assertCount(2, [...$action->overview($criteria)]);
@@ -90,7 +91,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testPagination(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria0 = new PortalNodeOverviewCriteria();
         $criteria0->setPageSize(1);
@@ -109,7 +110,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateAsc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
@@ -126,7 +127,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByDateDesc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
@@ -143,7 +144,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameAsc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
@@ -169,7 +170,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testSortByClassNameDesc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setSort([
@@ -195,7 +196,7 @@ class PortalNodeOverviewTest extends TestCase
 
     public function testFilterPortalNodeClass(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter(new ClassStringReferenceCollection([new UnsafeClassString(TestCase::class)]));

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Suite\Action;
 
-use Doctrine\DBAL\Connection;
 use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
@@ -25,6 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Heptacom\HeptaConnect\TestSuite\Storage\Action\PortalNodeStorageTestContract;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -61,10 +61,6 @@ class PortalNodeStorageTest extends PortalNodeStorageTestContract
     #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        $kernel = $this->kernel;
-        /** @var Connection $connection */
-        $connection = $kernel->getContainer()->get(Connection::class);
-
-        return new StorageFacade($connection);
+        return StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
     }
 }

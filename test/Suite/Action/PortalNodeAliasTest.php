@@ -24,6 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Heptacom\HeptaConnect\TestSuite\Storage\Action\PortalNodeAliasTestContract;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -53,6 +54,6 @@ class PortalNodeAliasTest extends PortalNodeAliasTestContract
     #[\Override]
     protected function createStorageFacade(): StorageFacadeInterface
     {
-        return new StorageFacade($this->getConnection());
+        return StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
     }
 }

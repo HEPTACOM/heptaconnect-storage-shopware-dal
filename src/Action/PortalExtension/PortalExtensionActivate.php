@@ -9,7 +9,7 @@ use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExt
 use Heptacom\HeptaConnect\Storage\Base\Action\PortalExtension\Activate\PortalExtensionActivateResult;
 use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface;
 
-final class PortalExtensionActivate extends PortalExtensionSwitchActive implements PortalExtensionActivateActionInterface
+final readonly class PortalExtensionActivate extends PortalExtensionSwitchActive implements PortalExtensionActivateActionInterface
 {
     public function activate(PortalExtensionActivatePayload $payload): PortalExtensionActivateResult
     {

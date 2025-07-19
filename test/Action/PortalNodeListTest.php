@@ -15,6 +15,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -47,7 +48,7 @@ class PortalNodeListTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $action = $facade->getPortalNodeListAction();
         $resultItems = \iterable_to_array($action->list());
         static::assertCount(0, $resultItems);
@@ -67,7 +68,7 @@ class PortalNodeListTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $action = $facade->getPortalNodeListAction();
         $resultItems = \iterable_to_array($action->list());
         static::assertCount(1, $resultItems);

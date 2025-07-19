@@ -19,6 +19,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use Heptacom\HeptaConnect\Utility\ClassString\UnsafeClassString;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -71,7 +72,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $action = $facade->getRouteFindAction();
         $criteria = new RouteFindCriteria(
             new PortalNodeStorageKey($portalNodeHex),
@@ -114,7 +115,7 @@ class RouteFindTest extends TestCase
             'id' => Types::BINARY,
         ]);
 
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $action = $facade->getRouteFindAction();
         $criteria = new RouteFindCriteria(
             new PortalNodeStorageKey($portalNodeHex),

@@ -38,6 +38,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Portal\Portal;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -71,7 +72,7 @@ class IdentityPersistTest extends TestCase
     {
         parent::setUp();
 
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $this->identityPersistAction = $facade->getIdentityPersistAction();
         $this->datasetEntityTypeAccessor = new EntityTypeAccessor($this->getConnection(), new QueryFactory($this->getConnection(), new QueryIterator(), [], 500));
         $this->portalNodeCreateAction = $facade->getPortalNodeCreateAction();

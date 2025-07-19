@@ -19,6 +19,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -144,7 +145,7 @@ class RouteOverviewTest extends TestCase
 
     public function testDeletedAt(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         static::assertCount(4, [...$action->overview($criteria)]);
@@ -152,7 +153,7 @@ class RouteOverviewTest extends TestCase
 
     public function testPagination(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria0 = new RouteOverviewCriteria();
         $criteria0->setPageSize(1);
@@ -183,7 +184,7 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByDateAsc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
@@ -200,7 +201,7 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByDateDesc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
@@ -217,7 +218,7 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByEntityTypeAsc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([
@@ -243,7 +244,7 @@ class RouteOverviewTest extends TestCase
 
     public function testSortByEntityTypeDesc(): void
     {
-        $facade = new StorageFacade($this->getConnection());
+        $facade = StorageFacadeProvider::createContainerStorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
         $criteria->setSort([

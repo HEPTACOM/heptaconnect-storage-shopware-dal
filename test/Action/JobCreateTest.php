@@ -24,6 +24,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -49,7 +50,7 @@ class JobCreateTest extends TestCase
         $source = Id::randomBinary();
         $entityType = Id::randomBinary();
         $connection = $this->getConnection();
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $now = DateTime::nowToStorage();
 
         $connection->insert('heptaconnect_entity_type', [

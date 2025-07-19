@@ -20,6 +20,7 @@ use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\SelectQueryBuilder;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\Dataset\Simple;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\Fixture\StorageFacadeProvider;
 use Heptacom\HeptaConnect\Storage\ShopwareDal\Test\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
@@ -110,7 +111,7 @@ class JobDeleteTest extends TestCase
         static::assertEquals(1, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job_payload'));
         static::assertEquals(1, $connection->fetchOne('SELECT COUNT(1) FROM heptaconnect_job'));
 
-        $facade = new StorageFacade($connection);
+        $facade = StorageFacadeProvider::createContainerStorageFacade($connection);
         $action = $facade->getJobDeleteAction();
         $criteria = new JobDeleteCriteria(new JobKeyCollection([new JobStorageKey(self::JOB)]));
         $action->delete($criteria);

@@ -1,0 +1,188 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+use Doctrine\DBAL\Connection;
+use Heptacom\HeptaConnect\Storage\Base\Bridge\Contract\StorageFacadeInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferenceGetRequestActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\FileReference\FileReferencePersistRequestActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityMapActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityPersistActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Identity\IdentityReflectActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityError\IdentityErrorCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\IdentityRedirect\IdentityRedirectOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFailActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobFinishActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobListFinishedActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobScheduleActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Job\JobStartActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionActivateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionDeactivateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalExtension\PortalExtensionFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeListActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNode\PortalNodeOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeAlias\PortalNodeAliasSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeConfiguration\PortalNodeConfigurationSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageClearActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageListActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\PortalNodeStorage\PortalNodeStorageSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\ReceptionRouteListActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteCreateActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteDeleteActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteGetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\Route\RouteOverviewActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFindActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSetActionInterface;
+use Heptacom\HeptaConnect\Storage\Base\Contract\StorageKeySerializerContract;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferenceGetRequestAction;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\FileReference\FileReferencePersistRequestAction;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityMap;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityReflect;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityError\IdentityErrorCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\IdentityRedirect\IdentityRedirectOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFail;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinish;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobFinishedList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobSchedule;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Job\JobStart;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionActivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionDeactivate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalExtension\PortalExtensionFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNode\PortalNodeOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeAlias\PortalNodeAliasSet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeConfiguration\PortalNodeConfigurationSet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageClear;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\PortalNodeStorage\PortalNodeStorageSet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\ReceptionRouteList;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteCreate;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteDelete;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteGet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Route\RouteOverview;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationFind;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Action\WebHttpHandlerConfiguration\WebHttpHandlerConfigurationSet;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Bridge\StorageFacade;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\EntityTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\JobTypeAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\PortalNodeAliasAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKeySerializer;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryFactory;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\Support\Query\QueryIterator;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathAccessor;
+use Heptacom\HeptaConnect\Storage\ShopwareDal\WebHttpHandlerPathIdResolver;
+use Psr\Log\LoggerInterface;
+
+return static function (ContainerConfigurator $container): void {
+    $services = $container->services();
+
+    // dependency, that needs to be provided somewhere else
+    $services->set(Connection::class)->synthetic();
+    $services->set(LoggerInterface::class)->synthetic();
+
+    $defaults = $services->defaults();
+    $defaults->autowire();
+    $defaults->public();
+    $defaults->tag('container.ignore_attributes');
+
+    $services->set(StorageFacadeInterface::class, StorageFacade::class)
+        ->args([
+            tagged_locator('heptaconnect-storage-service', indexAttribute: 'key'),
+        ]);
+
+    $defaults->tag('heptaconnect-storage-service');
+
+    $services->set(QueryIterator::class);
+    $services->set(EntityTypeAccessor::class);
+    $services->set(JobTypeAccessor::class);
+    $services->set(PortalNodeAliasAccessor::class);
+    $services->set(WebHttpHandlerPathIdResolver::class);
+    $services->set(WebHttpHandlerPathAccessor::class);
+    $services->set(WebHttpHandlerAccessor::class);
+    $services->set(QueryFactory::class)
+        ->arg('$fallbackPageSizes', [])
+        ->arg('$fallbackPageSize', 500);
+
+    $services->set(FileReferenceGetRequestActionInterface::class, FileReferenceGetRequestAction::class);
+    $services->set(FileReferencePersistRequestActionInterface::class, FileReferencePersistRequestAction::class);
+    $services->set(IdentityRedirectCreateActionInterface::class, IdentityRedirectCreate::class);
+    $services->set(IdentityRedirectDeleteActionInterface::class, IdentityRedirectDelete::class);
+    $services->set(IdentityRedirectOverviewActionInterface::class, IdentityRedirectOverview::class);
+    $services->set(IdentityErrorCreateActionInterface::class, IdentityErrorCreate::class);
+    $services->set(IdentityMapActionInterface::class, IdentityMap::class);
+    $services->set(IdentityOverviewActionInterface::class, IdentityOverview::class);
+    $services->set(IdentityPersistActionInterface::class, IdentityPersist::class);
+    $services->set(IdentityReflectActionInterface::class, IdentityReflect::class);
+    $services->set(JobCreateActionInterface::class, JobCreate::class);
+    $services->set(JobDeleteActionInterface::class, JobDelete::class);
+    $services->set(JobFailActionInterface::class, JobFail::class);
+    $services->set(JobFinishActionInterface::class, JobFinish::class);
+    $services->set(JobGetActionInterface::class, JobGet::class);
+    $services->set(JobListFinishedActionInterface::class, JobFinishedList::class);
+    $services->set(JobScheduleActionInterface::class, JobSchedule::class);
+    $services->set(JobStartActionInterface::class, JobStart::class);
+    $services->set(PortalExtensionActivateActionInterface::class, PortalExtensionActivate::class);
+    $services->set(PortalExtensionDeactivateActionInterface::class, PortalExtensionDeactivate::class);
+    $services->set(PortalExtensionFindActionInterface::class, PortalExtensionFind::class);
+    $services->set(RouteCreateActionInterface::class, RouteCreate::class);
+    $services->set(RouteDeleteActionInterface::class, RouteDelete::class);
+    $services->set(RouteFindActionInterface::class, RouteFind::class);
+    $services->set(RouteGetActionInterface::class, RouteGet::class);
+    $services->set(RouteOverviewActionInterface::class, RouteOverview::class);
+    $services->set(ReceptionRouteListActionInterface::class, ReceptionRouteList::class);
+    $services->set(PortalNodeCreateActionInterface::class, PortalNodeCreate::class);
+    $services->set(PortalNodeDeleteActionInterface::class, PortalNodeDelete::class);
+    $services->set(PortalNodeGetActionInterface::class, PortalNodeGet::class);
+    $services->set(PortalNodeListActionInterface::class, PortalNodeList::class);
+    $services->set(PortalNodeOverviewActionInterface::class, PortalNodeOverview::class);
+    $services->set(PortalNodeAliasGetActionInterface::class, PortalNodeAliasGet::class);
+    $services->set(PortalNodeAliasFindActionInterface::class, PortalNodeAliasFind::class);
+    $services->set(PortalNodeAliasSetActionInterface::class, PortalNodeAliasSet::class);
+    $services->set(PortalNodeAliasOverviewActionInterface::class, PortalNodeAliasOverview::class);
+    $services->set(PortalNodeConfigurationGetActionInterface::class, PortalNodeConfigurationGet::class);
+    $services->set(PortalNodeConfigurationSetActionInterface::class, PortalNodeConfigurationSet::class);
+    $services->set(PortalNodeStorageClearActionInterface::class, PortalNodeStorageClear::class);
+    $services->set(PortalNodeStorageDeleteActionInterface::class, PortalNodeStorageDelete::class);
+    $services->set(PortalNodeStorageGetActionInterface::class, PortalNodeStorageGet::class);
+    $services->set(PortalNodeStorageListActionInterface::class, PortalNodeStorageList::class);
+    $services->set(PortalNodeStorageSetActionInterface::class, PortalNodeStorageSet::class);
+    $services->set(StorageKeySerializerContract::class, StorageKeySerializer::class);
+    $services->set(WebHttpHandlerConfigurationFindActionInterface::class, WebHttpHandlerConfigurationFind::class);
+    $services->set(WebHttpHandlerConfigurationSetActionInterface::class, WebHttpHandlerConfigurationSet::class);
+};
