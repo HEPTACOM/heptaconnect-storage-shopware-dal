@@ -24,6 +24,7 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 ### Fixed
 
 - Remove erroneous `ORDER BY` in query `d8bb9156-edcc-4b1b-8e7e-fae2e8932434` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist`
+- Add conflict constraint for `enqueue/enqueue:^0.10.24`, because a code-style change broke compatibility with `php:7.4`
 
 ### Security
 
