@@ -23,6 +23,8 @@ The version numbers are structured like `GENERATION.MAJOR.MINOR.PATCH`:
 
 ### Fixed
 
+- Remove erroneous `ORDER BY` in query `d8bb9156-edcc-4b1b-8e7e-fae2e8932434` in `\Heptacom\HeptaConnect\Storage\ShopwareDal\Action\Identity\IdentityPersist`
+
 ### Security
 
 ## [0.9.1.2] - 2023-11-23
