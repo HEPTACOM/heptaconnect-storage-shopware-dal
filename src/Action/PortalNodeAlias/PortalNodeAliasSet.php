@@ -52,7 +52,7 @@ class PortalNodeAliasSet implements PortalNodeAliasSetActionInterface
             return;
         }
 
-        $matches = $this->portalNodeAliasAccessor->getIdsByAliases(\array_values(\array_filter($updates, 'strlen')));
+        $matches = $this->portalNodeAliasAccessor->getIdsByAliases(\array_values(\array_filter(\array_filter($updates, 'is_string'), 'strlen')));
 
         if ($matches !== []) {
             foreach ($matches as $match) {

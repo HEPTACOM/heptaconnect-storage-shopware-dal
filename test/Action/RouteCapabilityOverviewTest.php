@@ -24,7 +24,7 @@ class RouteCapabilityOverviewTest extends TestCase
         $facade = new StorageFacade($this->getConnection());
         $action = $facade->getRouteCapabilityOverviewAction();
         $criteria = new RouteCapabilityOverviewCriteria();
-        static::assertCount(1, $action->overview($criteria));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria)));
     }
 
     public function testPagination(): void
@@ -41,8 +41,8 @@ class RouteCapabilityOverviewTest extends TestCase
         $criteria2 = clone $criteria0;
         $criteria2->setPage(2);
 
-        static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(1, $action->overview($criteria1));
-        static::assertCount(0, $action->overview($criteria2));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria0)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria1)));
+        static::assertCount(0, \iterable_to_array($action->overview($criteria2)));
     }
 }
