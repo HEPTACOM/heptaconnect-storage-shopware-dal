@@ -92,7 +92,7 @@ class RouteGetTest extends TestCase
         $action = $facade->getRouteGetAction();
         $criteria = new RouteGetCriteria(new RouteKeyCollection([new RouteStorageKey(self::ROUTE_DELETED)]));
 
-        static::assertCount(0, $action->get($criteria));
+        static::assertCount(0, \iterable_to_array($action->get($criteria)));
     }
 
     public function testGet(): void

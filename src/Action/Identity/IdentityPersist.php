@@ -439,7 +439,6 @@ final class IdentityPersist implements IdentityPersistActionInterface
 
         $hasConflict = (bool) $queryBuilder->select('1')
             ->from('heptaconnect_mapping', 'mapping')
-            ->addOrderBy('mapping.id')
             ->where($expr->and(
                 $expr->in('mapping.mapping_node_id', ':mappingNodeIds'),
                 $expr->isNull('mapping.deleted_at')

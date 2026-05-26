@@ -136,7 +136,7 @@ class RouteOverviewTest extends TestCase
         $facade = new StorageFacade($this->getConnection());
         $action = $facade->getRouteOverviewAction();
         $criteria = new RouteOverviewCriteria();
-        static::assertCount(4, $action->overview($criteria));
+        static::assertCount(4, \iterable_to_array($action->overview($criteria)));
     }
 
     public function testPagination(): void

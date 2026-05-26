@@ -71,7 +71,7 @@ class PortalNodeOverviewTest extends TestCase
         $facade = new StorageFacade($this->getConnection());
         $action = $facade->getPortalNodeOverviewAction();
         $criteria = new PortalNodeOverviewCriteria();
-        static::assertCount(2, $action->overview($criteria));
+        static::assertCount(2, \iterable_to_array($action->overview($criteria)));
     }
 
     public function testPagination(): void
@@ -88,9 +88,9 @@ class PortalNodeOverviewTest extends TestCase
         $criteria2 = clone $criteria0;
         $criteria2->setPage(4);
 
-        static::assertCount(1, $action->overview($criteria0));
-        static::assertCount(1, $action->overview($criteria1));
-        static::assertCount(0, $action->overview($criteria2));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria0)));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria1)));
+        static::assertCount(0, \iterable_to_array($action->overview($criteria2)));
     }
 
     public function testSortByDateAsc(): void
@@ -186,7 +186,7 @@ class PortalNodeOverviewTest extends TestCase
         $criteria = new PortalNodeOverviewCriteria();
         $criteria->setClassNameFilter([TestCase::class]);
 
-        static::assertCount(1, $action->overview($criteria));
+        static::assertCount(1, \iterable_to_array($action->overview($criteria)));
 
         /** @var PortalNodeOverviewResult $item */
         foreach ($action->overview($criteria) as $item) {

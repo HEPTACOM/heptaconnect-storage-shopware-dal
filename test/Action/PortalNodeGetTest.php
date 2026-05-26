@@ -71,7 +71,7 @@ class PortalNodeGetTest extends TestCase
         $action = $facade->getPortalNodeGetAction();
         $criteria = new PortalNodeGetCriteria(new PortalNodeKeyCollection([new PortalNodeStorageKey(self::PORTAL_DELETED)]));
 
-        static::assertCount(0, $action->get($criteria));
+        static::assertCount(0, \iterable_to_array($action->get($criteria)));
     }
 
     public function testGet(): void

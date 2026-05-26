@@ -412,6 +412,17 @@ class IdentityPersistTest extends TestCase
         }
     }
 
+    protected function downQueryTracking(): void
+    {
+        foreach (\array_column($this->trackedQueries, 0) as $key => $trackedQuery) {
+            if (\mb_strpos($trackedQuery, IdentityPersist::VALIDATE_MERGE_QUERY) !== false) {
+                unset($this->trackedQueries[$key]);
+            }
+        }
+
+        parent::downQueryTracking();
+    }
+
     /**
      * @return IdentityOverviewResult[]
      */

@@ -43,6 +43,7 @@
         "shopware/storefront": ">=6.3"
     },
     "conflict": {
+        "enqueue/enqueue": "^0.10.24",
         "nikic/php-parser": "4.7.0"
     },
     "repositories": {

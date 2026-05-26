@@ -85,10 +85,10 @@ class StorageKeyGeneratorTest extends TestCase
     {
         $generator = $this->createStorageFacade()->getStorageKeyGenerator();
         /* @var \Heptacom\HeptaConnect\Storage\ShopwareDal\StorageKey\AbstractStorageKey $key */
-        static::assertCount(100, $generator->generateKeys($interface, 100));
-        static::assertCount(10, $generator->generateKeys($interface, 10));
-        static::assertCount(0, $generator->generateKeys($interface, 0));
-        static::assertCount(0, $generator->generateKeys($interface, -10));
+        static::assertCount(100, \iterable_to_array($generator->generateKeys($interface, 100)));
+        static::assertCount(10, \iterable_to_array($generator->generateKeys($interface, 10)));
+        static::assertCount(0, \iterable_to_array($generator->generateKeys($interface, 0)));
+        static::assertCount(0, \iterable_to_array($generator->generateKeys($interface, -10)));
     }
 
     /**
